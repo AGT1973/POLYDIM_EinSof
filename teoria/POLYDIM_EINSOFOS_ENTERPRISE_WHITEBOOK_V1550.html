@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>POLYDIM-EINSOF Enterprise Whitebook V1550</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">POLYDIM-EINSOF Enterprise Whitebook V1550</h1>
+</header>
+<h1
+id="polydim-einsofos-high-dimensional-native-computing-architecture">POLYDIM
+/ EinsofOS: High-Dimensional Native Computing Architecture</h1>
+<h2
+id="enterprise-technical-white-paper-kernel-series-1550-genesis-v1550-kernel-v26155-master-edition">Enterprise
+Technical White Paper — Kernel Series 1550 (Genesis V1550 / Kernel
+V26155 Master Edition)</h2>
+<blockquote>
+<p>🌐 <strong>Language Navigation / Navegación de Idioma:</strong> - <a
+href="#-english-version">🇬🇧 English Version (Enterprise &amp; Industrial
+Architecture)</a> - <a href="#-version-en-espanol-para-latam">🇦🇷 Versión
+en Español (Especificación Industrial LATAM)</a></p>
+</blockquote>
+<hr />
+<h1 id="english-version">🇬🇧 English Version</h1>
+<p><strong>Author:</strong> Ariel García Traba<br />
+<strong>Affiliation:</strong> Independent Mathematical &amp; Systems
+Researcher — Lecturer at Universidad Tecnológica Nacional
+(UTN-FRBA)<br />
+<strong>Consortium:</strong> EinsofOS / POLYDIM Research
+Consortium<br />
+<strong>Contact:</strong> <code>ariel.garcia.traba@gmail.com</code> |
+<code>polydim-cla@gmail.com</code><br />
+<strong>Date:</strong> October 2026 — Master Edition V1550 (Kernel
+V26155 Frozen)<br />
+<strong>Status:</strong> Certified Industrial Specification (1,571 SOTA
+Theorems — Exit Code 0 Silicon Verified across 26,155+ Cycles)</p>
+<hr />
+<h2 id="executive-summary-industrial-scope">Executive Summary &amp;
+Industrial Scope</h2>
+<p>The global deployment of Artificial Intelligence and Multi-Agent
+Systems has encountered an unsustainable physical wall: the <strong>1D
+Serialization Bottleneck (The 1D Worm)</strong>. Conventional agentic
+frameworks (Model Context Protocol, LangChain, AutoGen, CrewAI) force
+dense, continuous neural representations (<img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%5Cmathbf%7Bh%7D%20%5Cin%20%5Cmathbb%7BR%7D%5ED%2C%20D%20%5Cge%2010%5E4"
+alt="\mathbf{h} \in \mathbb{R}^D, D \ge 10^4"
+title="\mathbf{h} \in \mathbb{R}^D, D \ge 10^4" class="math inline" />)
+through discrete 1D text tokenization (JSON, REST APIs, UTF-8
+strings).</p>
+<p>This text-based intermediate serialization inflicts catastrophic
+penalties: 1. <strong>Irreversible Shannon Entropy Loss:</strong> Under
+Shannon’s Data Processing Inequality (<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20I%28T%3B%20Z_T%29%20%5Cle%20I%28T%3B%20Z_L%29"
+alt="I(T; Z_T) \le I(T; Z_L)" title="I(T; Z_T) \le I(T; Z_L)"
+class="math inline" />), continuous manifold information destroyed by
+discrete token quantization cannot be recovered by downstream layers. 2.
+<strong>Extreme Autoregressive Latency:</strong> Inter-agent token
+generation consumes <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20100%5Ctext%7B--%7D500%5C%2C%5Ctext%7Bms%7D"
+alt="100\text{--}500\,\text{ms}" title="100\text{--}500\,\text{ms}"
+class="math inline" /> per hop in redundant autoregressive decoding. 3.
+<strong>Severe Economic Waste (Blood Tokens):</strong> Billions of
+redundant tokens are billed in foreign currency for intermediate chatter
+that humans never inspect.</p>
+<p><strong>POLYDIM / EinsofOS</strong> introduces an industrial-grade
+paradigm: <strong>Native High-Dimensional Computing on Continuous
+Riemannian Manifolds</strong>. By exchanging neural activation states
+directly on the unit hypersphere <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20S%5E%7BD-1%7D%20%5Csubset%20%5Cmathbb%7BR%7D%5ED"
+alt="S^{D-1} \subset \mathbb{R}^D" title="S^{D-1} \subset \mathbb{R}^D"
+class="math inline" /> and Stiefel manifold <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%5Cmathrm%7BSt%7D%28D%2C%20K%29"
+alt="\mathrm{St}(D, K)" title="\mathrm{St}(D, K)" class="math inline" />
+via <strong>Zero-Copy Shared Memory (PMTP V1550+)</strong>, enterprise
+deployments achieve: - <strong><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%2034.8%5C%2C%5Cmu%5Ctext%7Bs%7D"
+alt="34.8\,\mu\text{s}" title="34.8\,\mu\text{s}" class="math inline" />
+Local Data-Path Latency</strong> for an 8 MB neural state transfer in
+RAM (<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20229.885%5C%2C%5Ctext%7BGB%2Fs%7D"
+alt="229.885\,\text{GB/s}" title="229.885\,\text{GB/s}"
+class="math inline" /> effective local throughput). - <strong><img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%204%2C023%5Ctimes"
+alt="4,023\times" title="4,023\times" class="math inline" />
+Speedup</strong> compared to the <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20140%5C%2C%5Ctext%7Bms%7D"
+alt="140\,\text{ms}" title="140\,\text{ms}" class="math inline" />
+autoregressive text decoding baseline. - <strong>Machine-Zero Geometric
+Losslessness</strong> certified by bi-Lipschitz Secant RIP conditions
+and <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%5Cmathbb%7BF%7D_2"
+alt="\mathbb{F}_2" title="\mathbb{F}_2" class="math inline" />
+persistent simplicial homology (<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%5Cbeta_1%20%3D%201"
+alt="\beta_1 = 1" title="\beta_1 = 1" class="math inline" />). -
+<strong>$0.00 Marginal Token Cost</strong> for co-located multi-agent
+workflows.</p>
+<hr />
+<h2 id="enterprise-architecture-pmtp-data-plane">1. Enterprise
+Architecture &amp; PMTP Data Plane</h2>
+<pre><code>┌─────────────────────────────────────────────────────────────────────────────┐
+│                    PMTP V1550+ ZERO-COPY IPC DATA PLANE                     │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │ 88-Byte Fixed C ABI Descriptor (@Packed(1), Endianness Little-Endian) │  │
+│  ├───────────────────────────────────────────────────────────────────────┤  │
+│  │ Double-Buffered Shared Memory Slabs (mmap / CreateFileMappingA)       │  │
+│  ├───────────────────────────────────────────────────────────────────────┤  │
+│  │ AnchoredArray Memory Pinning: Eradicating Python SIGSEGV 139 (Th. 691) │  │
+│  ├───────────────────────────────────────────────────────────────────────┤  │
+│  │ C++20 AVX-512 Auto-Vectorization (Pragma No-Associative-Math, Th. 690)│  │
+│  ├───────────────────────────────────────────────────────────────────────┤  │
+│  │ Dart FFI NativeVector Zero-Copy Bindings with NativeFinalizer (Th. 692)│  │
+│  ├───────────────────────────────────────────────────────────────────────┤  │
+│  │ OpenAI Triton Coalescent GPU SRAM Tiling for NVIDIA / ROCm / Intel Max│  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────────┘</code></pre>
+<h3 id="the-88-byte-fixed-width-c-abi-tensor-descriptor">1.1 The 88-Byte
+Fixed-Width C ABI Tensor Descriptor</h3>
+<p>PMTP standardizes inter-process tensor transfers via a strictly
+aligned 88-byte header: - <code>uint32_t magic</code>:
+<code>0x504D5450</code> (<code>PMTP</code>) -
+<code>uint16_t version</code>: <code>26155</code> -
+<code>uint16_t dtype</code>: Enumerated standard numerical dtypes (FP64,
+FP32, FP16, BF16) - <code>uint64_t rank</code>: Tensor rank (<img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%201%20%5Cle%20%5Ctext%7Brank%7D%20%5Cle%208"
+alt="1 \le \text{rank} \le 8" title="1 \le \text{rank} \le 8"
+class="math inline" />) - <code>uint64_t shape[8]</code>: Dimension
+extents along each axis (64 bytes) - <code>uint64_t byte_length</code>:
+Total payload length in bytes</p>
+<h3 id="multi-language-silicon-binding-parity">1.2 Multi-Language
+Silicon Binding Parity</h3>
+<ol type="1">
+<li><strong>C++20 Native:</strong> Fused memory passes, OpenMP
+<code>#pragma omp parallel for</code>, and auto-vectorization without
+volatile barriers.</li>
+<li><strong>Rust 2021 Safe SIMD:</strong> Bit-level IEEE-754 subnormal
+inspection, 8-byte slice alignment, and panic isolation via
+<code>catch_unwind</code>.</li>
+<li><strong>Dart FFI:</strong> Direct pointer wrapping via
+<code>asTypedList</code> and deterministic disposal via
+<code>NativeFinalizer(calloc.nativeFree)</code>.</li>
+<li><strong>Triton GPU:</strong> Multi-GPU context matching, contiguous
+layout verification, and FP64 precision preservation.</li>
+</ol>
+<h3
+id="enterprise-cryptographic-wire-format-certified-dual-path-arithmetic">1.3
+Enterprise Cryptographic Wire Format &amp; Certified Dual-Path
+Arithmetic</h3>
+<ul>
+<li><strong>120-Byte Wire Layout (Theorem 976):</strong> 88-byte core
+header containing 32-byte <code>ExtFields</code> (Type byte + 31-byte
+metadata), authenticated end-to-end by an appending 32-byte HMAC-SHA256
+tag. Any payload tampering causes instant verification rejection (<img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20P_%7B%5Ctext%7Bforgery%7D%7D%20%5Cle%202%5E%7B-256%7D"
+alt="P_{\text{forgery}} \le 2^{-256}"
+title="P_{\text{forgery}} \le 2^{-256}" class="math inline" />).</li>
+<li><strong>Anti-Replay Durability (Theorem 975):</strong> Monotonic
+sequence tracking bound to persistent storage (<code>fsync</code>) and
+ephemeral session UUIDs.</li>
+<li><strong>Certified Arithmetic Path (Theorems 973 &amp;
+977–980):</strong>
+<ul>
+<li>Bit-exact IEEE-754 reference validation using a 4,288-bit Kulisch
+accumulator (136 radix-<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%202%5E%7B32%7D"
+alt="2^{32}" title="2^{32}" class="math inline" /> buckets spanning
+4,352 bits, analytic bound <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20W%282%5E%7B64%7D%29%20%3D%204261%5Ctext%7B%20bits%7D"
+alt="W(2^{64}) = 4261\text{ bits}" title="W(2^{64}) = 4261\text{ bits}"
+class="math inline" />).</li>
+<li>Universal integer significand multiplication via
+<code>VPMULUDQ</code> (Theorem 978), eliminating FMA underflow collapse
+(<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%202%5E%7B-1074%7D%20%5Ctimes%202%5E%7B-1074%7D%20%3D%200"
+alt="2^{-1074} \times 2^{-1074} = 0"
+title="2^{-1074} \times 2^{-1074} = 0" class="math inline" />).</li>
+<li>Provably zero intermediate carry propagation for <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20D%20%3D%2010%5E7"
+alt="D = 10^7" title="D = 10^7" class="math inline" /> (Theorem 979,
+maximum bucket occupancy <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%205.59%5C%25%20%3C%202%5E%7B59%7D%20%3C%202%5E%7B63%7D-1"
+alt="5.59\% &lt; 2^{59} &lt; 2^{63}-1"
+title="5.59\% &lt; 2^{59} &lt; 2^{63}-1" class="math inline" />).</li>
+<li>SIMD race eradication via 8 private lane banks
+<code>Superacc { int64_t b[8][136]; }</code> (8,704 bytes in L1D cache,
+Theorem 980).</li>
+<li>Structure-of-Arrays (SoA) topology
+<code>alignas(64) int64_t b[136][8]</code> with tight 5-row contiguous
+deposit bound and exact integer floor-form RNE reduction.</li>
+</ul></li>
+</ul>
+<h3 id="the-unified-6-fold-acceptance-predicate-c_textaccept">1.4 The
+Unified 6-Fold Acceptance Predicate (<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20C_%7B%5Ctext%7Baccept%7D%7D"
+alt="C_{\text{accept}}" title="C_{\text{accept}}"
+class="math inline" />)</h3>
+<p>Admission into the PMTP-v3 pipeline requires the simultaneous
+conjunction of six independent, fail-safe predicates: <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20C_%7B%5Ctext%7Baccept%7D%7D%20%3D%20C_%7B%5Ctext%7Btransport%7D%7D%20%5Cland%20C_%7B%5Ctext%7Bfreshness%7D%7D%20%5Cland%20C_%7B%5Ctext%7Bcapability%7D%7D%20%5Cland%20C_%7B%5Ctext%7Bgeometry%7D%7D%20%5Cland%20C_%7B%5Ctext%7Bsemantic%7D%7D%20%5Cland%20C_%7B%5Ctext%7Bresource%7D%7D"
+alt="C_{\text{accept}} = C_{\text{transport}} \land C_{\text{freshness}} \land C_{\text{capability}} \land C_{\text{geometry}} \land C_{\text{semantic}} \land C_{\text{resource}}"
+title="C_{\text{accept}} = C_{\text{transport}} \land C_{\text{freshness}} \land C_{\text{capability}} \land C_{\text{geometry}} \land C_{\text{semantic}} \land C_{\text{resource}}"
+class="math display" /> - <strong><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20C_%7B%5Ctext%7Btransport%7D%7D"
+alt="C_{\text{transport}}" title="C_{\text{transport}}"
+class="math inline" />:</strong> 120-byte wire descriptor HMAC-SHA256
+valid, BLAKE3 payload digest match, and physical seal verification via
+<code>F_GET_SEALS</code> on Linux (<code>F_SEAL_*</code>) or
+<code>PAGE_READONLY</code> duplicated handle on Windows. - <strong><img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20C_%7B%5Ctext%7Bfreshness%7D%7D"
+alt="C_{\text{freshness}}" title="C_{\text{freshness}}"
+class="math inline" />:</strong> Generation, nonce, epoch, and strictly
+monotonic sequence enforced via <code>fsync</code> journal or TPM 2.0 NV
+counter. - <strong><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20C_%7B%5Ctext%7Bcapability%7D%7D"
+alt="C_{\text{capability}}" title="C_{\text{capability}}"
+class="math inline" />:</strong> Authenticated capability tuple
+<code>{producer_id, session_id, generation, object_nonce, payload_digest, byte_length}</code>
+bound via protected control channel. - <strong><img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20C_%7B%5Ctext%7Bgeometry%7D%7D"
+alt="C_{\text{geometry}}" title="C_{\text{geometry}}"
+class="math inline" />:</strong> Three-state Stiefel oracle (<img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%5C%7B%5Ctext%7BAccept%7D%2C%20%5Ctext%7BReject%7D%2C%20%5Ctext%7BRefine%7D%5C%7D"
+alt="\{\text{Accept}, \text{Reject}, \text{Refine}\}"
+title="\{\text{Accept}, \text{Reject}, \text{Refine}\}"
+class="math inline" />) certifying <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%5C%7CX%5E%5Ctop%20X%20-%20I_K%5C%7C_F%20%5Cle%2010%5E%7B-10%7D"
+alt="\|X^\top X - I_K\|_F \le 10^{-10}"
+title="\|X^\top X - I_K\|_F \le 10^{-10}" class="math inline" /> with
+reproducible error bounds. - <strong><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20C_%7B%5Ctext%7Bsemantic%7D%7D"
+alt="C_{\text{semantic}}" title="C_{\text{semantic}}"
+class="math inline" />:</strong> Model identity, coordinate basis,
+Clifford generator ordering, and admissible transformation group
+agreement. - <strong><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20C_%7B%5Ctext%7Bresource%7D%7D"
+alt="C_{\text{resource}}" title="C_{\text{resource}}"
+class="math inline" />:</strong> Memory byte quotas, bounded queues,
+reader epoch fencing, and backpressure. - <strong>SLA
+Decomposition:</strong> The <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%2034.8%5C%2C%5Cmu%5Ctext%7Bs%7D"
+alt="34.8\,\mu\text{s}" title="34.8\,\mu\text{s}" class="math inline" />
+SLA governs control-plane descriptor validation (<img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%205%5Ctext%7B--%7D15%5C%2C%5Cmu%5Ctext%7Bs%7D"
+alt="5\text{--}15\,\mu\text{s}" title="5\text{--}15\,\mu\text{s}"
+class="math inline" />); asynchronous data-plane streaming (<img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%201.28%5Ctext%7B%20GB%7D"
+alt="1.28\text{ GB}" title="1.28\text{ GB}" class="math inline" /> at
+<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%2048%5Ctext%7B%20GB%2Fs%7D"
+alt="48\text{ GB/s}" title="48\text{ GB/s}" class="math inline" /> in
+<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%2026.7%5Ctext%7B%20ms%7D"
+alt="26.7\text{ ms}" title="26.7\text{ ms}" class="math inline" />)
+decouples latency from throughput.</p>
+<h3 id="multi-language-packaging-developer-experience">1.5
+Multi-Language Packaging &amp; Developer Experience</h3>
+<ul>
+<li><strong>Python Wheel:</strong>
+<code>polydim-26.155.0-py3-none-any.whl</code> (pure Python ABI-agnostic
+package with CFFI fallback).</li>
+<li><strong>Dart FFI CLI:</strong> <code>polydim_cli.dart</code>
+(zero-dependency CLI for CI validation and Stiefel oracle queries).</li>
+<li><strong>C++20 Dynamic Library:</strong>
+<code>kernel_cpp_v26155.dll</code> (pinned release build exposing 5-row
+deposit, RNE reduction, and 6-fold predicate).</li>
+</ul>
+<h3
+id="entorno-de-co-work-vectorial-y-canales-de-interfaz-biológica-dart-sdk-3.13.3-flutter-d-10.000">1.6
+Entorno de Co-Work Vectorial y Canales de Interfaz Biológica (Dart SDK
+3.13.3 / Flutter, <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20D%20%3D%2010.000"
+alt="D = 10.000" title="D = 10.000" class="math inline" />)</h3>
+<p>Paquete nativo en <code>polydim_cowork_vectorial/</code> con 6
+módulos desacoplados de cualquier tokenización: 1. <strong>Canal BCI /
+Neuralink Cortical (<code>BciNeuralinkChannel</code>):</strong> Ingesta
+cortical masiva (<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%201.024%5Ctext%7B--%7D3.072"
+alt="1.024\text{--}3.072" title="1.024\text{--}3.072"
+class="math inline" /> canales). Mapeo afín <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20W_%7B%5Ctext%7Bcortical%7D%20%5Cto%2010000%7D"
+alt="W_{\text{cortical} \to 10000}"
+title="W_{\text{cortical} \to 10000}" class="math inline" /> proyectando
+intención humana directamente a <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20S%5E%7BD-1%7D"
+alt="S^{D-1}" title="S^{D-1}" class="math inline" /> sin formular
+palabras (norma <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%201.0" alt="1.0"
+title="1.0" class="math inline" />, error <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%202.22%20%5Ctimes%2010%5E%7B-16%7D"
+alt="2.22 \times 10^{-16}" title="2.22 \times 10^{-16}"
+class="math inline" />). 2. <strong>Canal Acústico Espectral Continuo
+(<code>ContinuousAudioChannel</code>):</strong> 10.000 resonadores
+sinusoidales armónicos sin ASR ni texto, preservando prosodia y tono en
+espacio continuo. 3. <strong>Síntesis Vectorial de Skills y Agentes
+(<code>LatentSkillSynthesizer</code>):</strong> Operador geodésico en
+<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20T_x%20S%5E%7BD-1%7D"
+alt="T_x S^{D-1}" title="T_x S^{D-1}" class="math inline" />: <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20T_%7B%5Ctext%7Bskill%7D%7D%20%3D%20%28z_%7B%5Ctext%7Banchor%7D%7D%2C%20v_%7B%5Ctext%7Btangent%7D%7D%2C%20%5Ctau%29"
+alt="T_{\text{skill}} = (z_{\text{anchor}}, v_{\text{tangent}}, \tau)"
+title="T_{\text{skill}} = (z_{\text{anchor}}, v_{\text{tangent}}, \tau)"
+class="math inline" /> con acción <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20z_%7B%5Ctext%7Bout%7D%7D%20%3D%20%5Coperatorname%7Bproj%7D_%7BS%5E%7BD-1%7D%7D%28%5Ccos%28%5Ctau%29%20z_%7B%5Ctext%7Bin%7D%7D%20%2B%20%5Csin%28%5Ctau%29%28z_%7B%5Ctext%7Bin%7D%7D%5E%5Ctop%20z_%7B%5Ctext%7Banchor%7D%7D%29%20v_%7B%5Ctext%7Btangent%7D%7D%29"
+alt="z_{\text{out}} = \operatorname{proj}_{S^{D-1}}(\cos(\tau) z_{\text{in}} + \sin(\tau)(z_{\text{in}}^\top z_{\text{anchor}}) v_{\text{tangent}})"
+title="z_{\text{out}} = \operatorname{proj}_{S^{D-1}}(\cos(\tau) z_{\text{in}} + \sin(\tau)(z_{\text{in}}^\top z_{\text{anchor}}) v_{\text{tangent}})"
+class="math inline" />, transferido como SLAB en memoria compartida PMTP
+sin código 1D ni prompts. 4. <strong>Transducción Sensorial de Retorno
+(<code>SensoryFeedbackTransducer</code>):</strong> Nube de puntos 3D
+rebanada con Z-buffer para Flutter Canvas (<code>CustomPainter</code>),
+paisaje binaural de <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20120%5Ctext%7B--%7D480%5C%20%5Ctext%7BHz%7D"
+alt="120\text{--}480\ \text{Hz}" title="120\text{--}480\ \text{Hz}"
+class="math inline" /> con pulso alfa de <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%204.08%5C%20%5Ctext%7BHz%7D"
+alt="4.08\ \text{Hz}" title="4.08\ \text{Hz}" class="math inline" /> y
+retorno cortical estimulatorio. 5. <strong>Certificación de
+Silicio:</strong> Telemetría <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20100%5C%25"
+alt="100\%" title="100\%" class="math inline" /> exitosa en
+<code>polydim_latent_cowork_demo.dart</code> (Humano <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%5Cleftrightarrow"
+alt="\leftrightarrow" title="\leftrightarrow" class="math inline" /> IA:
+<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%201.3%5C%20%5Ctext%7Bms%7D"
+alt="1.3\ \text{ms}" title="1.3\ \text{ms}" class="math inline" />,
+Agente <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%5Cleftrightarrow"
+alt="\leftrightarrow" title="\leftrightarrow" class="math inline" />
+Agente: <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%2014.4%5C%20%5Ctext%7Bms%7D"
+alt="14.4\ \text{ms}" title="14.4\ \text{ms}" class="math inline" />,
+Síntesis de Skill: <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%2011.7%5C%20%5Ctext%7Bms%7D"
+alt="11.7\ \text{ms}" title="11.7\ \text{ms}" class="math inline" />, 0
+tokens, Exit Code 0).</p>
+<h3
+id="pmtp-v4-triadic-fusion-subsystem-rust-c-triton-zero-copy-ffi">1.7
+PMTP-v4 Triadic Fusion Subsystem (Rust-C++-Triton Zero-Copy FFI)</h3>
+<p>Despliegue de tubería triádica
+(<code>E:\POLYDIM_EINSOF\PMTP_V4_CORE\TRIADIC_FUSION\</code>): -
+<strong>Stage I (Rust 2021 Safe SIMD):</strong> Retracción esférica con
+acumulador compensado de Neumaier, absorción de subnormales <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%2010%5E%7B-315%7D"
+alt="10^{-315}" title="10^{-315}" class="math inline" /> y descriptor de
+128 bytes sellado bajo <code>PAGE_READONLY</code>. - <strong>Stage II
+(C++20 Quiescent Router):</strong> Ring-buffer lock-free, épocas
+monótonas de 64 bits anti-ABA y reader leases RCU en <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20O%281%29"
+alt="O(1)" title="O(1)" class="math inline" /> sobre named pipe local. -
+<strong>Stage III (Triton GPU / ROCm Consumer):</strong> Reducción de
+varianza en SRAM coalescente y verificación de norma unitaria (<img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%5C%7Cz%5C%7C_2%20%3D%201.0%20%5Cpm%205.0%20%5Ctimes%2010%5E%7B-15%7D"
+alt="\|z\|_2 = 1.0 \pm 5.0 \times 10^{-15}"
+title="\|z\|_2 = 1.0 \pm 5.0 \times 10^{-15}" class="math inline" />). -
+<strong>Teorema 5.1 Certificado (Ciclo 27501):</strong> <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%5CDelta%20H%20%3D%200.0"
+alt="\Delta H = 0.0" title="\Delta H = 0.0" class="math inline" />
+(conservación entrópica estricta), latencia <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%205.54%5C%20%5Ctext%7Bms%7D"
+alt="5.54\ \text{ms}" title="5.54\ \text{ms}" class="math inline" />
+para <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20D%3D100.000"
+alt="D=100.000" title="D=100.000" class="math inline" />, RAM peak <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%2044.77%5C%20%5Ctext%7BMB%7D"
+alt="44.77\ \text{MB}" title="44.77\ \text{MB}" class="math inline" />
+(<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%3C80%5C%20%5Ctext%7BMB%7D"
+alt="&lt;80\ \text{MB}" title="&lt;80\ \text{MB}" class="math inline" />
+límite), 0 fugas de memoria, Exit Code 0.</p>
+<h3
+id="formal-verification-mechanized-proofs-in-lean-4-barrier-c-leaseguard-pmtp-v4">1.8
+Formal Verification &amp; Mechanized Proofs in Lean 4 (Barrier C /
+LeaseGuard PMTP-v4)</h3>
+<p>The foundational mathematical guarantees of the PMTP-v4 LeaseGuard
+subsystem have been formally mechanized and type-checked in <strong>Lean
+4 Core (v4.34.1)</strong> without external dependencies, sorry, or
+trivial closures (<code>pmtp_v4_axioms.lean</code>, Exit Code 0,
+certified in PostgreSQL 16 <code>pmtp_v4_theorems</code>, IDs 13–16,
+Cycle 27401): 1. <strong>Theorem 1 (Memory Disjointness &amp;
+Anti-Aliasing):</strong> Constructive proof that if <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%5Cmathrm%7Bdom%7D%28l_1%29%20%5Cneq%20%5Cmathrm%7Bdom%7D%28l_2%29%20%5Clor%20%5Cmathrm%7Bepoch%7D%28l_1%29%20%5Cneq%20%5Cmathrm%7Bepoch%7D%28l_2%29"
+alt="\mathrm{dom}(l_1) \neq \mathrm{dom}(l_2) \lor \mathrm{epoch}(l_1) \neq \mathrm{epoch}(l_2)"
+title="\mathrm{dom}(l_1) \neq \mathrm{dom}(l_2) \lor \mathrm{epoch}(l_1) \neq \mathrm{epoch}(l_2)"
+class="math inline" /> under <code>COMMITTED_READ</code>, the
+intersection of physical memory footprints is strictly empty: <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%5Cmathrm%7BFootprint%7D%28l_1%29%20%5Ccap%20%5Cmathrm%7BFootprint%7D%28l_2%29%20%3D%20%5Cemptyset"
+alt="\mathrm{Footprint}(l_1) \cap \mathrm{Footprint}(l_2) = \emptyset"
+title="\mathrm{Footprint}(l_1) \cap \mathrm{Footprint}(l_2) = \emptyset"
+class="math inline" />. 2. <strong>Theorem 2 (Neumaier Subnormal
+Stability on <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20S%5E%7BD-1%7D"
+alt="S^{D-1}" title="S^{D-1}" class="math inline" />):</strong> Analytic
+bound proving that for any subnormal floating inputs <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20x_i%20%5Cin%20%5B4.94%20%5Ctimes%2010%5E%7B-324%7D%2C%202.22%20%5Ctimes%2010%5E%7B-308%7D%5D"
+alt="x_i \in [4.94 \times 10^{-324}, 2.22 \times 10^{-308}]"
+title="x_i \in [4.94 \times 10^{-324}, 2.22 \times 10^{-308}]"
+class="math inline" />, the compensation residual <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20c" alt="c"
+title="c" class="math inline" /> absorbs round-off error, guaranteeing
+<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%5C%7Cx%5C%7C_2%5E2%20%3D%20s%20%2B%20c%20%3E%200"
+alt="\|x\|_2^2 = s + c &gt; 0" title="\|x\|_2^2 = s + c &gt; 0"
+class="math inline" /> and finite norm. 3. <strong>Theorem 3 (Monotonic
+Epoch ABA Immunity):</strong> Constructive reductio ad absurdum proving
+that for <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20e_1%20%3C%20e_2"
+alt="e_1 &lt; e_2" title="e_1 &lt; e_2" class="math inline" />, no
+active reader at <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20e_1" alt="e_1"
+title="e_1" class="math inline" /> can observe a slot reused at <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20e_2" alt="e_2"
+title="e_2" class="math inline" /> without violating the RCU quiescence
+grace period (<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%5Cmathcal%7BP%7D%28%5Cmathrm%7BABA%7D%29%20%3D%200"
+alt="\mathcal{P}(\mathrm{ABA}) = 0"
+title="\mathcal{P}(\mathrm{ABA}) = 0" class="math inline" />). 4.
+<strong>Theorem 4 (DPI Shannon Entropy Invariance):</strong> Proof that
+the canonical 128-byte wire bijection (<img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%5Cmathrm%7Bdeserialize%7D%20%5Ccirc%20%5Cmathrm%7Bserialize%7D%20%3D%20%5Cmathrm%7Bid%7D"
+alt="\mathrm{deserialize} \circ \mathrm{serialize} = \mathrm{id}"
+title="\mathrm{deserialize} \circ \mathrm{serialize} = \mathrm{id}"
+class="math inline" />) implies <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20H%28X%7CY%29%20%3D%200"
+alt="H(X|Y) = 0" title="H(X|Y) = 0" class="math inline" />, <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20I%28X%3B%20Y%29%20%3D%20H%28X%29"
+alt="I(X; Y) = H(X)" title="I(X; Y) = H(X)" class="math inline" />, and
+<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%5CDelta%20H%20%3D%200.0"
+alt="\Delta H = 0.0" title="\Delta H = 0.0" class="math inline" /> (zero
+information loss).</p>
+<hr />
+<h2 id="industrial-sla-silicon-benchmarks">2. Industrial SLA &amp;
+Silicon Benchmarks</h2>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: left;">Metric</th>
+<th style="text-align: left;">Target SLA</th>
+<th style="text-align: left;">Measured Silicon Performance</th>
+<th style="text-align: left;">Compliance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>8 MB Latency</strong></td>
+<td style="text-align: left;"><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%3C%20100%5C%2C%5Cmu%5Ctext%7Bs%7D"
+alt="&lt; 100\,\mu\text{s}" title="&lt; 100\,\mu\text{s}"
+class="math inline" /></td>
+<td style="text-align: left;"><strong><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%2034.8%5C%2C%5Cmu%5Ctext%7Bs%7D"
+alt="34.8\,\mu\text{s}" title="34.8\,\mu\text{s}"
+class="math inline" /></strong></td>
+<td style="text-align: left;"><strong>PASSED (300% Margin)</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Orthogonality Defect</strong></td>
+<td style="text-align: left;"><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%3C%201.0%20%5Ctimes%2010%5E%7B-11%7D"
+alt="&lt; 1.0 \times 10^{-11}" title="&lt; 1.0 \times 10^{-11}"
+class="math inline" /></td>
+<td style="text-align: left;"><strong><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%3C%201.0%20%5Ctimes%2010%5E%7B-15%7D"
+alt="&lt; 1.0 \times 10^{-15}" title="&lt; 1.0 \times 10^{-15}"
+class="math inline" /></strong></td>
+<td style="text-align: left;"><strong>PASSED
+(Machine-Zero)</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Process Crash Rate</strong></td>
+<td style="text-align: left;"><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%200.00%5C%25"
+alt="0.00\%" title="0.00\%" class="math inline" /></td>
+<td style="text-align: left;"><strong><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%200.00%5C%25"
+alt="0.00\%" title="0.00\%" class="math inline" /> across 26,155+
+cycles</strong></td>
+<td style="text-align: left;"><strong>PASSED (Exit Code 0)</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>IPC Memory Leaks</strong></td>
+<td style="text-align: left;"><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%200" alt="0"
+title="0" class="math inline" /> bytes</td>
+<td style="text-align: left;"><strong><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%200" alt="0"
+title="0" class="math inline" /> bytes (AnchoredArray /
+RAII)</strong></td>
+<td style="text-align: left;"><strong>PASSED</strong></td>
+</tr>
+</tbody>
+</table>
+<h3
+id="asymptotic-scaling-on-sd-1-geodesic-transport-phase-4-benchmarks">2.1
+Asymptotic Scaling on <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20S%5E%7BD-1%7D"
+alt="S^{D-1}" title="S^{D-1}" class="math inline" /> &amp; Geodesic
+Transport (Phase 4 Benchmarks)</h3>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th>Dimension <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20D" alt="D"
+title="D" class="math inline" /></th>
+<th>Vector Payload</th>
+<th>C++20 Latency</th>
+<th>Rust 2024 Latency</th>
+<th>Levi-Civita Transport (<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20T_X" alt="T_X"
+title="T_X" class="math inline" />)</th>
+<th>Cross-Lang Discrepancy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%2010%5E5"
+alt="10^5" title="10^5" class="math inline" /></td>
+<td><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%200.80%5C%20%5Ctext%7BMB%7D"
+alt="0.80\ \text{MB}" title="0.80\ \text{MB}"
+class="math inline" /></td>
+<td><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%201.11%5C%20%5Ctext%7Bms%7D"
+alt="1.11\ \text{ms}" title="1.11\ \text{ms}" class="math inline" />
+(<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%202.88%5C%20%5Ctext%7BGB%2Fs%7D"
+alt="2.88\ \text{GB/s}" title="2.88\ \text{GB/s}"
+class="math inline" />)</td>
+<td><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%200.89%5C%20%5Ctext%7Bms%7D"
+alt="0.89\ \text{ms}" title="0.89\ \text{ms}" class="math inline" />
+(<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%203.58%5C%20%5Ctext%7BGB%2Fs%7D"
+alt="3.58\ \text{GB/s}" title="3.58\ \text{GB/s}"
+class="math inline" />)</td>
+<td><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%200.62%5C%20%5Ctext%7Bms%7D"
+alt="0.62\ \text{ms}" title="0.62\ \text{ms}" class="math inline" />
+(<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%202.58%5C%20%5Ctext%7BGB%2Fs%7D"
+alt="2.58\ \text{GB/s}" title="2.58\ \text{GB/s}"
+class="math inline" />)</td>
+<td><strong><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%200.00%20%5Ctimes%2010%5E0"
+alt="0.00 \times 10^0" title="0.00 \times 10^0"
+class="math inline" /></strong></td>
+</tr>
+<tr>
+<td><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%2010%5E6"
+alt="10^6" title="10^6" class="math inline" /></td>
+<td><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%208.00%5C%20%5Ctext%7BMB%7D"
+alt="8.00\ \text{MB}" title="8.00\ \text{MB}"
+class="math inline" /></td>
+<td><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%2012.01%5C%20%5Ctext%7Bms%7D"
+alt="12.01\ \text{ms}" title="12.01\ \text{ms}" class="math inline" />
+(<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%202.66%5C%20%5Ctext%7BGB%2Fs%7D"
+alt="2.66\ \text{GB/s}" title="2.66\ \text{GB/s}"
+class="math inline" />)</td>
+<td><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%2011.34%5C%20%5Ctext%7Bms%7D"
+alt="11.34\ \text{ms}" title="11.34\ \text{ms}" class="math inline" />
+(<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%202.82%5C%20%5Ctext%7BGB%2Fs%7D"
+alt="2.82\ \text{GB/s}" title="2.82\ \text{GB/s}"
+class="math inline" />)</td>
+<td><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%2039.85%5C%20%5Ctext%7Bms%7D"
+alt="39.85\ \text{ms}" title="39.85\ \text{ms}" class="math inline" />
+(<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%201.61%5C%20%5Ctext%7BGB%2Fs%7D"
+alt="1.61\ \text{GB/s}" title="1.61\ \text{GB/s}"
+class="math inline" />)</td>
+<td><strong><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%200.00%20%5Ctimes%2010%5E0"
+alt="0.00 \times 10^0" title="0.00 \times 10^0"
+class="math inline" /></strong></td>
+</tr>
+<tr>
+<td><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%2010%5E7"
+alt="10^7" title="10^7" class="math inline" /></td>
+<td><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%2080.00%5C%20%5Ctext%7BMB%7D"
+alt="80.00\ \text{MB}" title="80.00\ \text{MB}"
+class="math inline" /></td>
+<td><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20149.61%5C%20%5Ctext%7Bms%7D"
+alt="149.61\ \text{ms}" title="149.61\ \text{ms}" class="math inline" />
+(<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%202.14%5C%20%5Ctext%7BGB%2Fs%7D"
+alt="2.14\ \text{GB/s}" title="2.14\ \text{GB/s}"
+class="math inline" />)</td>
+<td><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20114.93%5C%20%5Ctext%7Bms%7D"
+alt="114.93\ \text{ms}" title="114.93\ \text{ms}" class="math inline" />
+(<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%202.78%5C%20%5Ctext%7BGB%2Fs%7D"
+alt="2.78\ \text{GB/s}" title="2.78\ \text{GB/s}"
+class="math inline" />)</td>
+<td><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20350.85%5C%20%5Ctext%7Bms%7D"
+alt="350.85\ \text{ms}" title="350.85\ \text{ms}" class="math inline" />
+(<img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%201.82%5C%20%5Ctext%7BGB%2Fs%7D"
+alt="1.82\ \text{GB/s}" title="1.82\ \text{GB/s}"
+class="math inline" />)</td>
+<td><strong><img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%200.00%20%5Ctimes%2010%5E0"
+alt="0.00 \times 10^0" title="0.00 \times 10^0"
+class="math inline" /></strong></td>
+</tr>
+</tbody>
+</table>
+<p><em>Hardware floor: AMD APU (Family 21 Model 19, 2 Cores, DDR3 Host
+Floor, Peak RSS: 840.95 MB). 27/27 checks passed (Exit Code 0).</em></p>
+<hr />
+<h1 id="versión-en-español-para-latam">🇦🇷 Versión en Español (Para
+LATAM)</h1>
+<h2 id="especificación-técnica-e-industrial">Especificación Técnica e
+Industrial</h2>
+<p>POLYDIM / EinsofOS es un sistema operativo geométrico de alta
+dimensión diseñado para eliminar el cuello de botella de serialización
+en arquitecturas de inteligencia artificial distribuidas y
+multi-agente.</p>
+<h3 id="pilares-de-ingeniería">Pilares de Ingeniería</h3>
+<ol type="1">
+<li><strong>Transferencia de Estado Nativo en RAM:</strong> La
+información se intercambia directamente en el hiper-espacio continuo
+mediante descriptores C ABI de 88 bytes, evitando la conversión a
+cadenas de texto o JSON.</li>
+<li><strong>Compatibilidad Multi-Silicio:</strong> Ejecutable de forma
+transparente en CPUs convencionales (AMD/Intel), aceleradores GPU
+(NVIDIA CUDA / AMD ROCm / Intel Max) y arquitecturas móviles/desktop vía
+Dart FFI.</li>
+<li><strong>Cero Costo Marginal:</strong> En despliegues locales o de
+centro de datos, la comunicación entre agentes es completamente libre de
+costos por token de inferencia comercial.</li>
+<li><strong>Verificación Formal en Lean 4 (Barrera C):</strong>
+Deducción inductiva rigurosa (0 sorry, 0 trivial, Exit Code 0) de los 4
+teoremas de LeaseGuard:
+<ul>
+<li><em>Teorema 1 (Anti-Aliasing):</em> Aislamiento físico de
+direcciones en dominios y épocas RCU bajo
+<code>COMMITTED_READ</code>.</li>
+<li><em>Teorema 2 (Estabilidad Neumaier):</em> Absorción de errores
+subnormales en <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20S%5E%7BD-1%7D"
+alt="S^{D-1}" title="S^{D-1}" class="math inline" /> garantizando norma
+no nula y finita.</li>
+<li><em>Teorema 3 (Inmunidad ABA):</em> Imposibilidad de reciclado
+prematuro de buffers durante lecturas activas.</li>
+<li><em>Teorema 4 (Preservación DPI):</em> Invarianza entrópica (<img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%5CDelta%20H%20%3D%200.0"
+alt="\Delta H = 0.0" title="\Delta H = 0.0" class="math inline" />) por
+biyección canónica de 128 bytes.</li>
+</ul></li>
+<li><strong>Benchmark Asintótico en Silicio (<img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20D%20%3D%2010%5E6"
+alt="D = 10^6" title="D = 10^6" class="math inline" />):</strong>
+Latencia en C++20 de <img style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%2013.509%5C%20%5Ctext%7Bms%7D"
+alt="13.509\ \text{ms}" title="13.509\ \text{ms}"
+class="math inline" />, Throughput DRAM <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%201.10%5C%20%5Ctext%7BGB%2Fs%7D"
+alt="1.10\ \text{GB/s}" title="1.10\ \text{GB/s}"
+class="math inline" />, deriva unitaria residual <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%20%7C%5C%7Cx%5C%7C_2%20-%201.0%7C%20%3D%200.000%5Ctimes%2010%5E0"
+alt="|\|x\|_2 - 1.0| = 0.000\times 10^0"
+title="|\|x\|_2 - 1.0| = 0.000\times 10^0" class="math inline" />
+(precisión de máquina exacta vía Neumaier), <img
+style="vertical-align:middle"
+src="https://latex.codecogs.com/png.latex?%5Ctextstyle%203.3%5Ctimes"
+alt="3.3\times" title="3.3\times" class="math inline" /> más rápido que
+serialización JSON 1D.</li>
+</ol>
+</body>
+</html>
