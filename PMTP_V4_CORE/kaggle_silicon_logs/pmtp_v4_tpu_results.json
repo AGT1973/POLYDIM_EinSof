@@ -1,0 +1,19 @@
+{
+  "status": "COMPLETE",
+  "exit_code": 0,
+  "backend": "jax_xla",
+  "device_kind": "cpu",
+  "device_count": 1,
+  "is_tpu": false,
+  "hlo_compiled": true,
+  "hlo_stiefel_ops": 172,
+  "d_stiefel": 1000000,
+  "k_stiefel": 16,
+  "stiefel_latency_ms": 224.954,
+  "stiefel_dev": 8.1019e-16,
+  "d_clifford": 10000000,
+  "clifford_latency_ms": 53.816,
+  "norm_error": 1.1102e-15,
+  "hbm_bandwidth_gbps": 5.54,
+  "clean_teardown": true
+}

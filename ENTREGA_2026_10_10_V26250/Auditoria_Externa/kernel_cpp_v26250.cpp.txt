@@ -1,0 +1,433 @@
+// ============================================================================
+// POLYDIM EINSOF — C++20 AVX-512 / OPENMP SILICON KERNEL V26250
+// ============================================================================
+//
+// Purpose:
+//   High-Performance Native CPU Manifold Core for AMD EPYC, Intel Xeon,
+//   Apple Silicon, and ARM Graviton implementing Rule 27 (Silicon Contract)
+//   and Rule 22 (Ghost Protocol / PMTP 88-Byte Descriptors).
+//
+// Numerical Hardening V26250 Remediations:
+//   * Theorem 690: Eradicated volatile in neumaier_accumulate to restore full
+//     hardware auto-vectorization (AVX-512) while enforcing strict non-reassociative
+//     FP semantics via GCC pragmas (#pragma GCC optimize("no-associative-math")).
+//   * Explicit 8-byte pointer alignment enforcement for PmtpTensorDescriptor
+//     (overrides alignof==1 artifact from #pragma pack(1)).
+//   * Comprehensive pairwise anti-aliasing checking (including x vs y pairs).
+//   * Overflow-safe pointer address arithmetic in alias detection.
+//   * FTZ/DAZ subnormal underflow protection on extreme inputs (max_val near DBL_MAX).
+//   * DRAM bandwidth optimization: fused single-pass write and validation loop.
+//   * Checked 64-bit integer overflow protection for expected byte length.
+//   * Strict zero-padding validation for unused descriptor shape dimensions (ndim..4).
+//   * Version-aware multi-version backward-compatibility descriptor validation (26150..26155).
+//   * Relative tangency and isometry tolerance scaling robust for small norms (v_norm << 1).
+// ============================================================================
+
+#include <cstdint>
+#include <cmath>
+#include <algorithm>
+#include <limits>
+#include <cstring>
+
+#if defined(_OPENMP)
+#include <omp.h>
+#endif
+
+#if defined(_WIN32) || defined(__CYGWIN__)
+#define POLYDIM_EXPORT extern "C" __declspec(dllexport)
+#else
+#define POLYDIM_EXPORT extern "C" __attribute__((visibility("default")))
+#endif
+
+namespace polydim_v26155 {
+
+// Unified Status Codes (0 to -15, -99)
+enum Status : std::int32_t {
+    POLYDIM_OK                     = 0,
+    POLYDIM_INVALID_ARGUMENT       = -1,
+    POLYDIM_NONFINITE_INPUT        = -2,
+    POLYDIM_ALIAS_VIOLATION        = -3,
+    POLYDIM_ALIGNMENT_ERROR        = -4,
+    POLYDIM_NOT_UNIT               = -5,
+    POLYDIM_NOT_TANGENT            = -6,
+    POLYDIM_ZERO_VECTOR            = -7,
+    POLYDIM_PATH_REQUIRED          = -8,
+    POLYDIM_NUMERICAL_FAILURE      = -9,
+    POLYDIM_RANGE_ERROR            = -10,
+    POLYDIM_FP_ENV_ERROR           = -11,
+    POLYDIM_UNREPRESENTABLE_OUTPUT = -12,
+    POLYDIM_LENGTH_MISMATCH        = -13,
+    POLYDIM_PRECISION_LOSS         = -14,
+    POLYDIM_PMTP_SLAB_ERROR        = -15,
+    POLYDIM_PANIC_TRAPPED          = -99
+};
+
+constexpr std::uint64_t kMaxDimension = 10'000'000;
+constexpr double kBaseTolerance       = 1.0e-12;
+constexpr double kCutLocusNormSq      = 1.0e-8;
+
+inline double get_dimension_tolerance(std::uint64_t d) noexcept {
+    double eps_acc = static_cast<double>(d) * std::numeric_limits<double>::epsilon() * 10.0;
+    return std::max(kBaseTolerance, eps_acc);
+}
+
+#pragma pack(push, 1)
+struct PmtpTensorDescriptor {
+    char          magic[4];       // "PDM4"
+    std::uint16_t version;        // 26155
+    std::uint16_t encoded_size;   // 88
+    std::uint64_t segment_id;
+    std::uint64_t buffer_id;
+    std::uint64_t generation;
+    std::uint64_t byte_offset;
+    std::uint64_t byte_length;
+    std::uint8_t  dtype_code;     // 1 = f64
+    std::uint8_t  ndim;
+    std::uint8_t  reserved[6];
+    std::uint64_t shape[4];
+};
+#pragma pack(pop)
+
+static_assert(sizeof(PmtpTensorDescriptor) == 88, "PmtpTensorDescriptor must be exactly 88 bytes");
+
+extern "C" {
+    struct PolydimF64ConstView {
+        const double* ptr;
+        std::uint64_t len;
+    };
+
+    struct PolydimF64MutView {
+        double* ptr;
+        std::uint64_t len;
+    };
+}
+
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC push_options
+#pragma GCC optimize("no-associative-math")
+#pragma GCC optimize("no-reciprocal-math")
+#endif
+
+// Neumaier compensated summation with strict FP ordering (Theorem 690: no volatile, enabling SIMD vectorization)
+inline void neumaier_accumulate(double val, double& sum, double& comp) noexcept {
+    double s = sum;
+    double v = val;
+    double t = s + v;
+    if (std::abs(s) >= std::abs(v)) {
+        double diff = s - t;
+        comp += diff + v;
+    } else {
+        double diff = v - t;
+        comp += diff + s;
+    }
+    sum = t;
+}
+
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC pop_options
+#endif
+
+inline double dot_neumaier(const double* a, const double* b, std::uint64_t n) noexcept {
+    if (!a || !b || n == 0) return 0.0;
+
+    double sum[8] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    double comp[8] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+
+    std::uint64_t i = 0;
+    std::uint64_t n8 = n - (n % 8);
+    for (; i < n8; i += 8) {
+        for (int k = 0; k < 8; ++k) {
+            double prod = a[i + k] * b[i + k];
+            neumaier_accumulate(prod, sum[k], comp[k]);
+        }
+    }
+
+    double total_sum = 0.0;
+    double total_comp = 0.0;
+    for (int k = 0; k < 8; ++k) {
+        neumaier_accumulate(sum[k], total_sum, total_comp);
+        neumaier_accumulate(comp[k], total_sum, total_comp);
+    }
+
+    for (; i < n; ++i) {
+        double prod = a[i] * b[i];
+        neumaier_accumulate(prod, total_sum, total_comp);
+    }
+
+    return total_sum + total_comp;
+}
+
+// Universal buffer overlap checker: overlap = (start_a < end_b) && (start_b < end_a)
+inline bool buffers_overlap(const double* a, std::uint64_t len_a, const double* b, std::uint64_t len_b) noexcept {
+    if (!a || !b || len_a == 0 || len_b == 0) return false;
+    auto start_a = reinterpret_cast<std::uintptr_t>(a);
+    auto start_b = reinterpret_cast<std::uintptr_t>(b);
+    std::uintptr_t bytes_a = len_a * sizeof(double);
+    std::uintptr_t bytes_b = len_b * sizeof(double);
+    if (UINTPTR_MAX - start_a < bytes_a || UINTPTR_MAX - start_b < bytes_b) {
+        return true; // Pointer arithmetic overflow defense
+    }
+    auto end_a = start_a + bytes_a;
+    auto end_b = start_b + bytes_b;
+    return (start_a < end_b) && (start_b < end_a);
+}
+
+inline bool is_unsafe_partial_alias(const double* a, std::uint64_t len_a, const double* b, std::uint64_t len_b) noexcept {
+    return buffers_overlap(a, len_a, b, len_b);
+}
+
+// Spherical Projection: y = x / ||x||_2 with Two-Pass Scaled Norm and OpenMP Acceleration
+POLYDIM_EXPORT std::int32_t polydim_sphere_project_v26155(
+    PolydimF64ConstView in_view,
+    PolydimF64MutView out_view
+) noexcept {
+    if (!in_view.ptr || !out_view.ptr) return POLYDIM_INVALID_ARGUMENT;
+    if (in_view.len != out_view.len)   return POLYDIM_LENGTH_MISMATCH;
+    if (in_view.len == 0 || in_view.len > kMaxDimension) return POLYDIM_RANGE_ERROR;
+
+    // Strict 8-byte pointer alignment verification
+    if (reinterpret_cast<std::uintptr_t>(in_view.ptr) % alignof(double) != 0 ||
+        reinterpret_cast<std::uintptr_t>(out_view.ptr) % alignof(double) != 0) {
+        return POLYDIM_ALIGNMENT_ERROR;
+    }
+
+    bool is_in_place = (in_view.ptr == out_view.ptr);
+    if (!is_in_place && buffers_overlap(in_view.ptr, in_view.len, out_view.ptr, out_view.len)) {
+        return POLYDIM_ALIAS_VIOLATION;
+    }
+
+    std::uint64_t n = in_view.len;
+
+    // Pass 1: Find max absolute value to avoid overflow (1e308) and underflow (1e-308)
+    double max_val = 0.0;
+    for (std::uint64_t i = 0; i < n; ++i) {
+        double v = std::abs(in_view.ptr[i]);
+        if (!std::isfinite(v)) return POLYDIM_NONFINITE_INPUT;
+        if (v > max_val) max_val = v;
+    }
+
+    if (max_val == 0.0) return POLYDIM_ZERO_VECTOR;
+
+    // Pass 2: Binary exponent scaling with DAZ/FTZ safe factor
+    double scale = 1.0;
+    double inv_scale = 1.0;
+    if (max_val < std::numeric_limits<double>::min()) {
+        scale = 1.0e300;
+        inv_scale = 1.0 / (max_val * scale);
+    } else if (max_val > 1.0e300) {
+        scale = 1.0e-150;
+        inv_scale = 1.0 / (max_val * scale);
+    } else {
+        scale = 1.0;
+        inv_scale = 1.0 / max_val;
+    }
+
+    double sum[8] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    double comp[8] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    std::uint64_t i = 0;
+    std::uint64_t n8 = n - (n % 8);
+    for (; i < n8; i += 8) {
+        for (int k = 0; k < 8; ++k) {
+            double scaled = (in_view.ptr[i + k] * scale) * inv_scale;
+            neumaier_accumulate(scaled * scaled, sum[k], comp[k]);
+        }
+    }
+    double total_sum = 0.0;
+    double total_comp = 0.0;
+    for (int k = 0; k < 8; ++k) {
+        neumaier_accumulate(sum[k], total_sum, total_comp);
+        neumaier_accumulate(comp[k], total_sum, total_comp);
+    }
+    for (; i < n; ++i) {
+        double scaled = (in_view.ptr[i] * scale) * inv_scale;
+        neumaier_accumulate(scaled * scaled, total_sum, total_comp);
+    }
+    double scaled_norm_sq = total_sum + total_comp;
+    if (!std::isfinite(scaled_norm_sq) || scaled_norm_sq <= 0.0) return POLYDIM_NUMERICAL_FAILURE;
+
+    double scaled_norm = std::sqrt(scaled_norm_sq);
+    double inv_scaled_norm = 1.0 / scaled_norm;
+    if (!std::isfinite(inv_scaled_norm) || inv_scaled_norm <= 0.0) return POLYDIM_NUMERICAL_FAILURE;
+
+    // Write phase with inline validation and OpenMP (Theorem 700 associative scaling)
+    bool has_nan = false;
+    #if defined(_OPENMP)
+    #pragma omp parallel for if(n >= 10000) schedule(static) reduction(||:has_nan)
+    #endif
+    for (std::int64_t j = 0; j < static_cast<std::int64_t>(n); ++j) {
+        double res = ((in_view.ptr[j] * scale) * inv_scale) * inv_scaled_norm;
+        if (!std::isfinite(res)) has_nan = true;
+        out_view.ptr[j] = res;
+    }
+
+    if (has_nan) return POLYDIM_NUMERICAL_FAILURE;
+
+    return POLYDIM_OK;
+}
+
+// Spherical Parallel Transport on S^(D-1)
+POLYDIM_EXPORT std::int32_t polydim_sphere_transport_v26155(
+    PolydimF64ConstView x_view,
+    PolydimF64ConstView y_view,
+    PolydimF64ConstView v_view,
+    PolydimF64MutView out_view
+) noexcept {
+    if (!x_view.ptr || !y_view.ptr || !v_view.ptr || !out_view.ptr) return POLYDIM_INVALID_ARGUMENT;
+    std::uint64_t n = x_view.len;
+    if (y_view.len != n || v_view.len != n || out_view.len != n) return POLYDIM_LENGTH_MISMATCH;
+    if (n == 0 || n > kMaxDimension) return POLYDIM_RANGE_ERROR;
+
+    // Strict 8-byte alignment verification
+    if (reinterpret_cast<std::uintptr_t>(x_view.ptr) % alignof(double) != 0 ||
+        reinterpret_cast<std::uintptr_t>(y_view.ptr) % alignof(double) != 0 ||
+        reinterpret_cast<std::uintptr_t>(v_view.ptr) % alignof(double) != 0 ||
+        reinterpret_cast<std::uintptr_t>(out_view.ptr) % alignof(double) != 0) {
+        return POLYDIM_ALIGNMENT_ERROR;
+    }
+
+    // Complete pairwise anti-aliasing validation (rejects any overlap with out_view and pairwise inputs)
+    if (buffers_overlap(x_view.ptr, n, out_view.ptr, n) ||
+        buffers_overlap(y_view.ptr, n, out_view.ptr, n) ||
+        buffers_overlap(v_view.ptr, n, out_view.ptr, n) ||
+        buffers_overlap(x_view.ptr, n, y_view.ptr, n) ||
+        buffers_overlap(x_view.ptr, n, v_view.ptr, n) ||
+        buffers_overlap(y_view.ptr, n, v_view.ptr, n)) {
+        return POLYDIM_ALIAS_VIOLATION;
+    }
+
+    double tol_d = get_dimension_tolerance(n);
+
+    // Check unit norm of base points with NaN-safe guard
+    double x_norm_sq = dot_neumaier(x_view.ptr, x_view.ptr, n);
+    double y_norm_sq = dot_neumaier(y_view.ptr, y_view.ptr, n);
+    if (!std::isfinite(x_norm_sq) || !std::isfinite(y_norm_sq)) {
+        return POLYDIM_NONFINITE_INPUT;
+    }
+    if (std::abs(x_norm_sq - 1.0) > tol_d || std::abs(y_norm_sq - 1.0) > tol_d) {
+        return POLYDIM_NOT_UNIT;
+    }
+
+    // Relative tangency check (Scale-invariant normalized residual)
+    double v_norm_sq = dot_neumaier(v_view.ptr, v_view.ptr, n);
+    if (!std::isfinite(v_norm_sq)) return POLYDIM_NONFINITE_INPUT;
+    double v_norm = std::sqrt(std::max(0.0, v_norm_sq));
+    if (v_norm < 1.0e-15) {
+        return POLYDIM_ZERO_VECTOR;
+    }
+
+    double xt_v = dot_neumaier(x_view.ptr, v_view.ptr, n);
+    if (!std::isfinite(xt_v)) {
+        return POLYDIM_NONFINITE_INPUT;
+    }
+    // Scale-invariant relative tangency: |x^T v| <= tol_d * ||v||
+    double tol_tangency = tol_d * v_norm;
+    if (std::abs(xt_v) > tol_tangency) {
+        return POLYDIM_NOT_TANGENT;
+    }
+
+    // Dot product: cos(theta) = x^T y
+    double cos_th = dot_neumaier(x_view.ptr, y_view.ptr, n);
+    if (!std::isfinite(cos_th)) {
+        return POLYDIM_NONFINITE_INPUT;
+    }
+    cos_th = std::clamp(cos_th, -1.0, 1.0);
+
+    // Antipodal check
+    if (1.0 + cos_th <= kCutLocusNormSq) {
+        return POLYDIM_PATH_REQUIRED;
+    }
+
+    // Standard Levi-Civita Transport factor
+    double yt_v = dot_neumaier(y_view.ptr, v_view.ptr, n);
+    if (!std::isfinite(yt_v)) {
+        return POLYDIM_NONFINITE_INPUT;
+    }
+    double factor = yt_v / (1.0 + cos_th);
+
+    #if defined(_OPENMP)
+    #pragma omp parallel for if(n >= 10000) schedule(static)
+    #endif
+    for (std::int64_t i = 0; i < static_cast<std::int64_t>(n); ++i) {
+        out_view.ptr[i] = v_view.ptr[i] - factor * (x_view.ptr[i] + y_view.ptr[i]);
+    }
+
+    // Output relative tangency audit: |y^T out| <= (tol_d * 100.0) * ||v||
+    double yt_out = dot_neumaier(y_view.ptr, out_view.ptr, n);
+    if (!std::isfinite(yt_out) || std::abs(yt_out) > (tol_d * 100.0) * v_norm) {
+        return POLYDIM_PRECISION_LOSS;
+    }
+
+    // Isometry audit: ||out|| == ||v|| with relative scaling
+    double out_norm_sq = dot_neumaier(out_view.ptr, out_view.ptr, n);
+    if (!std::isfinite(out_norm_sq)) return POLYDIM_PRECISION_LOSS;
+    double out_norm = std::sqrt(std::max(0.0, out_norm_sq));
+    if (std::abs(out_norm - v_norm) > (tol_d * 100.0) * v_norm) {
+        return POLYDIM_PRECISION_LOSS;
+    }
+
+    return POLYDIM_OK;
+}
+
+// PMTP Descriptor Validation
+POLYDIM_EXPORT std::int32_t polydim_pmtp_validate_descriptor_v26155(
+    const PmtpTensorDescriptor* desc
+) noexcept {
+    if (!desc) return POLYDIM_INVALID_ARGUMENT;
+    // Explicit 8-byte pointer alignment enforcement
+    if (reinterpret_cast<std::uintptr_t>(desc) % alignof(std::uint64_t) != 0) {
+        return POLYDIM_ALIGNMENT_ERROR;
+    }
+    if (std::memcmp(desc->magic, "PDM4", 4) != 0) return POLYDIM_PMTP_SLAB_ERROR;
+    if (desc->version != 26155 && desc->version != 26154 && desc->version != 26153 &&
+        desc->version != 26152 && desc->version != 26151 && desc->version != 26150) {
+        return POLYDIM_RANGE_ERROR;
+    }
+    if (desc->encoded_size != sizeof(PmtpTensorDescriptor)) return POLYDIM_LENGTH_MISMATCH;
+    if (desc->dtype_code != 1) return POLYDIM_INVALID_ARGUMENT; // 1 = f64
+    if (desc->ndim < 1 || desc->ndim > 4) return POLYDIM_RANGE_ERROR;
+    if (desc->byte_length == 0) return POLYDIM_RANGE_ERROR;
+    for (int i = 0; i < 6; ++i) {
+        if (desc->reserved[i] != 0) return POLYDIM_INVALID_ARGUMENT;
+    }
+    std::uint64_t expected_elements = 1;
+    for (std::uint8_t i = 0; i < desc->ndim; ++i) {
+        if (desc->shape[i] == 0) return POLYDIM_RANGE_ERROR;
+        std::uint64_t prev = expected_elements;
+        expected_elements *= desc->shape[i];
+        if (expected_elements / desc->shape[i] != prev) {
+            return POLYDIM_RANGE_ERROR;
+        }
+    }
+    // Zero-check unassigned dimensions
+    for (std::uint8_t i = desc->ndim; i < 4; ++i) {
+        if (desc->shape[i] != 0) return POLYDIM_RANGE_ERROR;
+    }
+    // Overflow-safe byte length calculation
+    if (desc->byte_length / sizeof(double) != expected_elements ||
+        desc->byte_length % sizeof(double) != 0) {
+        return POLYDIM_LENGTH_MISMATCH;
+    }
+    if (desc->byte_offset % alignof(double) != 0) {
+        return POLYDIM_ALIGNMENT_ERROR;
+    }
+    return POLYDIM_OK;
+}
+
+// Backward compatibility alias symbols
+POLYDIM_EXPORT std::int32_t polydim_sphere_project_v26154(PolydimF64ConstView i, PolydimF64MutView o) noexcept { return polydim_sphere_project_v26155(i, o); }
+POLYDIM_EXPORT std::int32_t polydim_sphere_transport_v26154(PolydimF64ConstView x, PolydimF64ConstView y, PolydimF64ConstView v, PolydimF64MutView o) noexcept { return polydim_sphere_transport_v26155(x, y, v, o); }
+POLYDIM_EXPORT std::int32_t polydim_pmtp_validate_descriptor_v26154(const PmtpTensorDescriptor* d) noexcept { return polydim_pmtp_validate_descriptor_v26155(d); }
+POLYDIM_EXPORT std::int32_t polydim_sphere_project_v26153(PolydimF64ConstView i, PolydimF64MutView o) noexcept { return polydim_sphere_project_v26155(i, o); }
+POLYDIM_EXPORT std::int32_t polydim_sphere_transport_v26153(PolydimF64ConstView x, PolydimF64ConstView y, PolydimF64ConstView v, PolydimF64MutView o) noexcept { return polydim_sphere_transport_v26155(x, y, v, o); }
+POLYDIM_EXPORT std::int32_t polydim_pmtp_validate_descriptor_v26153(const PmtpTensorDescriptor* d) noexcept { return polydim_pmtp_validate_descriptor_v26155(d); }
+POLYDIM_EXPORT std::int32_t polydim_sphere_project_v26152(PolydimF64ConstView i, PolydimF64MutView o) noexcept { return polydim_sphere_project_v26155(i, o); }
+POLYDIM_EXPORT std::int32_t polydim_sphere_transport_v26152(PolydimF64ConstView x, PolydimF64ConstView y, PolydimF64ConstView v, PolydimF64MutView o) noexcept { return polydim_sphere_transport_v26155(x, y, v, o); }
+POLYDIM_EXPORT std::int32_t polydim_pmtp_validate_descriptor_v26152(const PmtpTensorDescriptor* d) noexcept { return polydim_pmtp_validate_descriptor_v26155(d); }
+POLYDIM_EXPORT std::int32_t polydim_sphere_project_v26151(PolydimF64ConstView i, PolydimF64MutView o) noexcept { return polydim_sphere_project_v26155(i, o); }
+POLYDIM_EXPORT std::int32_t polydim_sphere_transport_v26151(PolydimF64ConstView x, PolydimF64ConstView y, PolydimF64ConstView v, PolydimF64MutView o) noexcept { return polydim_sphere_transport_v26155(x, y, v, o); }
+POLYDIM_EXPORT std::int32_t polydim_pmtp_validate_descriptor_v26151(const PmtpTensorDescriptor* d) noexcept { return polydim_pmtp_validate_descriptor_v26155(d); }
+POLYDIM_EXPORT std::int32_t polydim_sphere_project_v26150(PolydimF64ConstView i, PolydimF64MutView o) noexcept { return polydim_sphere_project_v26155(i, o); }
+POLYDIM_EXPORT std::int32_t polydim_sphere_transport_v26150(PolydimF64ConstView x, PolydimF64ConstView y, PolydimF64ConstView v, PolydimF64MutView o) noexcept { return polydim_sphere_transport_v26155(x, y, v, o); }
+POLYDIM_EXPORT std::int32_t polydim_pmtp_validate_descriptor_v26150(const PmtpTensorDescriptor* d) noexcept { return polydim_pmtp_validate_descriptor_v26155(d); }
+
+} // namespace polydim_v26155

@@ -154,7 +154,7 @@ Se clonÃ³ el workspace a `E:\POLYDIM_EINSOF\ENTREGA_V506_SOTA\` y se parchearo
 *   **[C10/H17/H18] Numerics:** Implementados filtros estrictos Anti-NaN/Inf en Lift y Consenso, y prevenciÃ³n de overflow (`checked_mul`) en slices de Rust.
 
 ## 2. DocumentaciÃ³n Actualizada
-*   Se reescribiÃ³ `PERMANENT_MEMORY.md` y `SOUL_AGY_ORCHESTRATOR.md` incrustando la metodologÃ­a de validaciÃ³n agresiva (Bulldog/Red Team) para que las futuras IAs no vuelvan a dar respuestas tibias.
+*   Se reescribiÃ³ `permanent_memory.sqlite` y `SOUL_AGY_ORCHESTRATOR.md` incrustando la metodologÃ­a de validaciÃ³n agresiva (Bulldog/Red Team) para que las futuras IAs no vuelvan a dar respuestas tibias.
 *   Se redactÃ³ el nuevo Abstract promocional para LinkedIn enfocado en los claims probados (El hito del 8 de septiembre de TelepatÃ­a Tensorial) sin exponer benchmarks desactualizados (`polydim_abstract_v506.md`).
 
 ## 3. PrÃ³ximos pasos exactos para la NUEVA SESIÃ“N (Fase C y D)

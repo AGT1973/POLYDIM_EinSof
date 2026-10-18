@@ -1,0 +1,583 @@
+#![deny(unsafe_op_in_unsafe_fn)]
+#![deny(improper_ctypes_definitions)]
+#![deny(unused_must_use)]
+
+#[cfg(not(panic = "unwind"))]
+compile_error!("POLYDIM certified Rust core requires panic=unwind so FFI panics can be contained");
+
+// ============================================================================
+// POLYDIM EINSOF — RUST NUMERICAL CORE V26250 HARDENED
+// ============================================================================
+//
+// Purpose:
+//   Production-grade Safe Rust Manifold & PMTP Core implementing:
+//     1. Robust FP64 projection onto S^{D-1} with Two-Pass Scaled Norm.
+//     2. Parallel transport on S^{D-1} along unique shortest geodesics.
+//     3. Rule 22 (Ghost Protocol): PMTP 88-byte Tensor Descriptor verification.
+//     4. Rule 27 (Silicon Contract): Strict zero-cost C ABI across CPU architectures.
+//
+// Numerical Hardening V26250 Remediations:
+//   - ABI Version bump to 26.1.55 with backward compatibility down to 26150.
+//   - Active invocation of bit-level subnormal inspection (is_subnormal_raw_bits).
+//   - Complete pairwise anti-aliasing validation including (x, y) buffer overlaps.
+//   - Stacked Borrows / Tree Borrows safe aliasing scoping (immutable borrow dropped
+//     strictly before constructing mutable slice on identical raw pointers).
+//   - Checked 64-bit integer addition on byte_offset + byte_length span.
+//   - Zero-padding validation for unused descriptor shape dimensions (ndim..4).
+//   - Multi-version backward-compatibility descriptor validation (26150..26155).
+//   - Two-pass scaled norm protecting against overflow (1e308) and underflow (1e-308)
+//     with DAZ/FTZ safe scaling on extreme exponents.
+// ============================================================================
+
+use std::mem::{align_of, size_of};
+use std::panic::{catch_unwind, AssertUnwindSafe};
+
+// ABI Version 26.1.55
+pub const POLYDIM_ABI_VERSION_MAJOR: u32 = 26;
+pub const POLYDIM_ABI_VERSION_MINOR: u32 = 1;
+pub const POLYDIM_ABI_VERSION_PATCH: u32 = 55;
+
+// Unified Status Codes
+pub const POLYDIM_OK: i32                     = 0;
+pub const POLYDIM_INVALID_ARGUMENT: i32       = -1;
+pub const POLYDIM_NONFINITE_INPUT: i32        = -2;
+pub const POLYDIM_ALIAS_VIOLATION: i32        = -3;
+pub const POLYDIM_ALIGNMENT_ERROR: i32        = -4;
+pub const POLYDIM_NOT_UNIT: i32               = -5;
+pub const POLYDIM_NOT_TANGENT: i32            = -6;
+pub const POLYDIM_ZERO_VECTOR: i32            = -7;
+pub const POLYDIM_PATH_REQUIRED: i32          = -8;
+pub const POLYDIM_NUMERICAL_FAILURE: i32      = -9;
+pub const POLYDIM_RANGE_ERROR: i32            = -10;
+pub const POLYDIM_FP_ENV_ERROR: i32           = -11;
+pub const POLYDIM_UNREPRESENTABLE_OUTPUT: i32 = -12;
+pub const POLYDIM_LENGTH_MISMATCH: i32        = -13;
+pub const POLYDIM_PRECISION_LOSS: i32         = -14;
+pub const POLYDIM_PMTP_SLAB_ERROR: i32        = -15;
+pub const POLYDIM_PANIC_TRAPPED: i32          = -99;
+
+pub const PMTP_MAGIC: [u8; 4] = *b"PDM4";
+pub const PMTP_DESCRIPTOR_SIZE: usize = 88;
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct PmtpTensorDescriptor {
+    pub magic: [u8; 4],          // "PDM4" (offset 0..3)
+    pub version: u16,            // 26155  (offset 4..5)
+    pub encoded_size: u16,       // 88     (offset 6..7)
+    pub segment_id: u64,         // offset 8..15
+    pub buffer_id: u64,          // offset 16..23
+    pub generation: u64,         // offset 24..31
+    pub byte_offset: u64,        // offset 32..39
+    pub byte_length: u64,        // offset 40..47
+    pub dtype_code: u8,          // 1 = f64 (offset 48)
+    pub ndim: u8,                // offset 49
+    pub reserved: [u8; 6],       // offset 50..55
+    pub shape: [u64; 4],         // offset 56..87
+}
+
+const _: () = assert!(size_of::<PmtpTensorDescriptor>() == 88);
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+pub struct PolydimF64ConstView {
+    pub ptr: *const f64,
+    pub len: u64,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+pub struct PolydimF64MutView {
+    pub ptr: *mut f64,
+    pub len: u64,
+}
+
+pub const MAX_DIMENSION: u64 = 10_000_000;
+pub const BASE_TOLERANCE: f64 = 1.0e-12;
+pub const CUT_LOCUS_NORM_SQ: f64 = 1.0e-8;
+
+#[inline(always)]
+pub fn get_dimension_tolerance(d: u64) -> f64 {
+    let eps_acc = (d as f64) * f64::EPSILON * 10.0;
+    if eps_acc > BASE_TOLERANCE { eps_acc } else { BASE_TOLERANCE }
+}
+
+#[inline(always)]
+pub fn is_subnormal_raw_bits(val: f64) -> bool {
+    let bits = val.to_bits();
+    let exponent = (bits >> 52) & 0x7FF;
+    let mantissa = bits & 0x000F_FFFF_FFFF_FFFF;
+    exponent == 0 && mantissa != 0
+}
+
+// Neumaier Compensated Summation
+#[inline(always)]
+pub fn neumaier_sum(slice: &[f64]) -> f64 {
+    let mut sum = 0.0f64;
+    let mut comp = 0.0f64;
+    for &val in slice {
+        let t = sum + val;
+        if sum.abs() >= val.abs() {
+            comp += (sum - t) + val;
+        } else {
+            comp += (val - t) + sum;
+        }
+        sum = t;
+    }
+    sum + comp
+}
+
+#[inline(always)]
+pub fn dot_neumaier(a: &[f64], b: &[f64]) -> f64 {
+    let mut sum = 0.0f64;
+    let mut comp = 0.0f64;
+    let len = a.len().min(b.len());
+    for i in 0..len {
+        let prod = a[i] * b[i];
+        let t = sum + prod;
+        if sum.abs() >= prod.abs() {
+            comp += (sum - t) + prod;
+        } else {
+            comp += (prod - t) + sum;
+        }
+        sum = t;
+    }
+    sum + comp
+}
+
+#[inline(always)]
+pub fn buffers_overlap(ptr_a: *const f64, len_a: usize, ptr_b: *const f64, len_b: usize) -> bool {
+    if ptr_a.is_null() || ptr_b.is_null() || len_a == 0 || len_b == 0 {
+        return false;
+    }
+    let a0 = ptr_a as usize;
+    let b0 = ptr_b as usize;
+    let a_bytes = len_a.saturating_mul(size_of::<f64>());
+    let b_bytes = len_b.saturating_mul(size_of::<f64>());
+    let a1 = a0.saturating_add(a_bytes);
+    let b1 = b0.saturating_add(b_bytes);
+
+    a0 < b1 && b0 < a1
+}
+
+#[inline(always)]
+pub fn is_unsafe_partial_alias(ptr_a: *const f64, len_a: usize, ptr_b: *const f64, len_b: usize) -> bool {
+    buffers_overlap(ptr_a, len_a, ptr_b, len_b)
+}
+
+// Spherical Projection: y = x / ||x||_2 with Two-Pass Scaled Norm and In-Place Safety
+#[no_mangle]
+pub unsafe extern "C" fn polydim_sphere_project_v26155(
+    in_view: PolydimF64ConstView,
+    out_view: PolydimF64MutView,
+) -> i32 {
+    let result = catch_unwind(AssertUnwindSafe(|| {
+        if in_view.ptr.is_null() || out_view.ptr.is_null() {
+            return POLYDIM_INVALID_ARGUMENT;
+        }
+        if in_view.len != out_view.len {
+            return POLYDIM_LENGTH_MISMATCH;
+        }
+        let n_u64 = in_view.len;
+        if n_u64 == 0 || n_u64 > MAX_DIMENSION || n_u64 > (isize::MAX as u64) {
+            return POLYDIM_RANGE_ERROR;
+        }
+        let n = n_u64 as usize;
+
+        // Alignment check
+        if (in_view.ptr as usize) % align_of::<f64>() != 0 || (out_view.ptr as usize) % align_of::<f64>() != 0 {
+            return POLYDIM_ALIGNMENT_ERROR;
+        }
+
+        let is_in_place = in_view.ptr == (out_view.ptr as *const f64);
+        if !is_in_place && buffers_overlap(in_view.ptr, n, out_view.ptr as *const f64, n) {
+            return POLYDIM_ALIAS_VIOLATION;
+        }
+
+        if is_in_place {
+            let slice = unsafe { std::slice::from_raw_parts_mut(out_view.ptr, n) };
+
+            // Pass 1: Max absolute value with raw subnormal canary
+            let mut max_val = 0.0f64;
+            for &x in slice.iter() {
+                if !x.is_finite() {
+                    return POLYDIM_NONFINITE_INPUT;
+                }
+                let abs_x = x.abs();
+                if abs_x > max_val {
+                    max_val = abs_x;
+                }
+            }
+
+            if max_val == 0.0 {
+                return POLYDIM_ZERO_VECTOR;
+            }
+
+            // Pass 2: Binary exponent scaling for FP64 subnormals & extreme inputs
+            let (scale, inv_scale) = if max_val < f64::MIN_POSITIVE || is_subnormal_raw_bits(max_val) {
+                let s = 1.0e300f64;
+                (s, 1.0 / (max_val * s))
+            } else if max_val > 1.0e300 {
+                let s = 1.0e-150f64;
+                (s, 1.0 / (max_val * s))
+            } else {
+                (1.0, 1.0 / max_val)
+            };
+
+            let mut sum = 0.0f64;
+            let mut comp = 0.0f64;
+            for &x in slice.iter() {
+                let scaled = (x * scale) * inv_scale;
+                let prod = scaled * scaled;
+                let t = sum + prod;
+                if sum.abs() >= prod.abs() {
+                    comp += (sum - t) + prod;
+                } else {
+                    comp += (prod - t) + sum;
+                }
+                sum = t;
+            }
+            let scaled_norm_sq = sum + comp;
+            if !scaled_norm_sq.is_finite() || scaled_norm_sq <= 0.0 {
+                return POLYDIM_NUMERICAL_FAILURE;
+            }
+
+            let scaled_norm = scaled_norm_sq.sqrt();
+            let inv_scaled_norm = 1.0 / scaled_norm;
+            if !inv_scaled_norm.is_finite() || inv_scaled_norm <= 0.0 {
+                return POLYDIM_NUMERICAL_FAILURE;
+            }
+
+            for val in slice.iter_mut() {
+                let res = ((*val * scale) * inv_scale) * inv_scaled_norm;
+                if !res.is_finite() {
+                    return POLYDIM_NUMERICAL_FAILURE;
+                }
+                *val = res;
+            }
+        } else {
+            let in_slice = unsafe { std::slice::from_raw_parts(in_view.ptr, n) };
+            let out_slice = unsafe { std::slice::from_raw_parts_mut(out_view.ptr, n) };
+
+            // Pass 1: Max absolute value
+            let mut max_val = 0.0f64;
+            for &x in in_slice.iter() {
+                if !x.is_finite() {
+                    return POLYDIM_NONFINITE_INPUT;
+                }
+                let abs_x = x.abs();
+                if abs_x > max_val {
+                    max_val = abs_x;
+                }
+            }
+
+            if max_val == 0.0 {
+                return POLYDIM_ZERO_VECTOR;
+            }
+
+            // Pass 2: Binary exponent scaling for FP64 subnormals & extreme inputs
+            let (scale, inv_scale) = if max_val < f64::MIN_POSITIVE || is_subnormal_raw_bits(max_val) {
+                let s = 1.0e300f64;
+                (s, 1.0 / (max_val * s))
+            } else if max_val > 1.0e300 {
+                let s = 1.0e-150f64;
+                (s, 1.0 / (max_val * s))
+            } else {
+                (1.0, 1.0 / max_val)
+            };
+
+            let mut sum = 0.0f64;
+            let mut comp = 0.0f64;
+            for &x in in_slice.iter() {
+                let scaled = (x * scale) * inv_scale;
+                let prod = scaled * scaled;
+                let t = sum + prod;
+                if sum.abs() >= prod.abs() {
+                    comp += (sum - t) + prod;
+                } else {
+                    comp += (prod - t) + sum;
+                }
+                sum = t;
+            }
+            let scaled_norm_sq = sum + comp;
+            if !scaled_norm_sq.is_finite() || scaled_norm_sq <= 0.0 {
+                return POLYDIM_NUMERICAL_FAILURE;
+            }
+
+            let scaled_norm = scaled_norm_sq.sqrt();
+            let inv_scaled_norm = 1.0 / scaled_norm;
+            if !inv_scaled_norm.is_finite() || inv_scaled_norm <= 0.0 {
+                return POLYDIM_NUMERICAL_FAILURE;
+            }
+
+            for (dst, &src) in out_slice.iter_mut().zip(in_slice.iter()) {
+                let res = ((src * scale) * inv_scale) * inv_scaled_norm;
+                if !res.is_finite() {
+                    return POLYDIM_NUMERICAL_FAILURE;
+                }
+                *dst = res;
+            }
+        }
+
+        POLYDIM_OK
+    }));
+
+    match result {
+        Ok(code) => code,
+        Err(_) => {
+            if !out_view.ptr.is_null() && out_view.len > 0 && out_view.len <= (isize::MAX as u64) {
+                unsafe {
+                    std::ptr::write_bytes(out_view.ptr, 0, out_view.len as usize);
+                }
+            }
+            POLYDIM_PANIC_TRAPPED
+        }
+    }
+}
+
+// Spherical Parallel Transport on S^(D-1)
+#[no_mangle]
+pub unsafe extern "C" fn polydim_sphere_transport_v26155(
+    x_view: PolydimF64ConstView,
+    y_view: PolydimF64ConstView,
+    v_view: PolydimF64ConstView,
+    out_view: PolydimF64MutView,
+) -> i32 {
+    let result = catch_unwind(AssertUnwindSafe(|| {
+        if x_view.ptr.is_null() || y_view.ptr.is_null() || v_view.ptr.is_null() || out_view.ptr.is_null() {
+            return POLYDIM_INVALID_ARGUMENT;
+        }
+        let n_u64 = x_view.len;
+        if y_view.len != n_u64 || v_view.len != n_u64 || out_view.len != n_u64 {
+            return POLYDIM_LENGTH_MISMATCH;
+        }
+        if n_u64 == 0 || n_u64 > MAX_DIMENSION || n_u64 > (isize::MAX as u64) {
+            return POLYDIM_RANGE_ERROR;
+        }
+        let n = n_u64 as usize;
+
+        // Alignment check
+        if (x_view.ptr as usize) % align_of::<f64>() != 0 ||
+           (y_view.ptr as usize) % align_of::<f64>() != 0 ||
+           (v_view.ptr as usize) % align_of::<f64>() != 0 ||
+           (out_view.ptr as usize) % align_of::<f64>() != 0 {
+            return POLYDIM_ALIGNMENT_ERROR;
+        }
+
+        // Complete pairwise anti-aliasing check (rejects any overlap with out_view and pairwise inputs)
+        let out_const = out_view.ptr as *const f64;
+        if buffers_overlap(x_view.ptr, n, out_const, n) ||
+           buffers_overlap(y_view.ptr, n, out_const, n) ||
+           buffers_overlap(v_view.ptr, n, out_const, n) ||
+           buffers_overlap(x_view.ptr, n, y_view.ptr, n) ||
+           buffers_overlap(x_view.ptr, n, v_view.ptr, n) ||
+           buffers_overlap(y_view.ptr, n, v_view.ptr, n) {
+            return POLYDIM_ALIAS_VIOLATION;
+        }
+
+        let tol_d = get_dimension_tolerance(n_u64);
+
+        let (v_norm, factor) = {
+            let x_slice = unsafe { std::slice::from_raw_parts(x_view.ptr, n) };
+            let y_slice = unsafe { std::slice::from_raw_parts(y_view.ptr, n) };
+            let v_slice = unsafe { std::slice::from_raw_parts(v_view.ptr, n) };
+
+            let x_n_sq = dot_neumaier(x_slice, x_slice);
+            let y_n_sq = dot_neumaier(y_slice, y_slice);
+            if !x_n_sq.is_finite() || !y_n_sq.is_finite() {
+                return POLYDIM_NONFINITE_INPUT;
+            }
+            if (x_n_sq - 1.0).abs() > tol_d || (y_n_sq - 1.0).abs() > tol_d {
+                return POLYDIM_NOT_UNIT;
+            }
+
+            let v_n_sq = dot_neumaier(v_slice, v_slice);
+            if !v_n_sq.is_finite() {
+                return POLYDIM_NONFINITE_INPUT;
+            }
+            let v_n = v_n_sq.max(0.0).sqrt();
+            if v_n < 1.0e-15 {
+                return POLYDIM_ZERO_VECTOR;
+            }
+
+            let xt_v_val = dot_neumaier(x_slice, v_slice);
+            if !xt_v_val.is_finite() {
+                return POLYDIM_NONFINITE_INPUT;
+            }
+            // Scale-invariant relative tangency: |x^T v| <= tol_d * ||v||
+            let tol_tangency = tol_d * v_n;
+            if xt_v_val.abs() > tol_tangency {
+                return POLYDIM_NOT_TANGENT;
+            }
+
+            let cos_th = dot_neumaier(x_slice, y_slice);
+            if !cos_th.is_finite() {
+                return POLYDIM_NONFINITE_INPUT;
+            }
+            let cos_clamped = cos_th.clamp(-1.0, 1.0);
+
+            if 1.0 + cos_clamped <= CUT_LOCUS_NORM_SQ {
+                return POLYDIM_PATH_REQUIRED;
+            }
+
+            let yt_v_val = dot_neumaier(y_slice, v_slice);
+            if !yt_v_val.is_finite() {
+                return POLYDIM_NONFINITE_INPUT;
+            }
+            let fact = yt_v_val / (1.0 + cos_clamped);
+
+            (v_n, fact)
+        };
+
+        let is_v_inplace = out_const == v_view.ptr;
+        {
+            let x_slice = unsafe { std::slice::from_raw_parts(x_view.ptr, n) };
+            let y_slice = unsafe { std::slice::from_raw_parts(y_view.ptr, n) };
+
+            if is_v_inplace {
+                // Stacked Borrows safe: v_slice was dropped before taking out_slice
+                let out_slice = unsafe { std::slice::from_raw_parts_mut(out_view.ptr, n) };
+                for i in 0..n {
+                    out_slice[i] -= factor * (x_slice[i] + y_slice[i]);
+                }
+            } else {
+                let v_slice = unsafe { std::slice::from_raw_parts(v_view.ptr, n) };
+                let out_slice = unsafe { std::slice::from_raw_parts_mut(out_view.ptr, n) };
+                for i in 0..n {
+                    out_slice[i] = v_slice[i] - factor * (x_slice[i] + y_slice[i]);
+                }
+            }
+        }
+
+        let y_slice = unsafe { std::slice::from_raw_parts(y_view.ptr, n) };
+        let out_slice_ro = unsafe { std::slice::from_raw_parts(out_view.ptr, n) };
+        let yt_out = dot_neumaier(y_slice, out_slice_ro);
+        if !yt_out.is_finite() || yt_out.abs() > (tol_d * 100.0) * v_norm {
+            return POLYDIM_PRECISION_LOSS;
+        }
+
+        let out_norm_sq = dot_neumaier(out_slice_ro, out_slice_ro);
+        if !out_norm_sq.is_finite() {
+            return POLYDIM_PRECISION_LOSS;
+        }
+        let out_norm = out_norm_sq.max(0.0).sqrt();
+        if (out_norm - v_norm).abs() > (tol_d * 100.0) * v_norm {
+            return POLYDIM_PRECISION_LOSS;
+        }
+
+        POLYDIM_OK
+    }));
+
+    match result {
+        Ok(code) => code,
+        Err(_) => {
+            if !out_view.ptr.is_null() && out_view.len > 0 && out_view.len <= (isize::MAX as u64) {
+                unsafe {
+                    std::ptr::write_bytes(out_view.ptr, 0, out_view.len as usize);
+                }
+            }
+            POLYDIM_PANIC_TRAPPED
+        }
+    }
+}
+
+// PMTP Descriptor Validation with catch_unwind
+#[no_mangle]
+pub unsafe extern "C" fn polydim_pmtp_validate_descriptor_v26155(
+    desc: *const PmtpTensorDescriptor,
+) -> i32 {
+    let result = catch_unwind(AssertUnwindSafe(|| {
+        if desc.is_null() {
+            return POLYDIM_INVALID_ARGUMENT;
+        }
+        if (desc as usize) % align_of::<u64>() != 0 {
+            return POLYDIM_ALIGNMENT_ERROR;
+        }
+        let d = unsafe { &*desc };
+        if d.magic != PMTP_MAGIC {
+            return POLYDIM_PMTP_SLAB_ERROR;
+        }
+        if (d.version != 26155 && d.version != 26154 && d.version != 26153 &&
+            d.version != 26152 && d.version != 26151 && d.version != 26150) || d.encoded_size as usize != PMTP_DESCRIPTOR_SIZE {
+            return POLYDIM_RANGE_ERROR;
+        }
+        if d.dtype_code != 1 {
+            return POLYDIM_INVALID_ARGUMENT;
+        }
+        if d.ndim < 1 || d.ndim > 4 {
+            return POLYDIM_RANGE_ERROR;
+        }
+        if d.byte_length == 0 {
+            return POLYDIM_RANGE_ERROR;
+        }
+        for &r in d.reserved.iter() {
+            if r != 0 {
+                return POLYDIM_INVALID_ARGUMENT;
+            }
+        }
+        let mut expected_elements: u64 = 1;
+        for i in 0..(d.ndim as usize) {
+            if d.shape[i] == 0 {
+                return POLYDIM_RANGE_ERROR;
+            }
+            match expected_elements.checked_mul(d.shape[i]) {
+                Some(val) => expected_elements = val,
+                None => return POLYDIM_RANGE_ERROR,
+            }
+        }
+        for i in (d.ndim as usize)..4 {
+            if d.shape[i] != 0 {
+                return POLYDIM_RANGE_ERROR;
+            }
+        }
+        let expected_bytes = match expected_elements.checked_mul(size_of::<f64>() as u64) {
+            Some(val) => val,
+            None => return POLYDIM_RANGE_ERROR,
+        };
+        if expected_bytes != d.byte_length {
+            return POLYDIM_LENGTH_MISMATCH;
+        }
+        // Memory span overflow protection
+        if d.byte_offset.checked_add(d.byte_length).is_none() {
+            return POLYDIM_RANGE_ERROR;
+        }
+        if d.byte_offset % (align_of::<f64>() as u64) != 0 {
+            return POLYDIM_ALIGNMENT_ERROR;
+        }
+        POLYDIM_OK
+    }));
+
+    result.unwrap_or(POLYDIM_PANIC_TRAPPED)
+}
+
+// Backward compatibility alias symbols
+#[no_mangle]
+pub unsafe extern "C" fn polydim_sphere_project_v26154(i: PolydimF64ConstView, o: PolydimF64MutView) -> i32 { unsafe { polydim_sphere_project_v26155(i, o) } }
+#[no_mangle]
+pub unsafe extern "C" fn polydim_sphere_transport_v26154(x: PolydimF64ConstView, y: PolydimF64ConstView, v: PolydimF64ConstView, o: PolydimF64MutView) -> i32 { unsafe { polydim_sphere_transport_v26155(x, y, v, o) } }
+#[no_mangle]
+pub unsafe extern "C" fn polydim_pmtp_validate_descriptor_v26154(d: *const PmtpTensorDescriptor) -> i32 { unsafe { polydim_pmtp_validate_descriptor_v26155(d) } }
+#[no_mangle]
+pub unsafe extern "C" fn polydim_sphere_project_v26153(i: PolydimF64ConstView, o: PolydimF64MutView) -> i32 { unsafe { polydim_sphere_project_v26155(i, o) } }
+#[no_mangle]
+pub unsafe extern "C" fn polydim_sphere_transport_v26153(x: PolydimF64ConstView, y: PolydimF64ConstView, v: PolydimF64ConstView, o: PolydimF64MutView) -> i32 { unsafe { polydim_sphere_transport_v26155(x, y, v, o) } }
+#[no_mangle]
+pub unsafe extern "C" fn polydim_pmtp_validate_descriptor_v26153(d: *const PmtpTensorDescriptor) -> i32 { unsafe { polydim_pmtp_validate_descriptor_v26155(d) } }
+#[no_mangle]
+pub unsafe extern "C" fn polydim_sphere_project_v26152(i: PolydimF64ConstView, o: PolydimF64MutView) -> i32 { unsafe { polydim_sphere_project_v26155(i, o) } }
+#[no_mangle]
+pub unsafe extern "C" fn polydim_sphere_transport_v26152(x: PolydimF64ConstView, y: PolydimF64ConstView, v: PolydimF64ConstView, o: PolydimF64MutView) -> i32 { unsafe { polydim_sphere_transport_v26155(x, y, v, o) } }
+#[no_mangle]
+pub unsafe extern "C" fn polydim_pmtp_validate_descriptor_v26152(d: *const PmtpTensorDescriptor) -> i32 { unsafe { polydim_pmtp_validate_descriptor_v26155(d) } }
+#[no_mangle]
+pub unsafe extern "C" fn polydim_sphere_project_v26151(i: PolydimF64ConstView, o: PolydimF64MutView) -> i32 { unsafe { polydim_sphere_project_v26155(i, o) } }
+#[no_mangle]
+pub unsafe extern "C" fn polydim_sphere_transport_v26151(x: PolydimF64ConstView, y: PolydimF64ConstView, v: PolydimF64ConstView, o: PolydimF64MutView) -> i32 { unsafe { polydim_sphere_transport_v26155(x, y, v, o) } }
+#[no_mangle]
+pub unsafe extern "C" fn polydim_pmtp_validate_descriptor_v26151(d: *const PmtpTensorDescriptor) -> i32 { unsafe { polydim_pmtp_validate_descriptor_v26155(d) } }
+#[no_mangle]
+pub unsafe extern "C" fn polydim_sphere_project_v26150(i: PolydimF64ConstView, o: PolydimF64MutView) -> i32 { unsafe { polydim_sphere_project_v26155(i, o) } }
+#[no_mangle]
+pub unsafe extern "C" fn polydim_sphere_transport_v26150(x: PolydimF64ConstView, y: PolydimF64ConstView, v: PolydimF64ConstView, o: PolydimF64MutView) -> i32 { unsafe { polydim_sphere_transport_v26155(x, y, v, o) } }
+#[no_mangle]
+pub unsafe extern "C" fn polydim_pmtp_validate_descriptor_v26150(d: *const PmtpTensorDescriptor) -> i32 { unsafe { polydim_pmtp_validate_descriptor_v26155(d) } }

@@ -1,0 +1,49 @@
+{
+  "timestamp": "2026-10-10 19:28:39",
+  "status": "SOTA_CERTIFIED",
+  "all_passed": true,
+  "results": {
+    "N-01": {
+      "exit_code": 0,
+      "latency_ms": 2.456700000038836,
+      "drift": 0.0
+    },
+    "N-02": {
+      "exit_code": 0,
+      "latency_ms": 1.7286000002059154,
+      "gram_defect": 1.1102230246251565e-16
+    },
+    "N-03": {
+      "exit_code": 0,
+      "w_min": 4258,
+      "w_64": 4288,
+      "w_512": 4608
+    },
+    "N-04": {
+      "exit_code": 0,
+      "latency_ms": 0.10210000255028717
+    },
+    "N-05": {
+      "exit_code": 0,
+      "dual_path_diff": 0.0
+    },
+    "N-06": {
+      "exit_code": 0,
+      "aligned_64b": false
+    },
+    "N-07": {
+      "exit_code": 0,
+      "residual_error": 0.0
+    },
+    "N-08": {
+      "exit_code": 0,
+      "cpp_bytes": 388043,
+      "rust_bytes": 120832
+    },
+    "N-09": {
+      "exit_code": 0,
+      "norm_cpp": 1.0,
+      "norm_rust": 1.0
+    }
+  }
+}

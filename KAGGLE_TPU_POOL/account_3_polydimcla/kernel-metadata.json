@@ -1,0 +1,15 @@
+{
+  "id": "polydimcla/pmtp-v4-tpu-dispatch",
+  "title": "pmtp-v4-tpu-dispatch",
+  "code_file": "kaggle_tpu_worker.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": "true",
+  "enable_gpu": "false",
+  "enable_tpu": "true",
+  "enable_internet": "true",
+  "dataset_sources": [],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}

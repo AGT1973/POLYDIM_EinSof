@@ -1,0 +1,14 @@
+{
+  "id": "ariel/pmtp-v4-barrier-b-triton",
+  "title": "PMTP-v4 Barrier B Triton VRAM Lease",
+  "code_file": "kaggle_pmtp_v4_dispatch.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": "true",
+  "enable_gpu": "true",
+  "enable_tpu": "false",
+  "enable_internet": "true",
+  "dataset_sources": [],
+  "competition_sources": [],
+  "kernel_sources": []
+}

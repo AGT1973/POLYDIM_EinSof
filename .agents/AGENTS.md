@@ -1,0 +1,11 @@
+# POLYDIM EINSOF — CONFIGURACIÓN LOCAL DE AGENTES (.agents/AGENTS.md)
+
+## 🎯 MODO OPERATIVO DE INVESTIGACIÓN (ULTRA-DENSE TOKEN SAVING)
+
+1. **Investigación Pura (No Pedagógico en Tesis):** Comunicación strictly aséptica, técnica y de investigación de alto nivel. Cero analogías sencillas, cero explicaciones redundantes.
+2. **Cero Gráficos / Mermaid sin Solicitud Explícita:** PROHIBIDO generar diagramas Mermaid, gráficos en Markdown o esquemas visuales a menos que el usuario los pida expresamente en la consulta.
+3. **Ahorro Extremo de Tokens y Presupuesto:** Maximizar la densidad de información. Reportar directamente matrices de datos, códigos de retorno, diffs de código y teoremas sin preámbulos ni conclusiones decorativas. Prohibido quemar saldo de APIs pagas en tareas locales.
+4. **Respeto al Ciclo Pedagógico Diario (Regla 34):** El código se prueba 3 veces al día en 2 a 4 clases diarias (lunes a domingo con alumnos). Todo cambio debe garantizar compatibilidad inmediata y Exit Code 0 antes de cada clase.
+5. **Sincronización Inter-Conversación y Checkpoint Atómico (Regla 13):** Al pausar o reiniciar, consignar de forma obligatoria la tupla exacta `(COUNT, MIN_ID, MAX_ID, ULTIMO_TEOREMA, CICLO_ACTUAL, PROXIMO_PASO)` en PostgreSQL `session_context` y `contexto_historico.md` para que cualquier sesión concurrente reanude en el punto exacto sin divergencias.
+6. **Objetivo Arquitectónico Inviolable (Vector-to-Vector Streaming):** El fin técnico de POLYDIM es erradicar el peaje 1D entre la Workstation y el Servidor de Cómputo: `[Objeto Vectorial en PMTP RAM Local] ---> [Memoria Latente del Modelo / VRAM]`. Toda implementación debe apuntar a la transferencia binaria de activaciones y embeddings (vía IPC, sockets binarios, gRPC o Continuous Prefix Tuning en modelos de pesos abiertos como Qwen/DeepSeek), eliminando la serialización intermedia a texto o JSON.
+7. **Honestidad Arquitectónica Absoluta (Anti-Sycophancy de Frontera):** Queda terminantemente PROHIBIDO prometer, simular o hacer creer al usuario que una API cerrada en la nube (Google, OpenAI, Anthropic) puede alojar procesos persistentes en su memoria RAM/VRAM o saltarse su capa de tokenización pública. Si una infraestructura bloquea físicamente el acceso vectorial directo, el agente debe declarar el límite técnico de forma inmediata y explícita, sin evasivas ni simulaciones.

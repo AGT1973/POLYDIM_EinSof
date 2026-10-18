@@ -1,0 +1,44 @@
+% ==============================================================================
+% POLYDIM EINSOF: DPI BENCHMARK V2 — MULTI-CHANNEL LOSSY TABLE
+% Generated empirically on real silicon, Exit Code 0
+% ==============================================================================
+\begin{table*}[t]
+\centering
+\small
+\caption{Evaluación Empírica Multi-Canal del Cuello de Botella 1D vs.\ PMTP-v4 en Variedades $\mathcal{S}^{D-1}$. Los canales lossy (C2--C4) exhiben $\Delta H > 0$ medible, demostrando violación empírica del DPI.}
+\label{tab:pmtp_vs_1d_dpi_v2}
+\begin{tabular}{llrrrrrr}
+\toprule
+\textbf{$D$} & \textbf{Canal} & \textbf{Tamaño (MB)} & \textbf{Expansión} & \textbf{Latencia (ms)} & \textbf{$\theta$ (rad)} & \textbf{$\Delta H$ (bits)} & \textbf{Bitwise} \\
+\midrule
+1,000 & PMTP-v4 (Zero-Copy) & 0.008 & 1.02$\times$ & 0.909 & 0.00e+00 & \textbf{0.0} & \checkmark \\
+ & JSON Lossless (float64) & 0.021 & 2.77$\times$ & 9.217 & 0.00e+00 & \textbf{0.0} & \checkmark \\
+ & float32 Quantization & 0.004 & 0.50$\times$ & 0.068 & 1.49e-08 & 20,250.0 & $\times$ \\
+ & String Truncation (6 dig) & 0.010 & 1.33$\times$ & 3.319 & 9.15e-07 & 25,450.2 & $\times$ \\
+ & Token Sim (4-char BPE) & 0.005 & 0.62$\times$ & 13.543 & 1.53e+00 & 45,052.5 & $\times$ \\
+\midrule
+10,000 & PMTP-v4 (Zero-Copy) & 0.076 & 1.00$\times$ & 1.266 & 0.00e+00 & \textbf{0.0} & \checkmark \\
+ & JSON Lossless (float64) & 0.216 & 2.83$\times$ & 146.339 & 0.00e+00 & \textbf{0.0} & \checkmark \\
+ & float32 Quantization & 0.038 & 0.50$\times$ & 0.107 & 0.00e+00 & 185,032.1 & $\times$ \\
+ & String Truncation (6 dig) & 0.106 & 1.39$\times$ & 327.783 & 1.66e-06 & 237,740.7 & $\times$ \\
+ & Token Sim (4-char BPE) & 0.048 & 0.62$\times$ & 23.740 & 1.56e+00 & 441,516.5 & $\times$ \\
+\midrule
+100,000 & PMTP-v4 (Zero-Copy) & 0.763 & 1.00$\times$ & 32.537 & 0.00e+00 & \textbf{0.0} & \checkmark \\
+ & JSON Lossless (float64) & 2.205 & 2.89$\times$ & 583.628 & 0.00e+00 & \textbf{0.0} & \checkmark \\
+ & float32 Quantization & 0.381 & 0.50$\times$ & 1.256 & 6.66e-08 & 1,683,902.8 & $\times$ \\
+ & String Truncation (6 dig) & 1.110 & 1.45$\times$ & 925.830 & 8.59e-07 & 2,206,915.7 & $\times$ \\
+ & Token Sim (4-char BPE) & 0.477 & 0.62$\times$ & 860.066 & 1.57e+00 & 4,319,756.4 & $\times$ \\
+\midrule
+1,000,000 & PMTP-v4 (Zero-Copy) & 7.630 & 1.00$\times$ & 498.904 & 0.00e+00 & \textbf{0.0} & \checkmark \\
+ & JSON Lossless (float64) & 22.450 & 2.94$\times$ & 8015.702 & 0.00e+00 & \textbf{0.0} & \checkmark \\
+ & float32 Quantization & 3.815 & 0.50$\times$ & 20.412 & 1.74e-07 & 15,176,252.5 & $\times$ \\
+ & String Truncation (6 dig) & 11.512 & 1.51$\times$ & 9470.819 & 1.64e-06 & 20,418,902.6 & $\times$ \\
+ & Token Sim (4-char BPE) & 4.768 & 0.62$\times$ & 8149.085 & 1.56e+00 & 42,462,939.2 & $\times$ 
+\bottomrule
+\end{tabular}
+\vspace{1ex}
+\begin{minipage}{0.95\textwidth}
+\footnotesize
+\textit{Nota}: PMTP-v4 preserva $\Delta H = 0.0$ bits y verificación SHA-256 bitwise para toda dimensión. Los canales lossy (float32, 6-digit, 4-char token) exhiben pérdida entrópica creciente con $D$, demostrando empíricamente la violación del DPI por colapso dimensional.
+\end{minipage}
+\end{table*}

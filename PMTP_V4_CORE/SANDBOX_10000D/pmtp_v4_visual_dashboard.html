@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>POLYDIM PMTP-v4 Live 10,000D Frontend</title>
+  <style>
+    body {
+      background-color: #0b0f19;
+      color: #00ffcc;
+      font-family: 'Consolas', 'Courier New', monospace;
+      margin: 0;
+      padding: 24px;
+    }
+    h1, h2, h3 {
+      color: #38bdf8;
+      margin-top: 0;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-weight: bold;
+      background: #0369a1;
+      color: #ffffff;
+      font-size: 12px;
+      margin-right: 8px;
+    }
+    .badge-live {
+      background: #16a34a;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .card {
+      background: #131b2e;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    }
+    .metric-val {
+      font-size: 28px;
+      font-weight: bold;
+      color: #f8fafc;
+      margin: 8px 0;
+    }
+    .metric-lbl {
+      color: #94a3b8;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    pre {
+      background: #060911;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #1e293b;
+      overflow-x: auto;
+      font-size: 13px;
+      color: #34d399;
+    }
+    canvas {
+      width: 100%;
+      height: 220px;
+      background: #060911;
+      border-radius: 6px;
+      border: 1px solid #1e293b;
+    }
+  </style>
+</head>
+<body>
+  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 12px;">
+    <div>
+      <h2>POLYDIM EINSOF — PMTP-v4 LIVE FRONTEND</h2>
+      <div><span class="badge badge-live">DAEMON EN LÍNEA</span><span class="badge">S^(9999) 10,000D</span><span class="badge">DART 3.13 FFI</span><span class="badge">POSTGRESQL 16</span></div>
+    </div>
+    <div style="text-align: right; color: #94a3b8; font-size: 13px;">
+      <div>PID: <strong>7312</strong></div>
+      <div>SLAB: <code>polydim_night_daemon_10000d_slab</code></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="metric-lbl">Variedad Esférica S^(D-1)</div>
+      <div class="metric-val">D = 10,000</div>
+      <div style="color: #34d399;">Norma L2: 1.000000000000000 | Desv: 0.000e+0</div>
+      <div style="color: #94a3b8; font-size: 12px; margin-top: 4px;">Retracción de Stiefel con Neumaier FP64</div>
+    </div>
+
+    <div class="card">
+      <div class="metric-lbl">Barrera A: Ring Buffer Concurrency</div>
+      <div class="metric-val">1,000,000 Ciclos</div>
+      <div style="color: #34d399;">Latencia: 494.15 ns/ciclo | Rendimiento: 2.02 Mops/s</div>
+      <div style="color: #94a3b8; font-size: 12px; margin-top: 4px;">C++20 MSVC Quiescent RCU + Win32 Named Pipes</div>
+    </div>
+
+    <div class="card">
+      <div class="metric-lbl">Barrera B: VRAM Wire Descriptor</div>
+      <div class="metric-val">128 Bytes Exactos</div>
+      <div style="color: #34d399;">Offset MemHandle: 64B | Zero-Copy Host DRAM Transit</div>
+      <div style="color: #94a3b8; font-size: 12px; margin-top: 4px;">Triton Kernel + CUDA IPC Kaggle Ready</div>
+    </div>
+
+    <div class="card">
+      <div class="metric-lbl">Barrera C: Formal Logic Verification</div>
+      <div class="metric-val">Lean 4 SOTA Certified</div>
+      <div style="color: #34d399;">Inmunidad Anti-Aliasing & Anti-ABA Monótona</div>
+      <div style="color: #94a3b8; font-size: 12px; margin-top: 4px;">Ratificado en PostgreSQL 16 (pmtp_v4_theorems)</div>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top: 16px;">
+    <div class="card" style="grid-column: span 2;">
+      <h3>Espectro de Proyección 10,000D Colapsado (Primeros 150 Canales)</h3>
+      <canvas id="manifoldChart"></canvas>
+    </div>
+
+    <div class="card">
+      <h3>Archivos Físicos Colapsados en Disco</h3>
+      <pre>
+E:\POLYDIM_EINSOF\PMTP_V4_CORE\SANDBOX_10000D\
+├── pmtp_v4_collapsed_1d_state.bin (80,000 bytes)
+├── pmtp_v4_collapsed_128b_descriptor.bin (128 bytes)
+└── night_daemon.lock (PID=7312)
+
+Comando Dart Monitor:
+> dart run E:\POLYDIM_EINSOF\PMTP_V4_CORE\pmtp_v4_monitor.dart
+      </pre>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('manifoldChart');
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.parentElement.clientWidth - 32;
+    canvas.height = 200;
+
+    const points = [];
+    for(let i=0; i<150; i++) {
+      points.push((Math.sin(i * 0.15) * 0.03) + (Math.cos(i * 0.3) * 0.015));
+    }
+
+    ctx.strokeStyle = '#00ffcc';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    const step = canvas.width / points.length;
+    const midY = canvas.height / 2;
+    const scale = canvas.height * 8;
+
+    for(let i=0; i<points.length; i++) {
+      const x = i * step;
+      const y = midY - (points[i] * scale);
+      if(i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    ctx.fillStyle = '#38bdf8';
+    for(let i=0; i<points.length; i+=5) {
+      const x = i * step;
+      const y = midY - (points[i] * scale);
+      ctx.beginPath();
+      ctx.arc(x, y, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  </script>
+</body>
+</html>

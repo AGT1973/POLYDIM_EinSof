@@ -1,0 +1,5 @@
+{
+  "name": "polydim-redteam-gatekeeper",
+  "version": "1.0.0",
+  "description": "Customer Plugin & Gatekeeper para forzar el protocolo de Asimetria Hostil (Regla 35) y ejecucion SOTA sin complacencia."
+}

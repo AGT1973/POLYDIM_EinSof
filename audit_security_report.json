@@ -1,0 +1,384 @@
+{
+  "audit_timestamp": "2026-10-10T13:25:00-03:00",
+  "standard": "Rule 14 (Anti-Leak Protocol) & Rule 10 (Empirical Veto)",
+  "target_directory": "E:\\POLYDIM_EINSOF",
+  "excluded_directories": [
+    ".dart_tool",
+    "_AGY_BACKUP",
+    "_HISTORICO",
+    ".git",
+    "__pycache__"
+  ],
+  "total_files_scanned": 6825,
+  "sensitive_files_detected_count": 12,
+  "sensitive_files_detected": [
+    {
+      "file": "register_100.py",
+      "issues": [
+        {
+          "rule": "Password_Assignment",
+          "count": 1,
+          "sample": "***REDACTED***"
+        }
+      ],
+      "must_be_gitignored": true
+    },
+    {
+      "file": "register_25.py",
+      "issues": [
+        {
+          "rule": "Password_Assignment",
+          "count": 1,
+          "sample": "***REDACTED***"
+        }
+      ],
+      "must_be_gitignored": true
+    },
+    {
+      "file": "register_25_2.py",
+      "issues": [
+        {
+          "rule": "Password_Assignment",
+          "count": 1,
+          "sample": "***REDACTED***"
+        }
+      ],
+      "must_be_gitignored": true
+    },
+    {
+      "file": "register_theorems.py",
+      "issues": [
+        {
+          "rule": "Password_Assignment",
+          "count": 1,
+          "sample": "***REDACTED***"
+        }
+      ],
+      "must_be_gitignored": true
+    },
+    {
+      "file": "register_theorems_2.py",
+      "issues": [
+        {
+          "rule": "Password_Assignment",
+          "count": 1,
+          "sample": "***REDACTED***"
+        }
+      ],
+      "must_be_gitignored": true
+    },
+    {
+      "file": "update_kimi_keys.py",
+      "issues": [
+        {
+          "rule": "OpenAI_Moonshot_Key",
+          "count": 2,
+          "sample": "sk-4cs3h...bTmA"
+        }
+      ],
+      "must_be_gitignored": true
+    },
+    {
+      "file": "BACKUP_STAGE_2026_10_09\\mantenimiento_db_backup.sql",
+      "issues": [
+        {
+          "rule": "Anthropic_API_Key",
+          "count": 1,
+          "sample": "sk-ant-a...WgAA"
+        },
+        {
+          "rule": "OpenRouter_API_Key",
+          "count": 8,
+          "sample": "sk-or-v1...2aa9"
+        },
+        {
+          "rule": "GitHub_PAT",
+          "count": 18,
+          "sample": "ghp_IW6D...i3SO"
+        },
+        {
+          "rule": "OpenAI_Moonshot_Key",
+          "count": 14,
+          "sample": "sk-dSPn3...mC2e"
+        },
+        {
+          "rule": "HuggingFace_Token",
+          "count": 1,
+          "sample": "hf_BqZfT...fqeG"
+        }
+      ],
+      "must_be_gitignored": true
+    },
+    {
+      "file": "BACKUP_STAGE_2026_10_09\\polydim_active_db_backup.sql",
+      "issues": [
+        {
+          "rule": "Anthropic_API_Key",
+          "count": 7,
+          "sample": "sk-ant-a...fd9P"
+        },
+        {
+          "rule": "OpenRouter_API_Key",
+          "count": 1,
+          "sample": "sk-or-v1...2aa9"
+        },
+        {
+          "rule": "GitHub_PAT",
+          "count": 1,
+          "sample": "ghp_IW6D...i3SO"
+        },
+        {
+          "rule": "OpenAI_Moonshot_Key",
+          "count": 6,
+          "sample": "sk-f7u04...1OX2"
+        }
+      ],
+      "must_be_gitignored": true
+    },
+    {
+      "file": "BACKUP_STAGE_2026_10_09\\polydim_vec_db_backup.sql",
+      "issues": [
+        {
+          "rule": "Anthropic_API_Key",
+          "count": 14,
+          "sample": "sk-ant-a...WgAA"
+        },
+        {
+          "rule": "OpenRouter_API_Key",
+          "count": 2,
+          "sample": "sk-or-v1...2aa9"
+        },
+        {
+          "rule": "GitHub_PAT",
+          "count": 2,
+          "sample": "ghp_IW6D...i3SO"
+        },
+        {
+          "rule": "OpenAI_Moonshot_Key",
+          "count": 10,
+          "sample": "sk-dSPn3...mC2e"
+        }
+      ],
+      "must_be_gitignored": true
+    },
+    {
+      "file": "BRECHAS_RESOLUCION_PROMPTS\\generate_theorem_silicon_matrix.py",
+      "issues": [
+        {
+          "rule": "Password_Assignment",
+          "count": 1,
+          "sample": "***REDACTED***"
+        }
+      ],
+      "must_be_gitignored": true
+    },
+    {
+      "file": "matrix_state\\kimi_state.json",
+      "issues": [
+        {
+          "rule": "OpenAI_Moonshot_Key",
+          "count": 1,
+          "sample": "sk-uMC8O...Kirj"
+        }
+      ],
+      "must_be_gitignored": true
+    },
+    {
+      "file": "PAQUETE_ALUMNOS_UTN_FRBA\\generate_theorem_silicon_matrix.py",
+      "issues": [
+        {
+          "rule": "Password_Assignment",
+          "count": 1,
+          "sample": "***REDACTED***"
+        }
+      ],
+      "must_be_gitignored": true
+    }
+  ],
+  "clean_files_certified_count": 6813,
+  "recommended_gitignore_entries": [
+    "*.env",
+    "BACKUP_STAGE_*/",
+    "matrix_state/",
+    "update_kimi_keys.py",
+    "*.sql",
+    "*.log",
+    "__pycache__/",
+    ".dart_tool/",
+    "_HISTORICO/",
+    "_AGY_BACKUP/",
+    "*.sqlite",
+    "*.db"
+  ],
+  "production_kernels_checksum_tree": {
+    "delivery_directory": "ENTREGA_2026_10_10_V26155",
+    "artifacts_count": 33,
+    "artifacts": [
+      {
+        "file": "DIMENSION_IS_ALL_YOU_NEED_PAPER_V1550.docx",
+        "sha256": "AB0EAF0F7922689EB96689664DE60F1C03B765C62A647AA13F20351B7FDFDDC9",
+        "size_bytes": 18813
+      },
+      {
+        "file": "DIMENSION_IS_ALL_YOU_NEED_PAPER_V1550.html",
+        "sha256": "D2961622C52C9D7910C8A4890F2AA7382997131FD16541CE3E577F7178C6F3E3",
+        "size_bytes": 21857
+      },
+      {
+        "file": "DIMENSION_IS_ALL_YOU_NEED_PAPER_V1550.pdf",
+        "sha256": "A2876BCCF381EDA722FEC1533F89169B400181EF883A4C31FE323FEF44196819",
+        "size_bytes": 12267
+      },
+      {
+        "file": "DIMENSION_IS_ALL_YOU_NEED_PAPER_V1550.tex",
+        "sha256": "8FAAB90EA8B3D036E5684B39E8633D955101656A4E0509E8BEF577C4C3A74A8A",
+        "size_bytes": 11057
+      },
+      {
+        "file": "ejecutar_suite_real_silicio.py",
+        "sha256": "171550B1CF46CE38963FFF2DD7C846C2FE9FBD9C5772B727049725D7036AA8C3",
+        "size_bytes": 7719
+      },
+      {
+        "file": "kernel_cpp_v26155.cpp",
+        "sha256": "5065428989A934EB76AB0FED26F082FB7A0498242EF6897EAF7E74CA5BB4DCF0",
+        "size_bytes": 17416
+      },
+      {
+        "file": "kernel_cpp_v26155.cpp.txt",
+        "sha256": "5065428989A934EB76AB0FED26F082FB7A0498242EF6897EAF7E74CA5BB4DCF0",
+        "size_bytes": 17416
+      },
+      {
+        "file": "kernel_cpp_v26155.dll",
+        "sha256": "DA34723467CC80BA9C75CC68922F9DE0B3413EE2F7CE9DD564C65F4B1895FB43",
+        "size_bytes": 61891
+      },
+      {
+        "file": "kernel_rust_v26155.dll",
+        "sha256": "81C80030808C650159F24315704C0CCFC0A4B5C94D92F2BBAAB4F98FC286E391",
+        "size_bytes": 14336
+      },
+      {
+        "file": "kernel_rust_v26155.rs",
+        "sha256": "3F4209EF140BEF27AE591AD77B7C9BE288C8B3E848ACD525BA2890E2B4F1FE0C",
+        "size_bytes": 22709
+      },
+      {
+        "file": "kernel_rust_v26155.rs.txt",
+        "sha256": "3F4209EF140BEF27AE591AD77B7C9BE288C8B3E848ACD525BA2890E2B4F1FE0C",
+        "size_bytes": 22709
+      },
+      {
+        "file": "log_ejecucion_fisica_silicio_v26155.log",
+        "sha256": "5FB6C29068D37DA045845AE851FD0F9B71EE7ED56A6354F9479860F9CF138DBE",
+        "size_bytes": 2278
+      },
+      {
+        "file": "pmtp_v4_axioms.c",
+        "sha256": "33295BF2D68D723CE0004071177BE65095FD32023FC6E98D3D9D6F40B0D3B8F1",
+        "size_bytes": 219713
+      },
+      {
+        "file": "pmtp_v4_axioms.lean",
+        "sha256": "CA97214BE9464748F513D36748185B0280541F8C2F22421DBBEABC2675C53DA8",
+        "size_bytes": 23111
+      },
+      {
+        "file": "pmtp_v4_axioms.o",
+        "sha256": "1CA134F61520AD040F41C9C293EF1BEECB397450EC0A8108930F3BA8256179F2",
+        "size_bytes": 204429
+      },
+      {
+        "file": "polydim_triton_kernel_v26155.py",
+        "sha256": "10D95D62FCBD39552D8EC0C1555B9D13E68FE0EFAD0EFEE38634A1CDFDF006C5",
+        "size_bytes": 8445
+      },
+      {
+        "file": "polydim_v26155_ffi.dart",
+        "sha256": "D398F220B7CE1B70C74917C3C0F30FE72B4B539B14E4710123A0C5A49B098008",
+        "size_bytes": 9095
+      },
+      {
+        "file": "polydim_v26155_ffi.dart.txt",
+        "sha256": "D398F220B7CE1B70C74917C3C0F30FE72B4B539B14E4710123A0C5A49B098008",
+        "size_bytes": 9095
+      },
+      {
+        "file": "polydim_v26155_monolito.py",
+        "sha256": "3F6C709B2052D715922816DB54C0F9485B45BA80B3F35BD034F98766404316DF",
+        "size_bytes": 46177
+      },
+      {
+        "file": "pubspec.lock",
+        "sha256": "9C8E60D013EBA45C06AB204F41557CFAA201D92910E3370C2649C99DE2552994",
+        "size_bytes": 331
+      },
+      {
+        "file": "pubspec.yaml",
+        "sha256": "818EF85E3111BF0865CDD42B934EE954144D4F90CAF735F53CB1CEF97D19DCC7",
+        "size_bytes": 147
+      },
+      {
+        "file": "readme_first.md",
+        "sha256": "D4B1745BFFB983C2CED072E0C009ED6818BA28F9D669E37C1DFF589FCD2742DB",
+        "size_bytes": 4413
+      },
+      {
+        "file": "test_dart_stress_ffi.dart",
+        "sha256": "F916003834D4D64F7A1B0F80FF79435BD8A9CD464DA62CF6CD975CAF7365A694",
+        "size_bytes": 18261
+      },
+      {
+        "file": "outreach\\01_executive_summary_utn.md",
+        "sha256": "15D8EC9B7D28D6BA54DB484514CF7F8494658420E124D212B92A929EED966D11",
+        "size_bytes": 7121
+      },
+      {
+        "file": "outreach\\01_resumen_ejecutivo_utn_es.md",
+        "sha256": "B4A9798404B0AEB4006584CD3FC7E944037138DD656DB04DBE47DB6E81A429EE",
+        "size_bytes": 7331
+      },
+      {
+        "file": "outreach\\02_lesson_plan_level1_ai.md",
+        "sha256": "0BE454296F5926ECC7E018EF891E5867F37ED1888C69AEC7462DDD8EAB6CF514",
+        "size_bytes": 6355
+      },
+      {
+        "file": "outreach\\02_plan_de_clase_ia_utn_es.md",
+        "sha256": "DCCAB745D75167EC6BD81CDBFA4190AB465A674D976E784BE3707883F8EF4C78",
+        "size_bytes": 6295
+      },
+      {
+        "file": "outreach\\03_benchmarks_reproducibility_guide.md",
+        "sha256": "9D80A9DF33B05DD397DA4B51659028CAE3F1232A253B7711B1A820C541B90883",
+        "size_bytes": 5587
+      },
+      {
+        "file": "outreach\\03_guia_reproducibilidad_benchmarks_es.md",
+        "sha256": "9AEE0885C7D394C2BD56245531CC19B92B5369CD442256C62E037695AB82144E",
+        "size_bytes": 3473
+      },
+      {
+        "file": "outreach\\04_comunicado_institucional_prensa_es.md",
+        "sha256": "2A1B70897E166B2174D85A68357AA054328AF96DF3CFDDFDEDB1F07D74C4D148",
+        "size_bytes": 3947
+      },
+      {
+        "file": "outreach\\04_institutional_press_release.md",
+        "sha256": "2493625EC156F0176C289956D60CEF6431636E3B2AF358F64EF70F717BC56A51",
+        "size_bytes": 3578
+      },
+      {
+        "file": "outreach\\05_hilos_divulgacion_redes_academicas.md",
+        "sha256": "3143402FE9E6FB59B0F6EF7DAD597C14A07C7C7F354CFA23307CB850F77AEA68",
+        "size_bytes": 4924
+      },
+      {
+        "file": "outreach\\perplexity_evaluation_report.md",
+        "sha256": "2A400830039E5A6242C2EF22604DA8AE7F04B42B067C3D8E093CF8172F19011F",
+        "size_bytes": 11607
+      }
+    ]
+  }
+}
