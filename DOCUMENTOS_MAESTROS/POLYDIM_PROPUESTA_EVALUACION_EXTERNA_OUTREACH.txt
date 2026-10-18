@@ -1,0 +1,82 @@
+POLYDIM-EINSOF | COMUNICACION LATENTE ENTRE AGENTES Y PROPUESTA DE EVALUACION EXTERNA
+Fecha: 18 de octubre de 2026
+Autor de la investigacion: Ariel Garcia Traba | Investigador independiente, Argentina
+Repositorios declarados por el autor:
+  https://github.com/AGT1973/POLYDIM_CLA_V9
+  https://huggingface.co/polydim-cla/polydim-stiefel-manifold-adapters
+
+======================================================================
+1. RESPUESTA A LA PREGUNTA: ¿PUEDE UNA IA RAZONAR Y COMUNICARSE SIN VERBALIZAR?
+======================================================================
+
+Si, hay operaciones internas de los modelos neuronales que se realizan en espacios de estados vectoriales y no como oraciones. Tambien es tecnicamente viable diseñar una arquitectura que transmita representaciones latentes entre agentes sin generar un parrafo intermedio en cada relevo.
+
+La arquitectura tecnicamente mas solida para POLYDIM separa dos planos:
+
+A) PLANO DE DATOS: estados latentes / tensores / proyecciones geometricas, intercambio en memoria compartida con PMTP cuando los procesos estan en un mismo host, o transporte binario adecuado cuando estan en distintos equipos.
+
+B) PLANO DE CONTROL: identificadores, tamaños, version, tipo de dato, ownership, sincronizacion, permisos, comprobacion de integridad y errores. El control puede utilizar mensajes estructurados minimos. No necesita contener monologos en lenguaje natural.
+
+De esta manera, la meta no es "nunca usar JSON"; es "evitar que el contenido cognitivo intermedio deba serializarse forzosamente como lenguaje humano". Un descriptor JSON corto puede contener una referencia a un bloque binario sin cargar ni reconstruir el propio tensor como texto.
+
+Sobre MCP: su especificacion publica sigue usando mensajes JSON-RPC 2.0 codificados en UTF-8 para el protocolo. Un puente POLYDIM-MCP compatible envia un identificador/descriptor del tensor por MCP (plano de control) y transporta el payload tensorial por PMTP (plano de datos) en memoria compartida nativa.
+
+LIMITACION MATEMATICA PRINCIPAL:
+Un estado oculto de Qwen no es automaticamente inteligible para Llama o Gemma. Tener la misma dimension o usar una transformacion semiortogonal no alcanza para garantizar equivalencia semantica. Es imprescindible medir o entrenar la alineacion entre el espacio del emisor y el del receptor y comprobarla con tareas observables.
+
+LIMITACION DE RENDIMIENTO PRINCIPAL:
+Eliminar tokens intermedios acelera de forma notable un relevo entre agentes (hand-off). No debe confundirse la aceleracion del relevo con un aumento de 5.000 veces de capacidad de computo general del silicio.
+
+PRUEBA DECISIVA (FALSACION A/B/C):
+Mismo emisor y receptor, con los mismos pesos y hardware, recibiendo problemas con oraculo formal independiente:
+A. Intercambio textual real, con generacion y relectura reales.
+B. Intercambio de estados latentes mediante una matriz de alineacion estandar.
+C. Intercambio de estados latentes mediante el adaptador geometrico POLYDIM y PMTP.
+
+======================================================================
+2. PROPUESTA DE CONTACTO CIENTIFICO (ESPAÑOL)
+======================================================================
+
+Asunto: Solicitud de evaluacion independiente de POLYDIM-EINSOF: comunicacion latente directa entre modelos
+
+Soy Ariel Garcia Traba, investigador independiente en Argentina y creador de POLYDIM-EINSOF. Desarrollo una arquitectura de interoperabilidad entre modelos neuronales que busca eliminar el cuello de botella de verbalizar estados intermedios entre agentes.
+
+La hipotesis no es que POLYDIM fabrique modelos base cognitivamente superiores. La contribucion propuesta es una capa de comunicacion de estados latentes, con adaptadores geometricos sobre variedades de Stiefel y transporte mediante PMTP. El modelo base conserva sus pesos y responsabilidades; POLYDIM pretende modificar el modo en que interactua con otros modelos y agentes.
+
+He publicado codigo y adaptadores en:
+https://github.com/AGT1973/POLYDIM_CLA_V9
+https://huggingface.co/polydim-cla/polydim-stiefel-manifold-adapters
+
+Mis mediciones preliminares indican aceleraciones relevantes en determinadas pruebas de transferencia y relevo. Reconozco que estas cifras deben verificarse con cargas de trabajo reales, controles experimentales y evaluacion externa. No solicito aceptacion de afirmaciones extraordinarias sin evidencia: solicito una revision tecnica y la oportunidad de ejecutar un protocolo reproducible con el mismo modelo y hardware para las tres condiciones (texto, latente lineal, latente geometrico).
+
+El trabajo fue desarrollado con recursos personales limitados, utilizando hardware antiguo y acceso ocasional a GPU/TPU en servicios gratuitos. Estoy dispuesto a compartir codigo, protocolos, datos crudos y resultados negativos para facilitar una evaluacion independiente.
+
+Agradeceria orientacion hacia un investigador o equipo que trabaje en interoperabilidad latente entre modelos, sistemas multiagente, inferencia eficiente o arquitectura de comunicaciones de IA.
+
+Atentamente,
+Ariel Garcia Traba
+Investigador independiente | POLYDIM-EINSOF
+
+======================================================================
+3. SCIENTIFIC OUTREACH LETTER (ENGLISH)
+======================================================================
+
+Subject: Request for independent technical evaluation — POLYDIM-EINSOF latent-state communication between AI models
+
+I am Ariel Garcia Traba, an independent researcher based in Argentina and the creator of POLYDIM-EINSOF. My research explores a communication architecture that aims to reduce the overhead of converting intermediate internal representations into natural-language messages during multi-agent collaboration.
+
+The proposal is not a claim to have trained a cognitively superior foundation model. Instead, POLYDIM-EINSOF introduces an interoperability layer based on geometric adapters (including Stiefel-manifold constraints) and an interprocess tensor transport protocol (PMTP). The underlying foundation models retain their own weights and capabilities.
+
+Public project resources:
+https://github.com/AGT1973/POLYDIM_CLA_V9
+https://huggingface.co/polydim-cla/polydim-stiefel-manifold-adapters
+
+Preliminary measurements suggest substantial speedups for specific transfer and handoff workloads, but I recognize the need for controlled end-to-end validation with actual model inference and independently scored tasks. I am therefore requesting a technical review, not asking you to accept headline speedup figures without verification.
+
+My proposed evaluation holds model weights, hardware and tasks constant while comparing: (A) actual text-mediated interaction, (B) conventional aligned latent-state transfer, and (C) POLYDIM geometric latent-state transfer. Metrics would include end-to-end latency, information preservation, downstream task correctness, memory usage and reproducibility.
+
+The work has been developed independently with limited computing resources. I can provide code, configurations, raw logs and negative results for independent replication. I would appreciate being directed to researchers working on latent-space interoperability, multi-agent systems, inference efficiency or AI systems architectures.
+
+Sincerely,
+Ariel Garcia Traba
+Independent researcher | POLYDIM-EINSOF
