@@ -1,0 +1,24 @@
+POLYDIM-EINSOF — DICTAMEN DE POSICIONAMIENTO Y CONCEPTUALIZACION DE ARQUITECTURA
+Fecha: 18 de octubre de 2026
+Iniciativa: POLYDIM-EINSOF | Ariel García Traba (Independent Research / Founder)
+Tema: El rol de POLYDIM: Transmisión y Aerodinámica Vectorial (No re-inventar el motor)
+
+1. LA ANALOGÍA DEL FÓRMULA 1 (CLARIFICACIÓN ONTOLÓGICA)
+El planteo de POLYDIM-EINSOF no es entrenar desde cero un modelo fundacional para competir en conocimiento bruto con Qwen, DeepSeek, LLaMA o Gemma. Los pesos preentrenados representan el "motor de combustión interna".
+La contribución de POLYDIM es la arquitectura del flujo de información:
+- Carrocería aerodinámica y transmisión directa: interconectar motores de cálculo mediante memoria física compartida (PMTP) y variedades geométricas (Stiefel).
+- Eliminación del peaje de fricción: evitar que dos motores de alta gama deban frenar a cero, convertir su energía a palabras de texto (Gusano 1D), enviarlas por sockets HTTP/JSON, y volver a acelerar desde cero.
+- Interfaz humana al principio y al final: el ser humano define el problema y recibe la solución en lenguaje natural; el cómputo inter-agente intermedio permanece en el espacio vectorial continuo.
+
+2. LAS TRES CONDICIONES DE VERIFICACIÓN CIENTÍFICA
+Para no mezclar hipótesis con resultados certificados, la evaluación exige desacoplar:
+(a) Integridad Física del Transporte: el protocolo PMTP entrega el tensor exacto vía memoria compartida sin lecturas corruptas ni condiciones de carrera (verificado con Neumaier FP64 y CAS LOCKBIT).
+(b) Compatibilidad Funcional de Representaciones: el adaptador geométrico en Stiefel St(d_out, d_in) con d_out >= d_in proyecta el tensor sin pérdida de rango ni de información (evitando el colapso dimensional).
+(c) Costo Completo de Silicio (End-to-End): medir el tiempo de extremo a extremo (forward emisor + adaptación + transferencia SHM + inferencia receptora) frente a la línea base tradicional de generación de texto.
+
+3. ESTADO DE LOS ARTEFACTOS EN EL REPOSITORIO
+- Código C++/Rust/CUDA: https://github.com/AGT1973/POLYDIM_CLA_V9 (Rama V900).
+- Adaptadores de Stiefel: https://huggingface.co/polydim-cla/polydim-stiefel-manifold-adapters.
+- Suite de Falsación A vs. B vs. C: BENCHMARK_KITS/benchmark_falsation_abc_real.py.
+- Auditoría Técnica de Límites: BENCHMARK_KITS/AUDITORIA_ABC_V900.txt.
+- Contraejemplo de Pérdida Dimensional (1024->896): BENCHMARK_KITS/contraejemplo_proyeccion_1024_896.py.

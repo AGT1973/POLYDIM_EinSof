@@ -1,0 +1,74 @@
+POLYDIM-EINSOF / V900 — AUDITORÍA TÉCNICO-CIENTÍFICA DEL BENCHMARK A/B/C
+Fecha: 18-10-2026
+Alcance: revisión del código público en el commit 43285c8c986e090354d185c4ccf23ebcdda0b233.
+Referencia: https://github.com/AGT1973/POLYDIM_CLA_V9/commit/43285c8c986e090354d185c4ccf23ebcdda0b233
+Código: BENCHMARK_KITS/benchmark_falsation_abc.py
+Dossier: DOCUMENTOS_MAESTROS/DOSSIER_TEORICO_POLYDIM_TEOREMAS_CANONICOS.md
+
+DICTAMEN
+El ensayo confirma que hay una implementación de proyecciones lineales y semiortogonales, y que las matrices Stiefel pueden preservar ciertas normas y productos internos bajo las condiciones correctas. El benchmark actual NO demuestra todavía (a) exactitud en problemas reales, (b) aceleración extremo a extremo de modelos, (c) comunicación entre agentes mediante PMTP o (d) superioridad semántica medida. Las cifras de exactitud se generan mediante fórmulas predefinidas y la latencia de A es sintética. Por tanto, el Exit Code 0 del script prueba que se ejecutó sin fallar, no que su hipótesis cognitiva haya sido falsada o demostrada.
+
+HALLAZGOS CONCRETOS (FUENTE: benchmark_falsation_abc.py, commit 43285c8)
+
+ABC-01 — CRÍTICO — Exactitud C asignada por fórmula, no medida.
+Línea lógica: accuracy_c = max(0.85, 1.0 - (hops * 0.005))
+El 99 %, 98 %, 96 % y 92 % sale exclusivamente del número de saltos (hops 2,4,8,16). No se resuelven tareas ni se cotejan respuestas con un oráculo. No presentar esos porcentajes como fidelidad semántica experimental.
+
+ABC-02 — CRÍTICO — Exactitud A y B también sintética.
+A: accuracy_a = max(0.40, 1.0 - (hops * 0.035))
+B: accuracy_b = max(0.10, 1.0 - (hops * 0.08) - (drift_b * 0.05))
+La degradación semántica de B está impuesta por el diseño del score, no demostrada con respuestas de modelos.
+
+ABC-03 — CRÍTICO — Latencia A no medida.
+A: time_a_ms = (hops * avg_tokens_per_thought) * ms_per_token
+Con avg_tokens_per_thought=64 y ms_per_token=2.2 en CPU, 16 saltos dan 2252.8 ms por fórmula. El script no carga un tokenizer, no ejecuta un modelo generador y no mide una transmisión JSON real. No se puede calificar A/C como aceleración extremo a extremo observada.
+
+ABC-04 — CRÍTICO — C no implementa el transporte PMTP en este script.
+No hay apertura/mapeo de SHM, envío de descriptor, escritor/lector, CAS/lease, ni receptor independiente. La medición C toma el tiempo de multiplicaciones matmul y normalización en el mismo proceso. La denominación "Stiefel_PMTP" no significa que PMTP esté incluido en esa medición.
+
+ABC-05 — CRÍTICO — C no es isometría de R^1024 a R^896.
+El harness crea StiefelQREmbedder(d_canonical=1024, d_model=896): U tiene forma 896 x 1024. Sus filas pueden ser ortonormales (U U^T=I_896), pero U^T U != I_1024 y el rango de U es como máximo 896. No existe inmersión isométrica lineal de R^1024 en R^896. inverse_project(y)=y U es una proyección, no una inversa general. Un núcleo de dimensión >=128 pierde información. Para entrada isotrópica, el promedio de energía descartada por la primera proyección es (1024-896)/1024 = 12.5 %, aun cuando el error UU^T-I sea exactamente cero.
+Contraejemplo: U=[I_896|0_896x128] y x=e_1024. Ux=0 y U^T Ux=0, aunque ||x||=1. El error de ortogonalidad de filas es cero, pero el error de reconstrucción es uno.
+
+ABC-06 — ALTO — El indicador "deriva" no mide la misma magnitud en B y C.
+B: drift_b = abs(||curr_b||-1); C: drift_c = get_ortho_error() = max(|UU^T-I|) para salida más corta. La comparación mezcla degradación de una muestra con ortogonalidad de pesos. Además C normaliza cada paso, ocultando cambios de norma: una norma unitaria a posteriori no garantiza información preservada.
+
+ABC-07 — ALTO — El control B es estructuralmente desfavorable.
+B usa nn.Linear inicializada aleatoriamente sin calibración/training, y usa el traspuesto de sus pesos como si fuera inversa. C usa una matriz construida ortogonalmente. El experimento compara en buena medida una matriz aleatoria sin normalizar contra otra diseñada para conservar normas. Debe incorporarse un control de proyección plano calibrado, semiórtogonal y/o reconstrucción con pseudoinversa, junto a un modelo entrenado de igual capacidad y presupuesto.
+
+ABC-08 — ALTO — Costos de inicialización fuera de la ventana cronometrada.
+QR se realiza en el constructor de StiefelQREmbedder fuera del tiempo de C. En un despliegue real se puede excluir de latencia por petición si el adaptador es reutilizable, pero hay que especificarlo y medir también tiempos fríos y calientes, así como sincronizaciones y conversiones.
+
+ABC-09 — ALTO — Si se ejecuta sobre CUDA, las ventanas de tiempo no sincronizan GPU.
+El cronómetro alrededor de kernels PyTorch asincrónicos sin torch.cuda.synchronize() no equivale a tiempo de ejecución GPU completo. Deben utilizarse CUDA events y/o sincronizar antes y después del tramo medido. La línea B calcula .item() tras haber cerrado su cronómetro.
+
+ABC-10 — ALTO — No hay datos del comportamiento de un modelo cognitivo.
+No se cargan Qwen, DeepSeek, Llama, Gemma ni otros pesos; no hay tareas, prompts, respuestas, validadores, tasas de aprobación, funciones ejecutadas o agentes independientes. El nombre "exactitud" induce a una conclusión no sustentada por esta suite.
+
+ABC-11 — ALTO — Hay una gran discrepancia de warmup.
+C a 2 saltos = 67.15 ms; a 4 saltos = 3.08 ms. Se necesitan warmups, repeticiones suficientes, alternancia aleatoria de tratamientos, mediana/p95, intervalos de confianza y hardware/threads fijados. Una primera ejecución puede incluir inicialización de backend.
+
+ABC-12 — ALTO — El dossier tiene dos riesgos formales que deben revisarse.
+T-DPI02 define alpha(Q)=sup d_edit(Q(u),Q(v))/d_St(u,v). Para cualquier cuantizador no constante sobre una variedad conexa y un codominio discreto con separación positiva, una frontera de cuantización permite pares arbitrariamente próximos con distinto código; esta razón puede ser no acotada. La cota finita propuesta no representa correctamente ese supremo.
+T-PMTP: heartbeat monotónico + expiración a >500 microsegundos no distingue por sí solo un escritor muerto de uno vivo pausado por el planificador. El watchdog podría revocar un lease válido. El wrap-around de 31 bits a 100k actualizaciones por segundo ocurre en ~5.965 horas, por lo que una época finita, sin más mecanismos, no elimina ABA indefinidamente.
+
+CÁLCULO DE SPEEDUP A/C SEGÚN LA TABLA SUMINISTRADA
+2 saltos: 281.60/67.15 = 4.19x.
+4 saltos: 563.20/3.08 = 182.86x.
+8 saltos: 1126.40/8.04 = 140.10x.
+16 saltos: 2252.80/14.47 = 155.69x.
+Estas razones combinan latencia A modelada con latencia C medida en PyTorch; son índices experimentales de un prototipo, NO medidas homologables de inferencia end-to-end. El máximo y la media de 5000x reportados anteriormente pertenecen a otros protocolos y no quedan confirmados por este script.
+
+REPARACIÓN MÍNIMA DEL PROTOCOLO A/B/C
+1) Misma colección pública de tareas y mismas entradas/semillas para los tres brazos; conservar respuestas, salidas y oráculo.
+2) A: cargar un LLM real, generar y transferir mensajes con tokenización/JSON, y medir elapsed real desde entrada del emisor hasta respuesta final validada.
+3) B: establecer un protocolo latente no geométrico competitivo (calibrado y con misma capacidad/precisión); no penalizarlo por construcción.
+4) C: utilizar de verdad PMTP con SHM, escritor, lease, lector, adaptadores y LLM receptor; registrar integridad de tensores.
+5) Dimensiones: d_out>=d_in para una inmersión isométrica del espacio completo, o reconocer compresión 1024->896 y medir pérdida de información en B y C de manera homogénea.
+6) Métricas independientes: exactitud real por tarea, fidelidad de recuperación (error relativo, coseno, información útil), ortogonalidad, latencia p50/p95, memoria pico, coste de warmup, GPU sync.
+7) Abolir accuracy_* calculados por fórmulas. Deben resultar de tests ciegos y oráculos. No usar el mismo vector x sintético como sustituto de problemas matemáticos/código.
+8) Repetir >=30 corridas por condición, reportar dispersiones, y publicar logs con hashes (código/modelo/dataset).
+9) Corregir y demostrar los teoremas por separado; evitar saltar de una isometría de vectores a una garantía de equivalencia semántica sin puente teórico/empírico.
+
+CONCLUSIÓN
+Existe una hipótesis legítima y un mecanismo geométrico que vale la pena investigar. Pero la suite concreta del commit 43285c8 es una SIMULACIÓN/PROTOTIPO de los tres brazos, no una falsación cognitiva real. Reconocerlo no disminuye la investigación; impide que un revisor científico descarte sus resultados por un error de validez experimental fácilmente evitable.
