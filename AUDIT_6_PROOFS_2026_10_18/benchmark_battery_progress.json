@@ -1,0 +1,25 @@
+{
+  "status": "completed",
+  "completed_cases": 1731,
+  "total_cases": 1731,
+  "pct": 100.0,
+  "passed_count": 1731,
+  "pass_rate_pct": 100.0,
+  "total_tokens_1d_saved": 1772544,
+  "last_handover_latency_ms": 161.9721,
+  "max_stiefel_ortho_defect_fp64": 5.995204332975845e-15,
+  "max_neumaier_norm_err_fp64": 0.0,
+  "active_agents": [
+    "qwen2_5_PMTP_version_1_0",
+    "qwen2_5_PMTP_version_2_0",
+    "deepseekx_x_PMTP_version_1_0",
+    "deepseekx_x_PMTP_version_2_0",
+    "llamax_x_PMTP_version_1_0",
+    "llamax_x_PMTP_version_2_0",
+    "gemmax_x_PMTP_version_1_0",
+    "gemmax_x_PMTP_version_2_0"
+  ],
+  "transport": "PMTP_SHM_VECTOR_DIRECT_NO_MCP_1D",
+  "elapsed_sec": 352.77,
+  "timestamp": "2026-10-18 01:01:31"
+}

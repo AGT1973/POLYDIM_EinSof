@@ -1,0 +1,41 @@
+{
+  "node_metadata": {
+    "hostname": "AGY-server",
+    "os": "Linux 6.12.111+deb13-amd64",
+    "arch": "x86_64",
+    "python_version": "3.13.5",
+    "pytorch_version": "2.14.1+cpu",
+    "posix_shm_mount": "/dev/shm",
+    "total_elapsed_s": 57.465
+  },
+  "model_verified": {
+    "pytorch_model": "Qwen/Qwen2.5-0.5B",
+    "safetensors_bytes": 988097824,
+    "safetensors_sha256": "88c142557820ccad55bb59756bfcfcf891de9cc6202816bd346445188a0ed342",
+    "ollama_second_model": "llama3.2:3b",
+    "ollama_latency_ms": 15999.48,
+    "ollama_eval_count": 12,
+    "ollama_response": "The dimension of the Lie group SO(8) is"
+  },
+  "e2e_comparison_10_tasks": {
+    "condition_A_text_1d_mean_ms": 2446.454,
+    "condition_A_accuracy_pct": 30.0,
+    "condition_A_measured_tokens_total": 160,
+    "condition_C_polydim_posix_shm_mean_ms": 397.675,
+    "condition_C_accuracy_pct": 50.0,
+    "condition_C_tokens_total": 0,
+    "experimental_speedup_factor_A_over_C": 6.1519,
+    "stiefel_ortho_defect_fro": 3.3583166897027624e-14
+  },
+  "causal_ablation_aladin": {
+    "polydim_stiefel_acc_pct": 50.0,
+    "zero_channel_acc_pct": 20.0,
+    "random_gaussian_acc_pct": 10.0,
+    "permuted_vector_follows_sender_pct": 50.0
+  },
+  "posix_shm_red_team_and_oracle": {
+    "posix_bit_corruption_caught": true,
+    "posix_stale_epoch_aba_blocked": true,
+    "neumaier_abs_error_vs_100digit_decimal_oracle": 4.9986129188696144e-17
+  }
+}

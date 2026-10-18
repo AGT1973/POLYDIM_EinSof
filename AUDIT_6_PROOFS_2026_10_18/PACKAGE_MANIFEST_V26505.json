@@ -1,0 +1,38 @@
+{
+  "BENCHMARK_KITS\\run_six_decisive_proofs_v26505.py": {
+    "sha256": "682d6ec2c58c9ac0a172cd469f7473667835d96de07354bc3c42fe803a1b5bb1",
+    "bytes": 63702
+  },
+  "BENCHMARK_KITS\\benchmark_falsation_abc_real.py": {
+    "sha256": "89a621f19a68532d9dbe0788b4b371b05ef49d498dc0392e66413afeae0b5ecd",
+    "bytes": 13361
+  },
+  "AUDIT_6_PROOFS_2026_10_18\\aladin_external_reproduction_v26505.json": {
+    "sha256": "f7ea52f283ef0c75dee729281b9e231d335331b010bd79995e79c6e95cd3535d",
+    "bytes": 1415
+  },
+  "AUDIT_6_PROOFS_2026_10_18\\aladin_traces_v26505.jsonl": {
+    "sha256": "b7e73652a5896787cd336621d7785d2330437d9d31c1c2b25a06e513261adf6f",
+    "bytes": 10707
+  },
+  "AUDIT_6_PROOFS_2026_10_18\\distillation_certification_8models.json": {
+    "sha256": "c67289d1bfdebdd73625fdd5ef45ed9d3705f3e47eebc369f57af22708963afe",
+    "bytes": 10192
+  },
+  "AUDIT_6_PROOFS_2026_10_18\\theorems_corpus_1731.json": {
+    "sha256": "0e40f606fb00197837cfd6cc5770984bdbad21d0d0509e401634536f79c61e20",
+    "bytes": 768636
+  },
+  "ENTREGAS\\ENTREGA_2026_10_17_V26505\\cert_v26504\\kernel_cpp_v26503.cpp": {
+    "sha256": "263fefb3f2b5c1d160d1012d6164d556130adfdf8fe9fb3a847e32536c0f26cb",
+    "bytes": 52265
+  },
+  "ENTREGAS\\ENTREGA_2026_10_17_V26505\\cert_v26504\\kernel_rust_v26503.rs": {
+    "sha256": "93c77ab251d1360ae936463d7c49fb20f6c0eeee22e307d330f006774e5fba26",
+    "bytes": 66087
+  },
+  "ENTREGAS\\ENTREGA_2026_10_17_V26505\\cert_v26504\\polydim_v26503_ffi.dart": {
+    "sha256": "51439f6ba5ce31c17f6bff158e5a26906927a8335ff4cdf80b0f5c41dfd19e9d",
+    "bytes": 45779
+  }
+}
