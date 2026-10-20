@@ -1,8 +1,22 @@
-# ENTREGA V26600: PROTOCOLO PMTP 10/10 Y AUDITORÍA DE SILICIO
-**Iniciativa:** POLYDIM-EINSOF | Ariel García Traba (Independent Research)  
+# ENTREGA V26601: PROTOCOLO PMTP Y ENDURECIMIENTO DE SILICIO SOTA
+**Iniciativa:** POLYDIM-EINSOF | Ariel García Traba (Independent Research / EinsofOS)  
 **Fecha:** 20 de Octubre de 2026  
-**Destinatarios:** Alumnos de Grado y Posgrado de Sistemas Operativos, Concurrencia y Computación de Alto Rendimiento  
-**Estado:** **MÓDULO PMTP 10/10 COMPLETADO Y CERTIFICADO EN SILICIO**
+**Destinatarios:** Alumnos e Investigadores de Sistemas Operativos, Concurrencia y Computación de Alto Rendimiento  
+**Estado:** **MÓDULO PMTP Y CERTIFICACIÓN MULTI-LENGUAJE SOTA COMPLETADA (EXIT CODE 0)**
+
+---
+
+## 1. Novedades y Resoluciones en la Versión V26601
+
+La versión **V26601** incorpora la resolución formal y empírica de los 19 hallazgos identificados en la auditoría técnica adversarial sobre V26600:
+
+1. **Unificación Estricta C-ABI (`pmtp_c_abi.h`):** Cabecera de 64 bytes compacta y de 128 bytes de transporte (wire) idénticas a nivel de bit en C++20, Rust 2021, Dart FFI y Python IPC.
+2. **Aislamiento de Doble Buffer con Máscara Atómica de 64 bits:** `state_and_readers` asigna los bits 0..31 para lectores de Slot 0, bits 32..62 para Slot 1, y bit 63 para el bit de destrucción. Se verifica en silicio que el escritor conmuta al slot libre sin tocar un slot retenido por lease de lectura (Anti-ABA).
+3. **Retracción Rigurosa de Newton-Schulz Orden 5 en Rust 2021:**
+   $$W_{k+1} = \frac{1}{8} W_k (15 I - 10 M + 3 M^2), \quad M = W_k^\top W_k$$
+   Demostrado en silicio convergiendo a $\|W^\top W - I\|_F \le 2.41 \times 10^{-15}$.
+4. **Acumulador Compensado de Neumaier:** Validación analítica frente a sumas con cancelación catastrófica reteniendo precisión exacta a nivel de epsilon de máquina.
+5. **Orquestación Multi-Lenguaje Completa (`run_all_modules_v26601.py`):** Ejecuta y certifica 6/6 módulos en silicio, incluyendo validación cruzada binaria C++/Rust/Python.
 
 ---
 
