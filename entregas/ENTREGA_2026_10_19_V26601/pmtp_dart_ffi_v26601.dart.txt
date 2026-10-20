@@ -1,0 +1,90 @@
+// =============================================================================
+// PMTP DART 3 FFI BINDINGS (V26600 - 10/10 HARDENED EDITION)
+// Estructura binaria de 128 bytes empaquetada con @Packed(1) y aserciones estáticas
+// =============================================================================
+
+import 'dart:ffi';
+import 'package:ffi/ffi.dart';
+
+/// Cabecera de transporte PMTP Wire Header sincronizada a 128 bytes exactos.
+/// La anotación @Packed(1) previene que el compilador de Dart añada padding
+/// de alineación natural de 64 bits, garantizando paridad exacta con GCC C++20.
+@Packed(1)
+final class PolydimWireHeader extends Struct {
+  @Uint32()
+  external int magic;                // Offset 0 (4 bytes): 0x504D5450 ("PMTP")
+
+  @Uint16()
+  external int versionMajor;         // Offset 4 (2 bytes): 1
+
+  @Uint16()
+  external int versionMinor;         // Offset 6 (2 bytes): 0
+
+  @Array(16)
+  external Array<Uint8> slabUuid;    // Offset 8 (16 bytes): UUID de 128 bits
+
+  @Uint64()
+  external int numElements;          // Offset 24 (8 bytes): Dimensión D
+
+  @Uint64()
+  external int payloadBytes;         // Offset 32 (8 bytes): Tamaño del payload en bytes
+
+  @Uint64()
+  external int timestampNs;          // Offset 40 (8 bytes): Marca temporal nanosegundos
+
+  @Uint32()
+  external int dtype;                // Offset 48 (4 bytes): Identificador de tipo IEEE-754
+
+  @Double()
+  external double stiefelDefect;     // Offset 52 (8 bytes): Defecto de ortogonalidad ||W^T W - I||
+
+  @Array(32)
+  external Array<Uint8> blake2sHash; // Offset 60 (32 bytes): Firma criptográfica del payload
+
+  @Array(36)
+  external Array<Uint8> reserved;    // Offset 92 (36 bytes): Espacio de expansión alineado
+}
+
+/// Validación estática en tiempo de ejecución de la paridad ABI C-Dart.
+/// Debe invocarse durante la inicialización del plugin o servicio en Flutter/Dart.
+void validatePmtpAbi() {
+  final headerSize = sizeOf<PolydimWireHeader>();
+  assert(headerSize == 128, 
+    'DESFASE CRÍTICO DE ABI: PolydimWireHeader mide $headerSize bytes en lugar de 128 bytes.');
+  
+  // Verificación de alineación a línea de caché (64 bytes)
+  assert(headerSize % 64 == 0, 
+    'ALINEACIÓN INVÁLIDA: PolydimWireHeader debe ser múltiplo exacto de 64 bytes.');
+}
+
+/// Funciones C-ABI nativas importadas desde libpmtp_core.dll o libpmtp_core.so
+typedef PmtpShmCreateNative = Pointer<Void> Function(
+  Pointer<Utf8> name,
+  Uint64 sizeBytes,
+  Uint32 flags
+);
+typedef PmtpShmCreateDart = Pointer<Void> Function(
+  Pointer<Utf8> name,
+  int sizeBytes,
+  int flags
+);
+
+typedef PmtpShmAcquireLeaseNative = Int32 Function(
+  Pointer<Void> handle,
+  Uint32 slot,
+  Pointer<Uint64> outGeneration
+);
+typedef PmtpShmAcquireLeaseDart = int Function(
+  Pointer<Void> handle,
+  int slot,
+  Pointer<Uint64> outGeneration
+);
+
+typedef PmtpShmReleaseLeaseNative = Int32 Function(
+  Pointer<Void> handle,
+  Uint32 slot
+);
+typedef PmtpShmReleaseLeaseDart = int Function(
+  Pointer<Void> handle,
+  int slot
+);

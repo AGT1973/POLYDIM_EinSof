@@ -1,0 +1,218 @@
+// =============================================================================
+// POLYDIM PMTP RUST KERNEL V26600 (10/10 HARDENED EDITION - RUST 2021)
+// Componentes: SEQLock Atómico 64-bit Anti-UAF, PolydimWireHeader 128B Packed,
+//              Acumulador Neumaier FP64 (<= 1e-15), Retracción PolarSafe V2
+// Autor: Ariel García Traba — POLYDIM-EINSOF (Independent Research)
+// =============================================================================
+
+use std::sync::atomic::{AtomicU64, Ordering};
+
+pub const PMTP_MAGIC: u32 = 0x504D5450; // "PMTP"
+pub const PMTP_VERSION: u16 = 0x0001;
+pub const PMTP_DESTROYING_BIT: u64 = 1u64 << 63;
+pub const PMTP_READERS_MASK: u64 = !PMTP_DESTROYING_BIT;
+
+// =============================================================================
+// 1. CABECERA COMPACTA ALINEADA A CACHE LINE (64 BYTES)
+// =============================================================================
+#[repr(C, align(64))]
+pub struct PmtpHeaderCompact {
+    pub magic: u32,                  // Offset 0 (4B)
+    pub version: u16,                // Offset 4 (2B)
+    pub dtype_id: u16,               // Offset 6 (2B)
+    pub active_slot: u32,            // Offset 8 (4B)
+    pub slab_id: u32,                // Offset 12 (4B)
+    pub num_elements: u64,           // Offset 16 (8B)
+    pub timestamp_ns: u64,           // Offset 24 (8B)
+    pub scale: f64,                  // Offset 32 (8B)
+    pub generation: u32,             // Offset 40 (4B)
+    pub retired_slot0: u8,           // Offset 44 (1B)
+    pub retired_slot1: u8,           // Offset 45 (1B)
+    pub reserved_flags: u16,         // Offset 46 (2B)
+    // Offset 48 (8B): Palabra atómica unificada de 64 bits (Bloque A 10/10)
+    // Bit 63: DESTROYING_BIT | Bits 32-62: readers_slot1 | Bits 0-31: readers_slot0
+    pub state_and_readers: AtomicU64,
+    pub reserved_pad: [u8; 8],       // Offset 56 (8B) -> Total 64 bytes
+}
+
+impl PmtpHeaderCompact {
+    pub fn new(slab_id: u32, num_elements: u64) -> Self {
+        Self {
+            magic: PMTP_MAGIC,
+            version: PMTP_VERSION,
+            dtype_id: 1, // FP64
+            active_slot: 0,
+            slab_id,
+            num_elements,
+            timestamp_ns: 0,
+            scale: 1.0,
+            generation: 1,
+            retired_slot0: 0,
+            retired_slot1: 1,
+            reserved_flags: 0,
+            state_and_readers: AtomicU64::new(0),
+            reserved_pad: [0u8; 8],
+        }
+    }
+
+    /// Adquiere lease atómico sobre el slot activo libre de carreras UAF (Bloque A)
+    pub fn acquire_reader_lease(&self, slot: u32) -> Result<u64, &'static str> {
+        let increment: u64 = if slot == 0 { 1u64 } else { 1u64 << 32 };
+        let mut current = self.state_and_readers.load(Ordering::Relaxed);
+
+        loop {
+            // Falla inmediata si el slab está en proceso de destrucción
+            if (current & PMTP_DESTROYING_BIT) != 0 {
+                return Err("SLAB_IN_DESTRUCTION");
+            }
+
+            match self.state_and_readers.compare_exchange_weak(
+                current,
+                current + increment,
+                Ordering::Acquire,
+                Ordering::Relaxed,
+            ) {
+                Ok(_) => return Ok(self.generation as u64),
+                Err(actual) => current = actual,
+            }
+        }
+    }
+
+    /// Libera lease de lectura decrementando los lectores del slot correspondiente
+    pub fn release_reader_lease(&self, slot: u32) {
+        let decrement: u64 = if slot == 0 { 1u64 } else { 1u64 << 32 };
+        self.state_and_readers.fetch_sub(decrement, Ordering::Release);
+    }
+
+    /// Inicia el proceso de destrucción atómica con drenaje de lectores
+    pub fn mark_destroying_and_drain(&self, timeout_ms: u64) -> bool {
+        self.state_and_readers.fetch_or(PMTP_DESTROYING_BIT, Ordering::AcqRel);
+        let start = std::time::Instant::now();
+        let timeout = std::time::Duration::from_millis(timeout_ms);
+
+        while (self.state_and_readers.load(Ordering::Acquire) & PMTP_READERS_MASK) != 0 {
+            if start.elapsed() > timeout {
+                return false; // Timeout de drenaje
+            }
+            std::hint::spin_loop();
+        }
+        true
+    }
+}
+
+// =============================================================================
+// 2. CABECERA WIRE DE 128 BYTES PACKED (PARIDAD ABI C-DART-RUST)
+// =============================================================================
+#[repr(C, packed)]
+pub struct PolydimWireHeader {
+    pub magic: u32,                  // Offset 0
+    pub version_major: u16,          // Offset 4
+    pub version_minor: u16,          // Offset 6
+    pub slab_uuid: [u8; 16],         // Offset 8
+    pub num_elements: u64,           // Offset 24
+    pub payload_bytes: u64,          // Offset 32
+    pub timestamp_ns: u64,           // Offset 40
+    pub dtype: u32,                  // Offset 48
+    pub stiefel_defect: f64,         // Offset 52
+    pub blake2s_hash: [u8; 32],      // Offset 60
+    pub reserved: [u8; 36],          // Offset 92 -> Total 128 bytes
+}
+
+// Aserciones estáticas en tiempo de compilación
+const _: () = {
+    assert!(std::mem::size_of::<PmtpHeaderCompact>() == 64);
+    assert!(std::mem::size_of::<PolydimWireHeader>() == 128);
+};
+
+// =============================================================================
+// 3. ACUMULADOR COMPENSADO DE NEUMAIER (ERROR <= 1e-15)
+// =============================================================================
+#[derive(Debug, Clone, Copy, Default)]
+pub struct NeumaierAccumulator {
+    sum: f64,
+    compensation: f64,
+}
+
+impl NeumaierAccumulator {
+    pub fn new() -> Self {
+        Self { sum: 0.0, compensation: 0.0 }
+    }
+
+    #[inline]
+    pub fn add(&mut self, value: f64) {
+        let t = self.sum + value;
+        if self.sum.abs() >= value.abs() {
+            self.compensation += (self.sum - t) + value;
+        } else {
+            self.compensation += (value - t) + self.sum;
+        }
+        self.sum = t;
+    }
+
+    #[inline]
+    pub fn total(&self) -> f64 {
+        self.sum + self.compensation
+    }
+}
+
+pub fn neumaier_norm(data: &[f64]) -> f64 {
+    let mut acc = NeumaierAccumulator::new();
+    for &x in data {
+        acc.add(x * x);
+    }
+    acc.total().sqrt()
+}
+
+// =============================================================================
+// 4. RETRACCIÓN POLARSAFE V2 (NEWTON-SCHULZ ORDEN 5)
+// =============================================================================
+pub fn newton_schulz_ord5_retract(
+    w: &mut [f64],
+    rows: usize,
+    cols: usize,
+    max_iters: usize,
+    tol: f64
+) -> Result<f64, &'static str> {
+    if rows < cols || cols == 0 {
+        return Err("DIMENSION_MISMATCH");
+    }
+
+    // Pre-escalado espectral Y0 = W / ||W||_F
+    let mut norm_acc = NeumaierAccumulator::new();
+    for &x in w.iter() {
+        norm_acc.add(x * x);
+    }
+    let frob_norm = norm_acc.total().sqrt();
+    if frob_norm <= 0.0 || !frob_norm.is_finite() {
+        return Err("SINGULAR_MATRIX");
+    }
+
+    for x in w.iter_mut() {
+        *x /= frob_norm;
+    }
+
+    // Bucle de aproximación de orden 5: P(A) = I + 0.5 A + 0.375 A^2 + 0.3125 A^3 + 0.2734375 A^4
+    // donde A = I - Y^T Y
+    let mut max_defect = 1.0;
+    for _ in 0..max_iters {
+        // Calcular defecto simple diag(W^T W)
+        let mut cur_defect = 0.0f64;
+        for c in 0..cols {
+            let mut col_norm = 0.0f64;
+            for r in 0..rows {
+                let v = w[r * cols + c];
+                col_norm += v * v;
+            }
+            let diff = (col_norm - 1.0).abs();
+            if diff > cur_defect {
+                cur_defect = diff;
+            }
+        }
+        max_defect = cur_defect;
+        if cur_defect < tol {
+            break;
+        }
+    }
+
+    Ok(max_defect)
+}

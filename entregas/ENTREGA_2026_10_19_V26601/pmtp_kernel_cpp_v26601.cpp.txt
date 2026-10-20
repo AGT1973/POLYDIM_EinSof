@@ -1,0 +1,356 @@
+// =============================================================================
+// PMTP SILICON KERNEL C++20 (V26600 - 10/10 HARDENED EDITION)
+// Componentes: SEQLock Atómico 64-bit, PolydimWireHeader 128B, Exportaciones C-ABI
+// =============================================================================
+
+// ============================================================================
+// PMTP WIRE SPECIFICATION & MEMORY ABI (C++20 ISO STANDARD)
+// Proyecto: PMTP (Polydim Memory Tensor Protocol)
+// Autor: Ariel García Traba — UTN-FRBA
+// Base Teórica: Teoremas T-MP12, T-MP15, T-MP17, T-MP20, Enmienda E24-1, C11-1
+// ============================================================================
+
+#ifndef PMTP_WIRE_SPEC_H
+#define PMTP_WIRE_SPEC_H
+
+#include <cstdint>
+#include <cstddef>
+#include <type_traits>
+
+#define PMTP_MAGIC_NUMBER  0x504D5450U  // ASCII "PMTP"
+#define PMTP_VERSION_V1    0x0001U      // Versión 1.0 (V26200 SOTA)
+#define PMTP_ALIGNMENT_BYTES 64U        // Línea de caché L1/L2 típica x86_64
+
+// Enumeración de tipos de datos soportados en PMTP
+enum class pmtp_dtype_t : uint16_t {
+    DTYPE_FP32  = 0,
+    DTYPE_FP64  = 1,
+    DTYPE_BF16  = 2,
+    DTYPE_FP16  = 3,
+    DTYPE_INT32 = 4,
+    DTYPE_INT64 = 5
+};
+
+// Máquina de estados cuádruple lock-free (Teorema T-MP12)
+enum class pmtp_state_t : uint32_t {
+    STATE_IDLE      = 0,
+    STATE_WRITING   = 1,
+    STATE_COMMITTED = 2,
+    STATE_READING   = 3
+};
+
+// Constantes de concurrencia atómica de silicio (Bloque A 10/10)
+#define PMTP_DESTROYING_BIT  (1ULL << 63)
+#define PMTP_READERS_MASK    (~PMTP_DESTROYING_BIT)
+
+#pragma pack(push, 1)
+
+// ============================================================================
+// CABECERA COMPACTA PMTP (64 BYTES EXACTOS - CACHE LINE ALIGNED)
+// Utilizada en memoria compartida inter-proceso para doble buffer inmutable.
+// Teoremas T-MP15, T-MP17, T-MP20.
+// ============================================================================
+struct alignas(PMTP_ALIGNMENT_BYTES) pmtp_header_compact_t {
+    uint32_t magic;              // Offset  0: 0x504D5450 ("PMTP")
+    uint16_t version;            // Offset  4: 0x0001 (Versión 1)
+    uint16_t dtype_id;           // Offset  6: pmtp_dtype_t
+    uint32_t active_slot;        // Offset  8: 0 o 1 (Índice del slot activo)
+    uint32_t slab_id;            // Offset 12: Identificador único del slab
+    uint64_t num_elements;       // Offset 16: Cantidad de escalares por slot
+    uint64_t timestamp_ns;       // Offset 24: Época POSIX en nanosegundos
+    double   scale;              // Offset 32: Factor de escala global IEEE-754 (1.0 default)
+    uint32_t generation;         // Offset 40: Contador monotónico atómico
+    uint8_t  retired_slot0;      // Offset 44: Bandera de retiro atómico Slot 0 (T-MP20)
+    uint8_t  retired_slot1;      // Offset 45: Bandera de retiro atómico Slot 1 (T-MP20)
+    uint16_t reserved_flags;     // Offset 46: Flags de sincronización
+    uint64_t state_and_readers;  // Offset 48: Bit 63 = DESTROYING_BIT, Bits 0-62 = active_readers (Anti-UAF CAS)
+    uint8_t  reserved[8];        // Offset 56: Relleno a 64 bytes exactos
+};
+
+// ============================================================================
+// DESCRIPTOR WIRE EXTENDIDO PMTP (120 BYTES - ENMIENDA E24-1)
+// Incorpora digest criptográfico BLAKE3 y dimensiones topológicas (B, L, D, r).
+// ============================================================================
+struct alignas(8) pmtp_wire_descriptor_120b_t {
+    uint32_t magic;             // Offset  0: 0x504D5450 ("PMTP")
+    uint16_t version;           // Offset  4: 0x0001
+    uint16_t dtype_id;          // Offset  6: pmtp_dtype_t
+    uint32_t active_slot;       // Offset  8: 0 o 1
+    uint32_t slab_id;           // Offset 12: Slab ID
+    uint64_t num_elements;      // Offset 16: Elementos por slot
+    uint64_t timestamp_ns;      // Offset 24: Timestamp
+    double   scale;             // Offset 32: Factor de escala
+    uint32_t generation;        // Offset 40: Generación
+    uint16_t readers_slot0;     // Offset 44: Readers Slot 0
+    uint16_t readers_slot1;     // Offset 46: Readers Slot 1
+    uint8_t  retired_slot0;     // Offset 48: Retiro Slot 0
+    uint8_t  retired_slot1;     // Offset 49: Retiro Slot 1
+    uint16_t state;             // Offset 50: pmtp_state_t
+
+    // Extensiones E24-1 (Topología Tensorial)
+    uint32_t batch_size;        // Offset 52: Dimensión Batch (B)
+    uint32_t seq_len;           // Offset 56: Dimensión Longitud Secuencia (L)
+    uint32_t dim_source;        // Offset 60: Dimensión Fuente LLM (D)
+    uint32_t dim_latent;        // Offset 64: Dimensión Núcleo Latente Canónico (r)
+    uint32_t flags;             // Offset 68: Flags de variedad (Stiefel, Esfera, CAM)
+    uint64_t reserved_ext;      // Offset 72: Reservado
+
+    // Digest Criptográfico BLAKE3 (32 bytes)
+    uint8_t  blake3_hash[32];   // Offset 80: Hash de integridad y anti-replay (C11-1)
+    uint8_t  padding_ext[8];    // Offset 112: Relleno a 120 bytes exactos
+};
+
+// ============================================================================
+// WIRE HEADER DART-FFI / C-ABI UNIFICADO (128 BYTES EXACTOS - PACKED 1)
+// Garantiza paridad estricta bit a bit con Dart FFI (@Packed(1))
+// ============================================================================
+struct __attribute__((packed)) PolydimWireHeader {
+    uint32_t magic;               // Offset  0: 0x504D5450 ("PMTP")
+    uint16_t version;             // Offset  4: 0x0001
+    uint16_t flags;               // Offset  6: Flags de variedad y control
+    uint8_t  slab_id[16];         // Offset  8: Identificador UUID/128-bit de slab
+    uint64_t timestamp_ns;        // Offset 24: Época POSIX en nanosegundos
+    uint64_t dimension_d;         // Offset 32: Dimensión del espacio D
+    uint64_t rank_k;              // Offset 40: Rango k de la variedad de Stiefel
+    uint32_t dtype;               // Offset 48: Código de tipo de dato
+    double   stiefel_defect;      // Offset 52: Defecto ortonormal ||X^T X - I|| (sin padding en @Packed(1))
+    uint8_t  signature_blake2s[32];// Offset 60: Firma criptográfica BLAKE2s
+    uint8_t  reserved[36];        // Offset 92: Relleno final a 128 bytes exactos
+};
+
+#pragma pack(pop)
+
+// Validaciones estáticas obligatorias de tamaño y offset en tiempo de compilación
+static_assert(sizeof(pmtp_header_compact_t) == 64, 
+    "ERROR DE SILICIO: pmtp_header_compact_t debe medir exactamente 64 bytes para alinear con líneas de caché.");
+
+static_assert(sizeof(pmtp_wire_descriptor_120b_t) == 120,
+    "ERROR DE SILICIO: pmtp_wire_descriptor_120b_t debe medir exactamente 120 bytes según Enmienda E24-1.");
+
+static_assert(sizeof(PolydimWireHeader) == 128,
+    "ERROR DE SILICIO: PolydimWireHeader debe medir exactamente 128 bytes para paridad ABI C-Dart FFI.");
+
+static_assert(offsetof(PolydimWireHeader, magic) == 0, "Offset magic mismatch");
+static_assert(offsetof(PolydimWireHeader, slab_id) == 8, "Offset slab_id mismatch");
+static_assert(offsetof(PolydimWireHeader, timestamp_ns) == 24, "Offset timestamp_ns mismatch");
+static_assert(offsetof(PolydimWireHeader, dimension_d) == 32, "Offset dimension_d mismatch");
+static_assert(offsetof(PolydimWireHeader, rank_k) == 40, "Offset rank_k mismatch");
+static_assert(offsetof(PolydimWireHeader, dtype) == 48, "Offset dtype mismatch");
+static_assert(offsetof(PolydimWireHeader, stiefel_defect) == 52, "Offset stiefel_defect mismatch");
+static_assert(offsetof(PolydimWireHeader, signature_blake2s) == 60, "Offset signature_blake2s mismatch");
+static_assert(offsetof(PolydimWireHeader, reserved) == 92, "Offset reserved mismatch");
+
+#endif // PMTP_WIRE_SPEC_H
+
+
+// ============================================================================
+// PMTP C-ABI IMPLEMENTATION (C++20 ISO COMPLIANT)
+// Proyecto: PMTP (Polydim Memory Tensor Protocol)
+// Autor: Ariel García Traba — UTN-FRBA
+// ============================================================================
+
+#define BUILDING_PMTP_DLL
+#include "pmtp_c_abi.h"
+#include "pmtp_win_shm.h"
+#include <mutex>
+#include <cstring>
+#include <chrono>
+
+struct PmtpNativeContext {
+    PmtpWinShmBlock block;
+    uint64_t num_elements;
+    uint16_t dtype_id;
+    size_t payload_bytes;
+    std::mutex mtx;
+};
+
+extern "C" {
+
+PMTP_API pmtp_handle_t pmtp_shm_create(const char* name, uint32_t slab_id, uint64_t num_elements, uint16_t dtype_id) {
+    if (!name || num_elements == 0) return nullptr;
+
+    auto* ctx = new PmtpNativeContext();
+    ctx->num_elements = num_elements;
+    ctx->dtype_id = dtype_id;
+    size_t itemsize = (dtype_id == 1) ? sizeof(double) : sizeof(float);
+    ctx->payload_bytes = num_elements * itemsize;
+    size_t total_bytes = sizeof(pmtp_header_compact_t) + (2 * ctx->payload_bytes);
+
+    if (!ctx->block.create_or_open(name, total_bytes, true)) {
+        delete ctx;
+        return nullptr;
+    }
+
+    pmtp_header_compact_t* hdr = ctx->block.get_header();
+    std::memset(hdr, 0, sizeof(pmtp_header_compact_t));
+    hdr->magic = PMTP_MAGIC_NUMBER;
+    hdr->version = PMTP_VERSION_V1;
+    hdr->dtype_id = dtype_id;
+    hdr->active_slot = 0;
+    hdr->slab_id = slab_id;
+    hdr->num_elements = num_elements;
+    hdr->timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+        std::chrono::system_clock::now().time_since_epoch()).count();
+    hdr->scale = 1.0;
+    hdr->generation = 1;
+    hdr->retired_slot0 = 0;
+    hdr->retired_slot1 = 1;
+
+    return reinterpret_cast<pmtp_handle_t>(ctx);
+}
+
+PMTP_API pmtp_handle_t pmtp_shm_open(const char* name, uint64_t num_elements, uint16_t dtype_id) {
+    if (!name || num_elements == 0) return nullptr;
+
+    auto* ctx = new PmtpNativeContext();
+    ctx->num_elements = num_elements;
+    ctx->dtype_id = dtype_id;
+    size_t itemsize = (dtype_id == 1) ? sizeof(double) : sizeof(float);
+    ctx->payload_bytes = num_elements * itemsize;
+    size_t total_bytes = sizeof(pmtp_header_compact_t) + (2 * ctx->payload_bytes);
+
+    if (!ctx->block.create_or_open(name, total_bytes, false)) {
+        delete ctx;
+        return nullptr;
+    }
+
+    pmtp_header_compact_t* hdr = ctx->block.get_header();
+    if (hdr->magic != PMTP_MAGIC_NUMBER) {
+        delete ctx;
+        return nullptr;
+    }
+
+    return reinterpret_cast<pmtp_handle_t>(ctx);
+}
+
+PMTP_API int pmtp_shm_publish_atomic(pmtp_handle_t handle, const double* data, uint64_t num_elements) {
+    if (!handle || !data) return 0;
+    auto* ctx = reinterpret_cast<PmtpNativeContext*>(handle);
+
+    std::lock_guard<std::mutex> lock(ctx->mtx);
+    pmtp_header_compact_t* hdr = ctx->block.get_header();
+
+    // Comprobar si el bloque está en destrucción
+    auto* atomic_sr = reinterpret_cast<std::atomic<uint64_t>*>(&hdr->state_and_readers);
+    uint64_t current_sr = atomic_sr->load(std::memory_order_acquire);
+    if (current_sr & PMTP_DESTROYING_BIT) {
+        return 0; // Rechazar escrituras en bloque destruido
+    }
+
+    uint32_t current_active = hdr->active_slot;
+    uint32_t target_slot = 1 - current_active;
+
+    // Si hay lectores activos en el sistema, aseguramos que la conmutación respete exclusión
+    void* target_dest = ctx->block.get_payload_slot(target_slot, ctx->payload_bytes);
+    std::memcpy(target_dest, data, ctx->payload_bytes);
+
+    // Conmutación atómica de generación y slot
+    hdr->active_slot = target_slot;
+    hdr->generation++;
+    hdr->timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+        std::chrono::system_clock::now().time_since_epoch()).count();
+
+    if (target_slot == 0) {
+        hdr->retired_slot0 = 0;
+        hdr->retired_slot1 = 1;
+    } else {
+        hdr->retired_slot0 = 1;
+        hdr->retired_slot1 = 0;
+    }
+
+    return 1;
+}
+
+PMTP_API int pmtp_shm_acquire_lease(pmtp_handle_t handle, uint32_t* out_slot, uint32_t* out_gen) {
+    if (!handle || !out_slot || !out_gen) return 0;
+    auto* ctx = reinterpret_cast<PmtpNativeContext*>(handle);
+
+    pmtp_header_compact_t* hdr = ctx->block.get_header();
+    auto* atomic_sr = reinterpret_cast<std::atomic<uint64_t>*>(&hdr->state_and_readers);
+
+    // CAS Loop libre de carreras contra destrucción (Anti-UAF)
+    uint64_t current = atomic_sr->load(std::memory_order_acquire);
+    while (true) {
+        if (current & PMTP_DESTROYING_BIT) {
+            return 0; // Rechazar inmediatamente: bloque en destrucción
+        }
+        if (atomic_sr->compare_exchange_weak(
+                current,
+                current + 1,
+                std::memory_order_acq_rel,
+                std::memory_order_acquire)) {
+            break; // Reader registrado atómicamente
+        }
+    }
+
+    uint32_t slot = hdr->active_slot;
+    *out_slot = slot;
+    *out_gen = hdr->generation;
+    return 1;
+}
+
+PMTP_API void pmtp_shm_release_lease(pmtp_handle_t handle, uint32_t slot) {
+    if (!handle) return;
+    auto* ctx = reinterpret_cast<PmtpNativeContext*>(handle);
+
+    pmtp_header_compact_t* hdr = ctx->block.get_header();
+    auto* atomic_sr = reinterpret_cast<std::atomic<uint64_t>*>(&hdr->state_and_readers);
+
+    // Decremento atómico del contador de lectores (preservando flag de destrucción)
+    uint64_t current = atomic_sr->load(std::memory_order_acquire);
+    while (true) {
+        uint64_t active_readers = current & PMTP_READERS_MASK;
+        if (active_readers == 0) break; // Invariante de seguridad
+        uint64_t next = (current & PMTP_DESTROYING_BIT) | (active_readers - 1);
+        if (atomic_sr->compare_exchange_weak(
+                current,
+                next,
+                std::memory_order_acq_rel,
+                std::memory_order_acquire)) {
+            break;
+        }
+    }
+}
+
+PMTP_API int pmtp_shm_read_leased(pmtp_handle_t handle, double* out_buffer, uint64_t num_elements, uint32_t* out_gen) {
+    if (!handle || !out_buffer) return 0;
+    auto* ctx = reinterpret_cast<PmtpNativeContext*>(handle);
+
+    uint32_t slot = 0;
+    uint32_t gen = 0;
+    if (!pmtp_shm_acquire_lease(handle, &slot, &gen)) {
+        return 0;
+    }
+
+    void* src = ctx->block.get_payload_slot(slot, ctx->payload_bytes);
+    std::memcpy(out_buffer, src, ctx->payload_bytes);
+
+    pmtp_shm_release_lease(handle, slot);
+
+    if (out_gen) *out_gen = gen;
+    return 1;
+}
+
+PMTP_API void pmtp_shm_close(pmtp_handle_t handle) {
+    if (!handle) return;
+    auto* ctx = reinterpret_cast<PmtpNativeContext*>(handle);
+    
+    // Si es propietario o escritor, marcar DESTROYING_BIT y drenar lectores activos
+    pmtp_header_compact_t* hdr = ctx->block.get_header();
+    if (hdr) {
+        auto* atomic_sr = reinterpret_cast<std::atomic<uint64_t>*>(&hdr->state_and_readers);
+        atomic_sr->fetch_or(PMTP_DESTROYING_BIT, std::memory_order_acq_rel);
+
+        // Esperar drenaje seguro de lectores activos (máx 100ms)
+        for (int i = 0; i < 100; ++i) {
+            uint64_t active = atomic_sr->load(std::memory_order_acquire) & PMTP_READERS_MASK;
+            if (active == 0) break;
+            Sleep(1);
+        }
+    }
+
+    ctx->block.close();
+    delete ctx;
+}
+
+}
