@@ -1,6 +1,6 @@
 {
-  "version": "V018_FASE1_CERTIFIED",
-  "timestamp": "2026-10-31T15:05:00-03:00",
+  "version": "V018_FASE1_CERTIFIED_CANONICAL_TOTAL",
+  "timestamp": "2026-10-31T15:45:00-03:00",
   "author": "Ariel Garcia Traba (Independent Research / EinsofOS)",
   "theorems_count": 1739,
   "max_theorem_id": 1954,
@@ -37,9 +37,25 @@
       "sha256": "b806d32cd62e69b1d004f5f2bacb53a0303162672428e499f786883fdc0c38a2",
       "bytes": 24493
     },
+    "teoria/DIMENSION_IS_ALL_YOU_NEED_PAPER_V1550_HARDENED.html": {
+      "sha256": "8350a3a4e633dd37874dcf67a4788154b9946b772e12cf4021c485bfd29e67f6",
+      "bytes": 75208
+    },
     "teoria/DIMENSION_IS_ALL_YOU_NEED_PAPER_V1550_HARDENED.md": {
       "sha256": "3e034c78cd05e8749a4863116730a5ce14be89106ce695ade536f2c328c1744a",
       "bytes": 74523
+    },
+    "teoria/POLYDIM_DOCTORAL_DISSERTATION_FINAL.html": {
+      "sha256": "8c313206680766e15293313bfdc3fd540cb2e78b7557e6cb4670160193401064",
+      "bytes": 71844
+    },
+    "teoria/POLYDIM_DOCTORAL_DISSERTATION_FINAL.tex": {
+      "sha256": "cec985cd21c11baa14f4fd78f281b85010fe8f6416d3ee74ee4a3df89c157c1a",
+      "bytes": 69500
+    },
+    "teoria/POLYDIM_EINSOFOS_ENTERPRISE_WHITEBOOK_V1550.html": {
+      "sha256": "503c8075efe3a4cbd3438f0ee42b5669f96e49c030f2e6eb3551fe24b0f20d2b",
+      "bytes": 43231
     },
     "teoria/POLYDIM_EINSOFOS_ENTERPRISE_WHITEBOOK_V1550.md": {
       "sha256": "018546b55074e0ddac9956ff2707061a500fb18d207027e69241502a1a34a252",
@@ -48,6 +64,10 @@
     "teoria/POLYDIM_FORMAL_AXIOMATIC_THEORY_SOTA.md": {
       "sha256": "1a00cb593d653f07719182837475f02feffb2a8161acf2bf79f2d2341096db57",
       "bytes": 195843
+    },
+    "teoria/POLYDIM_TEORIA_COMPLETA_UNIFICADA_SOTA.md": {
+      "sha256": "daadfa7ba856171f59fdb8f2ab4558a5d7d849ea603da3e479cf1e018a3974b4",
+      "bytes": 373031
     },
     "teoria/POLYDIM_V018_TECHNICAL_DEBT_ISSUE_TRACKER.md": {
       "sha256": "36567fc22d123679a1d531b2c4bc7c17302caead1b9527b5b17304ae757e95d0",
