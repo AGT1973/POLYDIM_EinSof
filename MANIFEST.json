@@ -1,30 +1,77 @@
 {
-  "version": "polydim.einsof-canonical-2026.10.31",
-  "structure": "tripartita",
-  "components": {
-    "teoria": [
-      "DIMENSION_IS_ALL_YOU_NEED_PAPER_V1550_HARDENED.md",
-      "POLYDIM_FORMAL_AXIOMATIC_THEORY_SOTA.md",
-      "POLYDIM_EINSOFOS_ENTERPRISE_WHITEBOOK_V1550.md",
-      "POLYDIM_V018_TECHNICAL_DEBT_ISSUE_TRACKER.md",
-      "DICTAMEN_GPT6_EXTERNAL_REDTEAM_R2.md"
-    ],
-    "tests": [
-      "polydim_colab_benchmark_kit.ipynb",
-      "polydim_advanced_8_tests_suite.ipynb",
-      "test_cross_cpp_rust.py"
-    ],
-    "benchmarks": [
-      "run_six_decisive_proofs_v26505.py",
-      "run_aladin_external_repro_v26505.py",
-      "EXTERNAL_BENCHMARK_REPORT_V26505.json",
-      "PILOT20_HUMANEVALPLUS_REPORT_A_B_C_D.json",
-      "prompts_100.json"
-    ]
-  },
-  "hardware_verification": {
-    "host_windows": "MSVC C++20 AVX2 / Rust 2021, Exit Code 0",
-    "node_aladin_debian13": "GCC 14.2 AVX2 / rustc 2021, Exit Code 0 (15.16 ms, max_diff=0.0)"
-  },
-  "v018_technical_debt_status": "SPECIFIED_AND_REGISTERED"
+  "version": "V018_FASE1_CERTIFIED",
+  "timestamp": "2026-10-31T15:05:00-03:00",
+  "author": "Ariel Garcia Traba (Independent Research / EinsofOS)",
+  "theorems_count": 1739,
+  "max_theorem_id": 1954,
+  "files": {
+    ".git": {
+      "sha256": "ca3576003cbdba8412a1a42fd1fd49a5dc0a28ca9e59314e7273c4c51691175f",
+      "bytes": 67
+    },
+    "README.md": {
+      "sha256": "fa9be44a15630583b0b5a8bb7c3083a84b99452f982bd2376ba33fce8008b38c",
+      "bytes": 2484
+    },
+    "benchmarks/EXTERNAL_BENCHMARK_REPORT_V26505.json": {
+      "sha256": "9c6d952a0e945aafa5799e163650992972df87fae192561097d4813a09183e9f",
+      "bytes": 2826
+    },
+    "benchmarks/PILOT20_HUMANEVALPLUS_REPORT_A_B_C_D.json": {
+      "sha256": "ad7e3cc8e5d5cb6137c6f28f0e316229d0789b609aba48879e68c2cc8c81e173",
+      "bytes": 23078
+    },
+    "benchmarks/prompts_100.json": {
+      "sha256": "7f404da2f9134ccf9723f41c5fab45b1a1c0a87ee46a033ee1525599982a04ef",
+      "bytes": 135913
+    },
+    "benchmarks/run_aladin_external_repro_v26505.py": {
+      "sha256": "8c838456b14d7c65e48ec96cc35d9b1994f29af5fc90a808026263ebdbc0c95d",
+      "bytes": 18772
+    },
+    "benchmarks/run_six_decisive_proofs_v26505.py": {
+      "sha256": "c384a2d4918acf5196ac06a8d55f0aab6cfc3c750ba490966b9e9c7f65a27fbb",
+      "bytes": 65636
+    },
+    "teoria/DICTAMEN_GPT6_EXTERNAL_REDTEAM_R2.md": {
+      "sha256": "b806d32cd62e69b1d004f5f2bacb53a0303162672428e499f786883fdc0c38a2",
+      "bytes": 24493
+    },
+    "teoria/DIMENSION_IS_ALL_YOU_NEED_PAPER_V1550_HARDENED.md": {
+      "sha256": "3e034c78cd05e8749a4863116730a5ce14be89106ce695ade536f2c328c1744a",
+      "bytes": 74523
+    },
+    "teoria/POLYDIM_EINSOFOS_ENTERPRISE_WHITEBOOK_V1550.md": {
+      "sha256": "018546b55074e0ddac9956ff2707061a500fb18d207027e69241502a1a34a252",
+      "bytes": 42478
+    },
+    "teoria/POLYDIM_FORMAL_AXIOMATIC_THEORY_SOTA.md": {
+      "sha256": "1a00cb593d653f07719182837475f02feffb2a8161acf2bf79f2d2341096db57",
+      "bytes": 195843
+    },
+    "teoria/POLYDIM_V018_TECHNICAL_DEBT_ISSUE_TRACKER.md": {
+      "sha256": "36567fc22d123679a1d531b2c4bc7c17302caead1b9527b5b17304ae757e95d0",
+      "bytes": 11790
+    },
+    "tests/polydim_advanced_8_tests_suite.ipynb": {
+      "sha256": "feb6234339f016f212dcf5fd651da16374660c250cebb7eaad127852df50e929",
+      "bytes": 25306
+    },
+    "tests/polydim_colab_benchmark_kit.ipynb": {
+      "sha256": "288d22869ba0a36509455ee359b51e48531d3160a5d2f2f86f4618a4b90b43e0",
+      "bytes": 64214
+    },
+    "tests/test_cross_cpp_rust.py": {
+      "sha256": "1d58316861ba464e3f7df6e0fa72b773c76c94ac61268444756f05169f9a6cd2",
+      "bytes": 11358
+    },
+    "tests/test_v018_concurrency_silicon.py": {
+      "sha256": "40c9116544fb67f759255d3b9ebbecc35d2982577890e1245127a103967ea75a",
+      "bytes": 5589
+    },
+    "tests/test_v018_lease_anti_replay.py": {
+      "sha256": "ffa61b683e2d380afdd6ec5801e9f81515d43b0e11be3f9810ba1e29dafbf505",
+      "bytes": 4885
+    }
+  }
 }
