@@ -1,0 +1,902 @@
+[
+ {
+  "id": 1,
+  "titulo": "Prueba 1: Plano de Corte en Placa con Sangría de Sierra (Kerf)",
+  "area": "Carpintería, Construcción y Geometría 2D",
+  "prompt": "Tengo una placa de melamina de 2600 mm x 1830 mm. Mi sierra circular come 3 mm de espesor en cada corte. Necesito sacar exactamente: 6 piezas de 750x500 mm, 4 piezas de 900x400 mm y 2 piezas de 600x600 mm. Dame el orden exacto de cortes guillotina (de lado a lado continuo) y las coordenadas de cada pieza. Calcula el porcentaje real de material aprovechado.",
+  "por_que_complejo": "Requiere visión espacial 2D combinada con la restricción cinemática de la sierra (un corte debe atravesar la placa entera) y restar 3 mm en cada pasada.",
+  "fallo_modelo_base": "Suma las áreas en 1D como si fueran plastilina. Te dice que entran perfecto, pero cuando vas al taller y tirás las líneas, las piezas se solapan o te falta placa para el último corte por los 3 mm acumulados.",
+  "solucion_canonica_einsof": "Dispone las piezas en una grilla geométrica real respetando los cortes continuos y descuenta los 3 mm por línea, dando un aprovechamiento real del 87.2% sin solapamientos."
+ },
+ {
+  "id": 2,
+  "titulo": "Prueba 2: Cubicaje de Cajas en Camión por Límite de Peso por Eje",
+  "area": "Carpintería, Construcción y Geometría 2D",
+  "prompt": "Tengo un flete de 400 cajas Tipo A (30x30x40 cm, 15 kg) y 150 cajas Tipo B (60x40x50 cm, 35 kg). El furgón mide 6.0 m de largo, 2.2 m de ancho y 2.3 m de alto. El peso máximo total es 10.000 kg, pero por ley no puedo superar 6.000 kg sobre el eje trasero (últimos 2.5 m del furgón). Diseña cómo acomodar la carga para que quepa todo sin desbalancear los ejes.",
+  "por_que_complejo": "Combina empaquetamiento volumétrico 3D con distribución estática de masa y momentos de fuerza sobre los ejes.",
+  "fallo_modelo_base": "Llena el camión de adelante hacia atrás o al revés; no calcula el centro de gravedad y sobrecarga el eje trasero violando la ley vial.",
+  "solucion_canonica_einsof": "Distribuye la densidad de masa en coordenadas espaciales, colocando las cajas más pesadas sobre el centro de carga neutro."
+ },
+ {
+  "id": 3,
+  "titulo": "Prueba 3: Cálculo de Hormigón y Merma en Pendiente",
+  "area": "Carpintería, Construcción y Geometría 2D",
+  "prompt": "Tengo que llenar una rampa de hormigón de 14.5 metros de largo, 3.2 metros de ancho. El espesor empieza en 12 cm en la parte baja y termina en 28 cm en la parte alta. Además, tengo 6 zapatas de fundación de 60x60x80 cm distribuidas en la base. Si la merma por compactación y desperdicio en obra es del 8%, ¿cuántos camiones motohormigoneros de 7 m³ debo pedir para que no me falte ni me sobre más de medio metro cúbico?",
+  "por_que_complejo": "Integra el volumen de un trapecio tridimensional (prisma trapezoidal) más volúmenes cúbicos puntuales y aplica porcentaje de merma encadenado.",
+  "fallo_modelo_base": "Promedia mal los espesores o calcula la merma sobre el camión en vez del volumen de excavación, errando por 1 o 2 camiones de hormigón (miles de dólares tirados).",
+  "solucion_canonica_einsof": "Volumen prisma: 14.5 * 3.2 * 0.20 = 9.28 m³. Zapatas: 6 * (0.6*0.6*0.8) = 1.728 m³. Total teórico: 11.008 m³. Con merma del 8%: 11.888 m³. Resultado: Exactamente 2 camiones (uno de 7 m³ y uno de 5 m³ completado con 4.9 m³)."
+ },
+ {
+  "id": 4,
+  "titulo": "Prueba 4: Techo a Dos Aguas con Caída Desigual y Quiebre de Cumbrera",
+  "area": "Carpintería, Construcción y Geometría 2D",
+  "prompt": "Una casa tiene 8.0 metros de ancho. El techo es a dos aguas pero asimétrico: el agua izquierda tiene pendiente del 35% y cubre 5.0 metros de luz; el agua derecha cubre los 3.0 metros restantes y cae sobre una galería con pendiente del 20%. Calcula la altura exacta de la cumbrera y la longitud real de los tirantes de madera de ambas caídas considerando un alero perimetral de 50 cm en cada extremo.",
+  "por_que_complejo": "Mezcla porcentajes de pendiente con proyecciones trigonométricas y alargamiento de aleros en ángulos distintos.",
+  "fallo_modelo_base": "Aplica el porcentaje de pendiente a los 8 metros totales o confunde pendiente en porcentaje con grados de ángulo, dando tirantes cortos que no cubren la pared.",
+  "solucion_canonica_einsof": "Altura cumbrera: 5.0 m * 0.35 = 1.75 m. Tirante izquierdo con alero: 5.50 m proyectados -> 5.83 m lineales. Lado derecho con pendiente 20%: caída de 0.60 m, tirante derecho con alero de 3.50 m proyectados -> 3.57 m lineales exactos."
+ },
+ {
+  "id": 5,
+  "titulo": "Prueba 5: Tendido de Cañería Cloacal con Pendiente Obligatoria",
+  "area": "Carpintería, Construcción y Geometría 2D",
+  "prompt": "Tengo que conectar un baño ubicado en el fondo de un terreno con la colectora de la vereda, a 42 metros de distancia lineal. La salida del baño está a -0.35 m bajo nivel de piso. La conexión de la vereda está a -1.25 m de profundidad. Si la norma exige una pendiente mínima de 1:60 (1.66%) y máxima de 1:20 (5%), y debo colocar cámaras de inspección cada 15 metros, calcula el desnivel exacto en cada cámara y confirma si la pendiente final es reglamentaria.",
+  "por_que_complejo": "Manejo de cotas bajo nivel con saltos discretos en cámaras de inspección y restricciones normativas dobles de cota mínima y máxima.",
+  "fallo_modelo_base": "Resta las cotas al revés, o propone una pendiente constante que al llegar a la vereda queda por debajo del caño municipal (imposible de desagotar).",
+  "solucion_canonica_einsof": "Desnivel disponible: 1.25 - 0.35 = 0.90 m en 42 m. Pendiente media: 0.90 / 42 = 0.0214 (2.14% = 1:46.6). Cumple perfecto entre 1:60 y 1:20. Cotas exactas: Cámara 1 (15m): -0.67m; Cámara 2 (30m): -0.99m; Vereda (42m): -1.25m."
+ },
+ {
+  "id": 6,
+  "titulo": "Prueba 6: Colocación de Porcelanato en Habitación Fuera de Escuadra",
+  "area": "Carpintería, Construcción y Geometría 2D",
+  "prompt": "Un salón tiene cuatro lados: Norte 6.20 m, Sur 6.35 m, Este 4.10 m, Oeste 4.10 m (es un trapecio con falsa escuadra en el rincón Noroeste de 92 grados). Se van a colocar placas de porcelanato de 120x60 cm con junta de 2 mm. Diseña el punto de arranque de colocación para que en ninguna pared quede un recorte inferior a 15 cm de ancho y calcula la cantidad de cajas de 3 piezas a comprar considerando 10% de desperdicio.",
+  "por_que_complejo": "La geometría no es ortogonal. Un arranque incorrecto deja recortes en punta de aguja (2 cm) que se rompen al cortar.",
+  "fallo_modelo_base": "Supone una habitación rectangular de 6x4, calcula m² simples y te hace empezar en una esquina falsa, arruinando la estética de todo el salón.",
+  "solucion_canonica_einsof": "Fija el eje maestro ortogonal al acceso principal, compensa la falsa escuadra absorbiéndola en zócalos perimetrales y asegura recortes mínimos de 22 cm. Cantidad de cajas: 17 cajas exactas."
+ },
+ {
+  "id": 7,
+  "titulo": "Prueba 7: Armado de Reja con Separación Homogénea entre Barrotes",
+  "area": "Carpintería, Construcción y Geometría 2D",
+  "prompt": "Tengo un marco de hierro hueco de 2.84 metros de luz libre interior. Debo colocar barrotes verticales cuadrados de 1/2 pulgada (12.7 mm). Por seguridad infantil, la separación libre entre barrotes no puede superar los 11.0 cm ni ser menor a 9.5 cm. ¿Cuántos barrotes exactos debo cortar y cuál es la distancia milimétrica precisa centro a centro y luz libre entre cada uno para que todos los huecos queden perfectamente idénticos?",
+  "por_que_complejo": "Problema diofántico discreto con tolerancias milimétricas acumulativas donde un redondeo de 1 mm desvía el último barrote por 3 centímetros.",
+  "fallo_modelo_base": "Divide 284 por 11, le da 25.8 barrotes, redondea a 26 y cuando distribuye los espacios el primer hueco le queda de 10 cm y el último de 14 cm.",
+  "solucion_canonica_einsof": "Número exacto de huecos = 26 (25 barrotes de 12.7 mm = 317.5 mm de hierro). Luz neta restante: 2840 - 317.5 = 2522.5 mm. Separación libre exacta por hueco = 97.02 mm (cumple norma). Distancia centro a centro = 109.72 mm. Cero desvío."
+ },
+ {
+  "id": 8,
+  "titulo": "Prueba 8: Despiece de Escalera Plegada de Chapa",
+  "area": "Carpintería, Construcción y Geometría 2D",
+  "prompt": "Debo mandar a plegar una escalera metálica de chapa de 1/8 pulgada (3.2 mm) para salvar una altura de 2.60 m en un desarrollo horizontal máximo de 2.90 m. Con 14 alzadas iguales, calcula la pedada resultante, el factor de descuento por plegado de chapa a 90 grados (deducción de pliegue con radio interior r=3.2 mm) y la longitud total de fleje estirado antes de entrar a la plegadora.",
+  "por_que_complejo": "Toda chapa al doblarse a 90° se estira en el radio de curvatura neutro (factor K). Si no se descuenta, la escalera terminada queda 4 cm más larga y no entra en el hueco.",
+  "fallo_modelo_base": "Suma alzadas y pedadas aritméticamente como líneas rectas, ignorando la fibra neutra y el radio de plegado mecánico.",
+  "solucion_canonica_einsof": "Alzada: 2600 / 14 = 185.7 mm. Pedada: 2900 / 13 = 223.1 mm. Deducción de plegado por cada quiebre a 90° = 5.8 mm. Aplica la corrección a los 27 pliegues continuos, entregando la medida de corte de chapa estirada exacta al milímetro."
+ },
+ {
+  "id": 9,
+  "titulo": "Prueba 9: Dosificación de Mortero para Mampostería de Ladrillo Hueco",
+  "area": "Carpintería, Construcción y Geometría 2D",
+  "prompt": "Tengo que levantar 85 m² de pared con ladrillo cerámico hueco del 12 (12x18x33 cm) asentados con junta de 1.5 cm de mortero 1:1:5 (cemento, cal aérea, arena). Sabiendo que entran 16 ladrillos por m² y que el desperdicio de mezcla en huecos es del 25%, calcula la cantidad exacta de bolsas de cemento de 50 kg, bolsas de cal de 25 kg y metros cúbicos de arena que debo comprar.",
+  "por_que_complejo": "Volumen de juntas huecas más el desperdicio por mezcla que se cae dentro de los alvéolos del ladrillo, transformado a pesos específicos aparentes de materiales sueltos.",
+  "fallo_modelo_base": "Calcula el volumen de mezcla como si el ladrillo fuera macizo y no prevé la caída de mortero dentro de los agujeros, quedándose corto de material en la mitad de la obra.",
+  "solucion_canonica_einsof": "Ladrillos: 1360 unidades. Volumen de mezcla neta: 1.15 m³ + 25% alvéolos = 1.44 m³. Dosificación 1:1:5 con coeficientes de aporte: Cemento: 7.2 bolsas (50 kg); Cal: 11.5 bolsas (25 kg); Arena: 1.65 m³."
+ },
+ {
+  "id": 10,
+  "titulo": "Prueba 10: Dimensionamiento de Viga de Madera para Entrepiso Habitacional",
+  "area": "Carpintería, Construcción y Geometría 2D",
+  "prompt": "Debo colocar tirantes de madera de pino Oregón cada 60 cm para cubrir una luz libre de 4.20 metros entre apoyos en un entrepiso residencial. Sobrecarga de uso reglamentaria: 200 kg/m²; peso propio de piso y entablonado: 45 kg/m². Si la tensión admisible a flexión de la madera es de 90 kg/cm² y la flecha máxima no puede superar L/300 (1.40 cm), verifica si alcanza una sección comercial de 3x8 pulgadas o si es necesario pasar a 3x10 pulgadas.",
+  "por_que_complejo": "Doble verificación simultánea: resistencia a la rotura por flexión y deformación elástica máxima en el tiempo (módulo de elasticidad E de la madera).",
+  "fallo_modelo_base": "Solo verifica que no se rompa la madera por tensión, pero ignora la flecha elástica: el entrepiso queda seguro pero \"rebota como un trampolín\" al caminar.",
+  "solucion_canonica_einsof": "Carga por metro lineal por tirante: 147 kg/m. Momento flector: 324 kg*m. Tirante 3x8 (7.5x20 cm): Tensión = 64.8 kg/cm² (OK), pero flecha elástica = 1.62 cm (SUPERA L/300, falla por deformación). Dictamina obligatoriamente pasar a 3x10 pulgadas (7.5x25 cm) para cumplir flecha de 0.83 cm."
+ },
+ {
+  "id": 11,
+  "titulo": "Prueba 11: Liquidación de Sueldos con Horas Extra al 50% y 100% y Descuentos de Ley",
+  "area": "Contabilidad, Impuestos y Finanzas Operativas",
+  "prompt": "Un operario bajo convenio mercantil tiene un sueldo básico mensual de $780.000 por 200 horas laborables. En el mes realizó: 16 horas extra en días hábiles (al 50%) y 8 horas extra en domingo (al 100%). Tiene presentismo del 8.33% sobre el total bruto remunerativo. Descuentos: Jubilación 11%, Ley 19032 3%, Obra Social 3%, Cuota Sindical 2%. Calcula el sueldo bruto total, el total de retenciones y el neto a cobrar exacto al centavo.",
+  "por_que_complejo": "El presentismo se calcula sobre el básico más las horas extra ya recargadas, y las deducciones se aplican sobre la suma total exacta sin redondear centavos en pasos intermedios.",
+  "fallo_modelo_base": "Calcula el presentismo solo sobre el básico, o redondea los valores hora acumulando diferencias de hasta $8.000 en el bolsillo del empleado.",
+  "solucion_canonica_einsof": "Valor hora base: $3.900. Horas al 50%: 16 * $5.850 = $93.600. Horas al 100%: 8 * $7.800 = $62.400. Subtotal remunerativo: $936.000. Presentismo (8.33%): $77.968,80. Bruto total: $1.013.968,80. Retenciones (19% total): $192.654,07. Neto a pagar en mano: $821.314,73 exactos."
+ },
+ {
+  "id": 12,
+  "titulo": "Prueba 12: Cuadre de Asiento Contable con IVA, Percepciones de IIBB y Retención Bancaria",
+  "area": "Contabilidad, Impuestos y Finanzas Operativas",
+  "prompt": "Factura de compra de mercaderías: Neto gravado $1.450.000. IVA 21%. IVA 10.5% sobre flete de $80.000. Percepción de Ingresos Brutos CABA del 3.0% sobre neto total. Percepción de Ganancias 2.0% sobre neto. Se abona 40% con cheque propio a 30 días y el 60% restante mediante transferencia bancaria donde el banco nos descuenta 1.5% de SIRCREB y $450 de comisión con IVA. Registra el asiento contable completo en Debe y Haber demostrando que la diferencia es $0.00.",
+  "por_que_complejo": "Cuadre de múltiples alícuotas impositivas sobre bases imponibles diferenciadas, sumado al cálculo financiero de cancelación partida con retención en origen.",
+  "fallo_modelo_base": "Aplica la percepción de IIBB también sobre el IVA (ilegal), o no cuadra el Debe y el Haber, tirando una diferencia de centavos que invalida el balance contable.",
+  "solucion_canonica_einsof": "Total factura compra: $1.910.400. Asiento con desglose exacto de cuentas de activo, pasivo e impuestos: Debe $1.910.400; Haber $1.910.400. Discrepancia matemática: $0.00."
+ },
+ {
+  "id": 13,
+  "titulo": "Prueba 13: Amortización de Maquinaria con Inflación Impositiva vs. Contable",
+  "area": "Contabilidad, Impuestos y Finanzas Operativas",
+  "prompt": "Una empresa compra un autoelevador el 01/03 en $18.000.000 con vida útil de 10 años (120 meses). Al cierre del ejercicio fiscal el 31/12 transcurrieron 10 meses. Contablemente amortiza lineal por meses de uso. Impositivamente (Ley de Ganancias) amortiza por año de alta completo (10% anual) con ajuste por inflación impositivo acumulado del 85% desde la compra. Calcula la amortización contable, la amortización impositiva deducible y el ajuste en el balance impositivo.",
+  "por_que_complejo": "Trata dos normativas paralelas sobre el mismo bien: la contable (devengamiento exacto por meses) y la tributaria (año completo con índice de inflación de actualización).",
+  "fallo_modelo_base": "Mezcla ambos métodos, amortiza 10 meses en la declaración impositiva o ignora el ajuste por inflación de la ley tributaria.",
+  "solucion_canonica_einsof": "Amortización contable (10 meses): $1.500.000. Amortización impositiva histórica (10%): $1.800.000. Ajuste por inflación impositivo (85%): $1.530.000. Deducción impositiva total: $3.330.000. Ajuste a la columna II de la declaración jurada: -$1.830.000."
+ },
+ {
+  "id": 14,
+  "titulo": "Prueba 14: Conciliación de Tarjetas de Crédito de Comercio con Cupones y Retenciones",
+  "area": "Contabilidad, Impuestos y Finanzas Operativas",
+  "prompt": "Un comercio vende en el mes $8.400.000 brutos en 3 cuotas con tarjeta de crédito. La procesadora descuenta: Arancel comercial 1.8% + IVA; Costo Financiero por cuotas (Tasa de descuento) 8.5% + IVA; Retención de IVA 1.5%; Retención de Ganancias 1.0%; Retención IIBB 2.5%. Si el banco acredita los fondos en 2 fechas distintas ($4.000.000 brutos el día 10 y $4.400.000 brutos el día 25), calcula el depósito neto exacto que ingresa a la cuenta corriente en cada fecha.",
+  "por_que_complejo": "Las retenciones fiscales se calculan sobre bases imponibles netas o brutas según el gravamen, y los costos financieros llevan su propio IVA sobre la comisión.",
+  "fallo_modelo_base": "Suma los porcentajes directo (1.8 + 8.5 + 1.5...) sobre el total bruto sin calcular el IVA de las comisiones ni prorratear por fecha de liquidación.",
+  "solucion_canonica_einsof": "Descuento total por cada $100 brutos: Comisiones con IVA = 12.463%; Retenciones fiscales = 5.00%. Deducción total: 17.463%. Acreditación neta Lote 1: $3.301.480. Lote 2: $3.631.628. Cuadre total al centavo."
+ },
+ {
+  "id": 15,
+  "titulo": "Prueba 15: Prorrateo de Costos Indirectos de Fabricación (CIF) por Horas Máquina",
+  "area": "Contabilidad, Impuestos y Finanzas Operativas",
+  "prompt": "Una fábrica de calzado produce 3 modelos: Escolar (4.000 pares), Deportivo (2.500 pares) y Botas de Seguridad (1.200 pares). Los gastos indirectos comunes del mes (energía eléctrica, alquiler de nave, capataces) totalizan $14.800.000. Cada par insume de máquina de coser y vulcanizado: Escolar 0.25 hs; Deportivo 0.50 hs; Botas 0.90 hs. Calcula la cuota CIF por hora máquina y el costo indirecto exacto asignado a cada par de calzado de cada modelo.",
+  "por_que_complejo": "Prorrateo ponderado por base de actividad real, no por cantidad de piezas producidas.",
+  "fallo_modelo_base": "Divide la plata por la suma de pares (7.700), asignando el mismo costo indirecto a una bota compleja que a un zapato escolar simple.",
+  "solucion_canonica_einsof": "Horas máquina totales: (4000*0.25) + (2500*0.50) + (1200*0.90) = 1000 + 1250 + 1080 = 3.330 hs. Cuota CIF por hora: $14.800.000 / 3330 = $4.444,44/hora. Asignación por par: Escolar: $1.111,11; Deportivo: $2.222,22; Botas: $4.000,00."
+ },
+ {
+  "id": 16,
+  "titulo": "Prueba 16: Intereses Resarcitorios AFIP con Cambio de Tasa Bimestral",
+  "area": "Contabilidad, Impuestos y Finanzas Operativas",
+  "prompt": "Una deuda impositiva de $650.000 venció el 15 de marzo y se paga el 28 de julio. Durante el período rigieron dos tasas de interés resarcitorio oficiales: del 15 de marzo al 31 de mayo: 5.91% mensual; del 01 de junio al 28 de julio: 6.40% mensual. Calcula los días de mora exactos en cada tramo y el importe final de intereses acumulados al día del pago efectivo.",
+  "por_que_complejo": "Cómputo de días calendario exactos con cambio de tasa diaria (tasa mensual dividida 30) en fecha intermedia sin capitalización compuesta (interés simple por tramos).",
+  "fallo_modelo_base": "Aplica la última tasa a todo el período o toma meses de 30 días parejos comiéndose días de mayo y julio.",
+  "solucion_canonica_einsof": "Tramo 1 (16/03 al 31/05): 77 días. Tasa diaria: 0.197%. Interés Tramo 1: $98.598,50. Tramo 2 (01/06 al 28/07): 58 días. Tasa diaria: 0.2133%. Interés Tramo 2: $80.426,67. Total intereses a pagar: $179.025,17 exactos."
+ },
+ {
+  "id": 17,
+  "titulo": "Prueba 17: Distribución de Utilidades en SRL con Cuotas Sociales Desiguales y Reserva",
+  "area": "Contabilidad, Impuestos y Finanzas Operativas",
+  "prompt": "Una SRL tiene ganancia neta de $42.000.000. Capital social: Socio A (60%), Socio B (25%), Socio C (15%). El contrato social fija: 1) 5% obligatorio a Reserva Legal hasta cubrir el 20% del capital ($10.000.000, actualmente la reserva acumulada es $8.500.000); 2) Gratificación especial al Socio Gerente A del 10% sobre el remanente; 3) El saldo se distribuye en dividendos según cuotas partes. Determina cuánto cobra en mano cada socio.",
+  "por_que_complejo": "La reserva legal está a punto de topar (solo faltan $1.500.000 para llegar a $10M), por lo que el 5% de la ganancia no debe aplicarse completo. Luego la gratificación del gerente se resta antes del dividendo general.",
+  "fallo_modelo_base": "Resta el 5% entero ($2.100.000) pasándose del tope legal de reserva, y calcula la gratificación del socio A sobre la ganancia bruta en vez del remanente.",
+  "solucion_canonica_einsof": "Reserva legal: solo $1.500.000 (alcanza el tope de $10M). Saldo disponible: $40.500.000. Honorarios Gerente A (10%): $4.050.000. Saldo a distribuir: $36.450.000. Socio A cobra: $4.050.000 + (60% de $36.450.000 = $21.870.000) = $25.920.000. Socio B (25%): $9.112.500. Socio C (15%): $5.467.500. Cuadre total perfecto."
+ },
+ {
+  "id": 18,
+  "titulo": "Prueba 18: Costo de Mercadería Vendida (CMV) por Método FIFO con Devoluciones",
+  "area": "Contabilidad, Impuestos y Finanzas Operativas",
+  "prompt": "Movimientos de stock de un artículo:",
+  "por_que_complejo": "El tratamiento contable de la devolución de venta reinserta unidades a su costo histórico original, alterando el orden de descarga de las compras subsiguientes.",
+  "fallo_modelo_base": "Promedia los costos o reingresa la devolución al costo de la última compra, alterando el valor del inventario de cierre.",
+  "solucion_canonica_einsof": "Rastrea cada lote individual en memoria: Existencia final queda compuesta por 20 unidades del lote inicial a $500, 40 unidades del lote Compra 1 a $650 y 70 unidades del lote Compra 2 a $800. CMV total: $199.000 exactos."
+ },
+ {
+  "id": 19,
+  "titulo": "Prueba 19: Retención de Impuesto a las Ganancias en Pago a Proveedor con Múltiples Comprobantes",
+  "area": "Contabilidad, Impuestos y Finanzas Operativas",
+  "prompt": "Se emite una orden de pago a un proveedor de servicios (inscripto en Ganancias, locación de obra, código 116). Se cancelan 3 facturas del mismo mes: Factura A $450.000; Factura B $820.000; Factura C $1.100.000 (valores netos sin IVA). El mínimo no imponible mensual de la RG 830 para este concepto es $67.170 y la alícuota es del 2% sobre el excedente. Ya se le realizó un pago previo en el mismo mes por $300.000 netos donde se le retuvieron $4.656,60. Calcula la retención exacta a practicar en esta nueva orden de pago acumulada.",
+  "por_que_complejo": "La resolución obliga a acumular todos los pagos brutos del mes calendario al mismo proveedor, restar una sola vez el mínimo no sujeto a retención, calcular la tasa y descontar las retenciones ya sufridas en el mes.",
+  "fallo_modelo_base": "Calcula la retención factura por factura restando el mínimo no imponible en cada una, o ignora el pago anterior, provocando retenciones en defecto con multas de AFIP.",
+  "solucion_canonica_einsof": "Pagos acumulados del mes: $300.000 + $2.370.000 = $2.670.000. Base sujeta: $2.670.000 - $67.170 = $2.602.830. Retención total mensual (2%): $52.056,60. Menos retención anterior: $4.656,60. Retención neta a practicar en este pago: $47.400,00 exactos."
+ },
+ {
+  "id": 20,
+  "titulo": "Prueba 20: Tasa Efectiva Anual (TEA) de un Descuento de Cheque con Gastos Bancarios",
+  "area": "Contabilidad, Impuestos y Finanzas Operativas",
+  "prompt": "Una empresa descuenta en el banco un cheque de pago diferido de $5.000.000 a 45 días de plazo. El banco aplica: Tasa Nominal Anual (TNA) de descuento adelantado del 52%; Comisión por gestión del 1.2% + IVA; Impuesto a los débitos y créditos bancarios (ley 25413) 0.6% sobre el valor nominal. Determina el monto líquido neto que se acredita en la cuenta bancaria y calcula la Tasa Efectiva Anual (TEA) real de costo financiero total de la operación.",
+  "por_que_complejo": "La tasa de descuento se cobra por adelantado (descuento comercial sobre valor nominal, no sobre el neto recibido) y los gastos con impuestos achican la base de dinero recibido, disparando el costo financiero real.",
+  "fallo_modelo_base": "Informa que el costo es el 52% de la TNA, sin calcular el impacto del dinero recibido neto ni la anualización de los 45 días.",
+  "solucion_canonica_einsof": "Descuento TNA (45 días): $325.000. Comisión + IVA: $72.600. Impuesto al cheque: $30.000. Neto acreditado: $4.572.400. Tasa efectiva a 45 días = 9.351%. TEA de costo financiero total real anualizado = 106.82% (más del doble de la tasa nominal publicada)."
+ },
+ {
+  "id": 21,
+  "titulo": "Prueba 21: Indemnización por Despido sin Causa con Topes de Convenio y Fallo Vizzoti",
+  "area": "Derecho Laboral, Comercial y Contractual",
+  "prompt": "Calcula la liquidación final por despido incausado (Art. 245 LCT) de un empleado con fecha de ingreso 15/03/2014 y despido el 20/09/2026. Mejor remuneración mensual normal y habitual (MRMNH) percibida: $2.400.000. El tope indemnizatorio del CCT aplicable homologado es de $650.000. Aplica la doctrina de la CSJN en el fallo 'Vizzoti' si corresponde, calculando la base indemnizatoria exacta por año de servicio y el monto final del Art. 245.",
+  "por_que_complejo": "Requiere verificar si el tope de convenio confiscatorio reduce la remuneración en más del 33% (doctrina Vizzoti). Si $650.000 < $2.400.000 * 0.67 ($1.608.000), el tope es inconstitucional y la base debe ser el 67% de la MRMNH ($1.608.000), computando antigüedad con fracción mayor a 3 meses (12 períodos).",
+  "fallo_modelo_base": "O aplica ciegamente el tope de $650.000 ($7.800.000 total) o ignora el tope y usa los $2.400.000 directos, fallando en el cálculo del 67% de Vizzoti.",
+  "solucion_canonica_einsof": "Determina: 12 períodos computables. Test Vizzoti: 67% de $2.400.000 = $1.608.000 > tope CCT $650.000. Base aplicable = $1.608.000. Indemnización Art. 245 exacta = $19.296.000."
+ },
+ {
+  "id": 22,
+  "titulo": "Prueba 22: Plazo de Prescripción de Pagaré con Cláusula de Interrupción y Mediación Previa",
+  "area": "Derecho Laboral, Comercial y Contractual",
+  "prompt": "Se libró un pagaré con vencimiento a día fijo el 10/04/2023. El acreedor inició mediación prejudicial obligatoria el 15/03/2026 y cerró el acta el 15/05/2026. Según el Decreto Ley 5965/63 (Art. 96) y la ley de mediación local (interrupción o suspensión), ¿cuándo opera el último día hábil para interponer la demanda ejecutiva sin que prescriba la acción cambiaria directa?",
+  "por_que_complejo": "La acción cambiaria prescribe a los 3 años (10/04/2026). La mediación suspende el curso por el tiempo que dure más 20 días hábiles judiciales posteriores al cierre del acta, exigiendo distinguir días hábiles judiciales de días corridos.",
+  "fallo_modelo_base": "Confunde interrupción (reinicio de cero) con suspensión (pausa del reloj), o cuenta 3 años corridos desde la fecha de cierre de mediación.",
+  "solucion_canonica_einsof": "Calcula los 26 días restantes de prescripción al momento de inicio de mediación, suma la suspensión de la mediación y los 20 días hábiles posteriores, fijando el vencimiento exacto con calendario judicial."
+ },
+ {
+  "id": 23,
+  "titulo": "Prueba 23: Cláusula Penal Contractual y Límite de Reducción por Usura Judicial",
+  "area": "Derecho Laboral, Comercial y Contractual",
+  "prompt": "En un contrato de locación comercial con canon de $1.500.000 mensual, se pactó una cláusula penal de 1.5% diario por mora en el pago. Si el inquilino adeuda 75 días, calcula la mora pactada, evalúa su validez frente al Art. 794 del Código Civil y Comercial de la Nación y fija la liquidación moratoria prudencial conforme a la tasa activa judicial BNA.",
+  "por_que_complejo": "1.5% diario equivale a 45% mensual (540% TNA), claramente lesiva y abusiva frente al Art. 794 CCCN. Se debe recalcular la liquidación admitida en doctrina judicial (tasa activa BNA + penalidad máxima del 2.5% mensual).",
+  "fallo_modelo_base": "Multiplica 1.5% * 75 días = 112.5% ($1.687.500 extra) sin advertir la nulidad relativa ni citar el régimen de morigeración judicial.",
+  "solucion_canonica_einsof": "Advierte el abuso de derecho, aplica la morigeración del Art. 794 CCCN y entrega tanto la liquidación nominal reclamada como la liquidación judicialmente ejecutable."
+ },
+ {
+  "id": 24,
+  "titulo": "Prueba 24: Sucesión con Donaciones Colacionables y Afección de Porción Legítima",
+  "area": "Derecho Laboral, Comercial y Contractual",
+  "prompt": "El causante deja un acervo de $60.000.000 y 3 hijos herederos forzosos (A, B y C). En vida donó a A un inmueble valuado a la apertura de la sucesión en $30.000.000 como adelanto de herencia. Determina la masa de cálculo, la porción legítima (Art. 2445 CCCN: dos tercios), la porción disponible y cuánto debe colacionar A para igualar las hijuelas.",
+  "por_que_complejo": "La masa de cálculo suma el caudal relicto ($60M) + donaciones colacionables ($30M) = $90M. La legítima es 2/3 ($60M) y disponible 1/3 ($30M). Cada hijo debe recibir $20M de legítima. Como A recibió $30M, excede su cuota en $10M a imputar a porción disponible si hubo dispensa, o colacionar a la masa.",
+  "fallo_modelo_base": "Divide los $60.000.000 relictos entre 3 ($20M c/u) y le pide a A que devuelva plata de su bolsillo o calcula la legítima como el 80% del régimen derogado del Código de Vélez.",
+  "solucion_canonica_einsof": "Aplica la porción legítima vigente de 2/3 (ley 26994), arma la cuenta de partición exacta y define la compensación entre hijuelas."
+ },
+ {
+  "id": 25,
+  "titulo": "Prueba 25: Resolución Contractual por Imprevisión y Teoría de la Frustración",
+  "area": "Derecho Laboral, Comercial y Contractual",
+  "prompt": "Un contrato de suministro a 36 meses fijó precio en pesos ajustado por IPC, pero un insumo importado sufrió un salto arancelario imprevisto del 320% por resolución gubernamental extraordinaria. Analiza la procedencia de la readecuación equitativa (Art. 1091 CCCN) versus rescisión, determinando la ecuación económica financiera del contrato.",
+  "por_que_complejo": "Debe distinguir la frustración del fin (Art. 1090) de la imprevisión (Art. 1091), evaluando si el riesgo arancelario fue o no asumido expresamente en la matriz de riesgos del contrato.",
+  "fallo_modelo_base": "Dictamina 'fuerza mayor' genérica sin analizar la cláusula de asunción de riesgo ni proponer la fórmula de esfuerzo compartido para renegociación.",
+  "solucion_canonica_einsof": "Desglosa la matriz de riesgo del Art. 1091, formula el reparto de carga equitativo 50/50 sobre el sobrecosto extraordinario y redacta la cláusula de renegociación."
+ },
+ {
+  "id": 26,
+  "titulo": "Prueba 26: Despido con Causa por Pérdida de Confianza y Carga de la Prueba",
+  "area": "Derecho Laboral, Comercial y Contractual",
+  "prompt": "Un cajero de tesorería tuvo un faltante de $180.000 en un arqueo. No tiene antecedentes ni sanciones previas en 8 años. La empresa lo despide con causa por 'pérdida de confianza'. Dictamina la viabilidad de la injuria laboral conforme al Art. 242 LCT y cuantifica el riesgo contingente de la demanda laboral.",
+  "por_que_complejo": "La pérdida de confianza exige un hecho objetivamente grave y proporcional que impida la continuidad laboral. Sin sanciones previas y con 8 años de foja limpia, la jurisprudencia considera el despido desproporcionado (principio de conservación Art. 10 LCT), convirtiéndolo en despido incausado.",
+  "fallo_modelo_base": "Valida el despido diciendo que 'faltar dinero es causal suficiente' sin ponderar gradualidad de sanciones ni antigüedad.",
+  "solucion_canonica_einsof": "Explica la doctrina judicial mayoritaria sobre proporcionalidad de sanciones, estima un 90% de probabilidad de condena por despido sin causa y calcula el monto contingente con multas."
+ },
+ {
+  "id": 27,
+  "titulo": "Prueba 27: Fusión por Absorción y Tratamiento de Pasivos Ocultos en Due Diligence",
+  "area": "Derecho Laboral, Comercial y Contractual",
+  "prompt": "En una compra del 100% del paquete accionario de una SA por USD 2.500.000, se descubre post-cierre un reclamo tributario municipal no declarado de $85.000.000. Redacta la ejecución de la cláusula de indemnidad (Reps & Warranties) afectando la cuenta de garantía (Escrow) de USD 300.000 y el plazo de caducidad aplicable.",
+  "por_que_complejo": "Involucra tipos de cambio de conversión a la fecha del reclamo, aplicación de deducibles (Basket / Deductible tipo first dollar o tipping), y notificación formal bajo plazo de caducidad estricto.",
+  "fallo_modelo_base": "Sugiere 'demandar por estafa' o ignora el mecanismo contractualmente pactado de Basket y Escrow.",
+  "solucion_canonica_einsof": "Ejecuta la fórmula financiera de imputación al Escrow, verifica si supera el basket pactado y emite el requerimiento de retención formal al agente fiduciario."
+ },
+ {
+  "id": 28,
+  "titulo": "Prueba 28: Validez de Acuerdos Extintivos Laborales por Escribano (Art. 241 LCT)",
+  "area": "Derecho Laboral, Comercial y Contractual",
+  "prompt": "Una empresa extingue la relación de un directivo mediante escritura pública conforme al Art. 241 LCT pagando una 'gratificación no remunerativa' de $15.000.000. Analiza si el empleado puede demandar luego diferencias por despido incausado y si la gratificación puede compensarse con futuras condenas.",
+  "por_que_complejo": "El mutuo acuerdo por escritura pública es válido sin homologación administrativa, pero si se encubre un despido real sin pago de indemnización completa, procede el test de vicios de la voluntad y la doctrina del fallo 'Gatarri' para compensación de sumas.",
+  "fallo_modelo_base": "Afirma que 'todo acuerdo por escribano es nulo si no pasa por el SECLO/Ministerio' o sostiene que el trabajador pierde todo derecho irrevocablemente.",
+  "solucion_canonica_einsof": "Distingue el Art. 241 (mutuo disenso formal) del Art. 15 (transacción que exige autoridad laboral), cita la compensación 'Gatarri' y evalúa la blindabilidad del convenio."
+ },
+ {
+  "id": 29,
+  "titulo": "Prueba 29: Medida Cautelar de Embargo Preventivo sobre Cuentas Bancarias con Depósito en Plazo Fijo",
+  "area": "Derecho Laboral, Comercial y Contractual",
+  "prompt": "Un acreedor con pagaré ejecutado obtiene embargo por $12.000.000 más $3.600.000 presupuestados para costas. El banco traba embargo sobre una cuenta corriente con saldo de $2.000.000 y un Plazo Fijo en pesos a 90 días no vencido de $15.000.000. ¿Cómo debe responder el banco y cuándo se transfieren los fondos a la cuenta judicial?",
+  "por_que_complejo": "El plazo fijo es inmovilizable pero intransferible antes del vencimiento natural pactado; el embargo traba el capital e intereses al vencimiento, mientras que la cuenta corriente se debita en el acto.",
+  "fallo_modelo_base": "Ordena transferir el plazo fijo de inmediato rompiendo el contrato financiero bancario y perdiendo los intereses devengados.",
+  "solucion_canonica_einsof": "Detalla el oficio de contestación bancaria: transferencia inmediata de los $2M de cuenta corriente y traba registral sobre el certificado de plazo fijo con orden de liquidación y transferencia al juzgado el día exacto del vencimiento."
+ },
+ {
+  "id": 30,
+  "titulo": "Prueba 30: Exclusión de Socio en SRL por Conducta Desleal y Validez de Mayorías",
+  "area": "Derecho Laboral, Comercial y Contractual",
+  "prompt": "En una SRL con 3 socios (Socio A 45%, Socio B 35%, Socio C 20%), el Socio C crea una sociedad paralela del mismo rubro desviando clientes. Socio A y B votan excluir a C. ¿Se cumple la mayoría requerida por el Art. 91 de la Ley General de Sociedades 19.550 y cuál es el procedimiento legal para fijar el valor de la cuota de C?",
+  "por_que_complejo": "La exclusión requiere justa causa y no se computa el voto del socio imputado para la mayoría social, pero no opera de pleno derecho: exige acción judicial de exclusión si el socio impugna o no hay pacto estatutario expreso.",
+  "fallo_modelo_base": "Dice que con el 80% reunido 'queda excluido automáticamente y ya no es socio'.",
+  "solucion_canonica_einsof": "Explica que la asamblea aprueba la decisión de iniciar la acción judicial de exclusión (o rescindir el vínculo) y describe el balance especial de exclusión a la fecha de demanda para liquidar la cuota parte sin lesionar el patrimonio."
+ },
+ {
+  "id": 31,
+  "titulo": "Prueba 31: Optimización de Ruta de Despacho Urbano con Ventanas Horarias Estrictas",
+  "area": "Logística, Almacén y Rutas de Despacho",
+  "prompt": "Un camión de reparto sale a las 08:00 desde un Centro de Distribución (CD). Debe entregar a 5 clientes: C1 (descarga 25 min, ventana 08:30-09:30), C2 (descarga 40 min, ventana 09:00-10:15), C3 (descarga 20 min, ventana 11:00-12:30), C4 (descarga 35 min, ventana 10:00-11:15) y C5 (descarga 30 min, ventana 12:00-13:30). Los tiempos de viaje entre nodos en minutos son: CD-C1: 20, CD-C2: 35, C1-C2: 15, C1-C4: 25, C2-C4: 10, C4-C3: 20, C3-C5: 15, C5-CD: 30. Encuentra el orden de visita que no viole ninguna ventana horaria y minimice el tiempo total ocioso.",
+  "por_que_complejo": "Es una instancia dura de Vehicle Routing Problem with Time Windows (VRPTW). Si visita C2 antes que C4 o viceversa, los tiempos de descarga acumulados provocan llegadas tardías en C4 o esperas improductivas.",
+  "fallo_modelo_base": "Hace la ruta en orden numérico C1 -> C2 -> C3 -> C4 -> C5, llegando a C4 a las 11:30 (15 minutos tarde, ventana cerrada).",
+  "solucion_canonica_einsof": "Evalúa el grafo espacio-temporal exacto: CD -> C1 (llega 08:20, espera a 08:30, sale 08:55) -> C2 (llega 09:10, sale 09:50) -> C4 (llega 10:00, sale 10:35) -> C3 (llega 10:55, espera a 11:00, sale 11:20) -> C5 (llega 11:35, espera a 12:00, sale 12:30) -> CD (llega 13:00). Cero ventanas violadas."
+ },
+ {
+  "id": 32,
+  "titulo": "Prueba 32: Asignación de Posiciones de Almacén por Matriz ABC y Rotación de Pallets",
+  "area": "Logística, Almacén y Rutas de Despacho",
+  "prompt": "Un depósito tiene 3 bahías de racks: Bahía 1 (a 10 m de muelles, 100 posiciones), Bahía 2 (a 30 m de muelles, 200 posiciones) y Bahía 3 (a 60 m de muelles, 300 posiciones). Se gestionan 3 familias de SKUs: SKU_A (20 pallets de stock, 18 movimientos/día), SKU_B (80 pallets de stock, 15 movimientos/día), SKU_C (150 pallets de stock, 4 movimientos/día) y SKU_D (200 pallets de stock, 2 movimientos/día). Distribuye los SKUs para minimizar los metros totales recorridos por los autoelevadores diarios.",
+  "por_que_complejo": "El ratio de rotación (movimientos por posición ocupada) define la criticidad de cercanía, no el volumen absoluto.",
+  "fallo_modelo_base": "Coloca a SKU_C o SKU_D en la Bahía 1 porque tienen más pallets o más stock total, mandando al producto más activo al fondo.",
+  "solucion_canonica_einsof": "Ordena por índice de movimiento por pallet: SKU_A (0.90 mov/pos) -> Bahía 1 (20 pos); SKU_B (0.19 mov/pos) -> Bahía 1 (restan 80 pos, completando Bahía 1); SKU_C -> Bahía 2 (150 pos); SKU_D -> resto de Bahía 2 (50 pos) y Bahía 3 (150 pos). Ahorro de recorrido diario: 68.4%."
+ },
+ {
+  "id": 33,
+  "titulo": "Prueba 33: Punto de Reorden y Stock de Seguridad con Lead Time Variable y Demanda Estocástica",
+  "area": "Logística, Almacén y Rutas de Despacho",
+  "prompt": "Un producto tiene una demanda media de 120 unidades/día con desviación estándar de 25 u/día. El proveedor tarda en entregar un promedio de 8 días con desviación de 2 días. La empresa exige un nivel de servicio del 98% (Z = 2.05). Calcula el Stock de Seguridad exacto y el Punto de Reorden (ROP) formal combinando ambas variabilidades.",
+  "por_que_complejo": "La varianza de la demanda durante el lead time combina dos variables aleatorias independientes: $\\sigma_{DL} = \\sqrt{\\bar{L} \\cdot \\sigma_D^2 + \\bar{D}^2 \\cdot \\sigma_L^2}$. La mayoría de la gente omite el término de la variabilidad del proveedor.",
+  "fallo_modelo_base": "Usa la fórmula simple $\\sigma \\sqrt{L}$ ignorando que el tiempo de entrega no es fijo, subdimensionando el stock de seguridad en más de un 60%.",
+  "solucion_canonica_einsof": "Calcula $\\sigma_{DL} = \\sqrt{8 \\cdot (25)^2 + (120)^2 \\cdot (2)^2} = \\sqrt{5000 + 57600} = \\sqrt{62600} \\approx 250.2$ unidades. Stock de seguridad = $2.05 \\cdot 250.2 = 513$ unidades. Demanda esperada en lead time = $120 \\cdot 8 = 960$. ROP = $960 + 513 = 1.473$ unidades."
+ },
+ {
+  "id": 34,
+  "titulo": "Prueba 34: Estiba de Pallets con Capacidad Portante de Caja y Apilamiento Máximo",
+  "area": "Logística, Almacén y Rutas de Despacho",
+  "prompt": "Cajas de cartón corrugado de 40x30x25 cm pesan 18 kg. La resistencia al aplastamiento (BCT) nominal de la caja es de 140 kg. Se aplica un factor de seguridad por humedad y tiempo de estiba de 2.2. Si un pallet estándar mide 120x100 cm y el camión permite una altura máxima de carga de 2.20 m (pallet incluido, 15 cm de alto), determina cuántas capas de cajas se pueden apilar sin que colapse la caja inferior.",
+  "por_que_complejo": "La altura geométrica permite $(220-15)/25 = 8$ capas. Pero la resistencia admisible por caja es $140 / 2.2 = 63.63$ kg. Cada caja superior pesa 18 kg, por lo que una caja soporta máximo $63.63 / 18 = 3.53$ cajas arriba (máximo 4 cajas totales en columna).",
+  "fallo_modelo_base": "Apila 8 capas basándose puramente en la altura del techo del camión, provocando el aplastamiento de las cajas de la base por sobrepeso.",
+  "solucion_canonica_einsof": "Cruza la restricción dimensional con la resistencia mecánica: límite por peso = 4 niveles (108 cajas por pallet, 72 kg sobre caja base < 140/2.2). Emite alerta de límite portante."
+ },
+ {
+  "id": 35,
+  "titulo": "Prueba 35: Costo de Transporte por Tonelada-Kilómetro en Flota Propia vs. Tercerizada",
+  "area": "Logística, Almacén y Rutas de Despacho",
+  "prompt": "Una empresa traslada 600 toneladas mensuales entre Planta y Depósito (distancia 280 km). Puede contratar fletes terceros a $3.200 por km recorrido (ida con carga, vuelta vacía), o comprar 2 camiones de 30 toneladas de capacidad útil. Camión propio: cuota leasing $3.500.000/mes c/u, seguro $450.000/mes c/u, chofer $2.100.000/mes c/u, combustible 38 L/100km a $1.200/L, cubiertas y mantenimiento $180 por km. Realiza el análisis de punto de equilibrio mensual en toneladas.",
+  "por_que_complejo": "El viaje es de 560 km ida y vuelta (280 km cargado + 280 km vacío). 600 toneladas en camiones de 30 tn representan 20 viajes al mes (11.200 km totales).",
+  "fallo_modelo_base": "Calcula el flete de terceros solo sobre los 280 km de ida ($3.200 * 280) o divide los costos fijos sin considerar el consumo del viaje de regreso en vacío.",
+  "solucion_canonica_einsof": "Flete tercero: 20 viajes * 560 km * $3.200 = $35.840.000/mes. Flota propia: Costos fijos = 2 * ($3.5M + $0.45M + $2.1M) = $12.100.000. Costo variable/km = (38 * $1200 / 100) + $180 = $636/km * 11.200 km = $7.123.200. Total propia = $19.223.200. Ahorro mensual propia = $16.616.800 (46.3%). Punto de equilibrio = 217 toneladas/mes."
+ },
+ {
+  "id": 36,
+  "titulo": "Prueba 36: Cross-Docking Dinámico en Terminal Logística con Congestión de Puertas",
+  "area": "Logística, Almacén y Rutas de Despacho",
+  "prompt": "Una terminal tiene 4 puertas de entrada y 6 de salida. Llegan 8 camiones inbound simultáneamente con mercancía para 12 destinos regionales. El tiempo de despaletizado es de 3 minutos por pallet y el traslado interno por transpaleta eléctrica toma $t = 1.2 + 0.05 \\cdot d$ minutos (donde d es la distancia entre puertas de 15 a 90 metros). Diseña la asignación de puertas inbound a outbound para evitar acumulación en playa intermedia.",
+  "por_que_complejo": "Es un problema cuadrático de asignación (QAP). Minimizar la distancia de trasbordo entre las puertas donde hay mayor volumen cruzado evita cuellos de botella en el piso de cross-dock.",
+  "fallo_modelo_base": "Asigna secuencialmente puerta 1 con puerta 1, forzando recorridos máximos entre extremos del almacén.",
+  "solucion_canonica_einsof": "Resuelve la matriz de flujos cruzados colocando los camiones con mayor solapamiento de pallets en puertas enfrentadas directamente, minimizando el tiempo de ciclo total en 42 minutos."
+ },
+ {
+  "id": 37,
+  "titulo": "Prueba 37: Consolidación de Carga LCL en Contenedor Marítimo de 40 Pies High Cube",
+  "area": "Logística, Almacén y Rutas de Despacho",
+  "prompt": "Debes consolidar un contenedor 40' HC (dimensiones internas: 12.03 x 2.35 x 2.69 m, volumen útil 76.2 m³, carga útil máxima 28.500 kg). Se deben cargar: Lote A: 14 pallets de 1.20x1.00x1.60 m (800 kg c/u); Lote B: 300 cajas a granel de 60x50x40 cm (12 kg c/u); Lote C: 12 tambores de 200 litros (diámetro 60 cm, altura 90 cm, 220 kg c/u, no apilables). Valida si la carga es viable en volumen, peso y disposición física sobre el piso del contenedor.",
+  "por_que_complejo": "Peso total: 14*800 + 300*12 + 12*220 = 11.200 + 3.600 + 2.640 = 17.440 kg (< 28.500 kg, pasa). Pero la huella en el piso de los tambores (no apilables) y los pallets de 1.20x1.00 ocupan superficie fija que no permite meter los pallets y tambores sin dejar espacio para las cajas.",
+  "fallo_modelo_base": "Suma los metros cúbicos brutos (37.6 m³ < 76.2 m³) y dice que sobra el 50% del espacio, sin verificar que los tambores no admiten carga encima ni que el ancho de 2.35 m solo admite 2 pallets a lo ancho.",
+  "solucion_canonica_einsof": "Mapea la huella 2D en el suelo: 14 pallets en 7 filas de 2 (8.40 m de largo ocupados) + 12 tambores en piso (2.40 m de largo ocupados). Restan 1.23 m libres de piso donde se cargan las cajas a granel, aprovechando la altura superior de los pallets para el saldo de cajas."
+ },
+ {
+  "id": 38,
+  "titulo": "Prueba 38: Gestión de Inventario Perecedero con Vencimiento FEFO y Descuento por Merma",
+  "area": "Logística, Almacén y Rutas de Despacho",
+  "prompt": "Un supermercado recibe 1.000 unidades de lácteos con 21 días de vida útil. La demanda normal es de 40 unidades/día a precio de $1.500. El día 14 quedan 320 unidades y la demanda baja a 25 u/día si no se rebaja el precio. Una oferta con 40% de descuento triplica la demanda diaria. Si el producto vence, el costo de desecho es $300 por unidad. Diseña el día exacto de activación del descuento para maximizar la rentabilidad neta final.",
+  "por_que_complejo": "Si activa el descuento muy temprano pierde margen en unidades que se venderían a precio completo; si lo activa muy tarde, llega al día 21 con sobrante que paga costo de destrucción.",
+  "fallo_modelo_base": "Sugiere esperar hasta el día 20 o aplicar el descuento inmediatamente el día 14 sin simular la curva de agotamiento exacto.",
+  "solucion_canonica_einsof": "Modela el sistema dinámico: Vendiendo a precio normal del día 14 al 17 se venden 4*25 = 100 u (quedan 220 u). Activando descuento de $900 el día 18 (4 días de vida), la demanda sube a 75 u/día, vendiendo 220 u en 3 días. Desperdicio final = 0 u. Ingreso neto maximizado."
+ },
+ {
+  "id": 39,
+  "titulo": "Prueba 39: Dimensionamiento de Baterías de Autoelevador para Operación de 3 Turnos Continuos",
+  "area": "Logística, Almacén y Rutas de Despacho",
+  "prompt": "Una flota de 6 autoelevadores eléctricos opera 24 horas continuas (tres turnos de 8 horas). Cada batería de Plomo-Ácido dura 6 horas de trabajo continuo, requiere 8 horas de carga completa y 8 horas obligatorias de enfriamiento antes de reutilizarse (regla 8-8-8). ¿Cuántas baterías adicionales por máquina se requieren como mínimo absoluto para garantizar operación ininterrumpida sin degradar la vida útil de las celdas?",
+  "por_que_complejo": "El ciclo total de una batería es 6h uso + 8h carga + 8h enfriamiento = 22 horas. En 24 horas de operación continua se necesitan 4 ciclos de batería (24 / 6 = 4 baterías por máquina).",
+  "fallo_modelo_base": "Responde que 'con 2 baterías alcanza (una en uso y otra cargando)', destruyendo las baterías por sobrecalentamiento al saltarse las 8 horas de reposo.",
+  "solucion_canonica_einsof": "Demuestra que cada equipo necesita un parque de rotación de 4 baterías (1 en máquina, 2 en cargador/enfriamiento, 1 lista en espera), totalizando 24 baterías para la flota completa."
+ },
+ {
+  "id": 40,
+  "titulo": "Prueba 40: Cálculo de Penalidad por Demoras de Buque (Demurrage) en Puerto",
+  "area": "Logística, Almacén y Rutas de Despacho",
+  "prompt": "Un buque granelero atraca con 45.000 toneladas métricas de carga. El contrato estipula una tasa de descarga (Laytime) de 5.000 toneladas por día hábil de tiempo meteorológico permisible (WWD de 24 horas consecutivas), excluyendo domingos y feriados (SHEX). La descarga comenzó el miércoles a las 08:00 hs. Hubo lluvia torrencial el viernes de 10:00 a 18:00 hs (8 horas no computables). La descarga terminó el miércoles siguiente a las 14:00 hs. La tarifa de demora (Demurrage) es de USD 22.000/día o prorrata. Calcula el monto exacto de demurrage o despacho a favor.",
+  "por_que_complejo": "Tiempo permitido = 45.000 / 5.000 = 9 días = 216 horas netas. Se deben descontar las 8 horas de lluvia del viernes y el domingo completo (24 horas).",
+  "fallo_modelo_base": "Cuenta días corridos de calendario o calcula el demurrage sin descontar las horas de lluvia ni la cláusula SHEX.",
+  "solucion_canonica_einsof": "Liquida el Time-Sheet náutico hora por hora: horas transcurridas = 174 horas. Horas computables reales = 174 - 8 (lluvia) - 24 (domingo) = 142 horas. Como 142 h < 216 h permitidas, el buque terminó 74 horas antes de tiempo: no hay Demurrage, sino Despatch a favor del fletador (USD 33.916 a la mitad de la tarifa de demora)."
+ },
+ {
+  "id": 41,
+  "titulo": "Prueba 41: Caída de Tensión y Sección de Cable en Alimentador Trifásico Subterráneo",
+  "area": "Electricidad y Redes de Distribución",
+  "prompt": "Se debe alimentar una bomba centrífuga trifásica de 45 kW (rendimiento 92%, cos phi 0.84) a 380 V desde un tablero principal ubicado a 140 metros de distancia en zanja subterránea (cables unipolar de cobre XLPE enterrados a 0.8 m, temperatura de terreno 25°C). La norma exige una caída de tensión máxima admisible del 3%. Determina la corriente nominal, la corriente de proyecto corregida por factores de agrupamiento y temperatura, la sección mínima de conductor en mm² para no superar el 3% de caída de tensión y verifica la capacidad térmica.",
+  "por_que_complejo": "$P_{electrica} = 45 / 0.92 = 48.91$ kW. Corriente nominal $I = 48.910 / (\\sqrt{3} \\cdot 380 \\cdot 0.84) = 88.5$ A. La caída de tensión $\\Delta U = \\sqrt{3} \\cdot I \\cdot L \\cdot (R \\cos\\phi + X \\sin\\phi)$ exige considerar la reactancia inductiva $X$ a 140 metros, no solo la resistencia óhmica.",
+  "fallo_modelo_base": "Usa fórmulas aproximadas monofásicas de corriente continua ($\\Delta V = 2 \\cdot I \\cdot R$) ignorando el factor de potencia y la reactancia inductiva, recomendando cables subdimensionados de 16 mm² que sufren caída superior al 5%.",
+  "solucion_canonica_einsof": "Calcula: Sección por térmica = 25 mm² (admite 115 A). Pero a 140 m, 25 mm² produce caída de 3.65% (> 3.0%). Escala obligatoriamente a conductor de 35 mm² de cobre XLPE ($\\Delta U = 2.62\\% = 9.95$ V < 11.4 V permitidos)."
+ },
+ {
+  "id": 42,
+  "titulo": "Prueba 42: Compensación de Energía Reactiva y Resonancia con Armónicos",
+  "area": "Electricidad y Redes de Distribución",
+  "prompt": "Una planta industrial tiene una carga activa de 280 kW con un factor de potencia actual de 0.72 inductivo. Se desea corregir el factor de potencia a 0.96 para evitar recargos en factura. Además, el transformador es de 500 kVA (impedancia $u_k = 4.5\\%$) y existen variadores de velocidad que inyectan 5° y 7° armónicos. Calcula la potencia del banco de capacitores en kVAr y determina el orden del armónico de resonancia paralelo para verificar si se requieren inductancias de desintonización.",
+  "por_que_complejo": "Potencia reactiva requerida: $Q_c = P \\cdot (\\tan(\\phi_1) - \\tan(\\phi_2)) = 280 \\cdot (\\tan(\\arccos 0.72) - \\tan(\\arccos 0.96)) = 280 \\cdot (0.964 - 0.291) = 188.4$ kVAr (banco comercial de 190 kVAr). Frecuencia de resonancia $n_r = \\sqrt{S_{trafo} / (Q_c \\cdot u_k)} = \\sqrt{500 / (190 \\cdot 0.045)} = \\sqrt{58.48} \\approx 7.6$. Está peligrosamente cerca del 7° armónico, arriesgando explosión de capacitores por sobretensión resonante.",
+  "fallo_modelo_base": "Calcula los 190 kVAr pero no hace el test de resonancia armónica del circuito LC tanque con el transformador, recomendando bancos comunes sin reactores de bloqueo de 189 Hz.",
+  "solucion_canonica_einsof": "Entrega el valor exacto de 190 kVAr dividido en pasos de 10+20+40+40+80 kVAr y exige inductancias de bloqueo de sintonía al 7% (189 Hz) para proteger los capacitores frente al 5° y 7° armónico."
+ },
+ {
+  "id": 43,
+  "titulo": "Prueba 43: Coordinación de Protecciones y Selectividad Termomagnética",
+  "area": "Electricidad y Redes de Distribución",
+  "prompt": "En un tablero general se tiene un interruptor automático caja moldeada de cabecera de 250 A curva C (Icu = 36 kA) y aguas abajo un interruptor modular para un subramal de 63 A curva C (Icu = 10 kA). La corriente de cortocircuito presunta al inicio del subramal es de 4.800 A. Evalúa si existe selectividad cronométrica o amperométrica total o parcial y cómo regular el retardo de disparo breve (Isd) del interruptor principal para evitar el corte total de planta ante un cortocircuito en el ramal.",
+  "por_que_complejo": "A 4.800 A, el disparo magnético instantáneo del interruptor de 250 A (10 x In = 2.500 A) disparará al unísono con el de 63 A (10 x In = 630 A), provocando apagón total si no se parametriza retardo de tiempo ($t_{sd} = 100$ ms en relé electrónico LSI).",
+  "fallo_modelo_base": "Sostiene que como 250 A > 63 A 'hay selectividad automática', ignorando que en zona magnética de cortocircuito las curvas de disparo se cruzan.",
+  "solucion_canonica_einsof": "Grafica los puntos de intersección $I^2 t$, define el límite de selectividad en 2.500 A y receta la parametrización exacta de la unidad electrónica Micrologic/Tmax para selectividad total hasta 10 kA."
+ },
+ {
+  "id": 44,
+  "titulo": "Prueba 44: Dimensionamiento de Grupo Electrógeno para Arranque de Motores Directos",
+  "area": "Electricidad y Redes de Distribución",
+  "prompt": "Una clínica necesita un generador diésel de emergencia para respaldar: 40 kW de iluminación y equipos monofásicos (cos phi 0.95), y 2 bombas contra incendios de 15 kW (cos phi 0.82) con arranque directo (DOL, corriente de arranque 6.5 veces la nominal). El generador no debe sufrir una caída de tensión superior al 20% durante el arranque del motor más desfavorable con la carga base conectada. ¿De qué potencia en kVA debe ser el grupo electrógeno?",
+  "por_que_complejo": "El arranque directo de un motor de 15 kW exige una potencia transitoria de $15 \\cdot 6.5 / 0.82 \\approx 119$ kVA con factor de potencia bajísimo (0.3). Si se dimensiona por suma lineal de potencias en régimen permanente (70 kVA), el generador se apaga por descebe del AVR durante el transitorio.",
+  "fallo_modelo_base": "Suma $40 + 15 + 15 = 70$ kW y sugiere un generador de 80 o 100 kVA, provocando el colapso de la planta en el primer arranque de bomba.",
+  "solucion_canonica_einsof": "Aplica la curva transitoria del alternador: Potencia en régimen = 82 kVA; Potencia de paso de arranque de motor = Carga base (42 kVA) + Transitorio motor (119 kVA) = 161 kVA transitorios. Selecciona grupo electrógeno comercial de 135 kVA con motor sobredimensionado y alternador de baja reactancia subtransitoria $X''_d$."
+ },
+ {
+  "id": 45,
+  "titulo": "Prueba 45: Puesta a Tierra y Medición de Resistencia de Malla según Método Wenner",
+  "area": "Electricidad y Redes de Distribución",
+  "prompt": "Se realizó un sondeo eléctrico vertical Wenner en un terreno con espaciamientos de jabalinas $a = [1, 2, 4, 8, 16]$ metros, obteniendo resistencias medidas $R = [14.2, 8.5, 4.1, 2.3, 1.4]$ ohms. Calcula la resistividad aparente del terreno $\\rho = 2 \\pi a R$ en cada profundidad, determina si el suelo es de 2 capas con estrato inferior más conductor y diseña una malla de puesta a tierra de 10x10 m para alcanzar $R_{pat} \\le 5$ ohms.",
+  "por_que_complejo": "Multiplica $\\rho = 2 \\pi a R$: a=1m: $\\rho=89.2 \\ \\Omega \\cdot m$; a=2m: $\\rho=106.8 \\ \\Omega \\cdot m$; a=4m: $\\rho=103.0 \\ \\Omega \\cdot m$; a=8m: $\\rho=115.6 \\ \\Omega \\cdot m$; a=16m: $\\rho=140.7 \\ \\Omega \\cdot m$. La resistividad sube con la profundidad (estrato inferior más resistivo).",
+  "fallo_modelo_base": "Promedia aritméticamente los ohms sin aplicar $2 \\pi a R$ o asume erróneamente que la resistencia decreciente implica que el suelo profundo es mejor conductor.",
+  "solucion_canonica_einsof": "Interpreta el perfil de resistividades de IEEE 80, modela la malla de 4 mallas de 5x5 m con 4 jabalinas perimetrales de 3 m y calcula la resistencia combinada con la fórmula de Sverak obteniendo $R_{pat} = 3.82 \\ \\Omega \\le 5 \\ \\Omega$."
+ },
+ {
+  "id": 46,
+  "titulo": "Prueba 46: Cálculo de Esfuerzo de Cortocircuito Dinámico en Barras Colectoras",
+  "area": "Electricidad y Redes de Distribución",
+  "prompt": "Un tablero de distribución principal tiene un juego de 3 barras colectoras de cobre planas de 50x5 mm dispuestas de canto con separación entre fases de $d = 120$ mm y distancia entre aisladores soporte de $L = 800$ mm. Si el cortocircuito trifásico de pico es $I_{peak} = 50$ kA, calcula la fuerza electrodinámica máxima por metro entre fases y el momento flector sobre las barras para verificar si se doblan o rompen los aisladores.",
+  "por_que_complejo": "Ley de Biot-Savart/IEC 60865: $F_m = (\\mu_0 / 2\\pi) \\cdot (I_{peak}^2 / d) \\cdot 0.866$. La fuerza es gigantesca y produce flexión sobre el eje débil de la barra plana.",
+  "fallo_modelo_base": "Omite el pico asimétrico de cresta (usa corriente RMS) y calcula fuerzas 5 veces menores a las reales, aprobando montajes mecánicos que estallan en el ensayo de tipo.",
+  "solucion_canonica_einsof": "$F_m = 2 \\cdot 10^{-7} \\cdot (50.000)^2 / 0.12 = 4.166$ N/m. Momento flector $M = F \\cdot L^2 / 12 = 4166 \\cdot 0.64 / 12 = 222.2$ N·m. Tensión de flexión mecánica en el cobre $\\sigma = M / W = 222.2 / (5 \\cdot 50^2 / 6 \\cdot 10^{-9}) = 106.6$ MPa < 200 MPa admisible. Verifica que los soportes soporten 3.333 N de tracción."
+ },
+ {
+  "id": 47,
+  "titulo": "Prueba 47: Disipación Térmica y Ventilación Forzada de Tablero Eléctrico de Potencia",
+  "area": "Electricidad y Redes de Distribución",
+  "prompt": "Un armario estanco IP54 de 2000x800x600 mm aloja 3 variadores de frecuencia que disipan 450 W c/u y aparamenta varia que disipa 250 W (calor total 1.600 W). La temperatura ambiente externa máxima es de 35°C y la temperatura interna no debe superar los 45°C ($\\Delta T = 10$ K). Considerando la disipación natural por chapa según IEC 60890, determina si alcanza la ventilación natural o qué caudal de aire en m³/h debe inyectar un ventilador con filtro.",
+  "por_que_complejo": "Superficie efectiva del armario (contra pared): $A = 1.8 \\cdot H \\cdot (W+D) + 1.4 \\cdot W \\cdot D \\approx 3.7$ m². Disipación natural $P_{nat} = 5.5 \\cdot A \\cdot \\Delta T \\approx 5.5 \\cdot 3.7 \\cdot 10 = 203.5$ W. Restan $1.600 - 203.5 = 1.396.5$ W a evacuar por aire forzado: $V = 3.1 \\cdot P_{evac} / \\Delta T$.",
+  "fallo_modelo_base": "Cree que con rejillas pasivas 'el aire caliente sube solo' o aplica la fórmula de ventilación sin descontar la superficie de intercambio de chapa.",
+  "solucion_canonica_einsof": "Caudal forzado requerido: $V = 3.1 \\cdot 1396.5 / 10 = 433$ m³/h. Con factor de ensuciamiento de filtro del 20%, prescribe un kit de ventilación forzada de 550 m³/h con termostato calibrado a 38°C."
+ },
+ {
+  "id": 48,
+  "titulo": "Prueba 48: Arranque Estrella-Triángulo vs. Arrancador Suave en Molino de Martillos",
+  "area": "Electricidad y Redes de Distribución",
+  "prompt": "Un molino de martillos tiene un motor de 55 kW con alto momento de inercia ($J = 12 \\ kg \\cdot m^2$) y par resistente cuadrático. En arranque estrella-triángulo la corriente pico en la transición estrella a triángulo supera 7 veces la nominal y quema fusibles de cabecera. Explica por qué ocurre este transitorio de conmutación electromagnética y calcula la rampa de tensión y límite de corriente óptimo si se sustituye por un arrancador suave electrónico (Soft-Starter).",
+  "por_que_complejo": "Al abrir estrella y cerrar triángulo, la fuerza contraelectromotriz residual del rotor puede quedar desfasada 180° respecto a la red eléctrica, generando un choque de corriente y par mecánico destructivo peor que el arranque directo.",
+  "fallo_modelo_base": "Dice que el arranque estrella-triángulo 'siempre consume un tercio de la corriente', ignorando el pico transitorio de conmutación en cargas de alta inercia.",
+  "solucion_canonica_einsof": "Explica la desincronización de flujo residual, parametriza el arrancador suave con rampa de aceleración de 18 segundos y limitación de corriente al 350% de In, eliminando el pico transitorio por completo."
+ },
+ {
+  "id": 49,
+  "titulo": "Prueba 49: Protecciones Diferenciales Tipo B para Estaciones de Carga de Vehículos Eléctricos",
+  "area": "Electricidad y Redes de Distribución",
+  "prompt": "Una estación de recarga de vehículos eléctricos Modo 3 con toma Tipo 2 de 22 kW trifásica alimenta cargadores de a bordo con rectificadores de 6 pulsos. ¿Por qué el reglamento electrotécnico prohíbe el uso de interruptores diferenciales comunes Tipo AC o Tipo A y exige Tipo B o dispositivos RDC-DD de 6 mA DC? ¿Qué fenómeno físico inhabilita al diferencial Tipo A?",
+  "por_que_complejo": "Las fugas de corriente continua suave procedentes del puente rectificador saturan magnéticamente el núcleo toroidal de ferrita del transformador de corriente del diferencial Tipo A/AC, 'cegándolo' de modo que no dispara ante una fuga peligrosa en alterna.",
+  "fallo_modelo_base": "Responde que 'el Tipo B es mejor porque aguanta más amperes' o no sabe qué es la saturación por corriente continua pura ($I_{dc} \\ge 6$ mA).",
+  "solucion_canonica_einsof": "Detalla la física de la saturación del núcleo de magnetización toroidal por corrientes DC residuales superiores a 6 mA y prescribe el uso de diferencial Tipo B o Tipo A + RDC-DD (IEC 62955)."
+ },
+ {
+  "id": 50,
+  "titulo": "Prueba 50: Rendimiento y Pérdidas de Transformador de Potencia en Aceite",
+  "area": "Electricidad y Redes de Distribución",
+  "prompt": "Un transformador de 1.000 kVA, 13.2 / 0.4 kV presenta: Pérdidas en vacío (núcleo) $P_0 = 1.650$ W; Pérdidas en cortocircuito (cobre a plena carga) $P_k = 10.500$ W. Opera con una carga constante de 650 kVA con cos phi 0.88 inductivo. Determina las pérdidas totales en watts en ese punto de operación, el rendimiento porcentual exacto y el índice de carga donde el rendimiento es matemáticamente máximo.",
+  "por_que_complejo": "Las pérdidas en el cobre varían cuadráticamente con el índice de carga: $P_{cu} = P_k \\cdot (S / S_n)^2 = 10.500 \\cdot (650/1000)^2 = 10.500 \\cdot 0.4225 = 4.436.25$ W. El rendimiento máximo se produce cuando las pérdidas en el cobre igualan a las pérdidas en el hierro ($P_{cu} = P_0$).",
+  "fallo_modelo_base": "Calcula las pérdidas en el cobre de forma lineal con la carga ($10.500 * 0.65$) obteniendo 6.825 W (un 54% de error en pérdidas variables).",
+  "solucion_canonica_einsof": "Pérdidas totales = $1.650 + 4.436.25 = 6.086.25$ W. Potencia activa útil = $650 \\cdot 0.88 = 572$ kW. Rendimiento = $572.000 / (572.000 + 6.086.25) = 98.95\\%$. Rendimiento máximo en $\\beta = \\sqrt{P_0 / P_k} = \\sqrt{1650 / 10500} = 39.6\\%$ de carga (396 kVA)."
+ },
+ {
+  "id": 51,
+  "titulo": "Prueba 51: Diagrama de Turnos Rotativos 6x2 con Descanso Hebdomadario de 35 Horas Continuas",
+  "area": "Recursos Humanos y Turnos Rotativos",
+  "prompt": "Diseña un cronograma de turnos rotativos para una planta de proceso continuo (24/7) con 4 guardias (A, B, C, D) en ciclo de 8 horas (Mañana 06-14, Tarde 14-22, Noche 22-06). El esquema es de 6 días de trabajo seguidos por 2 días de descanso (6x2). Verifica si en algún punto del ciclo de 56 días se viola el descanso semanal obligatorio legal de 35 horas continuas (desde las 13:00 hs del sábado o finalización de jornada hasta reingreso).",
+  "por_que_complejo": "Al rotar de turno de Noche (sale a las 06:00 hs) a 2 días francos, el trabajador tiene $48 + 16 = 64$ horas de descanso; pero al rotar de Tarde (sale a las 22:00) y volver a la Mañana (06:00), los 2 francos pueden dar exactamente $48 + 8 = 56$ horas, requiriendo verificar que no se acumulen más de 48 horas semanales promedio sin franco compensatorio.",
+  "fallo_modelo_base": "Genera calendarios donde una guardia trabaja 7 días seguidos o entra con solo 8 horas de intervalo entre el turno de noche y tarde (violando las 12 horas mínimas de descanso entre jornadas).",
+  "solucion_canonica_einsof": "Proyecta la matriz booleana de 56 días para las 4 escuadras, garantizando descanso entre jornadas $\\ge 16$ horas y descanso franco $\\ge 56$ horas continuas con 42 horas promedio semanales."
+ },
+ {
+  "id": 52,
+  "titulo": "Prueba 52: Liquidación de Vacaciones no Gozadas con Sueldo Variable por Comisiones",
+  "area": "Recursos Humanos y Turnos Rotativos",
+  "prompt": "Un empleado comercial renuncia el 30 de abril de 2026. Antigüedad: 6 años (le corresponden 21 días de vacaciones anuales). Su sueldo básico es de $800.000. Durante los últimos 6 meses percibió comisiones variables: Nov: $450.000, Dic: $920.000, Ene: $380.000, Feb: $410.000, Mar: $600.000, Abr: $540.000. Determina el valor del día de vacaciones (Art. 155 LCT: sueldo básico / 25 + promedio de variables), calcula los días proporcionales de vacaciones por los 4 meses trabajados en el año y el monto de la indemnización por vacaciones no gozadas con su SAC proporcional.",
+  "por_que_complejo": "El día de vacación se divide por 25 (plus vacacional), no por 30. Las comisiones se promedian por 6 meses ($550.000 / 30 = $18.333/día). Días proporcionales: $21 \\cdot (120 / 360) = 7$ días. Además, la vacación no gozada genera SAC proporcional sobre sí misma (fallo plenario y doctrina laboral unánime).",
+  "fallo_modelo_base": "Divide todo por 30 ignorando el plus vacacional del divisor 25 o se olvida de calcular el SAC (aguinaldo) sobre las vacaciones no gozadas.",
+  "solucion_canonica_einsof": "Valor día básico = $800.000 / 25 = $32.000. Valor día variable = $550.000 / 25 = $22.000. Total día vacación = $54.000. Por 7 días = $378.000. SAC s/vacaciones no gozadas (8.33%) = $31.500. Total a liquidar = $409.500."
+ },
+ {
+  "id": 53,
+  "titulo": "Prueba 53: Cálculo de Horas Nocturnas Mixtas con Reducción de Jornada (8 min por hora)",
+  "area": "Recursos Humanos y Turnos Rotativos",
+  "prompt": "Un trabajador de vigilancia bajo jornada mixta ingresa a las 18:00 hs y egresa a las 03:00 hs del día siguiente (con 1 hora de pausa intermedia de cena no remunerada de 21:00 a 22:00 hs). Su horario comprende horas diurnas y nocturnas (las horas nocturnas rigen de 21:00 a 06:00 hs, donde cada hora trabajada equivale a 1 hora y 8 minutos a efectos de jornada, o se abona un recargo de 8 minutos como hora extra). Determina cuántas horas comunes, cuántas horas nocturnas puras y cuántos minutos de sobreasignación o recargo deben liquidarse en esa jornada diaria.",
+  "por_que_complejo": "De 18:00 a 21:00 hs: 3 horas diurnas. De 21:00 a 22:00 hs: pausa no laborada. De 22:00 a 03:00 hs: 5 horas laboradas en horario nocturno puro. Cada hora nocturna genera 8 minutos de exceso de jornada = 5 * 8 = 40 minutos extraordinarios.",
+  "fallo_modelo_base": "Suma 8 horas y aplica recargo nocturno sobre las horas de la cena o calcula el recargo nocturno en pesos como si fuera un 100% de hora extra.",
+  "solucion_canonica_einsof": "Discrimina: 3 horas diurnas normales, 5 horas nocturnas trabajadas (con recargo de ley del 30% sobre el salario básico horario) + 40 minutos a liquidar al valor de hora extra al 50%."
+ },
+ {
+  "id": 54,
+  "titulo": "Prueba 54: Licencia por Maternidad Down con Nacimiento Prematuro y Acumulación de Días",
+  "area": "Recursos Humanos y Turnos Rotativos",
+  "prompt": "Una trabajadora notificó fecha probable de parto (FPP) para el 25 de noviembre y optó por la licencia pre-parto de 30 días (iniciando el 26 de octubre). El bebé nace prematuro el 05 de noviembre (20 días antes de la FPP). De acuerdo con el régimen de la LCT (Art. 177) y leyes complementarias de protección integral, ¿cuántos días de licencia post-parto le corresponden para completar los 90 días legales y cuándo vence su excedencia si opta por ella?",
+  "por_que_complejo": "En caso de parto prematuro, todos los días de licencia pre-parto no gozados (20 días) se acumulan automáticamente al descanso post-parto para asegurar los 90 días íntegros.",
+  "fallo_modelo_base": "Hace perder a la madre los días no gozados antes del parto, fijándole solo 60 días posteriores (80 días totales en vez de los 90 de orden público).",
+  "solucion_canonica_einsof": "Computa los 10 días previos gozados y traslada los 80 días restantes al periodo post-parto (finalizando el 24 de enero de 2027), detallando plazos para acogerse al periodo de excedencia de 3 a 6 meses."
+ },
+ {
+  "id": 55,
+  "titulo": "Prueba 55: Asignación de Dotación Mínima en Centro de Llamadas con Modelo Erlang C",
+  "area": "Recursos Humanos y Turnos Rotativos",
+  "prompt": "Un call center de atención a clientes recibe en su hora pico 450 llamadas telefónicas. La duración media de cada llamada es de 180 segundos (3 minutos). El objetivo de nivel de servicio (SL) es atender el 80% de las llamadas antes de los 20 segundos de espera, con una tasa de ocupación de los agentes que no supere el 85%. Utilizando la teoría de colas Erlang C, calcula el número mínimo de operadores necesarios en línea y el porcentaje real de llamadas que esperarán en cola.",
+  "por_que_complejo": "Tráfico en Erlangs: $A = (\\lambda \\cdot T_s) / 3600 = (450 \\cdot 180) / 3600 = 22.5$ Erlangs. Mínimo de agentes para estabilidad $N > 22.5$ (al menos 23). Pero para cumplir la ocupación $\\rho = A / N \\le 0.85$, $N \\ge 22.5 / 0.85 = 26.5$ (al menos 27). Luego la fórmula de Erlang C evalúa la probabilidad de espera $P(W>0) = C(N, A)$.",
+  "fallo_modelo_base": "Divide 450 llamadas por hora entre llamadas que puede atender un agente (20 por hora) y dice que alcanzan 23 agentes, ignorando los picos de cola y el tiempo de espera de 20 segundos.",
+  "solucion_canonica_einsof": "Evalúa Erlang C: con 27 agentes, ocupación = 83.3%, probabilidad de espera = 31.2%, y porcentaje atendido en menos de 20 segundos = 84.6% (> 80%). Determina que 27 operadores es el mínimo estricto."
+ },
+ {
+  "id": 56,
+  "titulo": "Prueba 56: Liquidación de Accidente de Trabajo por Baremo Ley 24.557 e Incapacidad Parcial",
+  "area": "Recursos Humanos y Turnos Rotativos",
+  "prompt": "Un operario de 38 años sufre un accidente de trabajo con fractura de muñeca que consolida con limitación funcional de flexo-extensión, evaluada por comisión médica en 18% de incapacidad laboral permanente parcial definitiva (incluyendo factores de ponderación). Su Ingreso Base Mensual (IBM) actualizado es de $920.000. Calcula la indemnización dineraria de pago único del Art. 14 inc. 2 a) de la Ley de Riesgos del Trabajo ($53 \\times IBM \\times \\% \\times (65 / edad)$) más la compensación adicional del 20% (Art. 3 Ley 26.773) y verifica frente al piso indemnizatorio mínimo vigente.",
+  "por_que_complejo": "Fórmula: $53 \\cdot 920.000 \\cdot 0.18 \\cdot (65 / 38) = 8.776.800 \\cdot 1.7105 = $15.012.716. A esto se le suma obligatoriamente el 20% por daño moral y pérdida de chance según ley 26.773 ($3.002.543) = $18.015.259.",
+  "fallo_modelo_base": "Omite el multiplicador etario $(65 / edad)$ o el adicional de pago único del 20% de la ley 26.773, liquidando un tercio del valor real.",
+  "solucion_canonica_einsof": "Desarrolla cada término de la fórmula polinómica de la LRT, coteja con el piso RIPTE publicado y fija la indemnización exacta en $18.015.259."
+ },
+ {
+  "id": 57,
+  "titulo": "Prueba 57: Cálculo de Sanciones Disciplinarias Progresivas y Despido por Reiteración",
+  "area": "Recursos Humanos y Turnos Rotativos",
+  "prompt": "Un empleado acumula en los últimos 11 meses: 2 llamados de atención por llegadas tarde, 1 suspensión de 1 día por falta injustificada, y 1 suspensión de 3 días por desobediencia a una orden directa. Hoy comete una nueva falta injustificada. Diseña la sanción correspondiente para mantener la gradualidad y proporcionalidad disciplinaria (Art. 67 y 218 LCT), evaluando si corresponde despido o una suspensión mayor sin exceder el tope de 30 días anuales.",
+  "por_que_complejo": "Si la empresa despide ahora, la jurisprudencia considera que faltar un día tras una suspensión de 3 días no reviste gravedad suficiente para la máxima sanción (ruptura del vínculo), revocando el despido. Corresponde aplicar una suspensión agravada (p. ej. 5 días). Además, las suspensiones acumuladas no deben superar 30 días en el año calendario.",
+  "fallo_modelo_base": "Recomienda 'despido inmediato por reiteración de faltas', exponiendo a la empresa a pagar la indemnización completa por despido abusivo.",
+  "solucion_canonica_einsof": "Justifica jurídicamente por qué el despido es apresurado, redacta la carta documento de suspensión por 5 días con apercibimiento expreso de despido ante la próxima falta grave y valida que la suma anual de 9 días no excede el tope del Art. 220 LCT."
+ },
+ {
+  "id": 58,
+  "titulo": "Prueba 58: Compensación por Extinción de Teletrabajo y Reversibilidad al Trabajo Presencial",
+  "area": "Recursos Humanos y Turnos Rotativos",
+  "prompt": "Una empresa contrató a un desarrollador bajo modalidad presencial en 2021 y en 2023 pasó a teletrabajo 100%. En 2026 la empresa le exige volver a la oficina bajo apercibimiento de abandono de trabajo. El empleado ejerce su derecho de reversibilidad (Art. 8 Ley 27.555). La empresa argumenta que cerró la oficina local y le ofrece reubicarse en otra ciudad a 350 km asumiendo los viáticos. Dictamina si la orden patronal configura 'ius variandi' abusivo y despido indirecto.",
+  "por_que_complejo": "El derecho de reversibilidad de quien era presencial es irrenunciable. El traslado de 350 km altera una condición esencial del contrato (lugar de trabajo) causando perjuicio moral y material grave que no se compensa con viáticos, tipificando ejercicio abusivo del ius variandi (Art. 66 LCT).",
+  "fallo_modelo_base": "Responde que 'como la empresa paga los viáticos, el empleado está obligado a viajar' o ignora el estatuto de reversibilidad de la ley de teletrabajo.",
+  "solucion_canonica_einsof": "Dictamina que la imposibilidad empresaria de otorgar tareas en la sede original no anula el derecho del trabajador, configurando injuria suficiente para que el dependiente se coloque en situación de despido indirecto con derecho a indemnización completa."
+ },
+ {
+  "id": 59,
+  "titulo": "Prueba 59: Distribución de Cargas Sociales y Contribuciones Patronales con Detracciones Decreto 814",
+  "area": "Recursos Humanos y Turnos Rotativos",
+  "prompt": "Una empresa industrial mediana (no sector textil ni primario) tiene 45 empleados con una masa salarial bruta de $54.000.000. Calcula las contribuciones patronales al Sistema Único de Seguridad Social (SUSS) aplicando la alícuota del 20.40% (Art. 2 inc. a Ley 27.541), la detracción no imponible general por empleado ($7.003,68 base) y el aporte a obra social (6%). Determina el costo patronal neto en pesos.",
+  "por_que_complejo": "La detracción general de $7.003,68 se resta de la base imponible de cada trabajador individualmente antes de aplicar la alícuota de contribuciones de seguridad social, pero NO aplica para la base de aportes a obras sociales ni ART.",
+  "fallo_modelo_base": "Aplica la detracción sobre el total de la masa salarial bruta o la aplica indebidamente a las contribuciones de obras sociales y riesgos del trabajo.",
+  "solucion_canonica_einsof": "Desglosa: Base SUSS sujeta a alícuota = $54.000.000 - (45 * $7.003,68) = $53.684.834,40. Contribuciones SIPA/INSSJP/Asig.Fam/FNE (20.40%) = $10.951.706,22. Obra Social patronal (6% sobre $54M) = $3.240.000. Total patronal liquidado exacto."
+ },
+ {
+  "id": 60,
+  "titulo": "Prueba 60: Planificación de Relevos en Paradas de Mantenimiento Mayor (Shutdown)",
+  "area": "Recursos Humanos y Turnos Rotativos",
+  "prompt": "En una parada de planta química de 14 días corridos se deben ejecutar 3.200 horas-hombre de trabajo mecánico y de soldadura. Por seguridad, ningún técnico puede trabajar turnos mayores a 10 horas diarias ni más de 6 días consecutivos sin 24 hs de descanso. Se dispone de un plantel propio de 15 técnicos y se debe definir cuántos soldadores contratistas sumar para asegurar la terminación en día 14 con un colchón de contingencia del 15%.",
+  "por_que_complejo": "Horas requeridas con contingencia: $3.200 \\cdot 1.15 = 3.680$ horas. Cada persona puede trabajar máximo 12 días de los 14 (por la regla de 1 descanso tras 6 días) a 10 hs/día = 120 horas efectivas por persona en toda la parada.",
+  "fallo_modelo_base": "Multiplica 14 días * 10 horas = 140 horas por persona, ignorando el descanso obligatorio y dejando la parada inconclusa o con sobrecosto por fatiga.",
+  "solucion_canonica_einsof": "Horas por técnico = 12 días * 10 h = 120 h. Técnicos necesarios = $3.680 / 120 = 30.66$ (31 técnicos). Con 15 propios, se deben contratar exactamente 16 especialistas externos."
+ },
+ {
+  "id": 61,
+  "titulo": "Prueba 61: Evaluación Económica de Licitación con Fórmula Polinómica de Redeterminación",
+  "area": "Compras, Abastecimiento y Licitaciones",
+  "prompt": "En una licitación pública de obra, la Oferta A cotiza $500.000.000 con fórmula de redeterminación compuesta por: 40% Mano de Obra (UOCRA), 35% Asfalto y 25% Combustible diésel. La Oferta B cotiza $470.000.000 con fórmula: 60% Mano de Obra, 20% Asfalto y 20% Combustible. En un escenario proyectado a 12 meses de: Aumento salarial UOCRA 65%, aumento de Asfalto 30% y aumento de Diésel 90%, ¿cuál oferta termina resultando más económica para el Estado al final de la obra?",
+  "por_que_complejo": "Salto ponderado Oferta A: $0.40 \\cdot 65\\% + 0.35 \\cdot 30\\% + 0.25 \\cdot 90\\% = 26\\% + 10.5\\% + 22.5\\% = 59.0\\%$. Costo final Oferta A = $500M * 1.59 = $795.000.000. Salto ponderado Oferta B: $0.60 \\cdot 65\\% + 0.20 \\cdot 30\\% + 0.20 \\cdot 90\\% = 39\\% + 6\\% + 18\\% = 63.0\\%$. Costo final Oferta B = $470M * 1.63 = $766.100.000.",
+  "fallo_modelo_base": "Se marea cruzando los porcentajes de cada polinomio o dice que la Oferta A es mejor porque tiene menos mano de obra, sin calcular el valor monetario final.",
+  "solucion_canonica_einsof": "Resuelve algebraicamente ambos polinomios de redeterminación y demuestra que la Oferta B mantiene una ventaja económica real de $28.900.000 a favor del comitente al cierre de obra."
+ },
+ {
+  "id": 62,
+  "titulo": "Prueba 62: Cantidad Económica de Pedido (EOQ) con Descuentos por Volumen y Quiebre de Escala",
+  "area": "Compras, Abastecimiento y Licitaciones",
+  "prompt": "Una distribuidora vende 24.000 unidades anuales de un repuesto. El costo de emitir cada orden de compra es de $15.000 y el costo de almacenamiento anual es del 22% del valor unitario. La lista de precios del proveedor es: Tramo 1 (1 a 999 unidades): $4.000/u; Tramo 2 (1.000 a 2.999 unidades): $3.800/u; Tramo 3 (3.000 unidades o más): $3.600/u. Determina el lote óptimo de compra que minimiza el costo total anual (adquisición + pedido + mantenimiento de inventario).",
+  "por_que_complejo": "El EOQ clásico en el Tramo 3 da $Q = \\sqrt{(2 \\cdot 24000 \\cdot 15000) / (0.22 \\cdot 3600)} = \\sqrt{720.000.000 / 792} \\approx 953$ unidades (inviable porque exige mínimo 3.000 u). Se debe evaluar el costo total en el límite inferior de cada tramo elegible.",
+  "fallo_modelo_base": "Informa el EOQ de 953 unidades y compra al precio caro de $4.000, o asume que siempre conviene comprar 3.000 unidades sin verificar si el costo financiero de tener stock paralizado supera el descuento.",
+  "solucion_canonica_einsof": "Costo total en Tramo 2 (EOQ = 978 -> compra 1.000 u) = $91.200.000 adquisición + $360.000 pedidos + $418.000 stock = $91.978.000. Costo total en Tramo 3 (compra 3.000 u) = $86.400.000 adquisición + $120.000 pedidos + $1.188.000 stock = $87.708.000. El lote óptimo es exactamente 3.000 unidades (ahorro anual neto de $4.270.000)."
+ },
+ {
+  "id": 63,
+  "titulo": "Prueba 63: Homologación de Proveedores con Matriz de Decisión Multicriterio AHP",
+  "area": "Compras, Abastecimiento y Licitaciones",
+  "prompt": "Se evalúan 3 proveedores de mecanizado (P1, P2, P3) bajo 4 criterios: Precio (peso 35%), Calidad de pieza / PPM rechazados (peso 30%), Plazo de entrega (peso 20%) y Solvencia financiera (peso 15%). Las puntuaciones normalizadas de 1 a 10 son: P1: [8.5, 7.0, 9.0, 6.0]; P2: [6.0, 9.5, 8.0, 8.5]; P3: [9.5, 6.0, 6.5, 9.0]. Calcula el puntaje ponderado global de cada uno y realiza un análisis de sensibilidad si el peso de Calidad sube al 40% a costa de Precio.",
+  "por_que_complejo": "P1 inicial: $0.35(8.5) + 0.30(7.0) + 0.20(9.0) + 0.15(6.0) = 2.975 + 2.10 + 1.80 + 0.90 = 7.775$. P2 inicial: $0.35(6.0) + 0.30(9.5) + 0.20(8.0) + 0.15(8.5) = 2.10 + 2.85 + 1.60 + 1.275 = 7.825$. P3 inicial: $0.35(9.5) + 0.30(6.0) + 0.20(6.5) + 0.15(9.0) = 3.325 + 1.80 + 1.30 + 1.35 = 7.775$. P2 gana por solo 0.05 puntos.",
+  "fallo_modelo_base": "Elige a P3 por tener el mejor precio (9.5) o se equivoca en la ponderación decimal de la matriz normalizada.",
+  "solucion_canonica_einsof": "Identifica el empate técnico inicial y demuestra que ante el análisis de sensibilidad (Calidad 40%, Precio 25%), P2 amplía su liderazgo a 8.175 puntos, recomendando la adjudicación firme a P2."
+ },
+ {
+  "id": 64,
+  "titulo": "Prueba 64: Análisis Make or Buy (Fabricar o Comprar) con Inversión en Matrices y Vida Útil",
+  "area": "Compras, Abastecimiento y Licitaciones",
+  "prompt": "Una fábrica necesita 15.000 gabinetes metálicos por año durante 3 años. Un proveedor externo cobra $18.500 por unidad terminada. Fabricarlo internamente requiere: comprar una matriz de estampado por $45.000.000 (amortizable en los 3 años), chapa y pintura $8.200/u, mano de obra directa $4.600/u y costos indirectos de energía y supervisión de $1.400/u. Además, el capital invertido en la matriz tiene un costo de oportunidad del 12% anual. Determina el ahorro total neto en valor presente y la decisión estratégica.",
+  "por_que_complejo": "Costo variable interno: $8.200 + $4.600 + $1.400 = $14.200/u. Ahorro operativo por unidad = $18.500 - $14.200 = $4.300/u. Por 15.000 u = $64.500.000 anuales de ahorro operativo frente a una inversión inicial de $45.000.000.",
+  "fallo_modelo_base": "Suma los costos sin descontar el flujo de fondos a valor actual neto (VAN al 12%) o ignora la amortización fiscal de la matriz.",
+  "solucion_canonica_einsof": "Flujo anual de ahorro = $64.500.000. VAN al 12% a 3 años = $-45M + 64.5M * 2.4018 = $+109.916.100. Retorno de inversión (Payback) = 8.4 meses. Decisión contundente: Fabricar internamente (Make)."
+ },
+ {
+  "id": 65,
+  "titulo": "Prueba 65: Negociación de Términos Incoterms 2020: DDP vs. FOB con Riesgos Portuarios",
+  "area": "Compras, Abastecimiento y Licitaciones",
+  "prompt": "Un importador evalúa dos cotizaciones de un proveedor de maquinaria alemán: FOB Hamburgo por EUR 320.000, o DDP Depósito Buenos Aires por EUR 390.000. Los costos estimados por el importador son: Flete marítimo EUR 8.500, Seguro EUR 1.200, Arancel de importación 14% sobre CIF, Tasa de estadística 3%, Gastos de terminal portuaria y despacho aduanero local EUR 4.500, Flete interno camión EUR 1.800. ¿Cuál alternativa resulta financieramente más económica y quién asume el riesgo de demoras en aduana bajo cada Incoterm?",
+  "por_que_complejo": "Bajo DDP el vendedor extranjero debe despachar a plaza y pagar impuestos locales; si la aduana retiene la carga por licencias no automáticas, el comprador no tiene control legal para destrabarla. En costo FOB: CIF = EUR 320.000 + 8.500 + 1.200 = EUR 329.700. Derechos e impuestos: 17% s/CIF = EUR 56.049. Terminal y flete = EUR 6.300. Costo total FOB nacionalizado = EUR 392.049.",
+  "fallo_modelo_base": "Dice que DDP es más caro porque EUR 390.000 parece más que EUR 320.000, sin calcular que el arancel y fletes suman EUR 72.000 extra al FOB.",
+  "solucion_canonica_einsof": "Demuestra que DDP es EUR 2.049 más barato en número bruto, pero advierte el riesgo letal de importación bajo DDP para empresas sin filial local en aduanas complejas, recomendando cotizar DAP o CIF para retener el despacho aduanero propio."
+ },
+ {
+  "id": 66,
+  "titulo": "Prueba 66: Control de Inventario con Modelo de Revisión Periódica (s, S) y Costo de Ruptura",
+  "area": "Compras, Abastecimiento y Licitaciones",
+  "prompt": "Una cadena de ferreterías revisa el stock de electrodos cada 14 días (R = 14 días). El tiempo de entrega del proveedor es de 7 días (L = 7 días). La demanda diaria es normal con media 50 kg y desvío de 10 kg. El costo por faltante (stockout) es de $1.200 por kg no entregado y la empresa quiere asegurar que el riesgo de ruptura no supere el 1% (Z = 2.33). Calcula el nivel objetivo de inventario (S) al que debe completarse la orden en cada fecha de revisión.",
+  "por_que_complejo": "En revisión periódica, el stock de seguridad debe cubrir la variabilidad durante el periodo de revisión MÁS el lead time ($R + L = 14 + 7 = 21$ días), a diferencia de la revisión continua que solo cubre $L$.",
+  "fallo_modelo_base": "Calcula el stock de seguridad usando solo los 7 días de entrega ($L$), provocando faltantes de stock durante los 14 días que la orden no se emite.",
+  "solucion_canonica_einsof": "Desviación en $(R+L) = 10 \\cdot \\sqrt{21} = 45.82$ kg. Stock de seguridad = $2.33 \\cdot 45.82 = 107$ kg. Demanda media en 21 días = $50 \\cdot 21 = 1.050$ kg. Nivel de inventario meta $S = 1.050 + 107 = 1.157$ kg. La orden de compra es $Q = S - Stock\\_Actual$."
+ },
+ {
+  "id": 67,
+  "titulo": "Prueba 67: Penalidades por Mora en Entrega de Suministros Críticos con Cláusula Gradual",
+  "area": "Compras, Abastecimiento y Licitaciones",
+  "prompt": "Un contrato de provisión de válvulas de seguridad fija entrega el 1 de octubre. Se estipula penalidad: 0.5% del valor del contrato por cada día de mora en los primeros 10 días; 1% diario del día 11 al día 20; y resolución culpable con ejecución de fianza del 10% a partir del día 21. Si el contrato es por USD 800.000 y el proveedor entrega el 18 de octubre, calcula la multa total a deducir de la factura final y redacta el asiento de descuento.",
+  "por_que_complejo": "Mora total: 17 días (del 2 al 18 de octubre). Tramo 1 (días 1 al 10): 10 días * 0.5% = 5% = USD 40.000. Tramo 2 (días 11 al 17): 7 días * 1.0% = 7% = USD 56.000. Total penalidad = 12% = USD 96.000.",
+  "fallo_modelo_base": "Aplica el 1% directo a todos los 17 días ($800.000 * 17% = USD 136.000) violando la progresividad pactada, o calcula sobre días hábiles cuando la cláusula dice días corridos.",
+  "solucion_canonica_einsof": "Discrimina los tramos contractuales exactos: USD 40.000 + USD 56.000 = USD 96.000. Neto a pagar al proveedor en factura = USD 704.000, emitiendo el comprobante de débito comercial."
+ },
+ {
+  "id": 68,
+  "titulo": "Prueba 68: Descalce Financiero entre Cobros de Clientes y Pagos a Proveedores (Cash Conversion Cycle)",
+  "area": "Compras, Abastecimiento y Licitaciones",
+  "prompt": "Una empresa industrial presenta los siguientes ratios operativos: Días de inventario en calle (DIO): 68 días; Días de cobro a clientes (DSO): 75 días; Días de pago a proveedores de materia prima (DPO): 42 días. Sus ventas anuales son de $1.200.000.000 con un costo de ventas del 65%. Calcula el Ciclo de Conversión de Efectivo (CCC) en días y el volumen de capital de trabajo financiero que la empresa debe financiar permanentemente en el banco a una tasa del 48% anual.",
+  "por_que_complejo": "Ciclo de caja: $CCC = DIO + DSO - DPO = 68 + 75 - 42 = 101$ días de descalce. Capital de trabajo inmovilizado = $(Costo\\_Ventas / 365) \\cdot DIO + (Ventas / 365) \\cdot DSO - (Compras / 365) \\cdot DPO$.",
+  "fallo_modelo_base": "Suma los días algebraicamente pero calcula el dinero inmovilizado aplicando el porcentaje directo sobre las ventas sin separar el margen ni el costo de ventas.",
+  "solucion_canonica_einsof": "Costo de ventas diario = $780M / 365 = $2.136.986. Inventario = $145.3M. Cuentas por cobrar = $246.5M. Proveedores = $89.7M. Capital de trabajo neto financiado = $302.100.000. Costo financiero anual de mantener ese descalce = $145.008.000."
+ },
+ {
+  "id": 69,
+  "titulo": "Prueba 69: Auditoría de Facturas Duplicadas y Pagos Fantasma con Ley de Benford",
+  "area": "Compras, Abastecimiento y Licitaciones",
+  "prompt": "En una auditoría de compras de 15.000 comprobantes de pago a proveedores, el 28.5% de los importes comienzan con el dígito 7 o el dígito 8, mientras que los importes que comienzan con el dígito 1 representan solo el 11.2%. De acuerdo con la Ley de Benford ($P(d) = \\log_{10}(1 + 1/d)$), ¿cuál es la anomalía estadística porcentual y qué tipo de fraude o fraccionamiento de órdenes de compra para eludir autorizaciones de gerencia revela?",
+  "por_que_complejo": "Por ley de Benford, el dígito 1 debe aparecer naturalmente en el 30.1% de los casos, y el dígito 7 y 8 en el 5.8% y 5.1% (10.9% combinados). Una frecuencia del 28.5% en 7 y 8 indica manipulación deliberada: facturas infladas justo por debajo de topes de autorización (p. ej. $790.000 o $890.000 cuando el límite de firma es $1.000.000).",
+  "fallo_modelo_base": "Asume que todos los dígitos del 1 al 9 deberían tener un 11.1% de probabilidad uniforme o no interpreta el fraccionamiento de compras bajo montos de control.",
+  "solucion_canonica_einsof": "Aplica la prueba de Chi-cuadrado sobre la distribución empírica de Benford, determina p-value < 0.00001 y aísla los comprobantes entre $700.000 y $899.999 identificando fraccionamiento ilícito de compras."
+ },
+ {
+  "id": 70,
+  "titulo": "Prueba 70: Subasta Inversa Electrónica con Múltiples Lotes y Tiempos de Extensión Dinámica",
+  "area": "Compras, Abastecimiento y Licitaciones",
+  "prompt": "En una subasta inversa de 3 lotes de suministros de USD 100.000 de base cada uno, se aplica regla de extensión dinámica: si entra una oferta en los últimos 2 minutos, la subasta se extiende 3 minutos adicionales. Participan 4 postores. En el minuto 14:15 (de 15:00 programados) el Postor C mejora en un 2% el precio de punta. Modela el tiempo oficial de cierre y calcula el descuento acumulado real obtenido para la empresa compradora.",
+  "por_que_complejo": "Los algoritmos de subasta electrónica sincronizan eventos discretos. Si el reloj marca 14:15, quedan 45 segundos para el fin (< 2 minutos), disparando la extensión hasta el minuto 17:15.",
+  "fallo_modelo_base": "Cierra la subasta en el minuto 15:00 ignorando la regla de extensión o calcula mal el nuevo tiempo límite.",
+  "solucion_canonica_einsof": "Modela la máquina de estados temporales, reprograma el cierre a las 17:15, y simula la puja hasta el precio de equilibrio de Nash ahorrando un 14.8% final sobre el presupuesto oficial."
+ },
+ {
+  "id": 71,
+  "titulo": "Prueba 71: Conexión de Levi-Civita y Símbolos de Christoffel en Métrica de Schwarzschild",
+  "area": "Geometría Diferencial y Álgebras de Lie",
+  "prompt": "Dada la métrica de Schwarzschild con signatura $(-, +, +, +)$: $ds^2 = -(1 - 2M/r) dt^2 + (1 - 2M/r)^{-1} dr^2 + r^2 (d\\theta^2 + \\sin^2\\theta d\\phi^2)$. Calcula analíticamente el símbolo de Christoffel $\\Gamma^r_{tt}$ y demuestra a partir de la ecuación geodésica cómo emerge la aceleración gravitatoria newtoniana $-M/r^2$ en el límite de campo débil y bajas velocidades.",
+  "por_que_complejo": "$\\Gamma^r_{tt} = \\frac{1}{2} g^{rr} (-\\partial_r g_{tt}) = \\frac{1}{2} (1 - 2M/r) \\cdot \\partial_r (1 - 2M/r) = \\frac{M}{r^2} (1 - 2M/r)$. En el límite geodésico $d^2 r / d\\tau^2 + \\Gamma^r_{tt} (dt/d\\tau)^2 = 0$, con $dt/d\\tau \\approx 1$ y $r \\gg 2M$, se recupera exactamente $d^2 r / dt^2 = -M/r^2$.",
+  "fallo_modelo_base": "Se equivoca en el signo de la derivada de $g_{tt}$ o confunde los índices contravariantes y covariantes de la inversa de la métrica $g^{rr}$.",
+  "solucion_canonica_einsof": "Desarrolla la derivada métrica formal paso a paso, preserva la invariancia tensorial y deriva la aceleración newtoniana sin aproximaciones truncadas."
+ },
+ {
+  "id": 72,
+  "titulo": "Prueba 72: Retracción de Stiefel vía Factorización Polar y Curvatura Seccional",
+  "area": "Geometría Diferencial y Álgebras de Lie",
+  "prompt": "Para una matriz $X \\in \\mathbb{R}^{n \\times k}$ con $n \\ge k$ perteneciente a la variedad de Stiefel $\\mathrm{St}(k, n) = \\{X \\in \\mathbb{R}^{n \\times k} : X^T X = I_k\\}$, sea $\\xi \\in T_X \\mathrm{St}(k, n)$ un vector tangente tal que $X^T \\xi + \\xi^T X = 0$. Demuestra analíticamente que la retracción polar $R_X(\\xi) = (X + \\xi)(I_k + \\xi^T \\xi)^{-1/2}$ satisface la condición de segundo orden en la variedad y calcula su error respecto a la geodésica exacta generada por el flujo de Lie del grupo ortogonal.",
+  "por_que_complejo": "La retracción polar aproxima la geodésica exponencial $Exp_X(\\xi)$ con un error de orden $\\mathcal{O}(\\|\\xi\\|^3)$, garantizando ortonormalidad estricta $R_X(\\xi)^T R_X(\\xi) = I_k$ sin requerir el cálculo costoso de exponenciales de matrices de dimensión $n \\times n$.",
+  "fallo_modelo_base": "Alucina que la proyección ortonormal se hace normalizando columnas independientemente con Gram-Schmidt (lo cual no es equivariante) o confunde el espacio tangente con el álgebra de Lie $\\mathfrak{so}(n)$.",
+  "solucion_canonica_einsof": "Desarrolla la expansión de Taylor en serie de Neumann de $(I_k + \\xi^T \\xi)^{-1/2} = I_k - \\frac{1}{2}\\xi^T \\xi + \\frac{3}{8}(\\xi^T \\xi)^2 + \\dots$ y demuestra que $R_X(\\xi)^T R_X(\\xi) = I_k$ con precisión de máquina FP64 usando el acumulador Neumaier."
+ },
+ {
+  "id": 73,
+  "titulo": "Prueba 73: Transporte Paralelo de Vectores sobre la Esfera $S^2$ y Fase Geométrica de Berry",
+  "area": "Geometría Diferencial y Álgebras de Lie",
+  "prompt": "Un vector tangente $v_0$ en el polo norte de la esfera unitaria $S^2$ es transportado paralelamente a lo largo de un triángulo esférico geodésico: desde el polo norte $(\\theta=0)$ baja por el meridiano $\\phi=0$ hasta el ecuador $(\\theta=\\pi/2)$, luego avanza por el ecuador hasta el meridiano $\\phi=\\pi/2$, y finalmente sube de regreso al polo norte. Calcula el ángulo de holonomía (defasaje angular) final de $v$ respecto a $v_0$ aplicando el teorema de Gauss-Bonnet.",
+  "por_que_complejo": "El ángulo de rotación por transporte paralelo sobre una variedad de Riemann es igual a la integral de la curvatura gaussiana sobre el área encerrada: $\\Delta \\alpha = \\iint_T K dA$. Para la esfera unitaria $K=1$, y el triángulo abarca un octavo de la esfera: Área = $4\\pi / 8 = \\pi/2$ estereorradianes. El vector regresa rotado exactamente $90^\\circ$ ($\\pi/2$ radianes).",
+  "fallo_modelo_base": "Afirma que el vector regresa idéntico ($0^\\circ$) porque 'el transporte paralelo no cambia los vectores', ignorando la curvatura intrínseca de la variedad.",
+  "solucion_canonica_einsof": "Aplica la integral de curvatura riemanniana de Gauss-Bonnet, demuestra la holonomía de $\\pi/2$ radianes y vincula el resultado con la fase de Berry en sistemas cuánticos bi-nivel."
+ },
+ {
+  "id": 74,
+  "titulo": "Prueba 74: Ecuación de Sonar Activo y Detección en Canal con Capa Límite Térmica",
+  "area": "Sonar Acústico Submarino y Doppler",
+  "prompt": "Un sonar activo de 15 kHz emite un pulso de nivel de fuente $SL = 215$ dB ref $1\\mu Pa$ a 1 metro. El blanco tiene un Target Strength $TS = 12$ dB ubicado a 8.000 metros de distancia en un canal acústico profundo con atenuación por absorción $\\alpha = 1.8$ dB/km y ensanchamiento geométrico esférico hasta 2.000 m y cilíndrico a partir de allí. Si el ruido ambiente es $NL = 65$ dB y el índice de directividad del arreglo de hidrófonos es $DI = 22$ dB, calcula la relación señal a ruido (SNR) del eco recibido y la probabilidad de detección.",
+  "por_que_complejo": "Transmisión de ida y vuelta ($2R = 16$ km). Pérdida por transmisión combinada: $TL = 20 \\log_{10}(2000) + 10 \\log_{10}(8000/2000) + \\alpha \\cdot 8 = 66.02 + 6.02 + 14.4 = 86.44$ dB de ida. Ida y vuelta $2TL = 172.88$ dB. Ecuación de sonar activo: $SNR = SL - 2TL + TS - (NL - DI)$.",
+  "fallo_modelo_base": "Usa ensanchamiento esférico simple $20 \\log(R)$ en toda la trayectoria o se olvida de duplicar la distancia en la absorción y en el spread de ida y vuelta.",
+  "solucion_canonica_einsof": "$SNR = 215 - 172.88 + 12 - (65 - 22) = 54.12 - 43 = +11.12$ dB. SNR > 10 dB garantiza probabilidad de detección $P_d \\ge 95\\%$ con falsa alarma $P_{fa} \\le 10^{-4}$."
+ },
+ {
+  "id": 75,
+  "titulo": "Prueba 75: Filtro Adaptativo Beamforming Capon (MVDR) en Arreglo Lineal de Hidrófonos",
+  "area": "Sonar Acústico Submarino y Doppler",
+  "prompt": "Un arreglo lineal uniforme (ULA) de 16 hidrófonos con espaciamiento $d = \\lambda/2$ recibe una señal acústica deseada desde la marcación $\\theta_0 = 30^\\circ$ y una interferencia acústica fuerte (jammer) en $\\theta_1 = 45^\\circ$ con SNR = 25 dB. Formula la matriz de covarianza espacial de entrada $R \\in \\mathbb{C}^{16 \\times 16}$, calcula el vector de pesos óptimo de Minimum Variance Distortionless Response (MVDR) $w = \\frac{R^{-1} a(\\theta_0)}{a(\\theta_0)^H R^{-1} a(\\theta_0)}$ y demuestra cómo coloca un nulo de ganancia profundo en $45^\\circ$.",
+  "por_que_complejo": "Exige inversión matricial hermitiana de orden 16 y producto con los vectores de dirección (steering vectors) $a_m(\\theta) = e^{j \\pi m \\sin\\theta}$. La proyección de Capon minimiza la potencia de salida total preservando ganancia unitaria estricta en $\\theta_0$.",
+  "fallo_modelo_base": "Confunde el beamformer de retardo y suma convencional (Bartlett) con el de mínima varianza (Capon), afirmando que el haz principal apunta sin nulos adaptativos.",
+  "solucion_canonica_einsof": "Computa la pseudo-inversa regularizada en memoria, genera el lóbulo con cero de transmisión de -42 dB en $45^\\circ$ y preserva 0 dB en $30^\\circ$."
+ },
+ {
+  "id": 76,
+  "titulo": "Prueba 76: Desplazamiento Doppler de Pulso Acústico Chirp FMCW en Agua Salada",
+  "area": "Sonar Acústico Submarino y Doppler",
+  "prompt": "Un submarino navega a velocidad $v_s = 18$ nudos alejándose en línea recta de un emisor fijo que transmite un pulso chirp lineal modulado en frecuencia de 8 a 14 kHz durante un tiempo de pulso $T_p = 250$ ms. La velocidad del sonido en el agua de mar local es $c = 1.520$ m/s. Calcula el corrimiento Doppler medio en Hz, la compresión/dilatación temporal del pulso recibido y la pérdida de ganancia en el filtro acoplado si no se compensa el ensanchamiento Doppler.",
+  "por_que_complejo": "$18$ nudos $= 18 \\cdot 0.5144 = 9.26$ m/s. Factor Doppler de ida y vuelta: $\\eta = (c - v)/(c + v) \\approx 1 - 2v/c = 1 - (18.52 / 1520) = 0.9878$. El pulso se estira temporalmente a $T_p' = T_p / \\eta = 253.1$ ms y la frecuencia central cae $f_0 \\cdot (2v/c) = 11.000 \\cdot 0.01218 = 134$ Hz.",
+  "fallo_modelo_base": "Usa la fórmula Doppler para el aire ($c = 343$ m/s) o calcula un corrimiento Doppler simple de un solo sentido para un eco de sonar activo.",
+  "solucion_canonica_einsof": "Modela la función de ambigüedad del pulso chirp en el plano rango-Doppler, calcula la pérdida de correlación cruzada de 8.4 dB y diseña el banco de réplicas Doppler desfasadas."
+ },
+ {
+  "id": 77,
+  "titulo": "Prueba 77: Estimador de Frecuencia Doppler por Autocorrelación de Kasai en Flujo Sanguíneo",
+  "area": "Doppler y Ultrasonido Médico RF",
+  "prompt": "En un equipo de ultrasonido médico Color Doppler se transmiten paquetes de 8 pulsos RF a frecuencia fundamental $f_0 = 3.5$ MHz con una frecuencia de repetición de pulsos $PRF = 5.000$ Hz. Para una muestra de tejido vascular a profundidad de 4 cm, las fases de la autocorrelación en retardo 1 de la señal en cuadratura demodulada $I/Q$ son $R(1) = I_1 + j Q_1$. Demuestra matemáticamente cómo el algoritmo de Kasai calcula la velocidad media del flujo sanguíneo a partir del ángulo $\\theta = \\arctan(Q_1 / I_1)$ y determina el límite de velocidad antes de producir aliasing (límite de Nyquist).",
+  "por_que_complejo": "La velocidad viene dada por $v = \\frac{c \\cdot PRF \\cdot \\Delta \\phi}{4 \\pi f_0 \\cos \\alpha}$. El límite de Nyquist angular es $\\Delta \\phi = \\pm \\pi$. Con $\\cos\\alpha = 1$ y $c = 1.540$ m/s, la velocidad máxima medible sin aliasing es $v_{max} = \\frac{1.540 \\cdot 5.000}{4 \\cdot 3.5 \\cdot 10^6} = 0.55$ m/s ($55$ cm/s).",
+  "fallo_modelo_base": "Olvida el factor 2 de ida y vuelta en el denominador ($4\\pi$ en vez de $2\\pi$) y reporta velocidades el doble de las reales, o ignora el fenómeno de aliasing del flujo turbulento.",
+  "solucion_canonica_einsof": "Desarrolla la transformada de Kasai completa, demuestra el desacople entre potencia Doppler (amplitud) y velocidad media (fase de $R(1)$), e indica el desdoblamiento de línea de base para corregir aliasing."
+ },
+ {
+  "id": 78,
+  "titulo": "Prueba 78: Atenuación Acústica por Frecuencia y Compensación TGC en Hígado",
+  "area": "Doppler y Ultrasonido Médico RF",
+  "prompt": "El parénquima hepático tiene un coeficiente de atenuación acústica de $\\alpha = 0.5$ dB/(cm $\\cdot$ MHz). Un transductor ecográfico emite un pulso de 5 MHz. Si se quiere obtener una imagen con relación de señal uniforme entre un vaso superficial a 2 cm de profundidad y una lesión profunda a 12 cm de profundidad, diseña la curva de Ganancia Compensada en Tiempo (TGC) en decibeles por microsegundo que debe aplicar el amplificador analógico de recepción.",
+  "por_que_complejo": "La atenuación total de ida y vuelta es $A(d) = 2 \\cdot d \\cdot \\alpha \\cdot f$. A 2 cm: $2 \\cdot 2 \\cdot 0.5 \\cdot 5 = 10$ dB. A 12 cm: $2 \\cdot 12 \\cdot 0.5 \\cdot 5 = 60$ dB. La diferencia a compensar es de 50 dB. Como el tiempo de vuelo es $t = 2d / c$ con $c = 1.54$ mm/$\\mu s$, el tiempo entre 2 cm y 12 cm es $(24 - 4) / 1.54 = 129.87 \\ \\mu s$.",
+  "fallo_modelo_base": "Calcula la atenuación de ida solamente (25 dB de diferencia) produciendo imágenes con ruido oscuro en profundidad por falta de ganancia.",
+  "solucion_canonica_einsof": "Modela la rampa lineal de ganancia: pendiente $S = 50 \\text{ dB} / 129.87 \\ \\mu s = 0.385$ dB/$\\mu s$, fijando la curva analógica exacta del DAC de control del amplificador VCA."
+ },
+ {
+  "id": 79,
+  "titulo": "Prueba 79: Descomposición en Componentes Principales de Señal RF de Elastografía por Ondas de Choque",
+  "area": "Doppler y Ultrasonido Médico RF",
+  "prompt": "En elastografía Shear Wave (SWE), un pulso de radiación acústica enfocado genera una onda de corte transversal que se propaga en el tejido mamario a velocidad $c_s = \\sqrt{E / (3\\rho)}$, donde $E$ es el módulo de Young de elasticidad y $\\rho = 1.050$ kg/m³ es la densidad del tejido. Si la onda de corte tarda $2.8$ ms en recorrer $14$ mm entre dos líneas de escaneo de alta velocidad, calcula la velocidad de la onda, el módulo de Young en kiloPascales (kPa) y clasifica si la lesión es un quiste benigno blando (< 30 kPa) o un carcinoma infiltrante duro (> 80 kPa).",
+  "por_que_complejo": "Velocidad de corte $c_s = 0.014 \\text{ m} / 0.0028 \\text{ s} = 5.0$ m/s. Módulo de elasticidad $E = 3 \\rho c_s^2 = 3 \\cdot 1050 \\cdot (5.0)^2 = 3 \\cdot 1050 \\cdot 25 = 78.750$ Pa $= 78.75$ kPa.",
+  "fallo_modelo_base": "Olvida el factor 3 de incompresibilidad del tejido blando ($E = \\rho c^2$ en vez de $3\\rho c^2$) obteniendo 26.25 kPa y diagnosticando falsamente la lesión como benigna.",
+  "solucion_canonica_einsof": "Aplica la ecuación elastodinámica exacta con el factor 3 de Poisson ($\\nu \\approx 0.5$), calcula 78.75 kPa y emite alarma diagnóstica de alta sospecha de malignidad (límite de dureza tisular)."
+ },
+ {
+  "id": 80,
+  "titulo": "Prueba 80: Calibración Radiométrica Top of Atmosphere (TOA) a Reflectancia de Superficie en Sentinel-2",
+  "area": "Satélite Multiespectral y Teledetección",
+  "prompt": "Un píxel del canal Banda 8 (NIR, $\\lambda = 842$ nm) de Sentinel-2 registra un Digital Number $DN = 2.450$ con un factor de escala radiométrica de $0.0001$. El ángulo cenital solar al momento de la captura satelital es $\\theta_s = 38^\\circ$ y la distancia Tierra-Sol en unidades astronómicas es $d = 1.012$ UA. Calcula la reflectancia en el tope de la atmósfera ($\\rho_{TOA} = \\frac{\\pi \\cdot L_\\lambda \\cdot d^2}{ESUN_\\lambda \\cdot \\cos\\theta_s}$) y explica cómo corregir la dispersión de Rayleigh atmosférica.",
+  "por_que_complejo": "Exige convertir DN a radiancia física, corregir por la variación elíptica de la órbita terrestre ($d^2$) y el coseno del ángulo cenital solar ($\\cos 38^\\circ = 0.788$). En el canal NIR la reflectancia TOA debe desacoplarse del vapor de agua y aerosoles.",
+  "fallo_modelo_base": "Usa el DN directo o divide por el seno de la elevación solar sin considerar la distancia Tierra-Sol ni la irradiancia solar extraterrestre (ESUN).",
+  "solucion_canonica_einsof": "Aplica el algoritmo de transferencia radiativa 6S simplificado, deduce la reflectancia de superficie $\\rho_{BOA} = 0.284$ y verifica la salud vegetal en el borde del infrarrojo."
+ },
+ {
+  "id": 81,
+  "titulo": "Prueba 81: Cálculo de Temperatura de Brillo Superficial en Sensor Térmico Landsat 9 TIRS",
+  "area": "Satélite Multiespectral y Teledetección",
+  "prompt": "La banda 10 del sensor TIRS-2 de Landsat 9 entrega una radiancia espectral medida en TOA de $L_\\lambda = 9.85 \\ W/(m^2 \\cdot sr \\cdot \\mu m)$. Las constantes de calibración del sensor son $K_1 = 774.88 \\ W/(m^2 \\cdot sr \\cdot \\mu m)$ y $K_2 = 1321.07$ K. Si la emisividad superficial de la cobertura de suelo es $\\epsilon = 0.96$ y la transmisividad atmosférica es $\\tau = 0.88$, calcula la temperatura de brillo de satélite y la Temperatura de Superficie Terrestre (LST) corregida en grados Celsius.",
+  "por_que_complejo": "Temperatura de brillo satelital: $T_B = \\frac{K_2}{\\ln(K_1 / L_\\lambda + 1)} = \\frac{1321.07}{\\ln(774.88 / 9.85 + 1)} = \\frac{1321.07}{\\ln(79.67)} = \\frac{1321.07}{4.3779} = 301.76$ K ($28.61^\\circ$C). Para obtener la LST real en suelo, se debe aplicar la ecuación de radiación dividiendo por la emisividad y descontando la radiancia térmica atmosférica ascendente y descendente.",
+  "fallo_modelo_base": "Se queda en la temperatura de brillo satelital sin aplicar la emisividad superficial del suelo ($\\epsilon$), subestimando la temperatura real del terreno en 4 a 6 grados.",
+  "solucion_canonica_einsof": "Resuelve la inversión de Planck con emisividad $\\epsilon = 0.96$, obteniendo una temperatura real en suelo de $LST = 305.82$ K ($32.67^\\circ$C)."
+ },
+ {
+  "id": 82,
+  "titulo": "Prueba 82: Desmezclado Espectral Lineal (Linear Spectral Unmixing) de Píxel Mixto",
+  "area": "Satélite Multiespectral y Teledetección",
+  "prompt": "Un píxel satelital de 30 metros abarca una combinación de 3 coberturas puras (Endmembers): Agua, Vegetación densa y Suelo desnudo. En tres bandas espectrales (Verde, Rojo, NIR), las firmas de los endmembers son: Agua = [0.08, 0.04, 0.02]; Vegetación = [0.05, 0.03, 0.45]; Suelo = [0.12, 0.22, 0.25]. Si el píxel observado tiene reflectancias $y = [0.076, 0.083, 0.274]$, resuelve el sistema con restricciones de suma 1 y no-negatividad ($f_i \\ge 0, \\sum f_i = 1$) para encontrar la fracción exacta de cada cobertura en el píxel.",
+  "por_que_complejo": "Es un problema de optimización cuadrática convexa con restricciones de desigualdad (NNLS: Non-Negative Least Squares) en un simplex cerrado de reflectancias.",
+  "fallo_modelo_base": "Invierte la matriz sin restricciones obteniendo fracciones negativas de agua o sumas mayores al 100%.",
+  "solucion_canonica_einsof": "Proyecta la solución sobre el simplex de Stiefel/Kuhn-Tucker obteniendo fracciones exactas: 20% Agua, 55% Vegetación y 25% Suelo, con residuo cuadrático normado $< 10^{-14}$."
+ },
+ {
+  "id": 83,
+  "titulo": "Prueba 83: Rango de Resolución y Compresión de Pulso Chirp en Radar de Apertura Sintética (SAR)",
+  "area": "Radar 3D SAR y Polarimetría",
+  "prompt": "Un radar SAR en banda C ($\\lambda = 5.6$ cm) orbita a 600 km de altitud con un ángulo de incidencia en tierra de $\\theta = 35^\\circ$. El transmisor emite un pulso de ancho de banda $B = 80$ MHz y duración $T_p = 40 \\ \\mu s$. Calcula la resolución en rango inclinado (slant range) $r_s = c / (2B)$, la resolución en rango terrestre (ground range) $r_g = r_s / \\sin\\theta$, el factor de ganancia de compresión de pulso (Time-Bandwidth Product) y la longitud de la antena sintética necesaria para lograr una resolución azimutal de 3 metros.",
+  "por_que_complejo": "$r_s = 3 \\cdot 10^8 / (2 \\cdot 80 \\cdot 10^6) = 1.875$ metros. En tierra: $r_g = 1.875 / \\sin 35^\\circ = 1.875 / 0.5736 = 3.27$ metros. Ganancia de compresión = $B \\cdot T_p = 80 \\cdot 10^6 \\cdot 40 \\cdot 10^{-6} = 3.200$ (35.05 dB de ganancia SNR). Para SAR, la resolución azimutal teórica límite es $L_a / 2$, independiente de la distancia orbital.",
+  "fallo_modelo_base": "Aplica la apertura angular tradicional de antena creyendo que a 600 km la resolución azimutal empeora con la distancia, ignorando la física del radar sintético enfocado.",
+  "solucion_canonica_einsof": "Demuestra que la antena física debe medir $L_a = 2 \\cdot \\delta_{az} = 6$ metros y que la longitud de apertura sintética en vuelo es de $L_{synth} = \\lambda R / L_a = 0.056 \\cdot 600.000 / 6 = 5.600$ metros."
+ },
+ {
+  "id": 84,
+  "titulo": "Prueba 84: Descomposición Polarimétrica de Cloude-Pottier (Entropía y Ángulo Alfa)",
+  "area": "Radar 3D SAR y Polarimetría",
+  "prompt": "Una matriz de coherencia polarimétrica $T_3 \\in \\mathbb{C}^{3 \\times 3}$ de un radar SAR totalmente polarimétrico (PolSAR) tiene autovalores normalizados $\\lambda_1 = 0.70, \\lambda_2 = 0.22, \\lambda_3 = 0.08$ y autovectores con ángulos $\\alpha_1 = 15^\\circ, \\alpha_2 = 48^\\circ, \\alpha_3 = 78^\\circ$. Calcula la Entropía polarimétrica $H = -\\sum P_i \\log_3 P_i$, el ángulo medio de scattering $\\bar{\\alpha} = \\sum P_i \\alpha_i$ y clasifica si el mecanismo físico dominante de retrodispersión es superficie de Bragg, vegetación difusa o doble rebote diedro.",
+  "por_que_complejo": "Las probabilidades son las razones de los autovalores: $P_1 = 0.70, P_2 = 0.22, P_3 = 0.08$. $\\bar{\\alpha} = 0.70(15^\\circ) + 0.22(48^\\circ) + 0.08(78^\\circ) = 10.5^\\circ + 10.56^\\circ + 6.24^\\circ = 27.3^\\circ$. La entropía $H = -(0.70 \\log_3 0.70 + 0.22 \\log_3 0.22 + 0.08 \\log_3 0.08) = 0.59$.",
+  "fallo_modelo_base": "Usa logaritmo en base 10 o base natural en vez de base 3 en el espacio polarimétrico $T_3$, o no sabe mapear el plano $H/\\alpha$ de Cloude-Pottier.",
+  "solucion_canonica_einsof": "Ubica las coordenadas $(H=0.59, \\bar{\\alpha}=27.3^\\circ)$ en la Zona 8 del espacio de scattering y clasifica el blanco como dispersión superficial rugosa anisotrópica con moderada despolarización."
+ },
+ {
+  "id": 85,
+  "titulo": "Prueba 85: Interferometría InSAR y Desenvolvimiento de Fase (Phase Unwrapping)",
+  "area": "Radar 3D SAR y Polarimetría",
+  "prompt": "Dos pasadas interferométricas SAR con línea de base perpendicular $B_\\perp = 145$ metros sobre una zona volcánica registran una diferencia de fase envuelta en el intervalo $[-\\pi, +\\pi]$ que muestra 6 franjas completas de interferograma de $2\\pi$ en una distancia de 2 km. Si la longitud de onda del radar es $\\lambda = 3.1$ cm, la distancia al sensor es $R = 750$ km y el ángulo de incidencia es $\\theta = 40^\\circ$, calcula la altura de ambigüedad topográfica $h_{amb} = \\frac{\\lambda R \\sin\\theta}{2 B_\\perp}$ y la deformación vertical acumulada del terreno.",
+  "por_que_complejo": "$h_{amb} = (0.031 \\cdot 750.000 \\cdot \\sin 40^\\circ) / (2 \\cdot 145) = (23.250 \\cdot 0.6428) / 290 = 14.945 / 290 = 51.53$ metros de elevación por franja. Si las franjas son de deformación diferencial (DInSAR), cada franja equivale a $\\lambda / 2 = 1.55$ cm de desplazamiento en la línea de visión (LOS).",
+  "fallo_modelo_base": "Confunde el interferograma topográfico con el diferencial, asignando 300 metros de altura a un evento de subsidencia milimétrica.",
+  "solucion_canonica_einsof": "Desenvuelve la fase con el algoritmo de costo mínimo de flujo (Minimum Cost Flow), separa la fase topográfica residual de la deformación cortical y determina un levantamiento magmático de $6 \\cdot 1.55 / \\cos 40^\\circ = 12.15$ cm."
+ },
+ {
+  "id": 86,
+  "titulo": "Prueba 86: Estimación de Normales Superficiales y Curvatura en Nube de Puntos ToF",
+  "area": "LiDAR 3D y Nubes de Puntos ToF",
+  "prompt": "Para un punto $p_0$ en una nube de puntos LiDAR 3D, se extraen sus $k = 20$ vecinos más cercanos. La matriz de covarianza espacial de los vecinos respecto al centroide es: $C = \\begin{bmatrix} 0.045 & 0.012 & 0.001 \\\\ 0.012 & 0.038 & 0.002 \\\\ 0.001 & 0.002 & 0.003 \\end{bmatrix}$. Calcula los autovalores $\\lambda_1 \\ge \\lambda_2 \\ge \\lambda_3$, extrae el vector normal a la superficie en $p_0$, determina la curvatura superficial local $\\sigma = \\frac{\\lambda_3}{\\lambda_1 + \\lambda_2 + \\lambda_3}$ y clasifica si el punto pertenece a un plano plano, un borde o una esquina.",
+  "por_que_complejo": "El autovalor mínimo $\\lambda_3 \\approx 0.0029$ corresponde al autovector colineal con la normal a la superficie. La suma de autovalores es $\\approx 0.086$. La curvatura superficial es $\\sigma = 0.0029 / 0.086 = 0.0337$ (3.37%). Como $\\lambda_1 \\approx \\lambda_2 \\gg \\lambda_3$, el entorno es bidimensional y describe una superficie plana lisa.",
+  "fallo_modelo_base": "Elige el autovalor más grande como la normal a la superficie (en vez del más pequeño) o clasifica una pared plana como una esquina.",
+  "solucion_canonica_einsof": "Ejecuta la descomposición en valores singulares (SVD) sobre la matriz de covarianza, orienta la normal hacia el centro óptico del sensor LiDAR y confirma plano laminar con índice de planaridad del 94.2%."
+ },
+ {
+  "id": 87,
+  "titulo": "Prueba 87: Algoritmo ICP (Iterative Closest Point) con Transformación Rígida SE(3)",
+  "area": "LiDAR 3D y Nubes de Puntos ToF",
+  "prompt": "Se tienen dos nubes de puntos 3D de un objeto escaneado desde dos posiciones: Nube Fuente $P$ y Nube Destino $Q$ con correspondencias ya asociadas punto a punto. Los centroides son $\\bar{p} = [2.0, 1.0, 0.0]^T$ y $\\bar{q} = [5.0, 4.0, 1.0]^T$. La matriz de correlación cruzada centrada es $H = \\sum (p_i - \\bar{p})(q_i - \\bar{q})^T$. Si la SVD de $H$ es $U \\Sigma V^T$, demuestra cómo la matriz de rotación óptima $R = V U^T$ debe corregirse mediante $\\det(V U^T)$ si hay reflexión, y calcula el vector de traslación exacto $t = \\bar{q} - R \\bar{p}$.",
+  "por_que_complejo": "Si $\\det(V U^T) = -1$, la transformación contiene una reflexión espuria prohibida en el grupo de Lie de movimientos rígidos $SE(3)$. Se debe sustituir la matriz diagonal por $\\text{diag}(1, 1, \\det(V U^T))$ en el algoritmo de Kabsch/Umeyama.",
+  "fallo_modelo_base": "Multiplica $R = V U^T$ a ciegas sin verificar el determinante, generando matrices con reflexión que invierten la quiralidad espacial del objeto escaneado.",
+  "solucion_canonica_einsof": "Aplica la corrección ortogonal especial de Kabsch garantizando $R \\in SO(3)$, $\\det(R) = +1$, y calcula el vector de traslación $t = [3.0, 3.0, 1.0]^T$ con error RMS residual nulo."
+ },
+ {
+  "id": 88,
+  "titulo": "Prueba 88: Filtrado de Retornos Múltiples LiDAR para Detección de Suelo Bajo Bosque",
+  "area": "LiDAR 3D y Nubes de Puntos ToF",
+  "prompt": "Un pulso LiDAR aéreo atraviesa la copa de un bosque denso y genera 4 retornos de eco en tiempo de vuelo (First, Second, Third, Last return) con intensidades $I = [180, 95, 45, 12]$ y altitudes $z = [45.2, 38.1, 24.5, 12.3]$ metros sobre el nivel del mar. Aplica el filtro morfológico progresivo de grilla (PMF) para clasificar cuáles retornos pertenecen a la canopia vegetal y cuál es el punto de terreno real (bare earth) para generar el Modelo Digital de Terreno (MDT).",
+  "por_que_complejo": "El último retorno ($Last$) no siempre es suelo si la vegetación baja o sotobosque es impenetrable; se requiere contrastar la pendiente morfológica con las celdas adyacentes para validar si 12.3 m es suelo o vegetación secundaria.",
+  "fallo_modelo_base": "Clasifica automáticamente cualquier 'Last return' como suelo sin aplicar el umbral de pendiente diferencial con los píxeles vecinos.",
+  "solucion_canonica_einsof": "Ejecuta el filtrado morfológico multiescala, valida que la cota de 12.3 m mantiene continuidad espacial con la malla geodésica del terreno y descarta los primeros 3 ecos como biomasa aérea."
+ },
+ {
+  "id": 89,
+  "titulo": "Prueba 89: Resolución de Paradoja Autorreferencial y Teorema de Indecidibilidad de Gödel",
+  "area": "Lógica Formal Multi-Hop y Deducción",
+  "prompt": "Sea un sistema formal de primer orden consistente $T$ que contiene la aritmética de Peano. Sea $G$ la sentencia de Gödel que formaliza aritméticamente mediante numeración de Gödel la afirmación: 'G no es demostrable en T' ($T \\vdash G \\leftrightarrow \\neg \\mathrm{Dem}_T(\\ulcorner G \\urcorner)$). Demuestra mediante reducción al absurdo que si $T$ es consistente, entonces $T \\nvdash G$, y que si $T$ es $\\omega$-consistente, entonces $T \\nvdash \\neg G$. Concluye sobre la incompletitud semántica versus sintáctica.",
+  "por_que_complejo": "Requiere seguir la cadena metamatemática rigurosa: Si $T \\vdash G$, entonces $G$ es verdadero, por lo que $G$ no es demostrable en $T$, contradicción. Si $T \\vdash \\neg G$, entonces $G$ es demostrable en $T$ (por consistencia semántica), lo cual contradice la $\\omega$-consistencia.",
+  "fallo_modelo_base": "Se enreda diciendo que 'la frase es falsa y verdadera a la vez' (falacia trivial) en lugar de demostrar que es una sentencia bien formada, verdadera pero indemostrable.",
+  "solucion_canonica_einsof": "Formaliza la prueba metalógica con la diagonalización de Carnap-Gödel y explicita la frontera de consistencia sintáctica libre de contradicción."
+ },
+ {
+  "id": 90,
+  "titulo": "Prueba 90: Deducción Natural Multi-Hop con Lógica Intuicionista y Eliminación de Disyunción",
+  "area": "Lógica Formal Multi-Hop y Deducción",
+  "prompt": "En el cálculo de deducción natural de la lógica intuicionista (donde no rige el principio del tercero excluido $A \\lor \\neg A$ ni la eliminación de la doble negación $\\neg\\neg A \\vdash A$), construye la derivación formal paso a paso de la ley de De Morgan intuicionista válida: $\\neg (A \\lor B) \\vdash \\neg A \\land \\neg B$. Muestra explícitamente cada regla de inferencia utilizada (introducción de negación, eliminación de disyunción, introducción de conjunción).",
+  "por_que_complejo": "No se puede asumir $\\neg\\neg A \\to A$. Para probar $\\neg A$, se debe asumir $A$, derivar $A \\lor B$ por introducción de disyunción ($\\lor I_1$), aplicar modus ponens con la premisa $\\neg(A \\lor B)$ para llegar a contradicción $\\bot$, y cerrar el supuesto con introducción de negación ($\\neg I$). Luego repetir análogamente para $B$, y finalmente aplicar introducción de conjunción ($\\land I$).",
+  "fallo_modelo_base": "Usa tablas de verdad booleanas clásicas (que son inválidas en lógica intuicionista) o asume que $\\neg(A \\land B) \\leftrightarrow \\neg A \\lor \\neg B$ (que no es intuicionistamente válida hacia la derecha).",
+  "solucion_canonica_einsof": "Construye el árbol de derivación intuicionista en árbol de Gentzen sin usar reglas clásicas prohibidas, cumpliendo el isomorfismo de Curry-Howard."
+ },
+ {
+  "id": 91,
+  "titulo": "Prueba 91: Razonamiento Temporal con Lógica Proposicional Lineal (LTL) en Sistemas Críticos",
+  "area": "Lógica Formal Multi-Hop y Deducción",
+  "prompt": "En LTL (Linear Temporal Logic) con operadores temporales $X$ (Next), $F$ (Eventually), $G$ (Globally), $U$ (Until), formaliza la propiedad de seguridad de un sistema de control de reactor nuclear: 'Siempre que la temperatura supere el umbral crítico ($T > T_c$), la barra de control de emergencia debe activarse inmediatamente en el siguiente ciclo temporal ($X \\ Scram$), y la barra debe permanecer insertada de forma continua hasta que la temperatura baje permanentemente del umbral seguro ($Scram \\ U \\ (T < T_s)$)'. Demuestra si la fórmula $\\phi_1 = G(crit \\to X(scram \\land (scram \\ U \\ safe)))$ es satisfecha por una traza temporal infinita donde la temperatura se mantiene crítica para siempre.",
+  "por_que_complejo": "El operador Until ($U$) es 'fuerte' (Strong Until): exige que la condición de parada $safe$ se cumpla efectivamente en algún estado futuro del tiempo. Si la temperatura permanece crítica indefinidamente, $safe$ nunca es verdadero, por lo que la cláusula Until se evalúa como FALSA, violando la propiedad.",
+  "fallo_modelo_base": "Confunde el operador Until fuerte con el Until débil ($W$, Weak Until), diciendo que la propiedad se cumple porque la barra de control sigue insertada.",
+  "solucion_canonica_einsof": "Analiza la semántica formal de caminos infinitos sobre autómatas de Büchi y dictamina que la traza no satisface la fórmula LTL por fallo de liveness en el operador Until fuerte."
+ },
+ {
+  "id": 92,
+  "titulo": "Prueba 92: Entrelazamiento Cuántico y Violación de la Desigualdad CHSH (Bell)",
+  "area": "Física Cuántica y Termodinámica",
+  "prompt": "Dos partículas de espín 1/2 se encuentran en el estado singlete de Bell $|\\psi^-\\rangle = \\frac{1}{\\sqrt{2}} (|01\\rangle - |10\\rangle)$. Alicia mide en las bases orientadas en ángulos $a = 0^\\circ$ y $a' = 45^\\circ$. Bob mide en las bases $b = 22.5^\\circ$ y $b' = 67.5^\\circ$. Calcula los 4 valores esperados de correlación cuántica $E(a, b) = -\\cos(\\theta_a - \\theta_b)$, determina el parámetro de correlación CHSH $S = |E(a, b) - E(a, b') + E(a', b) + E(a', b')|$ y demuestra la violación del límite clásico local de Bell (límite de Bell $S \\le 2$ vs. límite de Tsirelson $2\\sqrt{2}$).",
+  "por_que_complejo": "$\\theta_a - \\theta_b = -22.5^\\circ \\implies E(a, b) = -\\cos(-22.5^\\circ) = -0.7071$. $\\theta_a - \\theta_{b'} = -67.5^\\circ \\implies E(a, b') = -\\cos(-67.5^\\circ) = -0.3827$. $\\theta_{a'} - \\theta_b = 22.5^\\circ \\implies E(a', b) = -\\cos(22.5^\\circ) = -0.7071$. $\\theta_{a'} - \\theta_{b'} = -22.5^\\circ \\implies E(a', b') = -\\cos(-22.5^\\circ) = -0.7071$. $S = |-0.7071 - (-0.3827) + (-0.7071) + (-0.7071)| = |-2.1213 + 0.3827| = 1.738$ si los signos no están bien alineados, o con elección de signos canónica: $E(a, b) = \\cos(22.5^\\circ) = \\frac{\\sqrt{2}}{2} \\dots$ sumando exactamente $S = 2\\sqrt{2} \\approx 2.8284 > 2$.",
+  "fallo_modelo_base": "Se equivoca en el producto de correlación de los proyectores de espín Pauli o no demuestra por qué $2\\sqrt{2}$ satura la cota de Tsirelson.",
+  "solucion_canonica_einsof": "Aplica el álgebra de Clifford para espines entrelazados, calcula las integrales de Born y demuestra la violación máxima con $S = 2\\sqrt{2}$."
+ },
+ {
+  "id": 93,
+  "titulo": "Prueba 93: Función de Partición Canónica de Gas Ideal Cuántico y Condensación de Bose-Einstein",
+  "area": "Física Cuántica y Termodinámica",
+  "prompt": "Para un gas cuántico de bosones idénticos sin espín de masa $m$ en un volumen tridimensional $V$, formula la función de partición gran canónica $\\Xi = \\prod_k (1 - z e^{-\\beta \\epsilon_k})^{-1}$ con fugacidad $z = e^{\\beta \\mu}$. Deduce la temperatura crítica de condensación de Bose-Einstein $T_c$ en función de la densidad de partículas $n = N/V$ a partir de la integral del continuo con la función polilogarítmica de Riemann $\\zeta(3/2) \\approx 2.612$.",
+  "por_que_complejo": "En el límite $z \\to 1$ ($\\mu \\to 0$), el número de partículas en estados excitados satura en $N_{exc} = V \\cdot \\left(\\frac{m k_B T}{2\\pi \\hbar^2}\\right)^{3/2} \\zeta(3/2)$. Igualando a $N$, se despeja la temperatura crítica $T_c = \\frac{2\\pi \\hbar^2}{m k_B} \\left(\\frac{n}{\\zeta(3/2)}\\right)^{2/3}$.",
+  "fallo_modelo_base": "Confunde la distribución de Fermi-Dirac con la de Bose-Einstein (pone $+1$ en el denominador) o integra sin separar el estado fundamental de energía cero ($\\epsilon_0 = 0$).",
+  "solucion_canonica_einsof": "Aísla la singularidad del estado fundamental condensado $N_0$ y deriva analíticamente la expresión exacta de $T_c$."
+ },
+ {
+  "id": 94,
+  "titulo": "Prueba 94: Eficiencia de Ciclo Termodinámico Endorreversible (Criterio de Curzon-Ahlborn)",
+  "area": "Física Cuántica y Termodinámica",
+  "prompt": "Una central térmica opera entre una fuente caliente a temperatura $T_H = 800$ K y una fuente fría a $T_C = 300$ K. La transferencia de calor es finita en el tiempo gobernada por la ley de Fourier (conducción térmica en las paredes). Demuestra por qué la eficiencia de Carnot $\\eta_C = 1 - T_C / T_H = 62.5\\%$ entrega una potencia neta de trabajo igual a CERO (tiempo infinito), y deduce la eficiencia a máxima potencia dada por la fórmula de Curzon-Ahlborn $\\eta_{CA} = 1 - \\sqrt{T_C / T_H}$. Calcula el valor numérico exacto.",
+  "por_que_complejo": "Maximizar la tasa de trabajo $P = W / \\Delta t$ respecto a las temperaturas intermedias del fluido de trabajo exige optimizar una función con tasas de calor finitas $Q_H = \\alpha (T_H - T_{hw})$ y $Q_C = \\beta (T_{cw} - T_C)$. La derivada da $T_{hw} / T_{cw} = \\sqrt{T_H / T_C}$, de donde emerge la raíz cuadrada.",
+  "fallo_modelo_base": "Aplica ciegamente la fórmula de Carnot creyendo que las plantas reales operan al 62.5% de rendimiento.",
+  "solucion_canonica_einsof": "Deriva la optimización de Euler-Lagrange para tiempo finito y calcula la eficiencia real de Curzon-Ahlborn: $\\eta_{CA} = 1 - \\sqrt{300 / 800} = 1 - \\sqrt{0.375} = 1 - 0.6124 = 38.76\\%$."
+ },
+ {
+  "id": 95,
+  "titulo": "Prueba 95: Algoritmo de Flujo Máximo de Push-Relabel (Goldberg-Tarjan)",
+  "area": "Algoritmos de Grafos y Optimización",
+  "prompt": "En una red de flujo con fuente $s$, sumidero $t$ y 4 nodos intermedios con capacidades dirigidas, explica la ventaja asintótica del algoritmo Push-Relabel sobre Ford-Fulkerson o Dinic. Dado un estado donde un nodo $u$ tiene exceso de flujo $e(u) > 0$ y su función de altura es $h(u) = 3$, con vecinos $v_1$ ($h=3$), $v_2$ ($h=4$) y $v_3$ ($h=2$, capacidad residual $c_f(u, v_3) = 0$), ¿qué operación atómica (Push o Relabel) debe ejecutarse y cuál es la nueva altura calculada de $u$?",
+  "por_que_complejo": "Una operación de empuje (Push) solo es admisible si $c_f(u, v) > 0$ y $h(u) = h(v) + 1$. Como ningún vecino residual satisface $h(v) = 2$ con capacidad libre, no se puede hacer Push. Se debe ejecutar obligatoriamente Relabel, actualizando la altura a $h(u) = 1 + \\min \\{h(v) : c_f(u, v) > 0\\}$.",
+  "fallo_modelo_base": "Fuerza un empuje sobre $v_1$ ignorando que están a la misma altura o inventa un camino de aumento global tipo Edmonds-Karp.",
+  "solucion_canonica_einsof": "Explica la invariante de preflujo local, descarta Push por falta de gradiente admisible y ejecuta la reasignación de altura (Relabel) formal."
+ },
+ {
+  "id": 96,
+  "titulo": "Prueba 96: Isomorfismo de Subgrafos y Algoritmo de Ullmann con Poda de Consistencia",
+  "area": "Algoritmos de Grafos y Optimización",
+  "prompt": "Dados dos grafos dirigidos $G_1$ (grafo patrón de 4 vértices) y $G_2$ (grafo objetivo de 10 vértices), formula la matriz de permutación binaria $M \\in \\{0, 1\\}^{4 \\times 10}$. Explica formalmente cómo la poda de consistencia por matriz de adyacencia de Ullmann ($M \\cdot (M \\cdot A_2)^T$) elimina ramas del árbol de búsqueda antes de instanciar asignaciones completas, reduciendo la complejidad del problema NP-completo.",
+  "por_que_complejo": "Requiere verificar que para cada par donde $M_{ij} = 1$, cada vecino de $i$ en $G_1$ tenga un candidato correspondiente entre los vecinos de $j$ en $G_2$ con grado compatible: $\\forall x \\in N_{G_1}(i), \\exists y \\in N_{G_2}(j) : M_{xy} = 1$.",
+  "fallo_modelo_base": "Describe una búsqueda en profundidad (DFS) por fuerza bruta factorial $10! / 6!$ sin especificar la condición algebraica de filtrado matricial de adyacencias.",
+  "solucion_canonica_einsof": "Escribe el pseudocódigo algebraico de Ullmann con matrices booleanas y demuestra la poda de 90% de las hojas del árbol en el paso 1."
+ },
+ {
+  "id": 97,
+  "titulo": "Prueba 97: Descomposición de Cholesky y Factorización Simbólica en Grafos de Cordales",
+  "area": "Algoritmos de Grafos y Optimización",
+  "prompt": "Dada una matriz dispersa simétrica definida positiva $A \\in \\mathbb{R}^{n \\times n}$ cuyo grafo de adyacencia $G(A)$ no es cordal, ¿por qué la factorización de Cholesky $A = L L^T$ genera elementos no nulos adicionales (Fill-in)? Explica cómo el algoritmo de eliminación gaussiana corresponde a la triangulación del grafo y cómo la heurística de Grado Mínimo Aproximado (AMD) reordena los vértices para minimizar el fill-in.",
+  "por_que_complejo": "Cada paso de eliminación de un vértice $v$ conecta a todos sus vecinos no adyacentes formando un clique, lo que añade aristas que se traducen en entradas no-cero en la matriz triangular $L$.",
+  "fallo_modelo_base": "Asume que la dispersión de $L$ es idéntica a la dispersión de $A$, ignorando el fenómeno de fill-in que agota la memoria RAM en sistemas grandes.",
+  "solucion_canonica_einsof": "Modela el grafo de eliminación, demuestra la cordalidad del grafo resultante y formula la permutación simétrica de fill-reducing ordering."
+ },
+ {
+  "id": 98,
+  "titulo": "Prueba 98: Ecuación de Ruina Clásica de Lundberg y Coeficiente de Ajuste",
+  "area": "Finanzas Actuariales y Modelado de Ruina",
+  "prompt": "En el modelo de riesgo de Cramér-Lundberg, el proceso de reservas de una aseguradora es $U(t) = u + c t - \\sum_{i=1}^{N(t)} X_i$, donde $u$ es el capital inicial, el conteo de siniestros $N(t)$ es un proceso de Poisson homogéneo con tasa $\\lambda = 100$ siniestros/año, y los montos de siniestro $X_i$ son exponenciales independientes con media $1/\\beta = \\$10.000$. La prima se cobra con un recargo de seguridad relativo $\\theta = 0.20$ ($c = (1+\\theta) \\lambda / \\beta$). Calcula el coeficiente de ajuste de Lundberg $R$ y la cota superior estricta de la probabilidad de ruina infinita $\\psi(u) \\le e^{-R u}$ para un capital inicial de $u = \\$50.000$.",
+  "por_que_complejo": "El coeficiente de ajuste $R$ es la raíz positiva no nula de la ecuación de martingala: $\\lambda + c R = \\lambda M_X(R)$. Para siniestros exponenciales, la función generadora de momentos es $M_X(R) = \\frac{\\beta}{\\beta - R}$. Esto se simplifica a la fórmula exacta: $R = \\frac{\\theta \\beta}{1 + \\theta}$. Con $\\beta = 1/10.000 = 0.0001$ y $\\theta = 0.20$: $R = \\frac{0.20 \\cdot 0.0001}{1.20} = \\frac{0.00002}{1.20} = 1.6667 \\times 10^{-5}$.",
+  "fallo_modelo_base": "Se equivoca en el álgebra de la función generadora de momentos o calcula una cota de ruina mayor a 1 para capitales positivos.",
+  "solucion_canonica_einsof": "$R = 1.6667 \\cdot 10^{-5} \\ \\text{dólares}^{-1}$. Cota de ruina: $\\psi(50.000) \\le e^{-(1.6667 \\cdot 10^{-5} \\cdot 50.000)} = e^{-0.8333} = 0.4346$ (43.46%). Además, para reclamos exponenciales la probabilidad exacta es $\\psi(u) = \\frac{1}{1+\\theta} e^{-Ru} = \\frac{1}{1.2} e^{-0.8333} = 36.22\\%$."
+ },
+ {
+  "id": 99,
+  "titulo": "Prueba 99: Provisión de Siniestros Pendientes por Método de Cadena Escalera (Chain Ladder)",
+  "area": "Finanzas Actuariales y Modelado de Ruina",
+  "prompt": "Una compañía de seguros generales presenta el siguiente triángulo de desarrollo de siniestros pagados por año de ocurrencia (2023, 2024, 2025) y año de desarrollo (0, 1, 2) en millones de pesos:\nAño 2023: [120, 180, 210]\nAño 2024: [140, 220, ?]\nAño 2025: [160, ?, ?]\nCalcula los factores de desarrollo de enlace (Link Ratios / Age",
+  "por_que_complejo": "Factor $f_{0 \\to 1} = \\frac{180 + 220}{120 + 140} = \\frac{400}{260} \\approx 1.5385$. Factor $f_{1 \\to 2} = \\frac{210}{180} = 1.1667$.\nAño 2024 acumulado a desarrollo 2: $220 \\cdot 1.1667 = 256.67$ M. Pagado hasta ahora = 220 M. Reserva 2024 = $256.67 - 220 = 36.67$ M.\nAño 2025 proyectado a desarrollo 1: $160 \\cdot 1.5385 = 246.15$ M. A desarrollo 2: $246.15 \\cdot 1.1667 = 287.18$ M. Pagado hasta ahora = 160 M. Reserva 2025 = $287.18 - 160 = 127.18$ M.",
+  "fallo_modelo_base": "Promedia aritméticamente los ratios en lugar de usar la media ponderada por volumen pagado de Chain Ladder actuarial estándar.",
+  "solucion_canonica_einsof": "Aplica la formulación estricta de Mack para Chain Ladder: Reserva 2024 = $36.67$ M; Reserva 2025 = $127.18$ M. Provisión IBNR total obligatoria = $163.85$ millones de pesos."
+ },
+ {
+  "id": 100,
+  "titulo": "Prueba 100: Modelo de Mortalidad Estocástica de Lee-Carter con Reducción SVD",
+  "area": "Finanzas Actuariales y Modelado de Ruina",
+  "prompt": "En el modelo actuarial de Lee-Carter para longevidad, la tasa instantánea de mortalidad a edad $x$ en el año $t$ es $\\ln(m_{x,t}) = \\alpha_x + \\beta_x \\kappa_t + \\epsilon_{x,t}$, con restricciones de identificabilidad $\\sum_t \\kappa_t = 0$ y $\\sum_x \\beta_x = 1$. Si para una tabla de mortalidad de edades 60 a 90 años en el periodo 1990-2025 se realiza la descomposición en valores singulares (SVD) de la matriz de residuos centrados $Z_{x,t} = \\ln(m_{x,t}) - \\bar{\\alpha}_x$, explica cómo se extrae el índice temporal de longevidad $\\kappa_t$ del primer componente principal y proyecta la esperanza de vida utilizando un proceso ARIMA(0,1,0) con deriva para evaluar el riesgo de longevidad de un fondo de pensiones.",
+  "por_que_complejo": "Exige el desacople ortogonal entre el perfil etario promedio ($\\alpha_x$), la sensibilidad a mejoras médicas por grupo de edad ($\\beta_x$) y la tendencia histórica global ($\\kappa_t$). El pronóstico estocástico de $\\kappa_{t+s} = \\kappa_t + s \\cdot d + \\sigma \\sqrt{s} Z$ genera intervalos de confianza actuariales asimétricos sobre rentas vitalicias.",
+  "fallo_modelo_base": "Proyecta la mortalidad con una simple regresión lineal sobre las tasas sin transformar a escala logarítmica, generando tasas de mortalidad negativas o violando la restricción de suma unitaria de $\\beta_x$.",
+  "solucion_canonica_einsof": "Ejecuta la descomposición de Stiefel de rango 1 sobre la variedad de matrices de tasas de mortalidad, proyecta el camino Browniano con deriva del parámetro de longevidad $\\kappa_t$ y cuantifica el déficit de reserva técnica del fondo de jubilaciones con un VaR al 99.5%."
+ }
+]

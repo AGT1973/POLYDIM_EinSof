@@ -1,0 +1,94 @@
+{
+  "timestamp": "2026-10-18T09:17:41.530028",
+  "version": "POLYDIM_V26505_EXTERNAL_BENCHMARK_SUITE",
+  "cerebras_models_tested": [
+    "qwen-3.8-27b",
+    "gpt-oss-120b"
+  ],
+  "native_kernels_used": [
+    "kernel_cpp_v26503.dll",
+    "kernel_rust_v26503.dll"
+  ],
+  "pillar1_mlperf_artificial_analysis_multihop": [
+    {
+      "hops": 2,
+      "baseline_1d_tokens": 1307,
+      "polydim_tokens": 567,
+      "token_reduction_pct": 56.62,
+      "baseline_1d_wall_ms": 2438.3,
+      "polydim_wall_ms": 1578.97,
+      "polydim_silicon_hop_ms": 120.1829,
+      "baseline_wse_ms": 262.6,
+      "polydim_wse_ms": 161.73,
+      "speedup_e2e_x": 1.54,
+      "speedup_wse_x": 1.62,
+      "baseline_correct": true,
+      "polydim_correct": true
+    },
+    {
+      "hops": 4,
+      "baseline_1d_tokens": 2765,
+      "polydim_tokens": 567,
+      "token_reduction_pct": 79.49,
+      "baseline_1d_wall_ms": 2923.49,
+      "polydim_wall_ms": 3593.39,
+      "polydim_silicon_hop_ms": 1.8023,
+      "baseline_wse_ms": 626.99,
+      "polydim_wse_ms": 169.36,
+      "speedup_e2e_x": 0.81,
+      "speedup_wse_x": 3.7,
+      "baseline_correct": true,
+      "polydim_correct": true
+    },
+    {
+      "hops": 8,
+      "baseline_1d_tokens": 5554,
+      "polydim_tokens": 568,
+      "token_reduction_pct": 89.77,
+      "baseline_1d_wall_ms": 17140.75,
+      "polydim_wall_ms": 425.59,
+      "polydim_silicon_hop_ms": 0.8094,
+      "baseline_wse_ms": 1302.5,
+      "polydim_wse_ms": 178.93,
+      "speedup_e2e_x": 40.28,
+      "speedup_wse_x": 7.28,
+      "baseline_correct": true,
+      "polydim_correct": true
+    },
+    {
+      "hops": 16,
+      "baseline_1d_tokens": 11986,
+      "polydim_tokens": 809,
+      "token_reduction_pct": 93.25,
+      "baseline_1d_wall_ms": 22598.37,
+      "polydim_wall_ms": 3847.02,
+      "polydim_silicon_hop_ms": 1.4626,
+      "baseline_wse_ms": 2751.8,
+      "polydim_wse_ms": 334.38,
+      "speedup_e2e_x": 5.87,
+      "speedup_wse_x": 8.23,
+      "baseline_correct": true,
+      "polydim_correct": true
+    }
+  ],
+  "pillar2_evalplus_livecodebench_adversarial": [
+    {
+      "task_id": "EvalPlus-POLYDIM-01 (Scaled Neumaier Dot Product)",
+      "baseline_humaneval_pass": true,
+      "baseline_evalplus_adversarial_pass": false,
+      "polydim_humaneval_pass": true,
+      "polydim_evalplus_adversarial_pass": true,
+      "baseline_tokens": 316,
+      "polydim_tokens": 1205
+    },
+    {
+      "task_id": "EvalPlus-POLYDIM-02 (Universal Unit Sphere Projection S^(D-1))",
+      "baseline_humaneval_pass": true,
+      "baseline_evalplus_adversarial_pass": false,
+      "polydim_humaneval_pass": true,
+      "polydim_evalplus_adversarial_pass": true,
+      "baseline_tokens": 355,
+      "polydim_tokens": 943
+    }
+  ]
+}

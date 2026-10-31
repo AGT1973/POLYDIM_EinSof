@@ -1,0 +1,30 @@
+{
+  "version": "polydim.einsof-canonical-2026.10.31",
+  "structure": "tripartita",
+  "components": {
+    "teoria": [
+      "DIMENSION_IS_ALL_YOU_NEED_PAPER_V1550_HARDENED.md",
+      "POLYDIM_FORMAL_AXIOMATIC_THEORY_SOTA.md",
+      "POLYDIM_EINSOFOS_ENTERPRISE_WHITEBOOK_V1550.md",
+      "POLYDIM_V018_TECHNICAL_DEBT_ISSUE_TRACKER.md",
+      "DICTAMEN_GPT6_EXTERNAL_REDTEAM_R2.md"
+    ],
+    "tests": [
+      "polydim_colab_benchmark_kit.ipynb",
+      "polydim_advanced_8_tests_suite.ipynb",
+      "test_cross_cpp_rust.py"
+    ],
+    "benchmarks": [
+      "run_six_decisive_proofs_v26505.py",
+      "run_aladin_external_repro_v26505.py",
+      "EXTERNAL_BENCHMARK_REPORT_V26505.json",
+      "PILOT20_HUMANEVALPLUS_REPORT_A_B_C_D.json",
+      "prompts_100.json"
+    ]
+  },
+  "hardware_verification": {
+    "host_windows": "MSVC C++20 AVX2 / Rust 2021, Exit Code 0",
+    "node_aladin_debian13": "GCC 14.2 AVX2 / rustc 2021, Exit Code 0 (15.16 ms, max_diff=0.0)"
+  },
+  "v018_technical_debt_status": "SPECIFIED_AND_REGISTERED"
+}
