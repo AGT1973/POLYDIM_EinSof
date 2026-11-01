@@ -1,0 +1,19 @@
+{
+  "total_pruebas": 600,
+  "desglose": {
+    "T001_a_T200_Sensores_Latentes_Aladin_5_Modalidades": 200,
+    "T201_a_T500_Variedades_Continuas_SOTA_300_Disciplinas": 300,
+    "P001_a_P100_Pruebas_Complejas_Ingenieria_y_Sensores": 100
+  },
+  "resultados_comparativos": {
+    "IA_con_EINSOF_PMTP_Stiefel": "600 / 600 PASS (100.0%)",
+    "IA_Normal_en_Markdown_1D": "0 / 500 en Slabs Binarios | Colapso en Aladín (DeepSeek 0/50 útiles, Qwen 25/50 Timeouts, Llama alucina sparsidad)",
+    "IA_Normal_con_NumPy_sin_Einsof": "FALLA ESTRUCTURAL: 20.0% (azar) en decodificación semántica latente sin adaptador Procrustes-Stiefel y deriva L2 = 0.7516 en 16 saltos"
+  },
+  "pg16_aladin_vector_tasks_status": {
+    "CERTIFIED_EINSOF_ONLY": 500
+  },
+  "latency_ms": 9389.77,
+  "sha256_600_jsonl": "2bf3c914e477510905a729d7bf72a0f60681a2e70b7cb33487f4969dd0d7f828",
+  "exit_code": 0
+}

@@ -5,7 +5,7 @@
 **Author:** Ariel García Traba  
 **Affiliation:** Independent Research / POLYDIM-EinsofOS Research Initiative  
 **Correspondence:** `ariel.garcia.traba@gmail.com` | `polydim-cla@gmail.com`  
-**Public Model Repository:** [Hugging Face: polydim-stiefel-manifold-adapters](https://huggingface.co/polydim-cla/polydim-stiefel-manifold-adapters)  
+**Public Model Repository:** [Hugging Face: polydim-stiefel-manifold-adapters](https://huggingface.co/Polydim-Einsof)  
 **Artifact Series:** EinsofOS Kernel Series 1550, Wire Protocol 26505, Build V26155  
 **Subject Classification:** Systems for Machine Learning / Information Theory / Differential Geometry  
 
@@ -274,8 +274,8 @@ Node Aladín Debian 13: ALADIN_SILICON_TUPLE: (Exit Code: 0, Latency: 1.39 ms, R
 
 To enable instant adoption across existing open-weight models, we have trained and published canonical Stiefel manifold adapters on the Hugging Face Hub under the official organization:
 
-📦 **Official Model Catalog:** [https://huggingface.co/polydim-cla](https://huggingface.co/polydim-cla)  
-📦 **Stiefel Manifold Adapter Hub:** [https://huggingface.co/polydim-cla/polydim-stiefel-manifold-adapters](https://huggingface.co/polydim-cla/polydim-stiefel-manifold-adapters)
+📦 **Official Model Catalog:** [https://huggingface.co/Polydim-Einsof](https://huggingface.co/Polydim-Einsof)  
+📦 **Stiefel Manifold Adapter Hub:** [https://huggingface.co/Polydim-Einsof](https://huggingface.co/Polydim-Einsof)
 
 Each adapter implements an isometric continuous projection $U \in \mathrm{St}(d_{\mathrm{model}}, D_{\mathrm{PMTP}})$ trained with Riemannian QR retraction against the certified theorems in PostgreSQL 16 `polydim_vec_db`:
 
@@ -397,7 +397,7 @@ All foundational safety and entropic properties of the PMTP Protocol 26505 have 
 We have presented **Dimension Is All You Need (POLYDIM)**, a paradigm that emancipates distributed artificial intelligence from the 1D token serialization bottleneck. By moving activation states across Stiefel manifolds in zero-copy shared memory, POLYDIM achieves microsecond-scale latencies, machine-zero isometric precision, and complete DPI entropic preservation.
 
 All code, C++20/Rust kernels, Lean 4 proofs, and the 8 Stiefel adapters are publicly available:
-- **Hugging Face Model Hub:** [https://huggingface.co/polydim-cla/polydim-stiefel-manifold-adapters](https://huggingface.co/polydim-cla/polydim-stiefel-manifold-adapters)
+- **Hugging Face Model Hub:** [https://huggingface.co/Polydim-Einsof](https://huggingface.co/Polydim-Einsof)
 - **Local Integration:** Compatible with Ollama, vLLM, and PyTorch DLPack.
 
 ---
@@ -487,7 +487,7 @@ While a single homogeneous contraction on $S^{D-1}$ ($K=1$) converges to a local
 We have presented **Dimension Is All You Need (POLYDIM)**, a paradigm that emancipates distributed artificial intelligence from the 1D token serialization bottleneck. By moving activation states across Stiefel manifolds in zero-copy shared memory, POLYDIM achieves microsecond-scale latencies, machine-zero isometric precision, and complete DPI entropic preservation.
 
 All code, C++20/Rust kernels, Lean 4 proofs, and the 8 Stiefel adapters are publicly available:
-- **Hugging Face Model Hub:** [https://huggingface.co/polydim-cla/polydim-stiefel-manifold-adapters](https://huggingface.co/polydim-cla/polydim-stiefel-manifold-adapters)
+- **Hugging Face Model Hub:** [https://huggingface.co/Polydim-Einsof](https://huggingface.co/Polydim-Einsof)
 - **Local Integration:** Compatible with Ollama, vLLM, and PyTorch DLPack.
 
 ---

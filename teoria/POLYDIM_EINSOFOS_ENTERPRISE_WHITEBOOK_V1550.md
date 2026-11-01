@@ -291,9 +291,9 @@ En implementaciones aeroespaciales y marinas de defensa, POLYDIM erradica la des
 ### 8. Teoremas Teóricos Maestros V44.0: Límites Geométricos y Garantías de Concurrencia
 
 #### Teorema 1.2 (Compacidad vs Deriva Semántica Dinámica y Contracción en el Espacio Cociente)
-La compacidad estática de $\mathrm{St}(D, K)$ garantiza el acotamiento universal de norma ($\|X\|_F = \sqrt{K}$, $\|X\|_2 = 1$), pero **no** previene la deriva semántica dinámica en procesos recurrentes $X_{t+1} = \mathcal{R}_{X_t}(\xi(X_t))$. Por el teorema de Kronecker-Weyl, flujos no restringidos generados por matrices antisimétricas $\Omega \in \mathfrak{so}(D)$ son densos en toros $\mathbb{T}^m \subset \mathrm{St}(D, K)$. Para asegurar convergencia asintótica a un atractor semántico en el espacio de Grassmann $\mathrm{Gr}(D, K) = \mathrm{St}(D, K)/O(K)$, el campo vectorial debe satisfacer contracción estricta riemanniana de Lyapunov-Banach:
+La compacidad estática de $\mathrm{St}(D, K)$ garantiza el acotamiento universal de norma ($\|X\|_F = \sqrt{K}$, $\|X\|_2 = 1$), pero **no** previene la deriva semántica dinámica en procesos recurrentes $X_{t+1} = \mathcal{R}_{X_t}(\xi(X_t))$. Por el teorema de Kronecker-Weyl, flujos no restringidos generados por matrices antisimétricas $\Omega \in \mathfrak{so}(D)$ son densos en toros $\mathbb{T}^m \subset \mathrm{St}(D, K)$. Para asegurar estabilidad dinámica en el espacio de Grassmann $\mathrm{Gr}(D, K) = \mathrm{St}(D, K)/O(K)$, el campo vectorial debe satisfacer una cota de perturbación Lipschitz covariante local:
 $$\|\mathcal{T}_{X \to Y} \xi(X) - \xi(Y)\|_F \le L \, d_R(X, Y) \quad \text{con } L < 1$$
-en la vecindad geodésica del atractor.
+en la vecindad geodésica del conjunto límite. Conforme a la clarificación formal D16, esta condición acota la sensibilidad del gradiente frente a variaciones de paso pero no impone contracción global de Banach (obstruida por la compacidad topológica de Poincaré-Hopf). La convergencia a atractores semánticos aislados queda subordinada a la estructura de Morse-Bott y Łojasiewicz del potencial de pérdida.
 
 #### Teorema 4.0 (Diferenciación Estricta entre Orden Geométrico y Orden Algebraico de Retracción)
 Deben discriminarse estrictamente dos órdenes asintóticos independientes en la retracción polar bajo tangencia horizontal obligatoria:

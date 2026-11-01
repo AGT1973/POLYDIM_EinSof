@@ -129,23 +129,34 @@ def test_rust_v2_workspace_bounds(rust_lib):
     )
     require(rc_short == -12, f"Expected -12 for short workspace, got {rc_short}")
 
-    # Aliased workspace: (a) Exact pointer equality -> -13
+    # Aliased workspace: (a) Exact pointer equality -> -17
     rc_alias = rust_lib.rust_newton_schulz_ord5_retract_v2(
         mat.ctypes.data, len_w, rows, cols, 10, 1e-12,
         ctypes.byref(defect),
         mat.ctypes.data, needed_len
     )
-    require(rc_alias == -13, f"Expected -13 for exact aliased workspace, got {rc_alias}")
+    require(rc_alias == -17, f"Expected -17 for exact aliased workspace, got {rc_alias}")
 
-    # Aliased workspace: (b) SEV1-02 FIX: Partial interval overlap -> -13
+    # Aliased workspace: (b) SEV1-02 FIX: Partial interval overlap -> -17
     partial_ws_ptr = mat.ctypes.data + 64
     rc_partial = rust_lib.rust_newton_schulz_ord5_retract_v2(
         mat.ctypes.data, len_w, rows, cols, 10, 1e-12,
         ctypes.byref(defect),
         partial_ws_ptr, needed_len
     )
-    require(rc_partial == -13, f"Expected -13 for partial interval overlap aliasing, got {rc_partial}")
-    print("  [PASS] Rejection of undersized (-12), exact alias (-13), and partial interval overlap (-13) verified.")
+    require(rc_partial == -17, f"Expected -17 for partial interval overlap aliasing, got {rc_partial}")
+    # Convergence basin violation: diagonal entry >= sqrt(3) in local bypass window ([1.75, 0, ...]) -> -14
+    mat.fill(0.0)
+    for k_i in range(cols):
+        mat.reshape(rows, cols)[k_i, k_i] = 1.0
+    mat.reshape(rows, cols)[0, 0] = 1.75  # 1.75^2 = 3.0625 >= 3.0, max_abs=1.75 <= 2.0
+    rc_basin = rust_lib.rust_newton_schulz_ord5_retract_v2(
+        mat.ctypes.data, len_w, rows, cols, 10, 1e-12,
+        ctypes.byref(defect),
+        ws.ctypes.data, needed_len
+    )
+    require(rc_basin == -14, f"Expected -14 for Newton-Schulz basin violation (sigma >= sqrt(3)), got {rc_basin}")
+    print("  [PASS] Rejection of undersized (-12), basin violation (-14), exact alias (-17), and partial overlap (-17) verified.")
 
 def test_cross_cpp_rust_parity(cpp_lib, rust_lib):
     print("[TEST 4/5] Cross C++20 Oracle vs Rust Retraction Parity...")
@@ -181,17 +192,17 @@ def test_cross_cpp_rust_parity(cpp_lib, rust_lib):
     require(diff < 1e-12 * max(1.0, float(np.linalg.norm(mat))), f"Parity divergence too high: {diff}")
 
 def test_extreme_subnormal_and_inf(cpp_lib, rust_lib):
-    print("[TEST 5/5] Extreme Subnormal Protection and Non-Finite Rejection...")
+    print("[TEST 5/5] Extreme Subnormal Protection and Non-Finite Rejection (D23 Enhanced)...")
     rows, cols = 32, 8
     len_w = rows * cols
     needed_len = rust_lib.rust_newton_schulz_workspace_len(rows, cols)
     ws, _ = get_aligned_buffer(needed_len, align=64)
     mat, _ = get_aligned_buffer(len_w, align=64)
+    defect = ctypes.c_double(0.0)
 
-    # 1. NaN rejection in Rust (-5) and C++ (PMTP_ERROR_ORACLE_NONFINITE = -2)
+    # 1. NaN rejection in Rust (-5) and C++ (PMTP_ERROR_ORACLE_NONFINITE != 0)
     mat.fill(1.0)
     mat[0] = float('nan')
-    defect = ctypes.c_double(0.0)
     rc_rust_nan = rust_lib.rust_newton_schulz_ord5_retract_v2(
         mat.ctypes.data, len_w, rows, cols, 10, 1e-12,
         ctypes.byref(defect),
@@ -204,6 +215,38 @@ def test_extreme_subnormal_and_inf(cpp_lib, rust_lib):
         ctypes.byref(defect)
     )
     require(rc_cpp_nan != 0, f"C++ oracle should reject NaN, got {rc_cpp_nan}")
+
+    # 1b. D23: Diagonal NaN rejection at multiple diagonal positions (i, i)
+    for diag_idx in (0, cols // 2, cols - 1):
+        mat.fill(1.0)
+        mat.reshape(rows, cols)[diag_idx, diag_idx] = float('nan')
+        rc_rust_diag_nan = rust_lib.rust_newton_schulz_ord5_retract_v2(
+            mat.ctypes.data, len_w, rows, cols, 10, 1e-12,
+            ctypes.byref(defect),
+            ws.ctypes.data, ws.size
+        )
+        require(rc_rust_diag_nan == -5, f"Expected -5 for diagonal NaN at ({diag_idx}, {diag_idx}), got {rc_rust_diag_nan}")
+        rc_cpp_diag_nan = cpp_lib.pmtp_oracle_verify_stiefel(
+            mat.ctypes.data, rows, cols, 1e-12,
+            ctypes.byref(defect)
+        )
+        require(rc_cpp_diag_nan != 0, f"C++ oracle should reject diagonal NaN at ({diag_idx}, {diag_idx}), got {rc_cpp_diag_nan}")
+
+    # 1c. D23: +/- Inf in row 0 rejection
+    mat.fill(1.0)
+    mat.reshape(rows, cols)[0, 0] = float('inf')
+    mat.reshape(rows, cols)[0, 1] = float('-inf')
+    rc_rust_inf = rust_lib.rust_newton_schulz_ord5_retract_v2(
+        mat.ctypes.data, len_w, rows, cols, 10, 1e-12,
+        ctypes.byref(defect),
+        ws.ctypes.data, ws.size
+    )
+    require(rc_rust_inf == -5, f"Expected -5 for +/-Inf in row 0, got {rc_rust_inf}")
+    rc_cpp_inf = cpp_lib.pmtp_oracle_verify_stiefel(
+        mat.ctypes.data, rows, cols, 1e-12,
+        ctypes.byref(defect)
+    )
+    require(rc_cpp_inf != 0, f"C++ oracle should reject +/-Inf in row 0, got {rc_cpp_inf}")
 
     # 2. Subnormal validation:
     # 2a. SEV1-01 FIX: True subnormal preservation with non-singular orthogonal seed (1e-310 * Q)
@@ -227,7 +270,29 @@ def test_extreme_subnormal_and_inf(cpp_lib, rust_lib):
         ws.ctypes.data, ws.size
     )
     require(rc_rust_sub_sing in (-6, -8), f"Expected -6 (SINGULAR) or -8 (CONVERGENCE_FAIL) for uniform subnormal rank-1, got {rc_rust_sub_sing}")
-    print("  [PASS] Non-finite rejection, true subnormal preservation, and singular subnormal detection verified.")
+
+    # 2c. D23: Mixed subnormal (1e-310) and normal (1.0) in the same column
+    mat.fill(1.0)
+    mat.reshape(rows, cols)[0, 0] = 1e-310
+    mat.reshape(rows, cols)[1, 0] = 1e-315
+    rc_rust_mixed_col = rust_lib.rust_newton_schulz_ord5_retract_v2(
+        mat.ctypes.data, len_w, rows, cols, 30, 1e-12,
+        ctypes.byref(defect),
+        ws.ctypes.data, ws.size
+    )
+    require(rc_rust_mixed_col in (-6, -8), f"Expected -6 or -8 for ill-conditioned subnormal mix in same col, got {rc_rust_mixed_col}")
+
+    # 2d. D23: Extreme spectral gap (col 0 subnormal 1e-310 * Q[:, 0], cols 1..k normal Q[:, 1..k])
+    mat[:] = Q_seed.flatten()
+    mat.reshape(rows, cols)[:, 0] *= 1e-310
+    rc_rust_spec_gap = rust_lib.rust_newton_schulz_ord5_retract_v2(
+        mat.ctypes.data, len_w, rows, cols, 30, 1e-12,
+        ctypes.byref(defect),
+        ws.ctypes.data, ws.size
+    )
+    require(rc_rust_spec_gap in (-6, -8), f"Expected -6 or -8 for extreme spectral gap condition, got {rc_rust_spec_gap}")
+
+    print("  [PASS] Non-finite rejection (scalar, diagonal, row-Inf) and subnormal battery (true, rank-1, mixed-col, spectral-gap) verified.")
 
 def main():
     cpp_path = DIR / f"pmtp_kernel_cpp{SUFFIX}"

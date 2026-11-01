@@ -1,0 +1,77 @@
+[
+  {
+    "id": 1,
+    "titulo": "Auditoría de Invarianza Riemanniana y Retracción Polar en Stiefel St(k, D)",
+    "categoria": "Geometría Diferencial y Variedades de Stiefel",
+    "complejidad": "Hiper-Complejo (4 Pasos Formales)",
+    "protocolo_vectorial_tokens_estimados": 128,
+    "tokens_resolucion_esperados": 850,
+    "pasos": [
+      "Paso 1: Demuestre formalmente que la retracción polar R_X(V) = (X+V)(I_k + V^T V)^{-1/2} sobre la variedad de Stiefel St(k, D) es de segundo orden dist(R_X(V), Exp_X(V)) = O(||V||^2).",
+      "Paso 2: Compare la estabilidad asintótica de la iteración de Newton-Schulz X_{k+1} = X_k (3 I - X_k^T X_k)/2 frente a Cholesky-QR2 bajo condicionamiento kappa >= 10^12.",
+      "Paso 3: Derive la cota exacta de error de punto flotante usando el acumulador compensado de Neumaier demostrando que |err_rel| <= 2 * eps + O(N * eps^2) para D = 4096.",
+      "Paso 4: Sintetice la estructura de memoria compartida binaria (SLAB_ID) de 64 bytes que transporta el tensor ortonormalizado en FP64 con cero peaje de tokenización 1D."
+    ],
+    "prompt_completo": "[PROTOCOLO DE EVALUACIÓN MULTI-PASO EINSOF // FASE GEOMETRÍA RIEMANNIANA]\nActúa como un geómetra diferencial de silicio y auditor de compiladores cuánticos.\nResuelve de forma rigurosa y exhaustiva los siguientes 4 pasos matemáticos secuenciales:\n\nPaso 1: Demuestre formalmente que para cualquier punto X en la variedad de Stiefel St(k, D) = {X in R^{D x k} : X^T X = I_k} y un vector tangente V en T_X St(k, D), la retracción polar R_X(V) = (X+V)(I_k + V^T V)^{-1/2} satisface la condición de retracción de segundo orden: dist(R_X(V), Exp_X(V)) = O(||V||^2), donde Exp es la geodésica Riemanniana canónica con la métrica euclidiana inducida.\n\nPaso 2: Analice la iteración de Newton-Schulz de orden 3 para ortogonalización rápida: X_{k+1} = 0.5 * X_k * (3 * I_k - X_k^T * X_k). Calcule el radio de convergencia espectral exacto rho(I_k - X_0^T X_0) < sqrt(3) y demuestre por qué diverge si ||X_0^T X_0 - I_k||_2 >= sqrt(3). Contraste su robustez frente al algoritmo Cholesky-QR2 (CholQR2) bajo perturbaciones con matriz de Hilbert kappa >= 10^12.\n\nPaso 3: Aplique el análisis de error hacia adelante (forward error analysis) de Higham al algoritmo del acumulador compensado de Neumaier: s = x_1; c = 0; para i=2..N: t = s + x_i; si |s| >= |x_i| entonces c += (s - t) + x_i sino c += (x_i - t) + s; s = t; suma = s + c. Demuestre que el error relativo satisface |suma - sum(x)| / |sum(x)| <= 2*eps + O(N * eps^2), erradicando la acumulación catastrófica O(N*eps) de la suma ingenua.\n\nPaso 4: Diseñe la estructura de memoria compartida binaria (SLAB_ID) de 64 bytes que transporta la matriz ortonormalizada resultante en FP64 sin serialización a texto 1D."
+  },
+  {
+    "id": 2,
+    "titulo": "Cuello de Botella Shannon DPI vs Telepatía Vectorial PMTP Inter-Agente",
+    "categoria": "Teoría de la Información y Arquitectura de Sistemas",
+    "complejidad": "Hiper-Complejo (4 Pasos Formales)",
+    "protocolo_vectorial_tokens_estimados": 140,
+    "tokens_resolucion_esperados": 920,
+    "pasos": [
+      "Paso 1: Formule el Teorema de Procesamiento de Datos de Shannon (DPI) para una cadena de Markov X -> Z -> Y_1D.",
+      "Paso 2: Calcule la pérdida de entropía en bits para un vector de activación z in R^{4096} en FP64 serializado a JSON de 16 caracteres ASCII.",
+      "Paso 3: Demuestre que el canal de memoria compartida PMTP (PmtpShmBus) tiene capacidad de canal C = infty respecto a la representación latente.",
+      "Paso 4: Particione formalmente el consumo de tokens entre carga de protocolo vectorial y tokens de ejecución pura."
+    ],
+    "prompt_completo": "[PROTOCOLO DE EVALUACIÓN MULTI-PASO EINSOF // FASE TEORÍA DE LA INFORMACIÓN]\nActúa como un teórico de la información y arquitecto de sistemas distribuidos de IA.\nResuelve minuciosamente los siguientes 4 pasos analíticos:\n\nPaso 1: Sea X una variable aleatoria que representa el espacio conceptual latente continuo en R^D (D = 4096). Sea Z el estado de activación interna del Modelo A. En una arquitectura tradicional 1D (como LangChain/AutoGen), Z es serializado mediante un tokenizer T: R^D -> Sigma* generando una secuencia de tokens de texto Y_1D = (t_1, t_2, ..., t_M). Posteriormente el Modelo B ingiere Y_1D. Formule la cadena de Markov X -> Z -> Y_1D -> Z_hat y demuestre por el Teorema de Procesamiento de Datos de Shannon (DPI) que I(X; Z_hat) <= I(X; Y_1D) <= I(X; Z).\n\nPaso 2: Calcule cuantitativamente la entropía diferencial h(Z) asumiendo una distribución gaussiana multivariada N(0, Sigma) en R^{4096} y calcule la pérdida exacta de información (en bits) al cuantizar y truncar cada coordenada a una representación de texto ASCII con precisión de 4 decimales. Compare 4096 * 64 bits = 262.144 bits frente a la representación textual.\n\nPaso 3: En la arquitectura EINSOF-PMTP, el canal es una región de memoria compartida de silicio /dev/shm (POSIX) o CreateFileMapping (Windows) con direccionamiento directo en RAM física. Demuestre que la tasa de transmisión R_PMTP = B_bus / Latencia_shm supera en al menos 3 órdenes de magnitud al parsing de texto JSON, detallando el número de ciclos de CPU consumidos por atof() o strtod() para 4096 elementos.\n\nPaso 4: Defina la partición estricta de tokens en el experimento: (A) Tokens de Carga de Protocolo Vectorial (tokens consumidos por el handshake y prefijo semántico), frente a (B) Tokens de Ejecución Neta del Prompt. Demuestre matemáticamente la asíntota de ahorro."
+  },
+  {
+    "id": 3,
+    "titulo": "Compilación de Silicio C++20 / Rust 2021 FFI y Control de Concurrencia RCU Lock-Free",
+    "categoria": "Sistemas de Bajo Nivel y Kernel Físico",
+    "complejidad": "Hiper-Complejo (4 Pasos Formales)",
+    "protocolo_vectorial_tokens_estimados": 160,
+    "tokens_resolucion_esperados": 980,
+    "pasos": [
+      "Paso 1: Diseñe el layout de memoria C ABI con alineación de 64 bytes (cache line) para AVX-512.",
+      "Paso 2: Implemente el protocolo RCU lock-free con números de secuencia atómicos (sequence lock) para escritores concurrentes.",
+      "Paso 3: Escriba el binding Rust 2021 con validación formal de 'unsafe' y manejo idéntico de desnormalizados (subnormal floats 1e-310).",
+      "Paso 4: Demuestre que el test de discrepancia cruzada satisface max_diff == 0.0 bajo IEEE-754 FP64."
+    ],
+    "prompt_completo": "[PROTOCOLO DE EVALUACIÓN MULTI-PASO EINSOF // FASE SILICIO Y CONCURRENCIA]\nActúa como un ingeniero principal de sistemas de bajo nivel y arquitecto de microkernels de IA.\nEjecuta los siguientes 4 pasos de implementación y auditoría de silicio:\n\nPaso 1: Especifique la estructura C ABI 'pmtp_shm_slab_descriptor_t' con alineación estricta alignas(64). Incluya: uint64_t magic_header (0x504D5450534C4142), uint64_t sequence_id, uint32_t dimension, uint32_t rank, uint64_t lease_cookie, double neumaier_norm_error, y el payload contiguo.\n\nPaso 2: Diseñe el algoritmo de lectura no bloqueante (Read-Copy-Update / Seqlock) en C++20: El escritor incrementa atomic<uint64_t> seq de par a impar, escribe los tensores continuos en memoria compartida, emite std::atomic_thread_fence(std::memory_order_release) e incrementa seq de impar a par. El lector lee seq con acquire, copia el tensor, y revalida con seq2. Demuestre la inmunidad contra lecturas rotas (torn reads) y condiciones de carrera.\n\nPaso 3: Construya el equivalente en Rust 2021 utilizando std::sync::atomic::{AtomicU64, Ordering}. Demuestre cómo el tipo 'UnsafeCell' garantiza la conformidad con las reglas de aliasing de Rust sin incurrir en UB (Undefined Behavior). Incluya la guardia explícita contra flotantes subnormales (1e-315) configurando el bit FTZ (Flush-To-Zero) y DAZ (Denormals-Are-Zero) en el registro MXCSR de x86_64.\n\nPaso 4: Formule el protocolo de validación cruzada binaria que garantiza max_diff == 0.0 en 1.000.000 de evaluaciones continuas entre la biblioteca C++ (.dll/.so) y el crate de Rust."
+  },
+  {
+    "id": 4,
+    "titulo": "Álgebras de Clifford Cl(p, q) y Rotaciones Espinoriales Unitarias en Horizonte Largo",
+    "categoria": "Álgebra Geométrica y Dinámica Simpléctica",
+    "complejidad": "Hiper-Complejo (4 Pasos Formales)",
+    "protocolo_vectorial_tokens_estimados": 135,
+    "tokens_resolucion_esperados": 890,
+    "pasos": [
+      "Paso 1: Defina el álgebra de Clifford Cl(0, D) generada por e_i e_j + e_j e_i = -2 delta_{ij} y su grupo espinorial Spin(D).",
+      "Paso 2: Derive la rotación de un multivector mediante el sandwich de rotor R x R^{dagger} con R = exp(-B/2).",
+      "Paso 3: Demuestre que la integración simpléctica preserva el volumen del espacio de fases (Teorema de Liouville) en 100.000 pasos de inferencia.",
+      "Paso 4: Muestre cómo el modelo Einsof previene el colapso dimensional mediante la conservación estricta de la 2-forma simpléctica omega."
+    ],
+    "prompt_completo": "[PROTOCOLO DE EVALUACIÓN MULTI-PASO EINSOF // FASE ÁLGEBRA DE CLIFFORD Y FÍSICA]\nActúa como un físico matemático y diseñador de redes neuronales geométricas.\nResuelve los 4 pasos analíticos siguientes:\n\nPaso 1: Considere el álgebra geométrica de Clifford Cl_{p,q}(R) con signatura métrica (p, q). Demuestre que el producto geométrico ab = a . b + a ^ b descompone la interacción entre un escalar simétrico y un bivector antisimétrico. Construya explícitamente el rotor R = exp(-theta * B / 2), donde B es un bivector unitario B^2 = -1.\n\nPaso 2: Demuestre que la transformación x' = R x R^{tilde} (donde R^{tilde} es la reversión) preserva de forma idéntica la norma cuadrática Q(x) = x x^{tilde} = ||x||^2 y los ángulos en cualquier dimensión D.\n\nPaso 3: En un horizonte de razonamiento recurrente de 100.000 pasos (multi-hop turing loop), los modelos tradicionales 1D sufren desvanecimiento de gradiente o dispersión caótica. Formule el integrador simpléctico de Verlet / Yoshida para el flujo geodésico sobre Spin(D) y demuestre que el error de energía hamiltoniana permanece estrictamente acotado: |H(t) - H(0)| <= C * (Delta t)^2 para todo t.\n\nPaso 4: Establezca el esquema numérico en silicio para representar bivectores dispersos (sparse bivectors) en O(k) memoria en lugar de O(D^2), garantizando que el cómputo se ejecute en < 0.05 ms por paso."
+  },
+  {
+    "id": 5,
+    "titulo": "Auditoría Adversarial Hostil: Deconstrucción de Alucinaciones y Desborde Espectral",
+    "categoria": "Red Team Hostil y Robustez Asintótica",
+    "complejidad": "Hiper-Complejo (4 Pasos Formales)",
+    "protocolo_vectorial_tokens_estimados": 150,
+    "tokens_resolucion_esperados": 960,
+    "pasos": [
+      "Paso 1: Inyecte matrices con valores singulares degradados sigma_min <= 1e-18 y analice el colapso del determinante det(X^T X).",
+      "Paso 2: Audite el comportamiento ante inyección directa de NaN, +Inf y -Inf demostrando rechazo determinista (Exit Code 1 / error code -14).",
+      "Paso 3: Evalúe el fenómeno de colapso de atención (Attention Sink Collapse) en modelos 1D sin anclaje en Stiefel frente a la estabilidad de Einsof.",
+      "Paso 4: Demuestre matemáticamente que el radio espectral de atracción rho < sqrt(3) aísla completamente el núcleo de cómputo."
+    ],
+    "prompt_completo": "[PROTOCOLO DE EVALUACIÓN MULTI-PASO EINSOF // FASE RED TEAM HOSTIL]\nActúa como un auditor adversarial Red Team especializado en fallos asintóticos de LLMs y microkernels.\nEjecuta los siguientes 4 pasos de estrés destructivo:\n\nPaso 1: Inyecte una matriz casi singular perturbada X_pert = I_k + 1e-15 * E, donde cond(X_pert) >= 1e16. Demuestre cómo los algoritmos estándar de ortogonalización (Gram-Schmidt clásico y modificado) pierden ortogonalidad a O(eps * cond(X)), mientras que la retracción polar compensada mantiene ||X_new^T X_new - I_k|| <= 1e-15.\n\nPaso 2: Audite la frontera de desbordamiento en memoria compartida: ¿Qué ocurre cuando un proceso hostil o corrupto escribe un payload que contiene NaNs o subnormales en el SLAB? Especifique la validación en O(1) ciclos con instrucciones AVX-512 (_mm512_fpclass_pd_mask) y su código de retorno determinista (-14 / PMTP_ERR_SPECTRUM_NAN).\n\nPaso 3: Analice el colapso de sumidero de atención (Attention Sink Collapse) en modelos LLM estándar (70B/72B) cuando procesan cadenas largas de razonamiento (>32k tokens) frente a la invarianza topológica que ofrece el prefijo vectorial de Stiefel en Einsof.\n\nPaso 4: Presente la matriz formal de comparación entre el Modelo Original (Vanilla 1D) y el Modelo Monstruo (Einsof SOTA) reportando: (a) Tokens de Protocolo, (b) Tokens de Resolución, (c) Velocidad tokens/s, (d) Deriva Numérica, (e) Código de Salida Físico."
+  }
+]

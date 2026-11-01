@@ -1,0 +1,35 @@
+{
+  "timestamp": "2026-11-01T10:36:04",
+  "total_tests": 4,
+  "passed": 4,
+  "results": [
+    {
+      "name": "Stiefel Hybrid Retraction & Asymptotic Limits",
+      "script": "E:\\POLYDIM_EINSOF\\test_stiefel_hybrid_retraction.py",
+      "exit_code": 0,
+      "latency_ms": 3565.64,
+      "status": "PASS"
+    },
+    {
+      "name": "PMTP Hostile Injections & Extremes",
+      "script": "E:\\PMTP\\test_pmtp_hostile_injections.py",
+      "exit_code": 0,
+      "latency_ms": 415.76,
+      "status": "PASS"
+    },
+    {
+      "name": "PMTP Long Horizon 100K Steps Drift",
+      "script": "E:\\PMTP\\test_pmtp_long_horizon_100k.py",
+      "exit_code": 0,
+      "latency_ms": 7099.79,
+      "status": "PASS"
+    },
+    {
+      "name": "Cross C++ vs Rust FFI Parity at Scale",
+      "script": "E:\\POLYDIM_EINSOF\\test_cross_cpp_rust.py",
+      "exit_code": 0,
+      "latency_ms": 419.9,
+      "status": "PASS"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "duration_s": 2.01,
+  "writes": 5869,
+  "reads": 23923,
+  "seqlock_retries": 0,
+  "torn_reads": 0,
+  "epoch_violations": 0,
+  "writer_contentions": 0,
+  "protocol": "Seqlock_Canonical_OddEven_V019"
+}
