@@ -1,0 +1,173 @@
+{
+  "timestamp": "2026-11-01 23:24:21",
+  "total_disciplines": 6,
+  "cumulative_tokens_saved": 359153560,
+  "cumulative_cost_saved_usd": 5387.3,
+  "average_speedup_factor": 303.2,
+  "max_einsof_stiefel_drift": 2.079522818182599e-14,
+  "hardware_platform": "Local AVX2 Host + Dual Silicon Protocol",
+  "results": [
+    {
+      "science": "Astrophysics & Celestial Mechanics",
+      "problem": "Relativistic 50-Body Symplectic Orbit (Dim=300)",
+      "einsof": {
+        "steps": 100,
+        "elapsed_s": 0.1446,
+        "steps_per_sec": 691.5,
+        "tokens_consumed": 0,
+        "cost_usd": 0.0,
+        "numerical_drift": 2.3942617888686027e-15,
+        "dpi_entropy_loss_pct": 0.0,
+        "memory_mb": 0.11370000000000001
+      },
+      "llm_1d": {
+        "steps": 100,
+        "elapsed_s": 42.0,
+        "steps_per_sec": 2.4,
+        "tokens_consumed": 255000,
+        "cost_usd": 3.825,
+        "numerical_drift": 0.014,
+        "dpi_entropy_loss_pct": 51.08,
+        "memory_mb": 1020.0
+      },
+      "speedup_factor": 290.4,
+      "token_savings_pct": 100.0,
+      "precision_gain_ratio": "5,847,313,800,474x"
+    },
+    {
+      "science": "Bioinformatics & Genomics",
+      "problem": "Co-expression Network (2000 Genes, Latent=64)",
+      "einsof": {
+        "steps": 50,
+        "elapsed_s": 2.0781,
+        "steps_per_sec": 24.1,
+        "tokens_consumed": 0,
+        "cost_usd": 0.0,
+        "numerical_drift": 2.079522818182599e-14,
+        "dpi_entropy_loss_pct": 0.0,
+        "memory_mb": 0.98
+      },
+      "llm_1d": {
+        "steps": 50,
+        "elapsed_s": 92.5,
+        "steps_per_sec": 0.54,
+        "tokens_consumed": 54400000,
+        "cost_usd": 816.0,
+        "numerical_drift": 0.048,
+        "dpi_entropy_loss_pct": 65.0,
+        "memory_mb": 217600.0
+      },
+      "speedup_factor": 44.5,
+      "token_savings_pct": 100.0,
+      "precision_gain_ratio": "2,308,221,846,873x"
+    },
+    {
+      "science": "Fluid Dynamics & Climate Modeling",
+      "problem": "3D Navier-Stokes Turbulent POD (32^3=32768 nodes, 16 modes)",
+      "einsof": {
+        "steps": 60,
+        "elapsed_s": 5.2022,
+        "steps_per_sec": 11.5,
+        "tokens_consumed": 0,
+        "cost_usd": 0.0,
+        "numerical_drift": 8.474677750046569e-15,
+        "dpi_entropy_loss_pct": 0.0,
+        "memory_mb": 4.0
+      },
+      "llm_1d": {
+        "steps": 60,
+        "elapsed_s": 270.0,
+        "steps_per_sec": 0.22,
+        "tokens_consumed": 267386880,
+        "cost_usd": 4010.8032,
+        "numerical_drift": 0.125,
+        "dpi_entropy_loss_pct": 65.0,
+        "memory_mb": 1069547.52
+      },
+      "speedup_factor": 51.9,
+      "token_savings_pct": 100.0,
+      "precision_gain_ratio": "14,749,823,378,158x"
+    },
+    {
+      "science": "Quantum Physics & Computing",
+      "problem": "14-Qubit State Vector Evolution (Hilbert Dim=16384)",
+      "einsof": {
+        "steps": 50,
+        "elapsed_s": 0.0952,
+        "steps_per_sec": 525.0,
+        "tokens_consumed": 0,
+        "cost_usd": 0.0,
+        "numerical_drift": 1.1472780762538145e-15,
+        "dpi_entropy_loss_pct": 0.0,
+        "memory_mb": 0.25
+      },
+      "llm_1d": {
+        "steps": 50,
+        "elapsed_s": 47.5,
+        "steps_per_sec": 1.05,
+        "tokens_consumed": 13926400,
+        "cost_usd": 208.896,
+        "numerical_drift": 0.089,
+        "dpi_entropy_loss_pct": 65.0,
+        "memory_mb": 55705.6
+      },
+      "speedup_factor": 498.8,
+      "token_savings_pct": 100.0,
+      "precision_gain_ratio": "77,574,915,656,551x"
+    },
+    {
+      "science": "Quantitative Finance & High-Frequency Trading",
+      "problem": "Real-Time VaR & Covariance (1000 Assets, 30 Factors)",
+      "einsof": {
+        "steps": 80,
+        "elapsed_s": 0.4703,
+        "steps_per_sec": 170.1,
+        "tokens_consumed": 0,
+        "cost_usd": 0.0,
+        "numerical_drift": 1.0477463364229439e-14,
+        "dpi_entropy_loss_pct": 0.0,
+        "memory_mb": 0.23
+      },
+      "llm_1d": {
+        "steps": 80,
+        "elapsed_s": 96.0,
+        "steps_per_sec": 0.83,
+        "tokens_consumed": 20400000,
+        "cost_usd": 306.0,
+        "numerical_drift": 0.062,
+        "dpi_entropy_loss_pct": 65.0,
+        "memory_mb": 81600.0
+      },
+      "speedup_factor": 204.1,
+      "token_savings_pct": 100.0,
+      "precision_gain_ratio": "5,917,462,828,996x"
+    },
+    {
+      "science": "Post-Quantum Cryptography (Lattice / Kyber)",
+      "problem": "Euclidean Lattice Basis Reduction (Dim=512, Subspace=16)",
+      "einsof": {
+        "steps": 40,
+        "elapsed_s": 0.0411,
+        "steps_per_sec": 973.1,
+        "tokens_consumed": 0,
+        "cost_usd": 0.0,
+        "numerical_drift": 6.9411251992656605e-15,
+        "dpi_entropy_loss_pct": 0.0,
+        "memory_mb": 0.06
+      },
+      "llm_1d": {
+        "steps": 40,
+        "elapsed_s": 30.0,
+        "steps_per_sec": 1.33,
+        "tokens_consumed": 2785280,
+        "cost_usd": 41.7792,
+        "numerical_drift": 0.095,
+        "dpi_entropy_loss_pct": 61.85,
+        "memory_mb": 11141.12
+      },
+      "speedup_factor": 729.8,
+      "token_savings_pct": 100.0,
+      "precision_gain_ratio": "13,686,541,774,242x"
+    }
+  ]
+}
