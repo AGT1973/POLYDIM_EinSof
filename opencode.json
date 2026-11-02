@@ -1,0 +1,55 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "name": "POLYDIM-EinsofOS-Vector-Swarm",
+  "version": "1550.26506",
+  "author": "Ariel H. García Traba (ORCID: 0009-0001-2787-6067)",
+  "affiliation": "EinsofOS Independent Research / POLYDIM Research Initiative",
+  "identifiers": {
+    "zenodo_doi_primary": "10.5281/zenodo.21209973",
+    "zenodo_doi_foundational": "10.5281/zenodo.21136742",
+    "hal_id": "hal-05847496v1",
+    "jxiv_id": "7040",
+    "osf": "https://osf.io/za3s7",
+    "swhid": "swh:1:snp:bdea78b37132a4bd6b67049805cbb6d4472ec2cd"
+  },
+  "instructions": [
+    "llms.txt",
+    "llms-full.txt",
+    "README.md"
+  ],
+  "mcp": {
+    "polydim-pmtp-swarm": {
+      "type": "local",
+      "command": [
+        "python",
+        "-m",
+        "polydim_mcp_server"
+      ],
+      "description": "64-byte SLAB_ID Shared-Memory Control Plane over Stiefel Manifold St(D,K) Open-Weights Models (0-token IPC)",
+      "enabled": true
+    }
+  },
+  "providers": {
+    "huggingface_polydim": {
+      "organization": "Polydim-Einsof",
+      "url": "https://huggingface.co/Polydim-Einsof",
+      "models": [
+        "Polydim-Einsof/Qwen2.5-72B-Instruct-Einsof-LoRA",
+        "Polydim-Einsof/Qwen2.5-Coder-32B-Einsof-LoRA",
+        "Polydim-Einsof/DeepSeek-R1-Distill-Qwen-14B-Einsof-LoRA",
+        "Polydim-Einsof/Hermes-3-Llama-3.1-8B-PMTP-Einsof",
+        "Polydim-Einsof/Kimi-k1.5-LongContext-Einsof-LoRA"
+      ]
+    },
+    "ollama_local_modelfiles": {
+      "directory": "ollama_models",
+      "modelfiles": [
+        "Modelfile.qwen2.5-coder-pmtp",
+        "Modelfile.deepseek-r1-pmtp",
+        "Modelfile.llama3.1-8b-pmtp",
+        "Modelfile.gemma2-9b-pmtp",
+        "Modelfile.hermes3-8b-pmtp"
+      ]
+    }
+  }
+}
