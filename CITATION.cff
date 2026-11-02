@@ -34,6 +34,9 @@ identifiers:
   - type: url
     value: "https://huggingface.co/Polydim-Einsof"
     description: "Hugging Face Hub Official Organization & Stiefel Manifold LoRA Adapters"
+  - type: swh
+    value: "swh:1:snp:bdea78b37132a4bd6b67049805cbb6d4472ec2cd"
+    description: "INRIA / UNESCO Software Heritage Permanent Snapshot SWHID"
 keywords:
   - "Riemannian Manifolds"
   - "Stiefel Manifold"

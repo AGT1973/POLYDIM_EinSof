@@ -17,6 +17,8 @@
 - [Hugging Face Canonical Papers Dataset](https://huggingface.co/datasets/Polydim-Einsof/POLYDIM-EINSOF-Canonical-Papers-V1550): Full-text PDFs, LaTeX source, Highwire Press HTMLs, BibTeX, CITATION.cff, codemeta.json, and llms-full.txt.
 - [GitHub Canonical Tripartite Repository (AGT1973/POLYDIM_EinSof)](https://github.com/AGT1973/POLYDIM_EinSof): Sovereign source, cross-verified C++20/Rust 2021 kernels, benchmarks, and reproducibility notebooks.
 
+- [INRIA / UNESCO Software Heritage Permanent Archive (swh:1:snp:bdea78b37132a4bd6b67049805cbb6d4472ec2cd)](https://archive.softwareheritage.org/swh:1:snp:bdea78b37132a4bd6b67049805cbb6d4472ec2cd;origin=https://github.com/AGT1973/POLYDIM_EinSof): Certified permanent source-code snapshot linked to CNRS HAL and OpenAIRE.
+
 ## Core Manuscripts & Specifications
 
 - [Full LLM Ingestion Corpus (llms-full.txt)](https://raw.githubusercontent.com/AGT1973/POLYDIM_EinSof/polydim.einsof/llms-full.txt): Complete mathematical proofs, 13 Silicon Laws, trilingual synthesis (English / Español / 简体中文), and full text of the V1550 Paper & Enterprise Whitebook.

@@ -38,6 +38,12 @@
       "propertyID": "Jxiv",
       "value": "7040",
       "url": "https://jxiv.jst.go.jp"
+    },
+    {
+      "@type": "PropertyValue",
+      "propertyID": "SWHID",
+      "value": "swh:1:snp:bdea78b37132a4bd6b67049805cbb6d4472ec2cd",
+      "url": "https://archive.softwareheritage.org/swh:1:snp:bdea78b37132a4bd6b67049805cbb6d4472ec2cd;origin=https://github.com/AGT1973/POLYDIM_EinSof"
     }
   ],
   "name": "POLYDIM / EinsofOS: Native High-Dimensional Stiefel Manifold IPC & Vector AI Architecture",
@@ -56,7 +62,8 @@
     "https://osf.io/za3s7",
     "https://orcid.org/0009-0001-2787-6067",
     "https://huggingface.co/Polydim-Einsof",
-    "https://github.com/AGT1973/POLYDIM_EINSOF"
+    "https://github.com/AGT1973/POLYDIM_EINSOF",
+    "https://archive.softwareheritage.org/swh:1:snp:bdea78b37132a4bd6b67049805cbb6d4472ec2cd;origin=https://github.com/AGT1973/POLYDIM_EinSof"
   ],
   "author": [
     {

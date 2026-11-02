@@ -1,0 +1,96 @@
+{
+  "benchmark_id": "VECTOR_AI_BIRTH_STRESS_BATTERY_2026_11_01",
+  "milestone": "2026-11-01: Birth of Vector AI (IA 2.0 / 3.0 / X.0) — POLYDIM / EinsofOS",
+  "author": "Ariel H. García Traba",
+  "orcid": "0009-0001-2787-6067",
+  "affiliation": "EinsofOS Independent Research / POLYDIM Research Initiative",
+  "persistent_identifiers": {
+    "zenodo_doi_v1550": "10.5281/zenodo.21209973",
+    "zenodo_doi_foundational": "10.5281/zenodo.21136742",
+    "cnrs_hal": "hal-05847496v1",
+    "jst_jxiv": "7040",
+    "osf": "https://osf.io/za3s7",
+    "inria_unesco_swhid": "swh:1:snp:bdea78b37132a4bd6b67049805cbb6d4472ec2cd"
+  },
+  "asymptotic_shannon_dpi_and_subnormal_battery": [
+    {
+      "dimension_D": 1024,
+      "subnormal_injected_value": "~1.09e-315 (ldexp(1.0, -1046))",
+      "subnormals_injected_count": 256,
+      "subnormals_remaining_after_law5": 0,
+      "nan_or_inf_detected": false,
+      "neumaier_unit_norm_drift": 0.0,
+      "pmtp_binary_bytes": 8192,
+      "pmtp_transfer_ms": 0.0261,
+      "pmtp_reconstruction_max_err": 0.0,
+      "pmtp_tokens_billed": 0,
+      "worm_1d_json_ms": 2.276,
+      "worm_1d_tokens_billed": 1929,
+      "worm_1d_l2_distortion": 0.0008276064740438275,
+      "worm_1d_cosine_fidelity": 0.9999996576998311,
+      "speedup_factor_1d_vs_pmtp": 87.2
+    },
+    {
+      "dimension_D": 4096,
+      "subnormal_injected_value": "~1.09e-315 (ldexp(1.0, -1046))",
+      "subnormals_injected_count": 1024,
+      "subnormals_remaining_after_law5": 0,
+      "nan_or_inf_detected": false,
+      "neumaier_unit_norm_drift": 0.0,
+      "pmtp_binary_bytes": 32768,
+      "pmtp_transfer_ms": 0.0158,
+      "pmtp_reconstruction_max_err": 0.0,
+      "pmtp_tokens_billed": 0,
+      "worm_1d_json_ms": 8.924,
+      "worm_1d_tokens_billed": 7727,
+      "worm_1d_l2_distortion": 0.0015848657527442337,
+      "worm_1d_cosine_fidelity": 0.9999987442121246,
+      "speedup_factor_1d_vs_pmtp": 564.8
+    },
+    {
+      "dimension_D": 16384,
+      "subnormal_injected_value": "~1.09e-315 (ldexp(1.0, -1046))",
+      "subnormals_injected_count": 4096,
+      "subnormals_remaining_after_law5": 0,
+      "nan_or_inf_detected": false,
+      "neumaier_unit_norm_drift": 1.1102230246251565e-16,
+      "pmtp_binary_bytes": 131072,
+      "pmtp_transfer_ms": 0.0651,
+      "pmtp_reconstruction_max_err": 0.0,
+      "pmtp_tokens_billed": 0,
+      "worm_1d_json_ms": 35.188,
+      "worm_1d_tokens_billed": 30853,
+      "worm_1d_l2_distortion": 0.0031904069640355274,
+      "worm_1d_cosine_fidelity": 0.9999949110535202,
+      "speedup_factor_1d_vs_pmtp": 540.5
+    },
+    {
+      "dimension_D": 65536,
+      "subnormal_injected_value": "~1.09e-315 (ldexp(1.0, -1046))",
+      "subnormals_injected_count": 16384,
+      "subnormals_remaining_after_law5": 0,
+      "nan_or_inf_detected": false,
+      "neumaier_unit_norm_drift": 0.0,
+      "pmtp_binary_bytes": 524288,
+      "pmtp_transfer_ms": 0.4672,
+      "pmtp_reconstruction_max_err": 0.0,
+      "pmtp_tokens_billed": 0,
+      "worm_1d_json_ms": 133.435,
+      "worm_1d_tokens_billed": 123456,
+      "worm_1d_l2_distortion": 0.006401310358355364,
+      "worm_1d_cosine_fidelity": 0.9999795127143084,
+      "speedup_factor_1d_vs_pmtp": 285.6
+    }
+  ],
+  "lie_algebra_so_n_cayley_transport": {
+    "manifold": "SO(256)",
+    "orthonormality_max_drift": 1.5543122344752192e-15,
+    "determinant_unit_drift": 4.440892098500626e-16
+  },
+  "silicon_tuple": {
+    "exit_code": 0,
+    "latency_ms": 393.09,
+    "ram_mb": 71.06,
+    "check_count": 29
+  }
+}

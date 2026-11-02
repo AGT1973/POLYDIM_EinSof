@@ -40,6 +40,7 @@ size_categories:
 | **CNRS / HAL Open Science (France)** | `hal-05847496v1` | https://hal.science/hal-05847496v1 |
 | **Center for Open Science (OSF)** | `osf.io/za3s7` | https://osf.io/za3s7 |
 | **JST / Jxiv Preprint Server (Japan)** | `Jxiv ID 7040` | https://jxiv.jst.go.jp/index.php/jxiv/authorDashboard/submission/7040 |
+| **INRIA / UNESCO Software Heritage (SWHID)** | `swh:1:snp:bdea78b37132a4bd6b67049805cbb6d4472ec2cd` | https://archive.softwareheritage.org/swh:1:snp:bdea78b37132a4bd6b67049805cbb6d4472ec2cd;origin=https://github.com/AGT1973/POLYDIM_EinSof |
 | **ORCID Verified Researcher Record** | `0009-0001-2787-6067` | https://orcid.org/0009-0001-2787-6067 |
 | **GitHub Canonical Repository** | `AGT1973/POLYDIM_EINSOF` (`polydim.einsof`) | https://github.com/AGT1973/POLYDIM_EINSOF |
 | **Hugging Face Organization** | `Polydim-Einsof` | https://huggingface.co/Polydim-Einsof |

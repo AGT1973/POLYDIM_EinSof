@@ -17,6 +17,7 @@
 | **法国国家科学研究中心 CNRS / HAL 开放科学库** | `hal-05847496v1` | https://hal.science/hal-05847496v1 |
 | **日本科学技术振兴机构 JST / Jxiv 预印本库** | `Jxiv ID 7040` | https://jxiv.jst.go.jp/index.php/jxiv/authorDashboard/submission/7040 |
 | **美国开放科学中心 OSF 官方仓库** | `osf.io/za3s7` | https://osf.io/za3s7 |
+| **联合国教科文组织 INRIA / Software Heritage 永久源码档案** | `swh:1:snp:bdea78b37132a4bd6b67049805cbb6d4472ec2cd` | https://archive.softwareheritage.org/swh:1:snp:bdea78b37132a4bd6b67049805cbb6d4472ec2cd;origin=https://github.com/AGT1973/POLYDIM_EinSof |
 | **ORCID 国际学者认证档案** | `0009-0001-2787-6067` | https://orcid.org/0009-0001-2787-6067 |
 | **Hugging Face 官方模型与数据集中心** | `Polydim-Einsof/*`（21 个公开仓库） | https://huggingface.co/Polydim-Einsof |
 | **Hugging Face 论文、白皮书与博士专著全集** | `POLYDIM-EINSOF-Canonical-Papers-V1550` | https://huggingface.co/datasets/Polydim-Einsof/POLYDIM-EINSOF-Canonical-Papers-V1550 |
