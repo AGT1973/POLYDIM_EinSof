@@ -1,0 +1,105 @@
+{
+  "@context": [
+    "https://doi.org/10.5063/schema/codemeta-2.0",
+    "https://schema.org"
+  ],
+  "@type": [
+    "SoftwareSourceCode",
+    "ScholarlyArticle"
+  ],
+  "@id": "https://doi.org/10.5281/zenodo.21136742",
+  "identifier": [
+    {
+      "@type": "PropertyValue",
+      "propertyID": "DOI",
+      "value": "10.5281/zenodo.21136742",
+      "url": "https://doi.org/10.5281/zenodo.21136742"
+    },
+    {
+      "@type": "PropertyValue",
+      "propertyID": "DOI",
+      "value": "10.5281/zenodo.21209973",
+      "url": "https://doi.org/10.5281/zenodo.21209973"
+    },
+    {
+      "@type": "PropertyValue",
+      "propertyID": "HAL",
+      "value": "hal-05847496v1",
+      "url": "https://hal.science/hal-05847496v1"
+    },
+    {
+      "@type": "PropertyValue",
+      "propertyID": "OSF",
+      "value": "za3s7",
+      "url": "https://osf.io/za3s7"
+    },
+    {
+      "@type": "PropertyValue",
+      "propertyID": "Jxiv",
+      "value": "7040",
+      "url": "https://jxiv.jst.go.jp"
+    }
+  ],
+  "name": "POLYDIM / EinsofOS: Native High-Dimensional Stiefel Manifold IPC & Vector AI Architecture",
+  "headline": "Dimension Is All You Need: Eradicating the 1D Worm Collapse via Native High-Dimensional Manifold Inter-Process Communication in S^{D-1}",
+  "version": "1550.26505",
+  "datePublished": "2026-11-01",
+  "dateCreated": "2026-10-01",
+  "dateModified": "2026-11-01",
+  "license": "https://spdx.org/licenses/MIT",
+  "codeRepository": "https://github.com/AGT1973/POLYDIM_EINSOF",
+  "url": "https://huggingface.co/Polydim-Einsof",
+  "sameAs": [
+    "https://doi.org/10.5281/zenodo.21136742",
+    "https://doi.org/10.5281/zenodo.21209973",
+    "https://hal.science/hal-05847496v1",
+    "https://osf.io/za3s7",
+    "https://orcid.org/0009-0001-2787-6067",
+    "https://huggingface.co/Polydim-Einsof",
+    "https://github.com/AGT1973/POLYDIM_EINSOF"
+  ],
+  "author": [
+    {
+      "@type": "Person",
+      "@id": "https://orcid.org/0009-0001-2787-6067",
+      "givenName": "Ariel H.",
+      "familyName": "García Traba",
+      "name": "Ariel H. García Traba",
+      "email": "polydim.einsof@gmail.com",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "EinsofOS Independent Research / POLYDIM Research Initiative"
+      }
+    }
+  ],
+  "programmingLanguage": [
+    "C++20",
+    "Rust 2021",
+    "CUDA",
+    "Triton",
+    "Python 3",
+    "Dart 3",
+    "Lean 4"
+  ],
+  "operatingSystem": [
+    "Linux (Debian 13)",
+    "Windows 11"
+  ],
+  "keywords": [
+    "Riemannian Manifolds",
+    "Stiefel Manifold",
+    "High-Dimensional Computing",
+    "Inter-Process Communication",
+    "Shared Memory",
+    "Information Theory",
+    "Data Processing Inequality",
+    "Multi-Agent Systems",
+    "Zero-Copy IPC",
+    "Clifford Algebra",
+    "Vector AI",
+    "POLYDIM",
+    "EinsofOS",
+    "PMTP"
+  ],
+  "description": "Contemporary Artificial Intelligence architectures universally serialize dense high-dimensional neural representations (h in R^D, D >= 10^4) into flat 1D token sequences. Under Shannon's Data Processing Inequality (DPI), this 1D Worm Paradigm inflicts irreversible information collapse, injects 140 ms quadratic decoding latency per hop, and incurs massive financial costs. POLYDIM / EinsofOS introduces a native high-dimensional computing paradigm where autonomous agents communicate losslessly on continuous Riemannian manifolds (S^{D-1} and St(D, K)) via Zero-Copy Shared Memory Inter-Process Communication (PMTP V1550+ and PMTP-v4 Triadic Fusion), achieving 34.8 microseconds control latency, 229.885 GB/s nominal payload-equivalent throughput on host RAM, 139.78 GB/s sustained VRAM throughput on Dual Tesla T4 / Triton SRAM tiles, and Neumaier compensated orthonormality drift <= 10^{-15}."
+}

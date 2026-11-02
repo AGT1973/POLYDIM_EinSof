@@ -1,0 +1,87 @@
+cff-version: 1.2.0
+message: "If you use POLYDIM, EinsofOS, or the PMTP Zero-Copy Stiefel Manifold IPC Architecture in your research or software, please cite it using the following metadata."
+title: "Dimension Is All You Need: Eradicating the 1D Worm Collapse via Native High-Dimensional Manifold Inter-Process Communication in S^{D-1}"
+type: software
+version: "1550.26505"
+date-released: "2026-11-01"
+doi: "10.5281/zenodo.21136742"
+url: "https://github.com/AGT1973/POLYDIM_EINSOF"
+repository-code: "https://github.com/AGT1973/POLYDIM_EINSOF"
+repository-artifact: "https://huggingface.co/Polydim-Einsof"
+license: "MIT"
+authors:
+  - family-names: "García Traba"
+    given-names: "Ariel H."
+    orcid: "https://orcid.org/0009-0001-2787-6067"
+    affiliation: "EinsofOS Independent Research / POLYDIM Research Initiative"
+    email: "polydim.einsof@gmail.com"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.21136742"
+    description: "CERN / Zenodo Canonical Preprint & Software Archive (Primary DOI)"
+  - type: doi
+    value: "10.5281/zenodo.21209973"
+    description: "CERN / Zenodo Extended Empirical & Theorem Verification Archive (Secondary DOI)"
+  - type: other
+    value: "hal-05847496v1"
+    description: "CNRS / HAL Open Science Archive (France)"
+  - type: url
+    value: "https://osf.io/za3s7"
+    description: "Center for Open Science / OSF Official Repository"
+  - type: other
+    value: "jxiv:7040"
+    description: "JST / Jxiv Preprint Server (Japan, Submission ID 7040)"
+  - type: url
+    value: "https://huggingface.co/Polydim-Einsof"
+    description: "Hugging Face Hub Official Organization & Stiefel Manifold LoRA Adapters"
+keywords:
+  - "Riemannian Manifolds"
+  - "Stiefel Manifold"
+  - "High-Dimensional Computing"
+  - "Inter-Process Communication"
+  - "Shared Memory"
+  - "Information Theory"
+  - "Data Processing Inequality"
+  - "Multi-Agent Systems"
+  - "Zero-Copy IPC"
+  - "Clifford Algebra"
+  - "Vector AI"
+  - "POLYDIM"
+  - "EinsofOS"
+  - "PMTP"
+abstract: >-
+  Contemporary Artificial Intelligence architectures universally serialize dense high-dimensional
+  neural representations (h in R^D, D >= 10^4) into flat 1D token sequences. Under Shannon's Data
+  Processing Inequality (DPI), this 1D Worm Paradigm inflicts irreversible information collapse,
+  injects 140 ms quadratic decoding latency per hop, and incurs massive financial costs. We introduce
+  POLYDIM / EinsofOS: a native high-dimensional computing paradigm where autonomous agents communicate
+  losslessly on continuous Riemannian manifolds (S^{D-1} and St(D, K)) via Zero-Copy Shared Memory
+  Inter-Process Communication (PMTP V1550+ and PMTP-v4 Triadic Fusion). Across 1,731 formal theorems
+  certified in PostgreSQL 16 and 26,505+ continuous physical cycles on host silicon, POLYDIM certifies
+  a data-path control latency of 34.8 microseconds (229.885 GB/s nominal payload-equivalent throughput
+  on host RAM, 139.78 GB/s sustained VRAM throughput on Dual Tesla T4 / Triton SRAM tiles), achieving
+  a 4,023x speedup over text tokenization with $0.00 marginal token cost and Neumaier compensated
+  orthonormality drift <= 10^{-15}.
+preferred-citation:
+  type: article
+  title: "Dimension Is All You Need: Eradicating the 1D Worm Collapse via Native High-Dimensional Manifold Inter-Process Communication in S^{D-1}"
+  authors:
+    - family-names: "García Traba"
+      given-names: "Ariel H."
+      orcid: "https://orcid.org/0009-0001-2787-6067"
+      affiliation: "EinsofOS Independent Research / POLYDIM Research Initiative"
+  year: 2026
+  month: 11
+  doi: "10.5281/zenodo.21136742"
+  url: "https://doi.org/10.5281/zenodo.21136742"
+  identifiers:
+    - type: doi
+      value: "10.5281/zenodo.21136742"
+    - type: doi
+      value: "10.5281/zenodo.21209973"
+    - type: other
+      value: "hal-05847496v1"
+    - type: url
+      value: "https://osf.io/za3s7"
+    - type: other
+      value: "jxiv:7040"
