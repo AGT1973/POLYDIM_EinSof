@@ -12,7 +12,7 @@
 **Author:** Ariel García Traba  
 **Affiliation:** Independent Research / POLYDIM-EinsofOS Research Initiative
 **Consortium:** EinsofOS / POLYDIM Research Consortium  
-**Contact:** `ariel.garcia.traba@gmail.com` | `polydim-cla@gmail.com`  
+**Contact:** `polydim.einsof@gmail.com` | `polydim-cla@gmail.com`  
 **Date:** October 2026 — Master Edition V1550 (Kernel V26155 Frozen)  
 **Status:** Certified Industrial Specification (1,571 SOTA Theorems — Exit Code 0 Silicon Verified across 26,155+ Cycles)
 

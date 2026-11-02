@@ -154,7 +154,7 @@ Para que POLYDIM aspire a ser considerado SOTA en razonamiento (y no solo una ar
 
 **Author:** Ariel García Traba  
 **Affiliation:** Independent Research / POLYDIM-EinsofOS Research Initiative  
-**Correspondence:** `ariel.garcia.traba@gmail.com` | `polydim-cla@gmail.com`  
+**Correspondence:** `polydim.einsof@gmail.com` | `polydim-cla@gmail.com`  
 **Public Model Repository:** [Hugging Face: polydim-stiefel-manifold-adapters](https://huggingface.co/polydim-cla/polydim-stiefel-manifold-adapters)  
 **Artifact Series:** EinsofOS Kernel Series 1550, Wire Protocol 26505, Build V26155  
 **Subject Classification:** Systems for Machine Learning / Information Theory / Differential Geometry  
@@ -2376,7 +2376,7 @@ output = model(inputs_embeds=inputs_embeds)
 **Author:** Ariel García Traba  
 **Affiliation:** Independent Research / POLYDIM-EinsofOS Research Initiative
 **Consortium:** EinsofOS / POLYDIM Research Consortium  
-**Contact:** `ariel.garcia.traba@gmail.com` | `polydim-cla@gmail.com`  
+**Contact:** `polydim.einsof@gmail.com` | `polydim-cla@gmail.com`  
 **Date:** October 2026 — Master Edition V1550 (Kernel V26155 Frozen)  
 **Status:** Certified Industrial Specification (1,571 SOTA Theorems — Exit Code 0 Silicon Verified across 26,155+ Cycles)
 

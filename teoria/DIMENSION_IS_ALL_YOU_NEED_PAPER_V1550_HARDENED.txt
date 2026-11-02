@@ -4,7 +4,7 @@
 
 **Author:** Ariel García Traba  
 **Affiliation:** Independent Research / POLYDIM-EinsofOS Research Initiative  
-**Correspondence:** `ariel.garcia.traba@gmail.com` | `polydim-cla@gmail.com`  
+**Correspondence:** `polydim.einsof@gmail.com` | `polydim-cla@gmail.com`  
 **Public Model Repository:** [Hugging Face: polydim-stiefel-manifold-adapters](https://huggingface.co/Polydim-Einsof)  
 **Artifact Series:** EinsofOS Kernel Series 1550, Wire Protocol 26505, Build V26155  
 **Subject Classification:** Systems for Machine Learning / Information Theory / Differential Geometry  
