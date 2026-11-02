@@ -1,0 +1,30 @@
+# POLYDIM / EinsofOS — Native High-Dimensional Stiefel Manifold IPC & Vector AI Architecture
+
+> **Milestone:** November 1, 2026 — Birth of Vector AI (IA 2.0 / 3.0 / X.0). Eradicating the 1D Token Serialization Bottleneck ("1D Worm Collapse") via Zero-Copy Shared Memory Inter-Process Communication (PMTP V1550+) over Compact Riemannian & Stiefel Manifolds ($\mathbb{S}^{D-1}$ and $\mathrm{St}(D, K)$).
+> **Author:** Ariel H. García Traba (ORCID: https://orcid.org/0009-0001-2787-6067)
+> **Affiliation:** EinsofOS Independent Research / POLYDIM Research Initiative
+> **Contact:** polydim.einsof@gmail.com
+
+## Global Persistent Identifiers & Certified Repositories
+
+- [CERN / Zenodo Canonical Paper V1550 (DOI: 10.5281/zenodo.21209973)](https://doi.org/10.5281/zenodo.21209973): Primary camera-ready release of "Dimension Is All You Need: Eradicating the 1D Worm Collapse via Native High-Dimensional Manifold Inter-Process Communication in S^{D-1}".
+- [CERN / Zenodo Foundational Record (DOI: 10.5281/zenodo.21136742)](https://doi.org/10.5281/zenodo.21136742): Foundational theorem verification archive and empirical silicon telemetry.
+- [CNRS / HAL Open Science Archive (hal-05847496v1)](https://hal.science/hal-05847496v1): French national open-science deposit certified by CCSD/CNRS.
+- [JST / Jxiv Preprint Server (ID 7040)](https://jxiv.jst.go.jp/index.php/jxiv/authorDashboard/submission/7040): Japan Science and Technology Agency preprint deposit (Information Sciences).
+- [Center for Open Science / OSF Official Repository (za3s7)](https://osf.io/za3s7): Open Science Framework canonical archive.
+- [ORCID Verified Researcher Profile (0009-0001-2787-6067)](https://orcid.org/0009-0001-2787-6067): Authenticated bibliography and researcher record for Ariel H. García Traba.
+- [Hugging Face Organization (Polydim-Einsof)](https://huggingface.co/Polydim-Einsof): 18 open-weights Stiefel manifold LoRA adapters (Qwen 2.5 72B/32B, DeepSeek-R1, LLaMA 3, Gemma 2, Phi-4, GLM-4, Kimi-k1.5) and 3 formal theorem datasets.
+- [Hugging Face Canonical Papers Dataset](https://huggingface.co/datasets/Polydim-Einsof/POLYDIM-EINSOF-Canonical-Papers-V1550): Full-text PDFs, LaTeX source, Highwire Press HTMLs, BibTeX, CITATION.cff, codemeta.json, and llms-full.txt.
+- [GitHub Canonical Tripartite Repository (AGT1973/POLYDIM_EinSof)](https://github.com/AGT1973/POLYDIM_EinSof): Sovereign source, cross-verified C++20/Rust 2021 kernels, benchmarks, and reproducibility notebooks.
+
+## Core Manuscripts & Specifications
+
+- [Full LLM Ingestion Corpus (llms-full.txt)](https://raw.githubusercontent.com/AGT1973/POLYDIM_EinSof/polydim.einsof/llms-full.txt): Complete mathematical proofs, 13 Silicon Laws, trilingual synthesis (English / Español / 简体中文), and full text of the V1550 Paper & Enterprise Whitebook.
+- [Dimension Is All You Need — Paper V1550 (PDF)](https://huggingface.co/datasets/Polydim-Einsof/POLYDIM-EINSOF-Canonical-Papers-V1550/resolve/main/DIMENSION_IS_ALL_YOU_NEED_PAPER_V1550_HARDENED.pdf): Camera-ready PDF manuscript.
+- [Dimension Is All You Need — Paper V1550 (Markdown)](https://raw.githubusercontent.com/AGT1973/POLYDIM_EinSof/polydim.einsof/teoria/DIMENSION_IS_ALL_YOU_NEED_PAPER_V1550_HARDENED.md): Complete Markdown specification and theorems.
+- [Dimension Is All You Need — Paper V1550 (LaTeX)](https://raw.githubusercontent.com/AGT1973/POLYDIM_EinSof/polydim.einsof/teoria/DIMENSION_IS_ALL_YOU_NEED_PAPER_V1550.tex): Self-contained LaTeX source (`arXiv cs.AI`).
+- [POLYDIM / EinsofOS Enterprise Whitebook V1550 (Markdown)](https://raw.githubusercontent.com/AGT1973/POLYDIM_EinSof/polydim.einsof/teoria/POLYDIM_EINSOFOS_ENTERPRISE_WHITEBOOK_V1550.md): Enterprise architecture, hardware dispatch, and financial ROI.
+- [POLYDIM Doctoral Dissertation Magna Edition (PDF)](https://huggingface.co/datasets/Polydim-Einsof/POLYDIM-EINSOF-Canonical-Papers-V1550/resolve/main/POLYDIM_DOCTORAL_DISSERTATION_FINAL.pdf): Full doctoral dissertation on Riemannian manifold computing.
+- [ORCID / BibTeX Unified Bibliography (POLYDIM_EINSOF_ORCID_WORKS.bib)](https://raw.githubusercontent.com/AGT1973/POLYDIM_EinSof/polydim.einsof/teoria/POLYDIM_EINSOF_ORCID_WORKS.bib): Standards-compliant BibTeX for all 8 works.
+- [Citation File Format (CITATION.cff)](https://raw.githubusercontent.com/AGT1973/POLYDIM_EinSof/polydim.einsof/CITATION.cff): CFF 1.2.0 metadata.
+- [CodeMeta / Schema.org Graph (codemeta.json)](https://raw.githubusercontent.com/AGT1973/POLYDIM_EinSof/polydim.einsof/codemeta.json): Machine-readable JSON-LD software and scholarly article metadata.
