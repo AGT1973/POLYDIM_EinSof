@@ -1,0 +1,30 @@
+{
+  "hardware": "IBM_ibm_kingston_156_QUBITS",
+  "job_id": "dbkj659ffo6c73bbkp3g",
+  "circuito": "MULTI_RAMSEY_SU2_CONTINUOUS_PHASE",
+  "qubits_usados": 8,
+  "compuertas_ccx_usadas": 0,
+  "salidas_emitidas": 1,
+  "vector_emitido_S7": [
+    0.46203,
+    0.36138,
+    0.20107,
+    -0.002,
+    -0.18965,
+    -0.34353,
+    -0.46228,
+    -0.49782
+  ],
+  "vector_teorico_S7": [
+    0.46194,
+    0.35355,
+    0.19134,
+    0.0,
+    -0.19134,
+    -0.35355,
+    -0.46194,
+    -0.5
+  ],
+  "fidelidad_coseno_silicio_real": 0.999866,
+  "deriva_neumaier": 2.220446049250313e-16
+}

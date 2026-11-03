@@ -1,0 +1,27 @@
+{
+  "einsof_vector_engine": {
+    "paradigma": "Einsof Vectorial (PmtpShmBus / C-ABI)",
+    "tokens_generados": 0,
+    "costo_usd": 0.0,
+    "latencia_ms": 92.492,
+    "error_ortonormal_stiefel": 1.9533772996104888e-16,
+    "bytes_transmitidos": 512,
+    "estado_salida": "Retracción de Stiefel Exacta en Silicio"
+  },
+  "qwen_1d_text_engine": {
+    "error": "The read operation timed out"
+  },
+  "diferencial": {
+    "ahorro_de_tokens": "0 tokens quemados vs 0 tokens en Einsof",
+    "aceleracion_latencia": "0.0x más rápido en silicio directo",
+    "garantia_matematica": "Einsof entrega flotantes IEEE-754 verificados en máquina; Qwen entrega texto aproximado."
+  },
+  "firma_autoria": {
+    "investigador_principal": "Ariel García Traba",
+    "email": "Ariel.Garcia.Traba@gmail.com",
+    "proyecto": "POLYDIM - EinsofOS",
+    "desacople_institucional": "Investigacion Independiente Soberana",
+    "mensaje": "De Argentina con amor",
+    "fecha": "2026-11-02"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "titulo": "SIMULACION DE SISTEMA FRUSTRADO EN SILICIO CUANTICO (16 QUBITS)",
+  "hardware": "IBM_ibm_kingston_156_QUBITS",
+  "job_id": "dbkjahonceqs73am12dg",
+  "dimension_hilbert": 65536,
+  "qubits_fisicos_usados": 16,
+  "compuertas_ccx_toffoli": 0,
+  "salidas_emitidas_puerta": 1,
+  "vector_hiperespacio_S15": [
+    0.019601,
+    -0.467625,
+    0.034353,
+    0.521663,
+    0.242944,
+    0.420246,
+    0.058016,
+    -0.09052,
+    0.0,
+    -0.165642,
+    -0.00195,
+    0.062528,
+    0.026125,
+    0.016805,
+    0.029637,
+    -0.476705
+  ],
+  "deriva_neumaier": 0.0,
+  "latencia_qpu_ms": 20372.92,
+  "comparativa_trafico": {
+    "paradigma_tradicional_bytes": 1600000,
+    "paradigma_einsof_puerta_adentro_bytes": 128,
+    "reduccion_ancho_de_banda_pct": 99.992
+  },
+  "firma_autoria": {
+    "investigador_principal": "Ariel García Traba",
+    "email": "Ariel.Garcia.Traba@gmail.com",
+    "proyecto": "POLYDIM - EinsofOS",
+    "desacople_institucional": "Investigacion Independiente Soberana",
+    "mensaje": "De Argentina con amor"
+  }
+}

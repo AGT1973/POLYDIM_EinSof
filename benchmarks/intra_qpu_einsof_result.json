@@ -1,0 +1,33 @@
+{
+  "qpu_backend": "ibm_kingston",
+  "num_qubits": 156,
+  "job_id": "dbkiat1kdqps7392h4tg",
+  "shots_per_circuit": 2048,
+  "total_parallel_turing_samples_in_qpu": 10240,
+  "hoeffding_threshold_tau": 0.14595,
+  "intra_qpu_coherent_counts": {
+    "000": 957,
+    "111": 931,
+    "101": 17,
+    "001": 25,
+    "110": 30,
+    "011": 48,
+    "100": 32,
+    "010": 8
+  },
+  "intra_qpu_raw_fidelity": 0.92188,
+  "surviving_valid_modes_above_threshold": {
+    "111": 0.465625,
+    "000": 0.4984375
+  },
+  "eliminated_invalid_states_below_threshold_count": 6,
+  "eliminated_invalid_states_detail": {
+    "101": 0.005078125,
+    "011": 0.01142578125,
+    "110": 0.00732421875,
+    "001": 0.00498046875,
+    "100": 0.00654296875,
+    "010": 0.0005859375
+  },
+  "post_threshold_valid_fidelity": 1.0
+}

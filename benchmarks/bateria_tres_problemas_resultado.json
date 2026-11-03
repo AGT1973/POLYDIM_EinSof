@@ -1,0 +1,57 @@
+{
+  "problema_1_ising_spin_glass": {
+    "problema": "Ising Spin Glass Max-Cut (D=8)",
+    "puerta_afuera": {
+      "shots_generados": 100000,
+      "trafico_bus_bytes": 800000,
+      "min_energia": -6.800000000000001,
+      "latencia_ms": 41.04
+    },
+    "puerta_adentro": {
+      "salidas_emitidas": 1,
+      "trafico_bus_bytes": 64,
+      "min_energia_continua": -0.953074103789211,
+      "latencia_ms": 27.09,
+      "reduccion_trafico_pct": 99.992,
+      "fidelidad_solucion": 0.91485,
+      "deriva_neumaier": 2.220446049250313e-16
+    }
+  },
+  "problema_2_quantum_phase_estimation": {
+    "problema": "Estimacion de Fase Cuantica Ramsey SU(2)",
+    "fase_verdadera_rad": 2.3941412,
+    "puerta_afuera": {
+      "shots_transferidos": 100000,
+      "trafico_bus_bytes": 100000,
+      "fase_estimada_host": 2.393724,
+      "error_fase_host": 0.000417,
+      "latencia_ms": 3.76
+    },
+    "puerta_adentro": {
+      "salidas_emitidas": 1,
+      "trafico_bus_bytes": 16,
+      "reduccion_trafico_pct": 99.984,
+      "fidelidad_coseno_vector": 1.0,
+      "deriva_neumaier": 0.0,
+      "latencia_ms": 0.0393
+    }
+  },
+  "problema_3_highdim_clustering": {
+    "problema": "Reduccion Multimodal en Alta Dimension (D=64, T=10,000 Turings)",
+    "puerta_afuera": {
+      "vectores_transferidos": 10000,
+      "trafico_bus_bytes": 5120000,
+      "fidelidad_al_modo_verdadero": 0.999145,
+      "latencia_ms": 1.09
+    },
+    "puerta_adentro": {
+      "salidas_emitidas": 1,
+      "trafico_bus_bytes": 512,
+      "reduccion_trafico_pct": 99.99,
+      "fidelidad_al_modo_verdadero": 0.967071,
+      "ganancia_fidelidad": -0.032074,
+      "deriva_neumaier": 0.0,
+      "latencia_ms": 10.78
+    }
+  }
+}
