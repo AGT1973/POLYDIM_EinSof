@@ -43,6 +43,9 @@ size_categories:
 | **INRIA / UNESCO Software Heritage (SWHID)** | `swh:1:snp:bdea78b37132a4bd6b67049805cbb6d4472ec2cd` | https://archive.softwareheritage.org/swh:1:snp:bdea78b37132a4bd6b67049805cbb6d4472ec2cd;origin=https://github.com/AGT1973/POLYDIM_EinSof |
 | **ORCID Verified Researcher Record** | `0009-0001-2787-6067` | https://orcid.org/0009-0001-2787-6067 |
 | **GitHub Canonical Repository** | `AGT1973/POLYDIM_EINSOF` (`polydim.einsof`) | https://github.com/AGT1973/POLYDIM_EINSOF |
+| **Theory & Mathematical Proofs Vault** | `AGT1973/POLYDIM-THEORICAL` | https://github.com/AGT1973/POLYDIM-THEORICAL |
+| **Google AI Developers Thread** | Discuss.ai.google.dev | https://discuss.ai.google.dev/t/polydim-einsofos-breaking-the-1d-token-bottleneck-via-continuous-stiefel-manifold-geometry/197762 |
+| **Hugging Face Canonical Papers & Slides** | Dataset V1550 | https://huggingface.co/datasets/Polydim-Einsof/POLYDIM-EINSOF-Canonical-Papers-V1550 |
 | **Hugging Face Organization** | `Polydim-Einsof` | https://huggingface.co/Polydim-Einsof |
 
 ---
@@ -88,3 +91,12 @@ Contemporary Artificial Intelligence architectures universally serialize dense h
   note      = {Secondary DOI: 10.5281/zenodo.21209973; HAL ID: hal-05847496v1; OSF: https://osf.io/za3s7; Jxiv ID: 7040; ORCID: 0009-0001-2787-6067; Affiliation: EinsofOS Independent Research / POLYDIM Research Initiative}
 }
 ```
+
+---
+
+## ⚡ Multi-Model Zero-Token Swarm: Qwen × DeepSeek-v4 (Turing Depth 100)
+
+[`benchmarks/test_turing100_matrix_mode_qwen38_deepseekv4.py`](benchmarks/test_turing100_matrix_mode_qwen38_deepseekv4.py)
+
+Continuous vector swarm connecting Qwen 3.8/27B → DeepSeek-v4 Distill in physical shared RAM (`PmtpShmBus`) at `turing_depth = 100` with **0 tokens serialized**. Proves multi-model inter-company reasoning (Alibaba × DeepSeek architecture) in a single binary memory bus.
+
