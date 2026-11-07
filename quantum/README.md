@@ -84,7 +84,9 @@ quantum/
 │   ├── kagome_spin_liquid.json
 │   ├── mott_hubbard_model.json
 │   ├── kissing_number_6d_k6.json
-│   └── dicopper_cu2o2_isomerization.json
+│   ├── dicopper_cu2o2_isomerization.json
+│   ├── syk4_quantum_chaos.json
+│   └── femoco_nitrogenase_cubane.json
 └── scripts/                                     # Self-contained reproducible benchmark scripts
     ├── 01_mermin_n5_phase_aligned_ibm.py        # Mermin N=5 QPU runner with S-gate alignment
     ├── 02_mermin_n3_ghz_ibm.py                  # Mermin N=3 GHZ runner
@@ -94,7 +96,9 @@ quantum/
     ├── 06_kagome_spin_liquid_stiefel.py         # Kagome quantum spin liquid chiral state solver
     ├── 07_mott_hubbard_stiefel.py               # 16-orbital Mott metal-insulator transition solver
     ├── 08_kissing_number_6d_stiefel.py          # 6D Kissing Number K(6) E6 lattice & 73-sphere flow
-    └── 09_dicopper_catalysis_stiefel.py         # Di-copper [Cu2O2]^2+ multireference catalytic core
+    ├── 09_dicopper_catalysis_stiefel.py         # Di-copper [Cu2O2]^2+ multireference catalytic core
+    ├── 10_syk4_quantum_chaos_stiefel.py         # SYK4 Majorana holographic quantum chaos solver
+    └── 11_femoco_nitrogenase_stiefel.py         # FeMoco nitrogenase mixed-valence cubane solver
 ```
 
 ---

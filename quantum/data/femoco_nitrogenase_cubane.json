@@ -1,0 +1,20 @@
+{
+  "problem": "FEMOCO_NITROGENASE_ACTIVE_CUBANE",
+  "hilbert_dim": 256,
+  "n_spins": 8,
+  "ground_energy_meV": -44.561,
+  "exact_e0_meV": -44.5637,
+  "stiefel_error_meV": 0.002731,
+  "s_tot_squared": 1.9947,
+  "s_tot_effective": 0.9982,
+  "ground_multiplet": "S_tot = 1.00 (Estado de esp\u00edn intermedio / mezcla de valencia)",
+  "ion_polarizations": [
+    0.4655,
+    0.412,
+    -0.0862,
+    -0.1365
+  ],
+  "neumaier_drift": 1.1102230246251565e-16,
+  "execution_ms": 922.79,
+  "timestamp": "2026-11-07 15:04:27"
+}
