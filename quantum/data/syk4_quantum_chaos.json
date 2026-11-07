@@ -1,0 +1,35 @@
+{
+  "scope_disclaimer": "Exact finite-N CPU calculation of the Majorana SYK_4 model (N=16 GOE and N=12 GSE ensembles). Verifies Altland-Zirnbauer Bott periodicity of level statistics and Stiefel-Lanczos ground-state convergence; NOT a QPU run nor an asymptotic large-N JT-gravity proof.",
+  "problem": "SYK4_MAJORANA_QUANTUM_CHAOS_AND_BOTT_PERIODICITY",
+  "primary_n_majoranas": 16,
+  "n_qubits": 8,
+  "hilbert_dim_total": 256,
+  "parity_sector_dim": 128,
+  "n_quartic_terms": 1820,
+  "ground_energy_stiefel_lanczos": -0.7712574368,
+  "ground_energy_per_majorana": -0.0482035898,
+  "abs_error_vs_exact": 2.220446049250313e-16,
+  "eigenstate_residual_norm": 1.9828394508157312e-14,
+  "hermiticity_defect": 0.0,
+  "rmt_bott_periodicity_verification": {
+    "N16_mod8_0_GOE": {
+      "symmetry_class": "GOE (BDI/AI, P^2 = +1)",
+      "n_realizations": 8,
+      "mean_gap_ratio_r": 0.534,
+      "sem_r": 0.0112,
+      "theoretical_rmt_r": 0.5359
+    },
+    "N12_mod8_4_GSE": {
+      "symmetry_class": "GSE (CII/AII, P^2 = -1, Kramers-degenerate)",
+      "n_realizations": 16,
+      "mean_gap_ratio_r": 0.6666,
+      "sem_r": 0.0205,
+      "theoretical_rmt_r": 0.6744
+    },
+    "poisson_integrable_reference": 0.3863
+  },
+  "neumaier_drift": 0.0,
+  "execution_ms": 738.6,
+  "exit_code": 0,
+  "timestamp": "2026-11-07 16:17:22"
+}

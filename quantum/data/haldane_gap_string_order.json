@@ -1,0 +1,56 @@
+{
+  "scope_disclaimer": "Exact matrix-free Stiefel-Lanczos diagonalization on local CPU for the N=10 spin-1 Heisenberg antiferromagnet (3^10=59,049 states; D_Sz0=8,953, D_Sz1=8,350). Evaluates den Nijs-Rommelse string order at true antipodal distance r=N/2=5 and finite-size Haldane gap without dense diagonalization; NOT a QPU run nor an infinite-chain proof.",
+  "problem": "HALDANE_SPIN1_CHAIN_N10_ANTIPODAL_STRING_ORDER_AND_GAP",
+  "n_spins": 10,
+  "hilbert_dim_total": 59049,
+  "hilbert_dim_sz0": 8953,
+  "hilbert_dim_sz1": 8350,
+  "pbc_singlet_e0": -14.0941299549,
+  "pbc_triplet_e1": -13.5693220045,
+  "finite_size_haldane_gap_n10": 0.52480795,
+  "thermodynamic_limit_reference_white1993": 0.41048,
+  "pbc_e0_residual_norm": 3.5412720290359974e-12,
+  "pbc_e1_residual_norm": 4.931979859319471e-13,
+  "antipodal_distance_r": 5,
+  "antipodal_string_order": 0.37195854,
+  "antipodal_staggered_two_point": 0.18180007,
+  "spatial_correlation_profile": [
+    {
+      "distance_r": 1,
+      "two_point_czz": -0.46980433,
+      "staggered_czz": 0.46980433,
+      "string_order": 0.46980433
+    },
+    {
+      "distance_r": 2,
+      "two_point_czz": 0.26392568,
+      "staggered_czz": 0.26392568,
+      "string_order": 0.39832918
+    },
+    {
+      "distance_r": 3,
+      "two_point_czz": -0.22135314,
+      "staggered_czz": 0.22135314,
+      "string_order": 0.3821467
+    },
+    {
+      "distance_r": 4,
+      "two_point_czz": 0.18479849,
+      "staggered_czz": 0.18479849,
+      "string_order": 0.3733848
+    },
+    {
+      "distance_r": 5,
+      "two_point_czz": -0.18180007,
+      "staggered_czz": 0.18180007,
+      "string_order": 0.37195854
+    }
+  ],
+  "obc_sz0_energy": -12.8945601322,
+  "obc_sz1_energy": -12.7562291969,
+  "obc_edge_mode_splitting": 0.13833094,
+  "neumaier_drift": 0.0,
+  "execution_ms": 1684.42,
+  "exit_code": 0,
+  "timestamp": "2026-11-07 16:18:07"
+}

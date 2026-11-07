@@ -1,0 +1,62 @@
+{
+  "scope_disclaimer": "Exact FCI diagonalization via Stiefel-Lanczos of a 4-orbital, 4-electron effective Hubbard-PPP model for the [Cu2O2]^2+ core on local CPU (D_total=70; D_Sz0=36, D_Sz1=16). NOT an all-electron ab initio CASPT2/DMRG calculation nor a QPU run.",
+  "problem": "DICOPPER_Cu2O2_4ORBITAL_HUBBARD_SPIN_RESOLVED_FCI",
+  "hilbert_dim_full_fock": 70,
+  "hilbert_dim_sz0": 36,
+  "hilbert_dim_sz1": 16,
+  "n_electrons": 4,
+  "n_orbitals": 4,
+  "isomerization_pathway": [
+    {
+      "theta_deg": 75.0,
+      "singlet_e0_eV": -50.15554437,
+      "triplet_e1_eV": -49.87900151,
+      "singlet_triplet_gap_meV": 276.5429,
+      "singlet_s2_expectation": 0.0,
+      "triplet_s2_expectation": 2.0,
+      "singlet_residual_norm": 2.521336952137101e-14,
+      "triplet_residual_norm": 1.9590324917928805e-14,
+      "abs_error_vs_exact_eV": 2.1316282072803006e-14,
+      "neumaier_drift": 0.0
+    },
+    {
+      "theta_deg": 85.0,
+      "singlet_e0_eV": -50.44721251,
+      "triplet_e1_eV": -50.15506962,
+      "singlet_triplet_gap_meV": 292.1429,
+      "singlet_s2_expectation": 0.0,
+      "triplet_s2_expectation": 2.0,
+      "singlet_residual_norm": 1.4491082358322832e-14,
+      "triplet_residual_norm": 1.3263332230788974e-14,
+      "abs_error_vs_exact_eV": 1.4210854715202004e-14,
+      "neumaier_drift": 1.1102230246251565e-16
+    },
+    {
+      "theta_deg": 95.0,
+      "singlet_e0_eV": -50.72186051,
+      "triplet_e1_eV": -50.41768389,
+      "singlet_triplet_gap_meV": 304.1766,
+      "singlet_s2_expectation": 0.0,
+      "triplet_s2_expectation": 2.0,
+      "singlet_residual_norm": 1.897738515867461e-14,
+      "triplet_residual_norm": 1.540291911441527e-14,
+      "abs_error_vs_exact_eV": 4.973799150320701e-14,
+      "neumaier_drift": 0.0
+    },
+    {
+      "theta_deg": 105.0,
+      "singlet_e0_eV": -50.97590834,
+      "triplet_e1_eV": -50.66254805,
+      "singlet_triplet_gap_meV": 313.3603,
+      "singlet_s2_expectation": 0.0,
+      "triplet_s2_expectation": 2.0,
+      "singlet_residual_norm": 3.021485900389349e-14,
+      "triplet_residual_norm": 1.7719103822653185e-14,
+      "abs_error_vs_exact_eV": 7.105427357601002e-15,
+      "neumaier_drift": 0.0
+    }
+  ],
+  "execution_ms": 207.18,
+  "exit_code": 0,
+  "timestamp": "2026-11-07 16:17:20"
+}

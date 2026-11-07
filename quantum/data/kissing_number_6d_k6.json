@@ -1,0 +1,26 @@
+{
+  "scope_disclaimer": "Exact CPU verification of the 72-sphere E6 kissing configuration on S^5 plus multi-start Riemannian penalty relaxation on (S^5)^73. Empirical jamming (min angle < 60 deg) tests local rigidity ONLY and is NOT a mathematical upper-bound proof for K(6) (rigorous SDP bound: 72 <= K(6) <= 78, Bachoc & Vallentin 2008).",
+  "problem": "KISSING_NUMBER_6D_E6_RIGIDITY_AND_OBLIQUE_RELAXATION",
+  "dimension": 6,
+  "known_rigorous_bounds": [
+    72,
+    78
+  ],
+  "e6_roots_verified": 72,
+  "e6_max_dot": 0.5,
+  "e6_min_angle_deg": 60.0,
+  "e6_norm_drift": 1.1102230246251565e-16,
+  "deepest_hole_max_dot": 0.6123724357,
+  "deepest_hole_analytic_sqrt6_over_4": 0.6123724357,
+  "deepest_hole_angle_deg": 52.238756,
+  "rigid_insertion_allowed": false,
+  "n_spheres_relaxed": 73,
+  "relaxed_73_max_dot": 0.55327322,
+  "relaxed_73_min_angle_deg": 56.408139,
+  "empirical_jamming_gap": 0.05327322,
+  "final_overlap_energy": 0.0484085645454084,
+  "oblique_sphere_norm_drift": 1.1102230246251565e-16,
+  "execution_ms": 72064.98,
+  "exit_code": 0,
+  "timestamp": "2026-11-07 16:17:19"
+}
