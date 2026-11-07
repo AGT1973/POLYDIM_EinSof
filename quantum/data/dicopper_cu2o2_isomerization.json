@@ -1,0 +1,42 @@
+{
+  "problem": "DICOOPER_CATALYTIC_CORE_Cu2O2",
+  "hilbert_dim": 70,
+  "n_electrons": 4,
+  "n_orbitals": 4,
+  "isomerization_pathway": [
+    {
+      "theta_deg": 75.0,
+      "stiefel_e0_eV": -50.100643,
+      "exact_e0_eV": -50.155544,
+      "error_eV": 0.0549015054,
+      "singlet_triplet_gap_meV": 81.24,
+      "neumaier_drift": 1.1102230246251565e-16
+    },
+    {
+      "theta_deg": 85.0,
+      "stiefel_e0_eV": -50.393471,
+      "exact_e0_eV": -50.447213,
+      "error_eV": 0.0537414776,
+      "singlet_triplet_gap_meV": 74.43,
+      "neumaier_drift": 0.0
+    },
+    {
+      "theta_deg": 95.0,
+      "stiefel_e0_eV": -50.66844,
+      "exact_e0_eV": -50.721861,
+      "error_eV": 0.0534205094,
+      "singlet_triplet_gap_meV": 71.38,
+      "neumaier_drift": 2.220446049250313e-16
+    },
+    {
+      "theta_deg": 105.0,
+      "stiefel_e0_eV": -50.921748,
+      "exact_e0_eV": -50.975908,
+      "error_eV": 0.054160252,
+      "singlet_triplet_gap_meV": 72.3,
+      "neumaier_drift": 0.0
+    }
+  ],
+  "execution_ms": 65.9,
+  "timestamp": "2026-11-07 14:58:39"
+}

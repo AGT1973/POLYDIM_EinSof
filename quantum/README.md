@@ -80,13 +80,21 @@ quantum/
 │   ├── mermin_3q_marrakesh_dbm99558ft8s738ueesg.json
 │   ├── ghz_scaling_marrakesh_dbm9glpkbkrc73cp3igg.json
 │   ├── heisenberg_16q_stiefel_benchmark.json
-│   └── zne_ghz_mitigation.json
+│   ├── zne_ghz_mitigation.json
+│   ├── kagome_spin_liquid.json
+│   ├── mott_hubbard_model.json
+│   ├── kissing_number_6d_k6.json
+│   └── dicopper_cu2o2_isomerization.json
 └── scripts/                                     # Self-contained reproducible benchmark scripts
     ├── 01_mermin_n5_phase_aligned_ibm.py        # Mermin N=5 QPU runner with S-gate alignment
     ├── 02_mermin_n3_ghz_ibm.py                  # Mermin N=3 GHZ runner
     ├── 03_ghz_scaling_decoherence_ibm.py        # GHZ 3Q to 20Q scaling mapper
     ├── 04_heisenberg_16q_stiefel_vs_dense.py    # 64 GiB OOM vs 5.6 MB Stiefel solver
-    └── 05_zne_error_mitigation_stiefel.py       # Zero-noise extrapolation with Stiefel retraction
+    ├── 05_zne_error_mitigation_stiefel.py       # Zero-noise extrapolation with Stiefel retraction
+    ├── 06_kagome_spin_liquid_stiefel.py         # Kagome quantum spin liquid chiral state solver
+    ├── 07_mott_hubbard_stiefel.py               # 16-orbital Mott metal-insulator transition solver
+    ├── 08_kissing_number_6d_stiefel.py          # 6D Kissing Number K(6) E6 lattice & 73-sphere flow
+    └── 09_dicopper_catalysis_stiefel.py         # Di-copper [Cu2O2]^2+ multireference catalytic core
 ```
 
 ---

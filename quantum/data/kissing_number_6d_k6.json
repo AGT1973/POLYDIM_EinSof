@@ -1,0 +1,17 @@
+{
+  "problem": "KISSING_NUMBER_6D_K6",
+  "dimension": 6,
+  "n_spheres": 73,
+  "e6_roots_verified": 72,
+  "e6_max_dot": 0.4999999999999999,
+  "e6_min_angle_deg": 60.00000000000001,
+  "deepest_hole_max_dot": 0.6133248766732107,
+  "deepest_hole_angle_deg": 52.16969656837749,
+  "rigid_insertion_allowed": false,
+  "relaxed_73_max_dot": 0.5532732236676889,
+  "relaxed_73_min_angle_deg": 56.40813910832229,
+  "jamming_gap": 0.05327322366768894,
+  "final_overlap_energy": 0.09681712909081655,
+  "execution_ms": 5013.782499998342,
+  "timestamp": "2026-11-07 14:56:30"
+}
