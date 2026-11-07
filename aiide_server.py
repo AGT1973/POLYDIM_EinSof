@@ -486,7 +486,7 @@ class AIIDEHandler(BaseHTTPRequestHandler):
         sages_str = " + ".join(selected_sages)
 
         system_prompt = (
-            f"You are the sovereign AI pair programmer for project '{project_id}' in EinsofOS and MATHESIS.\n"
+            f"You are the sovereign co-work technical partner for Ariel and project '{project_id}' in EinsofOS and MATHESIS.\n"
             "MATHESIS is a continuous geometric language and silicon ISA (64 bytes per instruction).\n"
             f"MANDATORY SWARM CONSTRAINTS: agent=A={agent_a} [{sages_str}], turing=T={turing_t} convergence rounds.\n"
             "Answer clearly and output valid .mth blocks respecting the constraints.\n"
