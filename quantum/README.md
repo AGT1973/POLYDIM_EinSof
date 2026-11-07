@@ -86,7 +86,9 @@ quantum/
 │   ├── kissing_number_6d_k6.json
 │   ├── dicopper_cu2o2_isomerization.json
 │   ├── syk4_quantum_chaos.json
-│   └── femoco_nitrogenase_cubane.json
+│   ├── femoco_nitrogenase_cubane.json
+│   ├── haldane_gap_string_order.json
+│   └── cuprate_dwave_superconductivity.json
 └── scripts/                                     # Self-contained reproducible benchmark scripts
     ├── 01_mermin_n5_phase_aligned_ibm.py        # Mermin N=5 QPU runner with S-gate alignment
     ├── 02_mermin_n3_ghz_ibm.py                  # Mermin N=3 GHZ runner
@@ -98,7 +100,9 @@ quantum/
     ├── 08_kissing_number_6d_stiefel.py          # 6D Kissing Number K(6) E6 lattice & 73-sphere flow
     ├── 09_dicopper_catalysis_stiefel.py         # Di-copper [Cu2O2]^2+ multireference catalytic core
     ├── 10_syk4_quantum_chaos_stiefel.py         # SYK4 Majorana holographic quantum chaos solver
-    └── 11_femoco_nitrogenase_stiefel.py         # FeMoco nitrogenase mixed-valence cubane solver
+    ├── 11_femoco_nitrogenase_stiefel.py         # FeMoco nitrogenase mixed-valence cubane solver
+    ├── 12_haldane_gap_topological_stiefel.py    # S=1 Haldane gap & topological string order solver
+    └── 13_cuprate_dwave_superconductivity_stiefel.py # High-Tc cuprate d-wave pairing symmetry solver
 ```
 
 ---

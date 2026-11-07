@@ -1,0 +1,15 @@
+{
+  "problem": "HALDANE_GAP_TOPOLOGICAL_STRING_ORDER",
+  "n_spins": 8,
+  "hilbert_dim_sz0": 1107,
+  "pbc_ground_energy": -11.336954,
+  "haldane_gap_pbc": 0.5936,
+  "haldane_gap_theoretical": 0.4105,
+  "string_order_parameter": 0.472374,
+  "two_point_correlation": -0.472374,
+  "obc_ground_energy": -10.124547,
+  "edge_mode_splitting": 0.201879,
+  "neumaier_drift": 0.0,
+  "execution_ms": 3502.18,
+  "timestamp": "2026-11-07 15:17:32"
+}
