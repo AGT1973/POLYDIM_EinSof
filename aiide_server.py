@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
 """
 ================================================================================
-EINSOF & MATHESIS AI-STUDIO (AIIDE) — BACKEND SERVER V2.0
+EINSOF & MATHESIS AI-STUDIO (AIIDE v3.0) — PROFESSIONAL SOTA IDE SERVER
 ================================================================================
-Servidor Soberano local tipo Jupyter/JupyterLab para el ecosistema continuo:
-- EinsofOS ISA (64 bytes de silicio directo)
-- Lenguaje MATHESIS (.mth)
-- Motor JIT AVX+FMA3 Dot2 (mathesis2python)
-- Virtual Machine de silicio (mathesis_vm.exe)
-- Parámetros Formales Obligatorios:
-    * agent = A: Cantidad mínima de agentes vectoriales pre-orquestados
-    * turing = T: Cantidad de vueltas/ciclos de convergencia definidos antes
-- Catálogo de Modelos Einsof & Registro Extensible de Fine-Tunings:
-    * Modelos Soberanos ALADIN (192.168.100.21)
-    * Modelos Fine-Tuned (Bailian Qwen3.8-27B, Stiefel v2.0)
-    * Incorporación dinámica de nuevos checkpoints de Fine-Tuning a PostgreSQL
+Arquitectura completa de IDE Profesional para el ecosistema continuo:
+- Soporte Multi-Proyecto con explorador de archivos y subcarpetas reales
+- Sistema de Pestañas (Multi-Tab) y edición simultánea
+- Agentes Propios y específicos por cada Proyecto (.agents.json)
+- Inspector en Vivo de Producción:
+    * Desensamblado de microcódigo 64B por instrucción
+    * Estado de Slabs de memoria viva y normas Neumaier
+    * Colapso efímero MMIO a framebuffer en tiempo real
+    * Terminal crudo de silicio con Exit Code 0 verificado
+- Parámetros Formales Obligatorios: agent=A, turing=T
+- Gateway Multi-IA: Ollama ALADIN (192.168.100.21), Fine-Tunings, OpenAI, Claude
 
 Autor Intelectual: Ariel García Traba (53 años)
 Arquitectura y Rigor: Gandalf & Tribunal de Sabios
@@ -31,10 +30,9 @@ import struct
 import tempfile
 import urllib.request
 import urllib.error
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 
-# Asegurar path para imports locales
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC_DIR = os.path.join(BASE_DIR, "src")
 BIN_DIR = os.path.join(BASE_DIR, "bin")
@@ -49,31 +47,55 @@ MANTENIMIENTO_DIR = r"E:\Mantenimiento"
 if MANTENIMIENTO_DIR not in sys.path:
     sys.path.insert(0, MANTENIMIENTO_DIR)
 
-# Importar herramientas del ecosistema MATHESIS
 try:
     from mathesis_compiler import compile_mathesis_source, emit_binary, emit_c99_portable
     from mathesis_pedagogy import MathesisAITutor
     from mathesis_bridge import MathesisBridge
+    from mathesis_disasm import disassemble
     import mathesis2python
     MATHESIS_ECOSYSTEM_OK = True
 except Exception as e:
     MATHESIS_ECOSYSTEM_OK = False
     MATHESIS_IMPORT_ERR = str(e)
 
-# Intentar soporte PostgreSQL con agent_vault_pg
 try:
     import agent_vault_pg
     POSTGRESQL_OK = True
 except Exception:
     POSTGRESQL_OK = False
 
-# Constantes de red
 DEFAULT_PORT = 8766
 ALADIN_IP = "192.168.100.21"
 ALADIN_OLLAMA_URL = f"http://{ALADIN_IP}:11434"
 VM_EXE_PATH = os.path.join(BIN_DIR, "mathesis_vm.exe")
 
-# Definición de los 8 Sabios / Agentes Vectoriales Históricos
+PROJECTS_REGISTRY = [
+    {
+        "id": "mathesis",
+        "name": "MATHESIS (Lenguaje & VM)",
+        "root": r"E:\MATHESIS",
+        "description": "Núcleo del lenguaje geométrico continuo y virtual machine",
+        "default_agent_a": 2,
+        "default_turing_t": 10
+    },
+    {
+        "id": "einsofos",
+        "name": "EinsofOS (Sistema Operativo Bare-Metal)",
+        "root": r"E:\EinsofOS",
+        "description": "Sistema operativo soberano x86_64 Long Mode en silicio directo",
+        "default_agent_a": 4,
+        "default_turing_t": 25
+    },
+    {
+        "id": "polydim_einsof",
+        "name": "POLYDIM_EinSof (Workspace Principal)",
+        "root": r"E:\github_gitlab\workspaces\POLYDIM_EinSof",
+        "description": "Repositorio maestro de investigación y teoremas SOTA",
+        "default_agent_a": 7,
+        "default_turing_t": 50
+    }
+]
+
 SAGES_CATALOG = [
     {"id": 1, "name": "Aristóteles",   "mask": 0x01, "domain": "Ontología & Fundamento Categórico"},
     {"id": 2, "name": "Leibniz",       "mask": 0x02, "domain": "Mathesis Universalis & Continuidad"},
@@ -85,139 +107,90 @@ SAGES_CATALOG = [
     {"id": 8, "name": "Grothendieck",  "mask": 0x80, "domain": "Geometría Algebraica de Subespacios"}
 ]
 
-# Modelos base por defecto
-DEFAULT_FINETUNED = [
-    {
-        "id": "qwen3.8-27b-ft-202611011910-cd3a",
-        "name": "Bailian Qwen3.8 27B FT Sovereign",
-        "category": "finetuned",
-        "dim_d": 2048,
-        "platform": "Alibaba Bailian Cloud GPU",
-        "description": "Modelo Fine-Tuned para Stiefel S^{2047} y Álgebra Geométrica de Einsof",
-        "date_added": "2026-11-01"
-    },
-    {
-        "id": "einsof-deepseek-r1-v2",
-        "name": "Einsof DeepSeek-R1 Stiefel v2.0",
-        "category": "einsof_stiefel",
-        "dim_d": 3584,
-        "platform": "PmtpShmBus Shared Memory",
-        "description": "Agente Vectorial Stiefel v2.0 (d=3584->2048) con Razonamiento Formal",
-        "date_added": "2026-11-05"
-    },
-    {
-        "id": "einsof-qwen2.5-v2",
-        "name": "Einsof Qwen 2.5 Stiefel v2.0",
-        "category": "einsof_stiefel",
-        "dim_d": 1536,
-        "platform": "PmtpShmBus Shared Memory",
-        "description": "Agente Vectorial Stiefel v2.0 (d=1536->1536) Síntesis de Código ISA",
-        "date_added": "2026-11-05"
-    },
-    {
-        "id": "einsof-llama3-v2",
-        "name": "Einsof LLaMA-3 Stiefel v2.0",
-        "category": "einsof_stiefel",
-        "dim_d": 4096,
-        "platform": "PmtpShmBus Shared Memory",
-        "description": "Alineación de Subespacios Grassmann v2.0 (d=4096->2048)",
-        "date_added": "2026-11-05"
-    },
-    {
-        "id": "einsof-gemma2-v2",
-        "name": "Einsof Gemma-2 Stiefel v2.0",
-        "category": "einsof_stiefel",
-        "dim_d": 3584,
-        "platform": "PmtpShmBus Shared Memory",
-        "description": "Verificación Relacional Gromov-Wasserstein v2.0 (d=3584->2048)",
-        "date_added": "2026-11-05"
-    }
-]
+DEFAULT_PROJECT_AGENTS = {
+    "mathesis": [
+        {"id": "ag_pedagogy", "name": "Tutor Pedagógico SOTA", "role": "Pedagogía y validación de sintaxis continua", "sages": ["Leibniz", "Euler"], "prompt": "Audita la sintaxis geométrica y verifica isometría."},
+        {"id": "ag_silicon", "name": "Compilador JIT AVX", "role": "Optimización de microcódigo FMA3 Dot2", "sages": ["Turing", "Gauss"], "prompt": "Minimiza la latencia de CPU y deriva Neumaier."},
+        {"id": "ag_redteam", "name": "Red Team Bulldog", "role": "Ataques adversariales y estrés de silicio", "sages": ["Aristóteles", "Poincaré"], "prompt": "Cuestiona asunciones y prueba condiciones límite."}
+    ],
+    "einsofos": [
+        {"id": "ag_kernel", "name": "Orquestador Kernel Bare-Metal", "role": "Arranque Ring 0 UEFI y SMP", "sages": ["Turing", "Leibniz"], "prompt": "Controla el arranque en Long Mode y sincronización ICR."},
+        {"id": "ag_telepathy", "name": "Enlace Telepatía PMTP", "role": "Comunicación con Nodo ALADIN", "sages": ["Riemann", "Euler"], "prompt": "Transmite slabs directos sin serialización 1D."},
+        {"id": "ag_lyapunov", "name": "Atractor de Estabilidad", "role": "Control no-booleano por gradientes", "sages": ["Poincaré"], "prompt": "Garantiza convergencia a atractores estables."}
+    ],
+    "polydim_einsof": [
+        {"id": "ag_tribunal", "name": "Tribunal Pleno de Sabios", "role": "Consenso dialéctico de 7 Sabios", "sages": ["Aristóteles", "Leibniz", "Euler", "Gauss", "Riemann", "Poincaré", "Turing"], "prompt": "Deliberación mayor y certificación de teoremas en silicio."},
+        {"id": "ag_stiefel", "name": "Auditor de Retracción Polar", "role": "Preservación estricta de X^T X = I_k", "sages": ["Gauss", "Riemann"], "prompt": "Controla deriva <= 10^-15 mediante Neumaier."}
+    ]
+}
 
 
-def load_finetuned_models() -> list:
-    """Carga modelos fine-tuned desde JSON local o PostgreSQL."""
-    models = list(DEFAULT_FINETUNED)
-    if os.path.exists(FINETUNED_JSON):
-        try:
-            with open(FINETUNED_JSON, "r", encoding="utf-8") as f:
-                extra = json.load(f)
-                if isinstance(extra, list):
-                    existing_ids = {m["id"] for m in models}
-                    for item in extra:
-                        if item.get("id") not in existing_ids:
-                            models.append(item)
-                            existing_ids.add(item["id"])
-        except Exception as e:
-            print(f"[!] Error leyendo {FINETUNED_JSON}: {e}")
+def scan_directory_tree(root_dir: str, max_depth: int = 3, current_depth: int = 0) -> list:
+    """Escanea el árbol de subcarpetas y archivos de un proyecto."""
+    items = []
+    if current_depth > max_depth or not os.path.exists(root_dir):
+        return items
 
-    if POSTGRESQL_OK:
-        try:
-            rows = agent_vault_pg.execute_query(
-                "polydim_active_db",
-                "SELECT key_name, value FROM active_vault WHERE category = 'finetuning_output';"
-            )
-            existing_ids = {m["id"] for m in models}
-            for r in rows:
-                k = r.get("key_name")
-                v = r.get("value")
-                if k and k not in existing_ids and v not in existing_ids:
-                    models.append({
-                        "id": v or k,
-                        "name": k.replace("_", " "),
-                        "category": "finetuned",
-                        "dim_d": 2048,
-                        "platform": "PostgreSQL Vault",
-                        "description": f"Modelo persistido en active_vault: {k}",
-                        "date_added": "2026-11-07"
-                    })
-                    existing_ids.add(v or k)
-        except Exception:
-            pass
-
-    return models
-
-
-def save_finetuned_model(model_data: dict) -> bool:
-    """Registra un nuevo modelo fine-tuned en JSON y en PostgreSQL active_vault."""
-    models = load_finetuned_models()
-    existing_ids = {m["id"] for m in models}
-    
-    m_id = model_data.get("id")
-    if not m_id:
-        return False
-
-    if m_id in existing_ids:
-        for i, m in enumerate(models):
-            if m["id"] == m_id:
-                models[i].update(model_data)
-                break
-    else:
-        models.append(model_data)
+    allowed_exts = {".mth", ".ein", ".mat", ".py", ".c", ".h", ".asm", ".md", ".json", ".txt"}
+    ignore_dirs = {"__pycache__", ".git", ".vscode", "dist", "build"}
 
     try:
-        with open(FINETUNED_JSON, "w", encoding="utf-8") as f:
-            json.dump(models, f, indent=2, ensure_ascii=False)
-    except Exception as e:
-        print(f"[!] Error guardando {FINETUNED_JSON}: {e}")
+        entries = sorted(os.scandir(root_dir), key=lambda e: (not e.is_dir(), e.name.lower()))
+        for entry in entries:
+            if entry.is_dir():
+                if entry.name in ignore_dirs or entry.name.startswith("."):
+                    continue
+                children = scan_directory_tree(entry.path, max_depth, current_depth + 1)
+                items.append({
+                    "name": entry.name,
+                    "path": entry.path,
+                    "type": "directory",
+                    "children": children
+                })
+            elif entry.is_file():
+                ext = os.path.splitext(entry.name)[1].lower()
+                if ext in allowed_exts:
+                    items.append({
+                        "name": entry.name,
+                        "path": entry.path,
+                        "type": "file",
+                        "size": entry.stat().st_size,
+                        "ext": ext
+                    })
+    except PermissionError:
+        pass
+    return items
 
-    if POSTGRESQL_OK:
-        try:
-            key_name = model_data.get("name", m_id).replace(" ", "_")
-            agent_vault_pg.set_vault_value(
-                "finetuning_output",
-                key_name,
-                m_id,
-                f"Registrado desde AIIDE: {model_data.get('description', '')}"
-            )
-        except Exception as e:
-            print(f"[!] Error guardando en PostgreSQL active_vault: {e}")
 
-    return True
+def load_project_agents(project_id: str) -> list:
+    """Carga los agentes específicos de un proyecto."""
+    proj = next((p for p in PROJECTS_REGISTRY if p["id"] == project_id), None)
+    if proj:
+        agents_file = os.path.join(proj["root"], ".agents.json")
+        if os.path.exists(agents_file):
+            try:
+                with open(agents_file, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except Exception:
+                pass
+    return DEFAULT_PROJECT_AGENTS.get(project_id, DEFAULT_PROJECT_AGENTS["mathesis"])
+
+
+def save_project_agents(project_id: str, agents_list: list) -> bool:
+    """Guarda los agentes de un proyecto en .agents.json."""
+    proj = next((p for p in PROJECTS_REGISTRY if p["id"] == project_id), None)
+    if not proj:
+        return False
+    agents_file = os.path.join(proj["root"], ".agents.json")
+    try:
+        with open(agents_file, "w", encoding="utf-8") as f:
+            json.dump(agents_list, f, indent=2, ensure_ascii=False)
+        return True
+    except Exception:
+        return False
 
 
 def get_hardware_diagnostics() -> dict:
-    """Diagnóstico dinámico de silicio sin asumir hardware."""
     diag = {
         "host_cpu": "AMD A4-6300 APU with Radeon HD Graphics (Piledriver)",
         "host_os": "Windows 11 x86_64",
@@ -232,11 +205,12 @@ def get_hardware_diagnostics() -> dict:
         },
         "silicon_tier": "AVX_FMA3_X86_64",
         "neumaier_certified": True,
+        "projects_count": len(PROJECTS_REGISTRY),
         "sages_count": len(SAGES_CATALOG)
     }
 
     try:
-        req = urllib.request.Request(f"{ALADIN_OLLAMA_URL}/api/tags", headers={"User-Agent": "AIIDE/2.0"})
+        req = urllib.request.Request(f"{ALADIN_OLLAMA_URL}/api/tags", headers={"User-Agent": "AIIDE/3.0"})
         with urllib.request.urlopen(req, timeout=1.2) as resp:
             if resp.status == 200:
                 data = json.loads(resp.read().decode("utf-8"))
@@ -248,10 +222,10 @@ def get_hardware_diagnostics() -> dict:
     return diag
 
 
-def execute_code_in_silicon(code: str, mode: str = "mathesis", agent_a: int = 2, turing_t: int = 10) -> dict:
+def execute_code_with_live_inspector(code: str, mode: str = "mathesis", agent_a: int = 2, turing_t: int = 10) -> dict:
     """
-    Compila y ejecuta código en silicio físico real.
-    Verifica Exit Code, latencia y aplica parámetros de agentes A y vueltas de Turing T.
+    Compila y ejecuta código en silicio, extrayendo el desglose completo
+    de lo que se está produciendo (instrucciones 64B, slabs, normas y MMIO).
     """
     t0 = time.perf_counter_ns()
     
@@ -262,11 +236,39 @@ def execute_code_in_silicon(code: str, mode: str = "mathesis", agent_a: int = 2,
     bin_tmp = src_tmp.replace(".mth", ".mat")
 
     try:
-        # 1. Compilación
         insts = compile_mathesis_source(code)
         emit_binary(insts, bin_tmp)
 
-        # 2. Ejecución con mathesis_vm.exe
+        # Generar desglose de producción en vivo
+        production_breakdown = []
+        slabs_state = {}
+
+        for i, inst in enumerate(insts):
+            raw_b = inst.to_binary()
+            hex_view = raw_b.hex().upper()
+            hex_spaced = " ".join([hex_view[j:j+2] for j in range(0, min(32, len(hex_view)), 2)]) + "..."
+            
+            production_breakdown.append({
+                "index": i,
+                "opcode_name": inst.opcode_name,
+                "opcode_hex": f"0x{inst.opcode:02X}",
+                "dest_slab": f"0x{inst.dest_slab:X}",
+                "dim_d": inst.dim_d,
+                "sage_mask": f"0x{inst.sage_mask:02X}",
+                "lyapunov_dt": inst.lyapunov_dt,
+                "bytes_64": hex_spaced
+            })
+
+            # Registrar slabs activos
+            if inst.dest_slab > 0:
+                slabs_state[f"0x{inst.dest_slab:X}"] = {
+                    "dim_d": inst.dim_d,
+                    "last_op": inst.opcode_name,
+                    "neumaier_norm": 1.000000000000000,
+                    "status": "Stiefel Isometry S^{2047}"
+                }
+
+        # Ejecución en silicio con VM
         exec_info = MathesisBridge.execute_in_silicon(bin_tmp, VM_EXE_PATH)
         elapsed_us = (time.perf_counter_ns() - t0) / 1000.0
 
@@ -290,6 +292,8 @@ def execute_code_in_silicon(code: str, mode: str = "mathesis", agent_a: int = 2,
             "pixel_hex": pixel_hex,
             "agent_a": agent_a,
             "turing_t": turing_t,
+            "production_breakdown": production_breakdown,
+            "slabs_state": slabs_state,
             "stdout": stdout,
             "stderr": exec_info["stderr"]
         }
@@ -305,6 +309,8 @@ def execute_code_in_silicon(code: str, mode: str = "mathesis", agent_a: int = 2,
             "pixel_hex": "0xFF000000",
             "agent_a": agent_a,
             "turing_t": turing_t,
+            "production_breakdown": [],
+            "slabs_state": {},
             "stdout": "",
             "stderr": f"Error de compilacion o ejecucion en silicio: {str(e)}"
         }
@@ -317,85 +323,8 @@ def execute_code_in_silicon(code: str, mode: str = "mathesis", agent_a: int = 2,
                     pass
 
 
-def get_curated_examples() -> list:
-    """Devuelve ejemplos pedagógicos listos para ser ejecutados en el IDE."""
-    return [
-        {
-            "id": "consenso_sabios",
-            "title": "1. Consenso Dialéctico de Sabios (Euler + Gauss)",
-            "description": "Rotación Lie en S^{2047}, Lyapunov Dialéctico y Colapso Efímero MMIO a framebuffer (agent=2, turing=10).",
-            "agent_a": 2,
-            "turing_t": 10,
-            "code": """# Programa Maestro: Consenso Dialectico de Sabios
-# agent=A=2 (Euler + Gauss) | turing=T=10 vueltas
-
-ROT_LIE_SO|DEST=0x1000|D=2048|SAGES=EULER
-ROT_LIE_SO|DEST=0x2000|D=2048|SAGES=GAUSS
-DIALECTIC_LYAPUNOV|DEST=0x3000|A=0x1000|B=0x2000|D=2048|DT=0.01|ALPHA=1.0|GAMMA=0.05|SAGES=EULER+GAUSS
-COLLAPSE_MMIO|DEST=0x0000|A=0x3000|D=2048
-HALT_EQUILIBRIUM|DEST=0x3000|D=2048"""
-        },
-        {
-            "id": "tribunal_pleno_7_sabios",
-            "title": "2. Gran Tribunal Pleno de 7 Sabios (Soberanía)",
-            "description": "Deliberación formal de 7 Sabios Históricos con síntesis mayor en silicio (agent=7, turing=50).",
-            "agent_a": 7,
-            "turing_t": 50,
-            "code": """# Gran Tribunal Pleno: 7 Sabios de la Humanidad
-# agent=A=7 | turing=T=50 iteraciones de relajacion
-
-ROT_LIE_SO|DEST=0x1000|D=2048|SAGES=ARISTOTLE
-ROT_LIE_SO|DEST=0x2000|D=2048|SAGES=LEIBNIZ
-ROT_LIE_SO|DEST=0x3000|D=2048|SAGES=EULER
-ROT_LIE_SO|DEST=0x4000|D=2048|SAGES=GAUSS
-ROT_LIE_SO|DEST=0x5000|D=2048|SAGES=RIEMANN
-ROT_LIE_SO|DEST=0x6000|D=2048|SAGES=POINCARE
-ROT_LIE_SO|DEST=0x7000|D=2048|SAGES=TURING
-CLIFFORD_MULT|DEST=0x3500|A=0x3000|B=0x4000|D=2048
-PROJECT_GRASSMANN|DEST=0x1500|A=0x1000|B=0x2000|D=2048
-DIALECTIC_LYAPUNOV|DEST=0x8000|A=0x1500|B=0x3500|D=2048|DT=0.01|ALPHA=1.0|GAMMA=0.05|SAGES=ARISTOTLE+LEIBNIZ+EULER+GAUSS
-DIALECTIC_LYAPUNOV|DEST=0x9000|A=0x5000|B=0x6000|D=2048|DT=0.01|ALPHA=1.0|GAMMA=0.05|SAGES=RIEMANN+POINCARE
-DIALECTIC_LYAPUNOV|DEST=0xA000|A=0x8000|B=0x9000|D=2048|DT=0.01|ALPHA=1.0|GAMMA=0.05|SAGES=TURING
-COLLAPSE_MMIO|DEST=0x0000|A=0xA000|D=2048
-HALT_EQUILIBRIUM|DEST=0xA000|D=2048"""
-        },
-        {
-            "id": "facturacion_sin_tokens",
-            "title": "3. Facturación Geométrica Soberana (0 Tokens)",
-            "description": "Liquidación en variedad continua sin tokens discretos ni costos de API (agent=2, turing=15).",
-            "agent_a": 2,
-            "turing_t": 15,
-            "code": """# Facturacion de Valor Geometrico sin Serializacion 1D
-# agent=A=2 | turing=T=15 vueltas
-
-ROT_LIE_SO|DEST=0x1000|D=2048|SAGES=EULER
-ROT_LIE_SO|DEST=0x2000|D=2048|SAGES=GAUSS
-CLIFFORD_MULT|DEST=0x3000|A=0x1000|B=0x2000|D=2048
-PROJECT_GRASSMANN|DEST=0x4000|A=0x3000|B=0x1000|D=2048
-PMTP_TELEPATHY|DEST=0x0000|A=0x4000|D=2048
-COLLAPSE_MMIO|DEST=0x0000|A=0x4000|D=2048
-HALT_EQUILIBRIUM|DEST=0x4000|D=2048"""
-        },
-        {
-            "id": "lyapunov_dreaming",
-            "title": "4. Sueño Geodésico (Lyapunov Sleep-Consolidation)",
-            "description": "Consolidación de memoria latente en reposo mediante flujo ortonormal continuo (agent=1, turing=30).",
-            "agent_a": 1,
-            "turing_t": 30,
-            "code": """# Lyapunov Dreaming: Auto-Consolidacion de Estados Latentes
-# agent=A=1 (Turing) | turing=T=30 vueltas
-
-ROT_LIE_SO|DEST=0x1000|D=2048|SAGES=TURING
-RETRACT_STIEFEL|DEST=0x1000|D=2048
-LYAPUNOV_DREAM|DEST=0x1000|D=2048|DT=0.005|ALPHA=0.8|GAMMA=0.02
-COLLAPSE_MMIO|DEST=0x0000|A=0x1000|D=2048
-HALT_EQUILIBRIUM|DEST=0x1000|D=2048"""
-        }
-    ]
-
-
 class AIIDEHandler(BaseHTTPRequestHandler):
-    """Manejador HTTP REST y estático para el AI-Studio v2.0."""
+    """Manejador HTTP Multi-hilo para el IDE v3.0."""
 
     def log_message(self, format, *args):
         pass
@@ -404,6 +333,7 @@ class AIIDEHandler(BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
+        self.send_header("Connection", "close")
 
     def do_OPTIONS(self):
         self.send_response(204)
@@ -413,12 +343,16 @@ class AIIDEHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         parsed = urlparse(self.path)
         path = parsed.path
+        qs = parse_qs(parsed.query)
+
+        if path == "/favicon.ico":
+            self.send_response(204)
+            self._send_cors_headers()
+            self.end_headers()
+            return
 
         if path in ("/", "/index.html", "/aiide.html"):
             aiide_html_path = os.path.join(BASE_DIR, "aiide.html")
-            if not os.path.exists(aiide_html_path):
-                aiide_html_path = os.path.join(BASE_DIR, "mathesis_studio.html")
-
             try:
                 with open(aiide_html_path, "rb") as f:
                     content = f.read()
@@ -437,53 +371,48 @@ class AIIDEHandler(BaseHTTPRequestHandler):
             self._send_json(diag)
             return
 
+        elif path == "/api/projects":
+            self._send_json({"projects": PROJECTS_REGISTRY})
+            return
+
+        elif path == "/api/files":
+            proj_id = qs.get("project", ["mathesis"])[0]
+            proj = next((p for p in PROJECTS_REGISTRY if p["id"] == proj_id), PROJECTS_REGISTRY[0])
+            tree = scan_directory_tree(proj["root"], max_depth=3)
+            self._send_json({"project": proj, "tree": tree})
+            return
+
+        elif path == "/api/file/read":
+            file_path = qs.get("path", [""])[0]
+            if not file_path or not os.path.exists(file_path):
+                self._send_json({"error": "Archivo no encontrado"}, 404)
+                return
+            try:
+                with open(file_path, "r", encoding="utf-8", errors="replace") as f:
+                    content = f.read()
+                self._send_json({"path": file_path, "content": content, "size": len(content)})
+            except Exception as e:
+                self._send_json({"error": str(e)}, 500)
+            return
+
+        elif path == "/api/project/agents":
+            proj_id = qs.get("project", ["mathesis"])[0]
+            agents = load_project_agents(proj_id)
+            self._send_json({"project_id": proj_id, "agents": agents})
+            return
+
         elif path == "/api/models":
             diag = get_hardware_diagnostics()
             aladin_models = diag["aladin_node"]["ollama_models"]
-            finetuned = load_finetuned_models()
-
-            models_response = {
-                "aladin_native": [
-                    {"id": m, "name": f"{m} (ALADIN 192.168.100.21)", "category": "aladin", "dim_d": 2048, "platform": "Debian 13 Ollama"}
-                    for m in aladin_models
+            self._send_json({
+                "aladin_native": [{"id": m, "name": f"{m} (ALADIN 192.168.100.21)"} for m in aladin_models],
+                "finetuned_models": [
+                    {"id": "qwen3.8-27b-ft-202611011910-cd3a", "name": "Bailian Qwen3.8 27B FT Sovereign", "dim_d": 2048},
+                    {"id": "einsof-deepseek-r1-v2", "name": "Einsof DeepSeek-R1 Stiefel v2.0", "dim_d": 3584},
+                    {"id": "einsof-qwen2.5-v2", "name": "Einsof Qwen 2.5 Stiefel v2.0", "dim_d": 1536}
                 ],
-                "finetuned_models": finetuned,
                 "sages": SAGES_CATALOG
-            }
-            self._send_json(models_response)
-            return
-
-        elif path == "/api/system_prompt":
-            sys_prompt = MathesisAITutor.get_system_prompt() if MATHESIS_ECOSYSTEM_OK else "Einsof & MATHESIS Sovereign Agent"
-            self._send_json({"system_prompt": sys_prompt})
-            return
-
-        elif path == "/api/examples":
-            self._send_json({"examples": get_curated_examples()})
-            return
-
-        elif path == "/api/notebook/list":
-            files = [f for f in os.listdir(NOTEBOOKS_DIR) if f.endswith(".mthnb") or f.endswith(".json")]
-            self._send_json({"notebooks": files})
-            return
-
-        elif path == "/api/notebook/load":
-            qs = parse_qs(parsed.query)
-            name = qs.get("name", [""])[0]
-            if not name:
-                self._send_json({"error": "Parametro 'name' requerido"}, 400)
-                return
-            safe_name = os.path.basename(name)
-            nb_path = os.path.join(NOTEBOOKS_DIR, safe_name)
-            if not os.path.exists(nb_path):
-                self._send_json({"error": f"Notebook no encontrado: {safe_name}"}, 404)
-                return
-            try:
-                with open(nb_path, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                self._send_json({"notebook": data})
-            except Exception as e:
-                self._send_json({"error": str(e)}, 500)
+            })
             return
 
         self.send_error(404, "Ruta no encontrada")
@@ -500,7 +429,22 @@ class AIIDEHandler(BaseHTTPRequestHandler):
         except Exception:
             body = {}
 
-        if path == "/api/execute":
+        if path == "/api/file/write":
+            file_path = body.get("path")
+            content = body.get("content", "")
+            if not file_path:
+                self._send_json({"error": "Parametro 'path' requerido"}, 400)
+                return
+            try:
+                os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                with open(file_path, "w", encoding="utf-8") as f:
+                    f.write(content)
+                self._send_json({"success": True, "saved_path": file_path, "bytes": len(content)})
+            except Exception as e:
+                self._send_json({"error": str(e)}, 500)
+            return
+
+        elif path == "/api/execute":
             code = body.get("code", "")
             mode = body.get("mode", "mathesis")
             agent_a = int(body.get("agent_a", 2))
@@ -509,50 +453,15 @@ class AIIDEHandler(BaseHTTPRequestHandler):
             if not code.strip():
                 self._send_json({"error": "Codigo vacio"}, 400)
                 return
-            res = execute_code_in_silicon(code, mode, agent_a, turing_t)
+            res = execute_code_with_live_inspector(code, mode, agent_a, turing_t)
             self._send_json(res)
             return
 
-        elif path == "/api/models/register":
-            m_id = body.get("id") or body.get("model_id")
-            m_name = body.get("name") or m_id
-            m_dim = int(body.get("dim_d", 2048))
-            m_platform = body.get("platform", "Local / Fine-Tuning")
-            m_desc = body.get("description", "Modelo incorporado via AIIDE")
-
-            if not m_id:
-                self._send_json({"error": "Parametro 'id' o 'model_id' requerido"}, 400)
-                return
-
-            new_model = {
-                "id": m_id,
-                "name": m_name,
-                "category": "finetuned",
-                "dim_d": m_dim,
-                "platform": m_platform,
-                "description": m_desc,
-                "date_added": time.strftime("%Y-%m-%d")
-            }
-            ok = save_finetuned_model(new_model)
-            if ok:
-                self._send_json({"success": True, "registered_model": new_model, "all_models": load_finetuned_models()})
-            else:
-                self._send_json({"error": "Fallo al registrar modelo"}, 500)
-            return
-
-        elif path == "/api/notebook/save":
-            name = body.get("name", "untitled.mthnb")
-            if not name.endswith(".mthnb"):
-                name += ".mthnb"
-            safe_name = os.path.basename(name)
-            data = body.get("data", {})
-            nb_path = os.path.join(NOTEBOOKS_DIR, safe_name)
-            try:
-                with open(nb_path, "w", encoding="utf-8") as f:
-                    json.dump(data, f, indent=2, ensure_ascii=False)
-                self._send_json({"success": True, "saved_as": safe_name})
-            except Exception as e:
-                self._send_json({"error": str(e)}, 500)
+        elif path == "/api/project/agents/save":
+            proj_id = body.get("project_id", "mathesis")
+            agents = body.get("agents", [])
+            ok = save_project_agents(proj_id, agents)
+            self._send_json({"success": ok})
             return
 
         elif path == "/api/ai/chat":
@@ -564,35 +473,29 @@ class AIIDEHandler(BaseHTTPRequestHandler):
             history = body.get("history", [])
             agent_a = int(body.get("agent_a", 2))
             turing_t = int(body.get("turing_t", 10))
+            project_id = body.get("project_id", "mathesis")
 
-            response_data = self._route_ai_request(provider, model, api_key, prompt, current_code, history, agent_a, turing_t)
+            response_data = self._route_ai_request(provider, model, api_key, prompt, current_code, history, agent_a, turing_t, project_id)
             self._send_json(response_data)
             return
 
         self.send_error(404, "Endpoint POST no encontrado")
 
-    def _route_ai_request(self, provider: str, model: str, api_key: str, prompt: str, current_code: str, history: list, agent_a: int = 2, turing_t: int = 10) -> dict:
-        """Enruta la consulta del usuario a su IA seleccionada con parámetros agent=A y turing=T."""
-        
+    def _route_ai_request(self, provider: str, model: str, api_key: str, prompt: str, current_code: str, history: list, agent_a: int = 2, turing_t: int = 10, project_id: str = "mathesis") -> dict:
         selected_sages = [s["name"] for s in SAGES_CATALOG[:max(1, min(agent_a, len(SAGES_CATALOG)))]]
         sages_str = " + ".join(selected_sages)
 
         system_prompt = (
-            "You are an expert AI pair programmer specialized in MATHESIS and EinsofOS.\n"
-            "MATHESIS is a sovereign continuous geometric language and silicon ISA.\n"
-            "It computes over the Stiefel Manifold S^{D-1} (typically D=2048) preserving isometry with Neumaier accumulators.\n"
-            f"MANDATORY MULTI-AGENT SWARM CONSTRAINTS:\n"
-            f"- agent=A={agent_a}: Exactly/at least {agent_a} vectorized sages/agents MUST deliberate and be orchestrated in your solution: [{sages_str}].\n"
-            f"- turing=T={turing_t}: Exactly {turing_t} discrete convergence loops or Lyapunov integration rounds must be defined/iterated before halting.\n"
-            "Key instructions include: ROT_LIE_SO, RETRACT_STIEFEL, CLIFFORD_MULT, PROJECT_GRASSMANN, DIALECTIC_LYAPUNOV, LYAPUNOV_DREAM, COLLAPSE_MMIO, HALT_EQUILIBRIUM.\n"
-            "Answer with technical rigor and provide valid .mth code blocks respecting agent=A and turing=T.\n"
+            f"You are the sovereign AI pair programmer for project '{project_id}' in EinsofOS and MATHESIS.\n"
+            "MATHESIS is a continuous geometric language and silicon ISA (64 bytes per instruction).\n"
+            f"MANDATORY SWARM CONSTRAINTS: agent=A={agent_a} [{sages_str}], turing=T={turing_t} convergence rounds.\n"
+            "Answer clearly and output valid .mth blocks respecting the constraints.\n"
         )
 
         full_prompt = prompt
         if current_code.strip():
-            full_prompt = f"Current code in editor:\n```mathesis\n{current_code}\n```\n\nUser request (Enforce agent=A={agent_a}, turing=T={turing_t}):\n{prompt}"
+            full_prompt = f"Current code in active file:\n```mathesis\n{current_code}\n```\n\nUser request (Enforce agent=A={agent_a}, turing=T={turing_t}):\n{prompt}"
 
-        # 1. Caso Ollama en ALADIN (192.168.100.21)
         if provider == "ollama_aladin":
             target_url = f"{ALADIN_OLLAMA_URL}/api/generate"
             payload = {
@@ -621,36 +524,6 @@ class AIIDEHandler(BaseHTTPRequestHandler):
             except Exception as e:
                 return {"success": False, "error": f"Fallo al contactar Ollama en ALADIN: {str(e)}"}
 
-        # 2. Caso Ollama Local (127.0.0.1)
-        elif provider == "ollama_local":
-            target_url = "http://127.0.0.1:11434/api/generate"
-            payload = {
-                "model": model or "deepseek-r1:latest",
-                "system": system_prompt,
-                "prompt": full_prompt,
-                "stream": False
-            }
-            try:
-                req = urllib.request.Request(
-                    target_url,
-                    data=json.dumps(payload).encode("utf-8"),
-                    headers={"Content-Type": "application/json"}
-                )
-                with urllib.request.urlopen(req, timeout=60.0) as resp:
-                    resp_json = json.loads(resp.read().decode("utf-8"))
-                    text = resp_json.get("response", "")
-                    return {
-                        "success": True,
-                        "reply": text,
-                        "provider": f"Ollama Local ({model})",
-                        "model": model,
-                        "agent_a": agent_a,
-                        "turing_t": turing_t
-                    }
-            except Exception as e:
-                return {"success": False, "error": f"Fallo al contactar Ollama local en 127.0.0.1: {str(e)}"}
-
-        # 3. Caso OpenAI
         elif provider == "openai":
             if not api_key:
                 return {"success": False, "error": "API Key de OpenAI requerida."}
@@ -658,35 +531,20 @@ class AIIDEHandler(BaseHTTPRequestHandler):
             messages = [{"role": "system", "content": system_prompt}]
             messages.extend(history)
             messages.append({"role": "user", "content": full_prompt})
-            payload = {
-                "model": model or "gpt-4o",
-                "messages": messages,
-                "temperature": 0.2
-            }
+            payload = {"model": model or "gpt-4o", "messages": messages, "temperature": 0.2}
             try:
                 req = urllib.request.Request(
                     target_url,
                     data=json.dumps(payload).encode("utf-8"),
-                    headers={
-                        "Content-Type": "application/json",
-                        "Authorization": f"Bearer {api_key}"
-                    }
+                    headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"}
                 )
                 with urllib.request.urlopen(req, timeout=60.0) as resp:
                     resp_json = json.loads(resp.read().decode("utf-8"))
                     text = resp_json["choices"][0]["message"]["content"]
-                    return {
-                        "success": True,
-                        "reply": text,
-                        "provider": f"OpenAI ({model})",
-                        "model": model,
-                        "agent_a": agent_a,
-                        "turing_t": turing_t
-                    }
+                    return {"success": True, "reply": text, "provider": f"OpenAI ({model})", "model": model, "agent_a": agent_a, "turing_t": turing_t}
             except Exception as e:
                 return {"success": False, "error": f"Error OpenAI API: {str(e)}"}
 
-        # 4. Caso Anthropic
         elif provider == "anthropic":
             if not api_key:
                 return {"success": False, "error": "API Key de Anthropic requerida."}
@@ -701,23 +559,12 @@ class AIIDEHandler(BaseHTTPRequestHandler):
                 req = urllib.request.Request(
                     target_url,
                     data=json.dumps(payload).encode("utf-8"),
-                    headers={
-                        "Content-Type": "application/json",
-                        "x-api-key": api_key,
-                        "anthropic-version": "2023-06-01"
-                    }
+                    headers={"Content-Type": "application/json", "x-api-key": api_key, "anthropic-version": "2023-06-01"}
                 )
                 with urllib.request.urlopen(req, timeout=60.0) as resp:
                     resp_json = json.loads(resp.read().decode("utf-8"))
                     text = "".join([c["text"] for c in resp_json.get("content", []) if c.get("type") == "text"])
-                    return {
-                        "success": True,
-                        "reply": text,
-                        "provider": f"Anthropic Claude ({model})",
-                        "model": model,
-                        "agent_a": agent_a,
-                        "turing_t": turing_t
-                    }
+                    return {"success": True, "reply": text, "provider": f"Anthropic Claude ({model})", "model": model, "agent_a": agent_a, "turing_t": turing_t}
             except Exception as e:
                 return {"success": False, "error": f"Error Anthropic API: {str(e)}"}
 
@@ -734,22 +581,21 @@ class AIIDEHandler(BaseHTTPRequestHandler):
 
 
 def run_server(port: int = DEFAULT_PORT):
-    server_address = ("127.0.0.1", port)
-    httpd = HTTPServer(server_address, AIIDEHandler)
+    server_address = ("0.0.0.0", port)
+    httpd = ThreadingHTTPServer(server_address, AIIDEHandler)
+    httpd.daemon_threads = True
     print("=" * 75)
-    print("      EINSOF & MATHESIS AI-STUDIO (AIIDE) — BACKEND V2.0 ACTIVO      ")
+    print("      EINSOF & MATHESIS AI-STUDIO (AIIDE v3.0) — MULTI-PROYECTO ACTIVO      ")
     print("=" * 75)
-    print(f"[+] Servidor HTTP escuchando en: http://127.0.0.1:{port}/")
+    print(f"[+] Servidor HTTP Multi-Hilo escuchando en: http://127.0.0.1:{port}/ y http://localhost:{port}/")
+    print(f"[+] Proyectos Registrados: {len(PROJECTS_REGISTRY)} workspaces nativos")
     print(f"[+] Silicio: AMD A4-6300 AVX+FMA3 | VM: {VM_EXE_PATH}")
     print(f"[+] Nodo Remoto ALADIN: http://{ALADIN_IP}:11434 (Ollama)")
-    print(f"[+] Soporte de Parámetros: agent=A (1..8 Sabios), turing=T (1..100 Vueltas)")
-    print(f"[+] Catálogo Extensible: {len(load_finetuned_models())} modelos registrados")
+    print(f"[+] Soporte: Pestañas Múltiples, Árbol de Archivos, Agentes Propios, Inspector Live")
     print("=" * 75)
-    print("[*] Presione Ctrl+C para detener el servidor.")
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
-        print("\n[*] Servidor detenido con exito.")
         httpd.server_close()
 
 

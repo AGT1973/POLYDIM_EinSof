@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EINSOF & MATHESIS AI-STUDIO (AIIDE v2.0) — Sovereign Jupyter-Style IDE</title>
+    <title>EINSOF & MATHESIS AI-STUDIO (AIIDE v3.0) — Professional SOTA IDE</title>
     <style>
         :root {
-            --bg-base: #080a0f;
-            --bg-panel: rgba(14, 18, 27, 0.95);
-            --bg-subpanel: #111622;
-            --border: #1e2638;
-            --border-glow: #2a364f;
+            --bg-darkest: #07090e;
+            --bg-base: #0b0e14;
+            --bg-panel: #10141d;
+            --bg-subpanel: #151b27;
+            --bg-hover: #1c2434;
+            --border: #1f2738;
+            --border-glow: #2b364e;
             --cyan: #00e5ff;
             --cyan-glow: rgba(0, 229, 255, 0.25);
             --purple: #9d4edd;
@@ -21,6 +23,7 @@
             --text-muted: #8b949e;
             --font-mono: 'Fira Code', 'Consolas', 'Courier New', monospace;
             --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --btn-height: 28px;
         }
 
         * {
@@ -39,109 +42,117 @@
             flex-direction: column;
         }
 
+        /* Standardized Button System */
+        .btn {
+            height: var(--btn-height);
+            padding: 0 10px;
+            font-size: 0.74rem;
+            font-family: var(--font-sans);
+            font-weight: 500;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            background: var(--bg-subpanel);
+            color: var(--text-main);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            border-color: var(--cyan);
+            color: var(--cyan);
+            background: var(--bg-hover);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0077b6, #0096c7);
+            border-color: var(--cyan);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 10px var(--cyan-glow);
+            color: #fff;
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, #7b2cbf, #9d4edd);
+            border-color: var(--purple);
+            color: #fff;
+        }
+
+        .btn-accent:hover {
+            box-shadow: 0 0 10px rgba(157, 78, 221, 0.4);
+            color: #fff;
+        }
+
         /* Top Header */
         header {
-            background: rgba(10, 13, 19, 0.98);
+            background: var(--bg-darkest);
             border-bottom: 1px solid var(--border);
-            padding: 8px 16px;
+            height: 42px;
+            padding: 0 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            z-index: 10;
+            z-index: 20;
         }
 
         .logo-group {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .logo-symbol {
-            width: 34px;
-            height: 34px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             background: conic-gradient(from 180deg at 50% 50%, var(--cyan), var(--purple), var(--cyan));
-            box-shadow: 0 0 16px var(--cyan-glow);
+            box-shadow: 0 0 10px var(--cyan-glow);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 900;
             color: #000;
-            font-size: 1.1rem;
+            font-size: 0.9rem;
         }
 
         .title-block h1 {
-            font-size: 1.1rem;
-            letter-spacing: 1.2px;
+            font-size: 0.92rem;
+            letter-spacing: 1px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
         .badge {
-            font-size: 0.65rem;
-            padding: 2px 7px;
-            border-radius: 4px;
+            font-size: 0.62rem;
+            padding: 2px 6px;
+            border-radius: 3px;
             background: rgba(0, 229, 255, 0.12);
             color: var(--cyan);
             border: 1px solid var(--cyan);
             font-family: var(--font-mono);
-            font-weight: bold;
-        }
-
-        .badge-green {
-            background: rgba(6, 214, 160, 0.12);
-            color: var(--green);
-            border-color: var(--green);
-        }
-
-        .badge-purple {
-            background: rgba(157, 78, 221, 0.15);
-            color: #d8b4fe;
-            border-color: var(--purple);
-        }
-
-        .subtitle {
-            font-size: 0.72rem;
-            color: var(--text-muted);
+            font-weight: 600;
         }
 
         .header-controls {
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-
-        .btn-header {
-            background: var(--bg-subpanel);
-            color: var(--text-main);
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            padding: 5px 10px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
-        }
-
-        .btn-header:hover {
-            border-color: var(--cyan);
-            box-shadow: 0 0 8px var(--cyan-glow);
-        }
-
-        .btn-header.highlight {
-            background: linear-gradient(135deg, rgba(157, 78, 221, 0.25), rgba(0, 229, 255, 0.25));
-            border-color: var(--purple);
-            color: #fff;
+            gap: 8px;
         }
 
         .metrics-banner {
             display: flex;
-            gap: 16px;
+            gap: 14px;
             font-family: var(--font-mono);
-            font-size: 0.75rem;
+            font-size: 0.72rem;
         }
 
         .metric-item {
@@ -157,26 +168,27 @@
 
         .metric-lbl {
             color: var(--text-muted);
-            font-size: 0.62rem;
+            font-size: 0.58rem;
         }
 
-        /* Swarm Parameters Bar */
+        /* Swarm Control Bar */
         .swarm-control-bar {
             background: #0d121c;
             border-bottom: 1px solid var(--border);
-            padding: 6px 16px;
+            height: 34px;
+            padding: 0 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-family: var(--font-mono);
-            z-index: 9;
+            z-index: 15;
         }
 
         .param-group {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
         }
 
         .param-badge-box {
@@ -184,9 +196,10 @@
             align-items: center;
             gap: 6px;
             background: #141a27;
-            padding: 4px 10px;
-            border-radius: 5px;
+            padding: 2px 8px;
+            border-radius: 4px;
             border: 1px solid #232c3f;
+            height: 24px;
         }
 
         .param-badge-box label {
@@ -195,37 +208,69 @@
         }
 
         .param-input-num {
-            width: 44px;
+            width: 40px;
             background: #080a0f;
             border: 1px solid #2d3850;
             color: #fff;
-            padding: 2px 4px;
+            padding: 1px 3px;
             border-radius: 3px;
             font-family: var(--font-mono);
             text-align: center;
-            font-size: 0.78rem;
+            font-size: 0.74rem;
             outline: none;
+            height: 18px;
         }
 
-        .param-input-num:focus {
-            border-color: var(--cyan);
-        }
-
-        .sages-preview {
-            color: var(--gold);
-            font-size: 0.7rem;
-        }
-
-        /* Main Workspace Layout */
-        .workspace-grid {
-            display: grid;
-            grid-template-columns: 1fr 340px 400px;
-            height: calc(100vh - 90px);
+        /* Main Workspace: Activity Bar + Sidebar + Editor/Inspector + Right Panel */
+        .main-layout {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 76px);
             overflow: hidden;
         }
 
-        /* Panel 1: Notebook & Code Cells */
-        .notebook-panel {
+        /* Activity Bar (Leftmost 48px) */
+        .activity-bar {
+            width: 46px;
+            background: var(--bg-darkest);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 0;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .activity-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 6px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all 0.15s;
+        }
+
+        .activity-btn:hover {
+            color: var(--text-main);
+            background: var(--bg-subpanel);
+        }
+
+        .activity-btn.active {
+            color: var(--cyan);
+            background: rgba(0, 229, 255, 0.12);
+            border-left: 2px solid var(--cyan);
+        }
+
+        /* Sidebar (Files, Agents, Slabs) */
+        .sidebar {
+            width: 250px;
             background: var(--bg-panel);
             border-right: 1px solid var(--border);
             display: flex;
@@ -233,189 +278,262 @@
             overflow: hidden;
         }
 
-        .notebook-toolbar {
+        .sidebar-header {
             padding: 8px 12px;
-            background: rgba(17, 22, 34, 0.9);
+            background: var(--bg-subpanel);
             border-bottom: 1px solid var(--border);
+            font-size: 0.74rem;
+            font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 8px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .toolbar-group {
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        .project-selector-box {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(10, 13, 19, 0.5);
         }
 
-        .btn-tool {
-            background: #19202f;
+        select.ide-select {
+            width: 100%;
+            height: var(--btn-height);
+            background: var(--bg-subpanel);
             color: var(--text-main);
-            border: 1px solid #2a3449;
+            border: 1px solid var(--border);
             border-radius: 4px;
-            padding: 5px 9px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .btn-tool:hover {
-            border-color: var(--cyan);
-            color: var(--cyan);
-        }
-
-        .btn-tool-run-all {
-            background: linear-gradient(135deg, #0077b6, #0096c7);
-            border-color: var(--cyan);
-            color: #fff;
-            font-weight: bold;
-        }
-
-        .select-example {
-            background: #19202f;
-            color: var(--text-main);
-            border: 1px solid #2a3449;
-            border-radius: 4px;
-            padding: 4px 8px;
-            font-size: 0.75rem;
+            padding: 0 8px;
+            font-size: 0.72rem;
             outline: none;
+            font-family: var(--font-mono);
         }
 
-        .cells-container {
+        select.ide-select:focus {
+            border-color: var(--cyan);
+        }
+
+        .tree-container {
             flex: 1;
             overflow-y: auto;
-            padding: 14px;
+            padding: 6px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
-        }
-
-        /* Jupyter Cell Card */
-        .cell-card {
-            background: var(--bg-subpanel);
-            border: 1px solid var(--border);
-            border-radius: 7px;
-            overflow: hidden;
-            transition: border-color 0.2s;
-        }
-
-        .cell-card:focus-within, .cell-card.active {
-            border-color: var(--cyan);
-            box-shadow: 0 0 10px rgba(0, 229, 255, 0.15);
-        }
-
-        .cell-header {
-            background: rgba(22, 29, 44, 0.85);
-            border-bottom: 1px solid var(--border);
-            padding: 5px 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            gap: 2px;
             font-family: var(--font-mono);
-            font-size: 0.72rem;
+            font-size: 0.74rem;
         }
 
-        .cell-prompt-tag {
-            color: var(--cyan);
-            font-weight: bold;
-        }
-
-        .cell-actions {
+        .tree-item {
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
             display: flex;
             align-items: center;
             gap: 6px;
+            color: #c9d1d9;
+            user-select: none;
         }
 
-        .btn-cell-action {
-            background: transparent;
+        .tree-item:hover {
+            background: var(--bg-hover);
+            color: #fff;
+        }
+
+        .tree-item.active {
+            background: rgba(0, 229, 255, 0.15);
+            color: var(--cyan);
+            font-weight: 600;
+        }
+
+        .tree-folder {
+            font-weight: 600;
+            color: #79c0ff;
+        }
+
+        /* Center Column: Tabs + Editor + Bottom Live Inspector */
+        .center-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--bg-darkest);
+        }
+
+        /* Tabs Bar */
+        .tabs-bar {
+            height: 32px;
+            background: var(--bg-darkest);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+            padding: 0 4px;
+            gap: 2px;
+        }
+
+        .tab-item {
+            height: 28px;
+            padding: 0 10px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.72rem;
+            font-family: var(--font-mono);
             color: var(--text-muted);
-            border: none;
             cursor: pointer;
-            font-size: 0.75rem;
-            padding: 2px 5px;
-            border-radius: 3px;
+            white-space: nowrap;
         }
 
-        .btn-cell-action:hover {
-            color: var(--text-main);
-            background: rgba(255, 255, 255, 0.08);
+        .tab-item.active {
+            background: var(--bg-subpanel);
+            color: var(--cyan);
+            border-color: var(--border-glow);
+            border-top: 2px solid var(--cyan);
+            font-weight: 600;
         }
 
-        .cell-editor {
-            width: 100%;
-            background: #0a0d14;
+        .tab-close {
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .tab-close:hover {
+            color: var(--red);
+        }
+
+        /* Editor Toolbar */
+        .editor-toolbar {
+            height: 36px;
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border);
+            padding: 0 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .editor-container {
+            flex: 1;
+            position: relative;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .line-numbers {
+            width: 44px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            color: #484f58;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            line-height: 1.5;
+            padding: 8px 6px;
+            text-align: right;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        textarea.code-editor {
+            flex: 1;
+            background: var(--bg-darkest);
             color: #79c0ff;
             border: none;
-            padding: 10px 12px;
+            padding: 8px 12px;
             font-family: var(--font-mono);
             font-size: 0.82rem;
-            line-height: 1.45;
-            resize: vertical;
-            min-height: 90px;
+            line-height: 1.5;
+            resize: none;
             outline: none;
+            white-space: pre;
+            overflow: auto;
         }
 
-        .cell-output {
-            background: #040508;
-            border-top: 1px solid #1a2233;
+        /* Bottom Live Inspector ("Ver lo que estás produciendo") */
+        .bottom-inspector {
+            height: 220px;
+            background: var(--bg-panel);
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .inspector-nav {
+            height: 28px;
+            background: var(--bg-subpanel);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 12px;
+            font-size: 0.72rem;
+            font-family: var(--font-mono);
+        }
+
+        .inspector-tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px 6px;
+            font-weight: 500;
+        }
+
+        .inspector-tab-btn.active {
+            color: var(--cyan);
+            border-bottom: 2px solid var(--cyan);
+            font-weight: 600;
+        }
+
+        .inspector-content {
+            flex: 1;
+            overflow-y: auto;
             padding: 8px 12px;
             font-family: var(--font-mono);
             font-size: 0.74rem;
-            color: #7ee787;
-            max-height: 180px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            display: none;
         }
 
-        .cell-output.active {
-            display: block;
+        /* Tables & Microcode View */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.72rem;
         }
 
-        .cell-output-meta {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 6px;
-            padding-bottom: 4px;
-            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
-            font-size: 0.68rem;
+        .data-table th, .data-table td {
+            padding: 5px 8px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
         }
 
-        .meta-tag {
-            padding: 1px 6px;
-            border-radius: 3px;
-            background: rgba(6, 214, 160, 0.15);
-            color: var(--green);
+        .data-table th {
+            color: var(--text-muted);
+            background: rgba(0,0,0,0.2);
         }
 
-        /* Panel 2: 3D Stiefel Manifold & Silicon HUD */
-        .visual-panel {
-            background: radial-gradient(circle at center, #141b2a 0%, #090c12 100%);
-            border-right: 1px solid var(--border);
+        /* Right Column: 3D Stiefel + Multi-AI */
+        .right-column {
+            width: 360px;
+            background: var(--bg-panel);
+            border-left: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            position: relative;
             overflow: hidden;
         }
 
-        .visual-header {
-            padding: 8px 12px;
-            background: rgba(14, 18, 27, 0.8);
+        .visual-box {
+            height: 200px;
+            background: radial-gradient(circle at center, #141b2a 0%, #090c12 100%);
             border-bottom: 1px solid var(--border);
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .canvas-wrapper {
-            flex: 1;
             position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         canvas#manifoldCanvas {
@@ -424,333 +542,45 @@
             display: block;
         }
 
-        .overlay-hud {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            pointer-events: none;
-            font-family: var(--font-mono);
-            font-size: 0.72rem;
-            color: var(--cyan);
-            background: rgba(10, 13, 19, 0.8);
-            padding: 6px 10px;
-            border-radius: 5px;
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            backdrop-filter: blur(4px);
-        }
-
-        .ephemeral-collapse-hud {
-            position: absolute;
-            bottom: 12px;
-            left: 10px;
-            right: 10px;
-            background: rgba(14, 18, 27, 0.9);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 8px 12px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-family: var(--font-mono);
-            font-size: 0.72rem;
-        }
-
-        .pixel-sample {
-            width: 30px;
-            height: 30px;
-            border-radius: 4px;
-            border: 2px solid #fff;
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
-            background-color: #827D7C;
-        }
-
-        /* Panel 3: Multi-AI Pair Programmer */
-        .ai-panel {
-            background: var(--bg-panel);
+        .ai-chat-box {
+            flex: 1;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
-        .ai-header {
-            padding: 8px 12px;
-            background: rgba(17, 22, 34, 0.95);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .ai-header-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .ai-provider-select {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-        }
-
-        select.ai-select, input.ai-input {
-            width: 100%;
-            background: #111622;
-            color: var(--text-main);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            padding: 5px 8px;
-            font-size: 0.72rem;
-            outline: none;
-            font-family: var(--font-mono);
-        }
-
-        select.ai-select:focus, input.ai-input:focus {
-            border-color: var(--cyan);
-        }
-
-        .ai-quick-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            padding: 6px 12px;
-            background: rgba(12, 15, 23, 0.9);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .btn-quick-ai {
-            background: rgba(157, 78, 221, 0.12);
-            color: #d8b4fe;
-            border: 1px solid rgba(157, 78, 221, 0.3);
-            border-radius: 3px;
-            padding: 3px 6px;
-            font-size: 0.68rem;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .btn-quick-ai:hover {
-            background: rgba(157, 78, 221, 0.25);
-            border-color: var(--purple);
-            color: #fff;
-        }
-
-        .ai-chat-body {
+        .chat-history {
             flex: 1;
             overflow-y: auto;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .chat-msg {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            font-size: 0.78rem;
-            line-height: 1.45;
-        }
-
-        .chat-msg.user {
-            align-items: flex-end;
-        }
-
-        .chat-bubble {
-            max-width: 92%;
-            padding: 8px 11px;
-            border-radius: 6px;
-        }
-
-        .chat-msg.user .chat-bubble {
-            background: #1f3049;
-            color: var(--text-main);
-            border: 1px solid #2d4568;
-        }
-
-        .chat-msg.ai .chat-bubble {
-            background: #111827;
-            color: #e5e7eb;
-            border: 1px solid #1f293d;
-        }
-
-        .chat-sender-tag {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            font-family: var(--font-mono);
-        }
-
-        .code-snippet-box {
-            background: #090c12;
-            border: 1px solid #1e2638;
-            border-radius: 4px;
-            margin: 6px 0;
-            overflow: hidden;
-        }
-
-        .code-snippet-header {
-            background: #111622;
-            padding: 3px 8px;
-            font-size: 0.65rem;
-            color: var(--cyan);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #1e2638;
-        }
-
-        .btn-insert-code {
-            background: rgba(0, 229, 255, 0.15);
-            border: 1px solid var(--cyan);
-            color: var(--cyan);
-            border-radius: 3px;
-            padding: 2px 6px;
-            font-size: 0.62rem;
-            cursor: pointer;
-        }
-
-        .btn-insert-code:hover {
-            background: var(--cyan);
-            color: #000;
-        }
-
-        .code-snippet-body {
-            padding: 8px;
-            font-family: var(--font-mono);
-            font-size: 0.74rem;
-            color: #79c0ff;
-            white-space: pre-wrap;
-            overflow-x: auto;
-        }
-
-        .ai-chat-input-area {
             padding: 10px;
-            background: rgba(17, 22, 34, 0.95);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chat-input-wrap {
+            padding: 8px;
+            background: var(--bg-subpanel);
             border-top: 1px solid var(--border);
             display: flex;
-            flex-direction: column;
             gap: 6px;
         }
 
-        .chat-input-row {
-            display: flex;
-            gap: 6px;
-        }
-
-        textarea.ai-prompt-input {
+        textarea.ai-input-text {
             flex: 1;
-            background: #0d111a;
+            height: 40px;
+            background: var(--bg-darkest);
             color: var(--text-main);
             border: 1px solid var(--border);
-            border-radius: 5px;
-            padding: 7px 10px;
-            font-family: var(--font-sans);
-            font-size: 0.8rem;
+            border-radius: 4px;
+            padding: 6px 8px;
+            font-size: 0.76rem;
             resize: none;
-            height: 48px;
             outline: none;
         }
 
-        textarea.ai-prompt-input:focus {
+        textarea.ai-input-text:focus {
             border-color: var(--cyan);
-        }
-
-        .btn-ai-send {
-            background: linear-gradient(135deg, #7b2cbf, #9d4edd);
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            padding: 0 14px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-ai-send:hover {
-            box-shadow: 0 0 10px rgba(157, 78, 221, 0.5);
-            transform: translateY(-1px);
-        }
-
-        /* Modal Flotante de Registro de Fine-Tuning */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(5px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal-card {
-            background: #0f1420;
-            border: 1px solid var(--border-glow);
-            border-radius: 8px;
-            width: 480px;
-            max-width: 90vw;
-            box-shadow: 0 0 25px rgba(0, 229, 255, 0.2);
-            overflow: hidden;
-        }
-
-        .modal-header {
-            background: #161d2d;
-            padding: 10px 16px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .modal-body {
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            font-size: 0.78rem;
-        }
-
-        .modal-row {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .modal-row label {
-            color: var(--cyan);
-            font-weight: bold;
-            font-family: var(--font-mono);
-            font-size: 0.72rem;
-        }
-
-        .modal-footer {
-            background: #141a27;
-            padding: 10px 16px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-        }
-
-        /* Scrollbars */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #253046;
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #3b4d6e;
         }
     </style>
 </head>
@@ -761,27 +591,26 @@
         <div class="logo-group">
             <div class="logo-symbol">&Omega;</div>
             <div class="title-block">
-                <h1>EINSOF & MATHESIS AI-STUDIO <span class="badge">AIIDE v2.0</span></h1>
-                <div class="subtitle">Entorno Soberano de Cómputo Polidimensional con Parámetros Formales (agent=A, turing=T)</div>
+                <h1>EINSOF & MATHESIS AI-STUDIO <span class="badge">AIIDE v3.0</span></h1>
             </div>
         </div>
 
         <div class="header-controls">
-            <button class="btn-header highlight" id="btnOpenFtModal" title="Incorporar nuevo modelo o checkpoint Fine-Tuned">
-                <span>&#10010;</span> Nuevo Fine-Tuning
+            <button class="btn btn-primary" id="btnRunMain" title="Ejecutar archivo activo (Ctrl+Enter)">
+                <span>&#9658;</span> Ejecutar en Silicio
             </button>
-            <button class="btn-header" id="btnCopyPrompt" title="Copia el System Prompt oficial para pegar en ChatGPT / Claude">
-                <span>&#128203;</span> Copiar Prompt Maestro
+            <button class="btn" id="btnSaveFile" title="Guardar archivo actual (Ctrl+S)">
+                <span>&#128190;</span> Guardar
             </button>
-            <button class="btn-header" id="btnSaveNotebook">
-                <span>&#128190;</span> Guardar .mthnb
+            <button class="btn btn-accent" id="btnCopyPrompt" title="Copiar System Prompt Maestro">
+                <span>&#128203;</span> Prompt Maestro
             </button>
         </div>
 
         <div class="metrics-banner">
             <div class="metric-item">
                 <span class="metric-val" id="topHostCpu">AMD A4-6300</span>
-                <span class="metric-lbl">SILICIO JIT W&oplus;X (AVX+FMA3)</span>
+                <span class="metric-lbl">AVX+FMA3 W&oplus;X SILICIO</span>
             </div>
             <div class="metric-item">
                 <span class="metric-val" id="topAladinStatus" style="color:var(--green);">ALADIN (192.168.100.21)</span>
@@ -794,496 +623,501 @@
         </div>
     </header>
 
-    <!-- Barra de Parámetros Formales Obligatorios: agent=A, turing=T -->
+    <!-- Swarm Control Bar (Parámetros Formales agent=A, turing=T) -->
     <div class="swarm-control-bar">
         <div class="param-group">
             <div class="param-badge-box">
                 <label for="inputAgentA">agent = A:</label>
-                <input type="number" class="param-input-num" id="inputAgentA" min="1" max="8" value="2" title="Cantidad mínima de agentes/sabios vectoriales obligados a deliberar">
-                <span style="color:var(--text-muted); font-size:0.68rem;">Sabios</span>
+                <input type="number" class="param-input-num" id="inputAgentA" min="1" max="8" value="2">
+                <span style="color:var(--text-muted); font-size:0.65rem;">Sabios</span>
             </div>
 
             <div class="param-badge-box">
                 <label for="inputTuringT">turing = T:</label>
-                <input type="number" class="param-input-num" id="inputTuringT" min="1" max="100" value="10" title="Cantidad de vueltas o ciclos de convergencia de Turing/Lyapunov">
-                <span style="color:var(--text-muted); font-size:0.68rem;">Vueltas</span>
+                <input type="number" class="param-input-num" id="inputTuringT" min="1" max="100" value="10">
+                <span style="color:var(--text-muted); font-size:0.65rem;">Vueltas</span>
             </div>
 
-            <div class="sages-preview" id="sagesPreview">
-                SABIOS ACTIVOS: Euler + Gauss (Topología & Curvatura)
-            </div>
+            <span style="color:var(--gold); font-size:0.68rem;" id="sagesActiveDesc">
+                SABIOS: Euler + Gauss (Topología & Curvatura)
+            </span>
         </div>
 
         <div style="display:flex; align-items:center; gap:8px;">
-            <span class="badge badge-purple" id="badgeActiveModel">MODELO: deepseek-r1:7b</span>
-            <span class="badge badge-green" id="badgeSwarmStatus">SWARM ORQUESTADO</span>
+            <span class="badge" id="badgeCurrentProject">PROYECTO: MATHESIS</span>
+            <span class="badge" style="border-color:var(--green); color:var(--green);" id="badgeExitStatus">EXIT CODE 0</span>
         </div>
     </div>
 
-    <!-- Main Workspace Grid -->
-    <div class="workspace-grid">
+    <!-- Main Workspace -->
+    <div class="main-layout">
 
-        <!-- Panel 1: Notebook Cells -->
-        <div class="notebook-panel">
-            <div class="notebook-toolbar">
-                <div class="toolbar-group">
-                    <button class="btn-tool" id="btnAddCell" title="Agregar celda de código">+ Celda</button>
-                    <button class="btn-tool btn-tool-run-all" id="btnRunAll" title="Ejecutar todas las celdas">▶ Ejecutar Todo</button>
-                    <button class="btn-tool" id="btnClearOutputs">Limpiar</button>
-                </div>
+        <!-- Activity Bar (Iconos vertical) -->
+        <div class="activity-bar">
+            <button class="activity-btn active" id="actFiles" title="Explorador de Archivos y Proyectos">&#128193;</button>
+            <button class="activity-btn" id="actAgents" title="Agentes del Proyecto">&#129302;</button>
+            <button class="activity-btn" id="actSlabs" title="Inspector de Memoria Viva y Slabs">&#9889;</button>
+        </div>
 
-                <div class="toolbar-group">
-                    <span style="font-size:0.7rem; color:var(--text-muted);">Ejemplo:</span>
-                    <select class="select-example" id="selectExample">
-                        <option value="consenso_sabios">1. Consenso Dialéctico (A=2, T=10)</option>
-                        <option value="tribunal_pleno_7_sabios">2. Tribunal Pleno 7 Sabios (A=7, T=50)</option>
-                        <option value="facturacion_sin_tokens">3. Facturación Soberana (A=2, T=15)</option>
-                        <option value="lyapunov_dreaming">4. Sueño Geodésico (A=1, T=30)</option>
-                    </select>
-                </div>
+        <!-- Sidebar Izquierdo -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <span id="sidebarTitle">Explorador</span>
+                <button class="btn" style="height:20px; padding:0 6px; font-size:0.65rem;" id="btnNewFile">+ Archivo</button>
             </div>
 
-            <!-- Celdas del Notebook -->
-            <div class="cells-container" id="cellsContainer">
-                <!-- Se poblarán dinámicamente -->
+            <div class="project-selector-box">
+                <select class="ide-select" id="selectProject">
+                    <!-- Poblado dinámicamente -->
+                </select>
+            </div>
+
+            <div class="tree-container" id="treeContainer">
+                <!-- Árbol de archivos y subcarpetas -->
             </div>
         </div>
 
-        <!-- Panel 2: 3D Stiefel Manifold & Silicon HUD -->
-        <div class="visual-panel">
-            <div class="visual-header">
-                <span>VARIEDAD DE STIEFEL S^{2047} (SO(D) LIE)</span>
-                <span class="badge badge-green" id="hudBadge">EXIT CODE 0</span>
+        <!-- Columna Central: Pestañas + Editor + Inspector en Vivo -->
+        <div class="center-column">
+            
+            <!-- Barra de Pestañas Multi-Archivo -->
+            <div class="tabs-bar" id="tabsBar">
+                <!-- Pestañas abiertas -->
             </div>
 
-            <div class="canvas-wrapper">
-                <div class="overlay-hud">
-                    <div>ESPACIO: Hiperesfera S^{D-1} (D=2048)</div>
-                    <div id="hudAtractor">ATRACTORES: <span id="hudSagesCount">2 Sabios</span></div>
-                    <div id="hudDeriva">DERIVA NEUMAIER: 0.00e+00</div>
-                    <div id="hudVueltas">VUELTAS TURING: T=10</div>
+            <!-- Toolbar de Edición -->
+            <div class="editor-toolbar">
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <span style="font-size:0.72rem; color:var(--cyan); font-family:var(--font-mono);" id="currentFilePath">sin_titulo.mth</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <button class="btn" id="btnQuickOptimize" title="Optimizar código con IA">&#9889; Optimizar AVX</button>
+                    <button class="btn" id="btnFormatCode" title="Formatear instrucciones">&#9776; Formato</button>
+                </div>
+            </div>
+
+            <!-- Editor de Código -->
+            <div class="editor-container">
+                <div class="line-numbers" id="lineNumbers">1</div>
+                <textarea class="code-editor" id="codeEditor" spellcheck="false"></textarea>
+            </div>
+
+            <!-- Inspector de Producción en Vivo ("Ver lo que estás produciendo") -->
+            <div class="bottom-inspector">
+                <div class="inspector-nav">
+                    <button class="inspector-tab-btn active" data-tab="tab-silicon">Terminal de Silicio</button>
+                    <button class="inspector-tab-btn" data-tab="tab-microcode">Microcódigo 64B Emitido</button>
+                    <button class="inspector-tab-btn" data-tab="tab-slabs">Slabs de Memoria Viva</button>
+                    <button class="inspector-tab-btn" data-tab="tab-mmio">Colapso GOP MMIO</button>
                 </div>
 
-                <canvas id="manifoldCanvas"></canvas>
+                <div class="inspector-content" id="inspectorContent">
+                    <!-- Tab 1: Terminal Silicio por Defecto -->
+                    <div id="viewSilicon">
+                        <div style="color:var(--green); margin-bottom:4px;" id="termSummary">[SISTEMA] Silicio listo. Esperando ejecución de archivo...</div>
+                        <pre id="termRawOutput" style="color:#7ee787; font-size:0.72rem; line-height:1.4;">--</pre>
+                    </div>
 
-                <div class="ephemeral-collapse-hud">
-                    <div class="pixel-sample" id="pixelSample"></div>
-                    <div>
-                        <div style="font-weight: bold; color: var(--text-main);">Colapso Efímero MMIO a 16.6 ms</div>
-                        <div style="color: var(--text-muted); font-size: 0.68rem;">
-                            Pixel ARGB: <span id="pixelHex" style="color:var(--cyan); font-weight:bold;">0xFF827D7C</span> | Destrucción en memoria viva O(1)
+                    <!-- Tab 2: Microcódigo 64B Emitido -->
+                    <div id="viewMicrocode" style="display:none;">
+                        <table class="data-table" id="tableMicrocode">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Instrucción ISA</th>
+                                    <th>Opcode</th>
+                                    <th>Slab Destino</th>
+                                    <th>Dim D</th>
+                                    <th>Sabios (Mask)</th>
+                                    <th>Volcado 64B Silicio (Hexadecimal)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyMicrocode">
+                                <tr><td colspan="7" style="color:var(--text-muted);">Ejecuta el código para inspeccionar el microcódigo emitido.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Tab 3: Slabs de Memoria Viva -->
+                    <div id="viewSlabs" style="display:none;">
+                        <table class="data-table" id="tableSlabs">
+                            <thead>
+                                <tr>
+                                    <th>Dirección Slab</th>
+                                    <th>Dimensión D</th>
+                                    <th>Última Operación</th>
+                                    <th>Norma Neumaier ||X||</th>
+                                    <th>Estado de Variedad Stiefel</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodySlabs">
+                                <tr><td colspan="5" style="color:var(--text-muted);">Ningún slab activo en memoria todavía.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Tab 4: Colapso GOP MMIO -->
+                    <div id="viewMmio" style="display:none;">
+                        <div style="display:flex; align-items:center; gap:16px;">
+                            <div id="mmioColorBox" style="width:50px; height:50px; border-radius:6px; border:2px solid #fff; background:#827D7C;"></div>
+                            <div>
+                                <div style="font-weight:bold; font-size:0.85rem;" id="mmioPixelHex">0xFF827D7C</div>
+                                <div style="color:var(--text-muted); font-size:0.7rem; margin-top:2px;">
+                                    Colapso efímero de la variedad continua S^{D-1} a memoria de video (ARGB 32-bit).<br>
+                                    Destruido en memoria viva O(1) a 16.6 ms.
+                                </div>
+                            </div>
                         </div>
                     </div>
+
                 </div>
             </div>
+
         </div>
 
-        <!-- Panel 3: Multi-AI Pair Programmer -->
-        <div class="ai-panel">
-            <div class="ai-header">
-                <div class="ai-header-top">
-                    <span style="font-size:0.8rem; font-weight:bold; color:var(--purple);">&#9733; ASISTENTE MULTI-IA EN EINSOF</span>
-                    <span style="font-size:0.65rem; color:var(--text-muted);" id="ftCountLabel">5 Fine-Tunings</span>
+        <!-- Columna Derecha: Variedad 3D + Asistente IA -->
+        <div class="right-column">
+            
+            <div class="visual-box">
+                <div style="position:absolute; top:6px; left:8px; font-size:0.65rem; color:var(--cyan); font-family:var(--font-mono); pointer-events:none; z-index:2;">
+                    VARIEDAD STIEFEL S^{2047} | SO(D) LIE
                 </div>
+                <canvas id="manifoldCanvas"></canvas>
+            </div>
 
-                <div class="ai-provider-select">
-                    <select class="ai-select" id="aiProvider">
-                        <option value="ollama_aladin" selected>Ollama ALADIN (192.168.100.21)</option>
-                        <option value="einsof_finetuned">Einsof Fine-Tuned Models</option>
-                        <option value="ollama_local">Ollama Local (127.0.0.1)</option>
-                        <option value="openai">OpenAI (GPT-4o / o3-mini)</option>
-                        <option value="anthropic">Anthropic (Claude 3.5)</option>
-                    </select>
-
-                    <select class="ai-select" id="aiModel">
-                        <!-- Poblado dinámicamente -->
+            <div class="ai-chat-box">
+                <div style="padding:6px 10px; background:var(--bg-subpanel); border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.74rem; font-weight:600; color:var(--purple);">&#9733; ASISTENTE DEL PROYECTO</span>
+                    <select class="ide-select" style="width:140px; height:22px; font-size:0.65rem;" id="selectAiModel">
+                        <!-- Modelos -->
                     </select>
                 </div>
 
-                <div id="apiKeyRow" style="display:none; margin-top:2px;">
-                    <input type="password" class="ai-input" id="aiApiKey" placeholder="Pegar API Key aquí (se guarda solo en navegador)">
-                </div>
-            </div>
-
-            <div class="ai-quick-actions">
-                <button class="btn-quick-ai" id="btnAiExplain">⚡ Explicar celda</button>
-                <button class="btn-quick-ai" id="btnAiOptimize">⚡ Optimizar AVX</button>
-                <button class="btn-quick-ai" id="btnAiStiefel">⚡ Teorema Stiefel</button>
-                <button class="btn-quick-ai" id="btnAiTribunal">⚡ Orquestar Sabios (A=7)</button>
-            </div>
-
-            <div class="ai-chat-body" id="aiChatBody">
-                <div class="chat-msg ai">
-                    <span class="chat-sender-tag">SISTEMA SOBERANO DE IA</span>
-                    <div class="chat-bubble">
-                        ¡Bienvenido al <b>AI-Studio Soberano v2.0</b>!
-                        <br><br>
-                        Parámetros activos de enjambre:
-                        <br>• <b>agent = A:</b> Mínimo de agentes vectoriales obligados.
-                        <br>• <b>turing = T:</b> Vueltas o ciclos de convergencia de Turing/Lyapunov.
-                        <br><br>
-                        Puedes incorporar nuevos modelos Fine-Tuned con el botón <b>"+ Nuevo Fine-Tuning"</b> en cualquier momento.
+                <div class="chat-history" id="chatHistory">
+                    <div style="font-size:0.74rem; line-height:1.45; background:#111622; padding:8px; border-radius:4px; border:1px solid var(--border);">
+                        ¡Hola! Soy el <b>Copiloto Soberano</b> de este proyecto. Puedo inspeccionar tus archivos, optimizar código a microcódigo AVX+FMA3 y orquestar el Tribunal de Sabios con <b>agent=A</b> y <b>turing=T</b>.
                     </div>
                 </div>
-            </div>
 
-            <div class="ai-chat-input-area">
-                <div class="chat-input-row">
-                    <textarea class="ai-prompt-input" id="aiPromptInput" placeholder="Escribe tu consulta o pide un algoritmo de silicio... (Enter para enviar)"></textarea>
-                    <button class="btn-ai-send" id="btnAiSend">Enviar</button>
+                <div class="chat-input-wrap">
+                    <textarea class="ai-input-text" id="aiInputPrompt" placeholder="Pregunta sobre este archivo o pide optimizar..."></textarea>
+                    <button class="btn btn-accent" id="btnSendAi" style="height:40px;">Enviar</button>
                 </div>
             </div>
+
         </div>
 
     </div>
 
-    <!-- Modal para Incorporar Nuevo Modelo Fine-Tuned -->
-    <div class="modal-overlay" id="modalFtOverlay">
-        <div class="modal-card">
-            <div class="modal-header">
-                <span style="font-weight:bold; color:var(--cyan); font-size:0.85rem;">Incorporar Nuevo Modelo Fine-Tuned a Einsof</span>
-                <button class="btn-cell-action" id="btnCloseFtModal" style="font-size:1rem;">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="modal-row">
-                    <label>Nombre del Modelo:</label>
-                    <input type="text" class="ai-input" id="ftName" placeholder="Ej: Qwen 2.5 Coder Stiefel Finetuned">
-                </div>
-                <div class="modal-row">
-                    <label>ID de Checkpoint / Modelo:</label>
-                    <input type="text" class="ai-input" id="ftId" placeholder="Ej: qwen3.8-27b-ft-20261107 o nombre en Ollama">
-                </div>
-                <div class="modal-row" style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                    <div>
-                        <label>Dimensión Geométrica (D):</label>
-                        <input type="number" class="ai-input" id="ftDimD" value="2048">
-                    </div>
-                    <div>
-                        <label>Plataforma:</label>
-                        <select class="ai-select" id="ftPlatform">
-                            <option value="Alibaba Bailian Cloud GPU">Alibaba Bailian Cloud</option>
-                            <option value="Google Colab A100/T4">Google Colab GPU</option>
-                            <option value="Debian 13 ALADIN Ollama">Debian 13 ALADIN Ollama</option>
-                            <option value="PmtpShmBus Shared Memory">PMTP ShmBus Host</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-row">
-                    <label>Descripción / Especialidad:</label>
-                    <input type="text" class="ai-input" id="ftDesc" placeholder="Ej: Fine-tuning LoRA en variedad S^{2047} para prueba de teoremas">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-tool" id="btnCancelFtModal">Cancelar</button>
-                <button class="btn-tool btn-tool-run-all" id="btnSaveFtModel">Registrar en Einsof</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Script de Interactividad, Simulación 3D y Conectividad con aiide_server v2.0 -->
+    <!-- Script de Interactividad y Conectividad con aiide_server v3.0 -->
     <script>
         const API_BASE = window.location.origin;
 
-        // Estado Global
-        let cells = [];
-        let executionCounter = 1;
+        // Estado del IDE
+        let projects = [];
+        let currentProject = null;
+        let openTabs = [];
+        let activeTabPath = null;
+        let projectAgents = [];
         let sagesCatalog = [];
-        let finetunedModels = [];
-        let aladinModels = [];
 
-        // Elementos UI
-        const cellsContainer = document.getElementById('cellsContainer');
-        const btnAddCell = document.getElementById('btnAddCell');
-        const btnRunAll = document.getElementById('btnRunAll');
-        const btnClearOutputs = document.getElementById('btnClearOutputs');
-        const selectExample = document.getElementById('selectExample');
+        // Elementos DOM
+        const selectProject = document.getElementById('selectProject');
+        const treeContainer = document.getElementById('treeContainer');
+        const tabsBar = document.getElementById('tabsBar');
+        const codeEditor = document.getElementById('codeEditor');
+        const lineNumbers = document.getElementById('lineNumbers');
+        const currentFilePath = document.getElementById('currentFilePath');
+        const badgeCurrentProject = document.getElementById('badgeCurrentProject');
+        const badgeExitStatus = document.getElementById('badgeExitStatus');
+
+        // Botones Header
+        const btnRunMain = document.getElementById('btnRunMain');
+        const btnSaveFile = document.getElementById('btnSaveFile');
+        const btnNewFile = document.getElementById('btnNewFile');
         const btnCopyPrompt = document.getElementById('btnCopyPrompt');
-        const btnSaveNotebook = document.getElementById('btnSaveNotebook');
+        const btnQuickOptimize = document.getElementById('btnQuickOptimize');
+        const btnFormatCode = document.getElementById('btnFormatCode');
 
-        // Elementos Parámetros Swarm
+        // Parámetros Swarm
         const inputAgentA = document.getElementById('inputAgentA');
         const inputTuringT = document.getElementById('inputTuringT');
-        const sagesPreview = document.getElementById('sagesPreview');
-        const badgeActiveModel = document.getElementById('badgeActiveModel');
+        const sagesActiveDesc = document.getElementById('sagesActiveDesc');
 
-        // Elementos AI
-        const aiProvider = document.getElementById('aiProvider');
-        const aiModel = document.getElementById('aiModel');
-        const apiKeyRow = document.getElementById('apiKeyRow');
-        const aiApiKey = document.getElementById('aiApiKey');
-        const aiChatBody = document.getElementById('aiChatBody');
-        const aiPromptInput = document.getElementById('aiPromptInput');
-        const btnAiSend = document.getElementById('btnAiSend');
-        const ftCountLabel = document.getElementById('ftCountLabel');
+        // Inspector en Vivo
+        const termSummary = document.getElementById('termSummary');
+        const termRawOutput = document.getElementById('termRawOutput');
+        const tbodyMicrocode = document.getElementById('tbodyMicrocode');
+        const tbodySlabs = document.getElementById('tbodySlabs');
+        const mmioColorBox = document.getElementById('mmioColorBox');
+        const mmioPixelHex = document.getElementById('mmioPixelHex');
 
-        // Modal Fine-Tuning
-        const modalFtOverlay = document.getElementById('modalFtOverlay');
-        const btnOpenFtModal = document.getElementById('btnOpenFtModal');
-        const btnCloseFtModal = document.getElementById('btnCloseFtModal');
-        const btnCancelFtModal = document.getElementById('btnCancelFtModal');
-        const btnSaveFtModel = document.getElementById('btnSaveFtModel');
-        const ftName = document.getElementById('ftName');
-        const ftId = document.getElementById('ftId');
-        const ftDimD = document.getElementById('ftDimD');
-        const ftPlatform = document.getElementById('ftPlatform');
-        const ftDesc = document.getElementById('ftDesc');
-
-        // Elementos HUD
-        const pixelSample = document.getElementById('pixelSample');
-        const pixelHex = document.getElementById('pixelHex');
-        const topNeumaier = document.getElementById('topNeumaier');
-        const hudDeriva = document.getElementById('hudDeriva');
-        const hudSagesCount = document.getElementById('hudSagesCount');
-        const hudVueltas = document.getElementById('hudVueltas');
-
-        // Inicialización de API Keys desde localStorage
-        if (localStorage.getItem('aiide_openai_key')) {
-            aiApiKey.value = localStorage.getItem('aiide_openai_key');
-        }
+        // AI Chat
+        const selectAiModel = document.getElementById('selectAiModel');
+        const chatHistory = document.getElementById('chatHistory');
+        const aiInputPrompt = document.getElementById('aiInputPrompt');
+        const btnSendAi = document.getElementById('btnSendAi');
 
         // -------------------------------------------------------------
-        // Actualización de Sabios y Parámetros Swarm
+        // Inicialización y Carga de Proyectos
         // -------------------------------------------------------------
-        function updateSagesPreview() {
-            const a = parseInt(inputAgentA.value) || 2;
-            const t = parseInt(inputTuringT.value) || 10;
-            
-            hudVueltas.textContent = `VUELTAS TURING: T=${t}`;
-            hudSagesCount.textContent = `${a} Sabios`;
-
-            if (sagesCatalog.length > 0) {
-                const active = sagesCatalog.slice(0, a).map(s => s.name);
-                sagesPreview.textContent = `SABIOS ACTIVOS (${a}): ` + active.join(' + ');
-            } else {
-                sagesPreview.textContent = `agent=A=${a} Sabios | turing=T=${t} Vueltas`;
-            }
-        }
-
-        inputAgentA.addEventListener('input', updateSagesPreview);
-        inputTuringT.addEventListener('input', updateSagesPreview);
-
-        // -------------------------------------------------------------
-        // Catálogo de Modelos Dinámicos
-        // -------------------------------------------------------------
-        async function fetchModels() {
+        async function initIDE() {
             try {
-                const res = await fetch(`${API_BASE}/api/models`);
-                const data = await res.json();
-                aladinModels = data.aladin_native || [];
-                finetunedModels = data.finetuned_models || [];
-                sagesCatalog = data.sages || [];
+                // 1. Cargar proyectos
+                const resProj = await fetch(`${API_BASE}/api/projects`);
+                const dataProj = await resProj.json();
+                projects = dataProj.projects || [];
 
-                ftCountLabel.textContent = `${finetunedModels.length} Fine-Tunings`;
-                updateSagesPreview();
-                populateModelDropdown();
-            } catch (e) {
-                console.error("Error al cargar modelos:", e);
-            }
-        }
+                selectProject.innerHTML = '';
+                projects.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = p.name;
+                    selectProject.appendChild(opt);
+                });
 
-        function populateModelDropdown() {
-            const p = aiProvider.value;
-            aiModel.innerHTML = '';
+                // 2. Cargar modelos y sabios
+                const resMod = await fetch(`${API_BASE}/api/models`);
+                const dataMod = await resMod.json();
+                sagesCatalog = dataMod.sages || [];
 
-            if (p === 'ollama_aladin') {
-                apiKeyRow.style.display = 'none';
-                if (aladinModels.length > 0) {
-                    aladinModels.forEach(m => {
+                selectAiModel.innerHTML = '';
+                if (dataMod.aladin_native) {
+                    dataMod.aladin_native.forEach(m => {
                         const opt = document.createElement('option');
                         opt.value = m.id;
                         opt.textContent = m.name;
-                        aiModel.appendChild(opt);
+                        selectAiModel.appendChild(opt);
                     });
-                } else {
-                    aiModel.innerHTML = '<option value="deepseek-r1:7b">deepseek-r1:7b (Aladín)</option><option value="qwen2.5-coder:7b">qwen2.5-coder:7b</option>';
                 }
-            } else if (p === 'einsof_finetuned') {
-                apiKeyRow.style.display = 'none';
-                finetunedModels.forEach(m => {
-                    const opt = document.createElement('option');
-                    opt.value = m.id;
-                    opt.textContent = `${m.name} (D=${m.dim_d})`;
-                    aiModel.appendChild(opt);
-                });
-            } else if (p === 'openai') {
-                apiKeyRow.style.display = 'block';
-                aiApiKey.placeholder = 'sk-... (API Key OpenAI)';
-                aiModel.innerHTML = '<option value="gpt-4o">gpt-4o</option><option value="o3-mini">o3-mini</option><option value="gpt-4o-mini">gpt-4o-mini</option>';
-            } else if (p === 'anthropic') {
-                apiKeyRow.style.display = 'block';
-                aiApiKey.placeholder = 'sk-ant-... (API Key Anthropic)';
-                aiModel.innerHTML = '<option value="claude-3-5-sonnet-20241022">claude-3-5-sonnet</option><option value="claude-3-5-haiku-20241022">claude-3-5-haiku</option>';
-            } else if (p === 'ollama_local') {
-                apiKeyRow.style.display = 'none';
-                aiModel.innerHTML = '<option value="deepseek-r1:latest">deepseek-r1:latest</option><option value="qwen2.5-coder:latest">qwen2.5-coder:latest</option>';
-            }
+                if (dataMod.finetuned_models) {
+                    dataMod.finetuned_models.forEach(m => {
+                        const opt = document.createElement('option');
+                        opt.value = m.id;
+                        opt.textContent = `[FT] ${m.name}`;
+                        selectAiModel.appendChild(opt);
+                    });
+                }
 
-            badgeActiveModel.textContent = `MODELO: ${aiModel.value || 'auto'}`;
+                // 3. Seleccionar primer proyecto
+                if (projects.length > 0) {
+                    switchProject(projects[0].id);
+                }
+
+                updateSagesDesc();
+            } catch (err) {
+                console.error("Error al inicializar IDE:", err);
+            }
         }
 
-        aiProvider.addEventListener('change', populateModelDropdown);
-        aiModel.addEventListener('change', () => {
-            badgeActiveModel.textContent = `MODELO: ${aiModel.value}`;
-        });
+        async function switchProject(projId) {
+            currentProject = projects.find(p => p.id === projId) || projects[0];
+            badgeCurrentProject.textContent = `PROYECTO: ${currentProject.id.toUpperCase()}`;
+            
+            if (currentProject.default_agent_a) inputAgentA.value = currentProject.default_agent_a;
+            if (currentProject.default_turing_t) inputTuringT.value = currentProject.default_turing_t;
+            updateSagesDesc();
 
-        aiApiKey.addEventListener('change', () => {
-            const p = aiProvider.value;
-            if (p === 'openai') localStorage.setItem('aiide_openai_key', aiApiKey.value);
-            if (p === 'anthropic') localStorage.setItem('aiide_anthropic_key', aiApiKey.value);
+            // Cargar árbol de archivos
+            await loadProjectTree(currentProject.id);
+
+            // Cargar agentes del proyecto
+            await loadProjectAgents(currentProject.id);
+        }
+
+        selectProject.addEventListener('change', (e) => {
+            switchProject(e.target.value);
         });
 
         // -------------------------------------------------------------
-        // Modal de Registro de Fine-Tuning
+        // Árbol de Archivos y Subcarpetas
         // -------------------------------------------------------------
-        btnOpenFtModal.addEventListener('click', () => {
-            modalFtOverlay.className = 'modal-overlay active';
-        });
-        function closeFtModal() {
-            modalFtOverlay.className = 'modal-overlay';
-        }
-        btnCloseFtModal.addEventListener('click', closeFtModal);
-        btnCancelFtModal.addEventListener('click', closeFtModal);
-
-        btnSaveFtModel.addEventListener('click', async () => {
-            const name = ftName.value.trim();
-            const id = ftId.value.trim();
-            const dim = parseInt(ftDimD.value) || 2048;
-            const platform = ftPlatform.value;
-            const desc = ftDesc.value.trim();
-
-            if (!id) {
-                alert("El ID o nombre del checkpoint es obligatorio.");
-                return;
-            }
-
+        async function loadProjectTree(projId) {
+            treeContainer.innerHTML = '<span style="color:var(--text-muted); font-size:0.7rem;">Cargando archivos...</span>';
             try {
-                const res = await fetch(`${API_BASE}/api/models/register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        id: id,
-                        name: name || id,
-                        dim_d: dim,
-                        platform: platform,
-                        description: desc
-                    })
-                });
-
+                const res = await fetch(`${API_BASE}/api/files?project=${projId}`);
                 const data = await res.json();
-                if (data.success) {
-                    alert(`Modelo '${data.registered_model.name}' registrado exitosamente en Einsof y PostgreSQL active_vault.`);
-                    closeFtModal();
-                    await fetchModels();
-                    aiProvider.value = 'einsof_finetuned';
-                    populateModelDropdown();
-                    aiModel.value = data.registered_model.id;
-                    badgeActiveModel.textContent = `MODELO: ${data.registered_model.name}`;
-                } else {
-                    alert("Error: " + (data.error || "Fallo al registrar"));
+                treeContainer.innerHTML = '';
+                renderTree(data.tree, treeContainer);
+
+                // Si no hay archivo abierto, abrir el primero relevante
+                if (openTabs.length === 0 && data.tree.length > 0) {
+                    const firstFile = findFirstFile(data.tree);
+                    if (firstFile) openFile(firstFile.path, firstFile.name);
                 }
             } catch (err) {
-                alert("Error de conexión: " + err.message);
+                treeContainer.innerHTML = `<span style="color:var(--red);">Error: ${err.message}</span>`;
+            }
+        }
+
+        function findFirstFile(nodes) {
+            for (const n of nodes) {
+                if (n.type === 'file' && (n.ext === '.mth' || n.ext === '.ein')) return n;
+                if (n.type === 'directory' && n.children) {
+                    const found = findFirstFile(n.children);
+                    if (found) return found;
+                }
+            }
+            return nodes.find(n => n.type === 'file');
+        }
+
+        function renderTree(nodes, container, depth = 0) {
+            nodes.forEach(node => {
+                const item = document.createElement('div');
+                item.className = 'tree-item';
+                item.style.paddingLeft = `${depth * 12 + 6}px`;
+
+                if (node.type === 'directory') {
+                    item.innerHTML = `<span>&#128193;</span> <span class="tree-folder">${node.name}</span>`;
+                    container.appendChild(item);
+                    if (node.children && node.children.length > 0) {
+                        renderTree(node.children, container, depth + 1);
+                    }
+                } else {
+                    let icon = '&#128196;';
+                    if (node.ext === '.mth') icon = '&#9889;';
+                    if (node.ext === '.ein') icon = '&Omega;';
+                    if (node.ext === '.py') icon = '&#128013;';
+                    if (node.ext === '.c' || node.ext === '.h') icon = '&#9881;';
+
+                    item.innerHTML = `<span>${icon}</span> <span>${node.name}</span>`;
+                    item.addEventListener('click', () => openFile(node.path, node.name));
+                    container.appendChild(item);
+                }
+            });
+        }
+
+        // -------------------------------------------------------------
+        // Sistema de Pestañas (Multi-Tab) y Editor
+        // -------------------------------------------------------------
+        async function openFile(filePath, fileName) {
+            let tab = openTabs.find(t => t.path === filePath);
+            if (!tab) {
+                try {
+                    const res = await fetch(`${API_BASE}/api/file/read?path=${encodeURIComponent(filePath)}`);
+                    const data = await res.json();
+                    tab = { path: filePath, name: fileName, content: data.content || '' };
+                    openTabs.push(tab);
+                } catch (err) {
+                    alert("Error al abrir archivo: " + err.message);
+                    return;
+                }
+            }
+
+            activeTabPath = filePath;
+            codeEditor.value = tab.content;
+            currentFilePath.textContent = tab.path;
+            updateLineNumbers();
+            renderTabs();
+        }
+
+        function renderTabs() {
+            tabsBar.innerHTML = '';
+            openTabs.forEach(t => {
+                const tabEl = document.createElement('div');
+                tabEl.className = `tab-item ${t.path === activeTabPath ? 'active' : ''}`;
+                tabEl.innerHTML = `
+                    <span>${t.name}</span>
+                    <span class="tab-close" onclick="closeTab(event, '${t.path}')">&times;</span>
+                `;
+                tabEl.addEventListener('click', () => openFile(t.path, t.name));
+                tabsBar.appendChild(tabEl);
+            });
+        }
+
+        window.closeTab = function(e, path) {
+            e.stopPropagation();
+            openTabs = openTabs.filter(t => t.path !== path);
+            if (activeTabPath === path) {
+                if (openTabs.length > 0) {
+                    const next = openTabs[openTabs.length - 1];
+                    openFile(next.path, next.name);
+                } else {
+                    activeTabPath = null;
+                    codeEditor.value = '';
+                    currentFilePath.textContent = 'sin_titulo.mth';
+                    renderTabs();
+                }
+            } else {
+                renderTabs();
+            }
+        };
+
+        function updateLineNumbers() {
+            const lines = codeEditor.value.split('\n').length;
+            let nums = '';
+            for (let i = 1; i <= lines; i++) {
+                nums += i + '\n';
+            }
+            lineNumbers.textContent = nums;
+        }
+
+        codeEditor.addEventListener('input', () => {
+            updateLineNumbers();
+            const tab = openTabs.find(t => t.path === activeTabPath);
+            if (tab) tab.content = codeEditor.value;
+        });
+
+        // Atajos de teclado: Ctrl+Enter (ejecutar), Ctrl+S (guardar)
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                executeActiveCode();
+            } else if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                saveCurrentFile();
             }
         });
 
-        // -------------------------------------------------------------
-        // Gestión de Celdas estilo Jupyter con A y T
-        // -------------------------------------------------------------
-        function addCell(code = "", runImmediately = false, a = null, t = null) {
-            const cellId = cells.length;
-            const cellData = {
-                id: cellId,
-                code: code,
-                output: null,
-                executionCount: null,
-                agent_a: a !== null ? a : (parseInt(inputAgentA.value) || 2),
-                turing_t: t !== null ? t : (parseInt(inputTuringT.value) || 10)
-            };
-            cells.push(cellData);
-            renderCell(cellData);
-            if (runImmediately) {
-                executeCell(cellId);
+        async function saveCurrentFile() {
+            if (!activeTabPath) return;
+            try {
+                const res = await fetch(`${API_BASE}/api/file/write`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path: activeTabPath, content: codeEditor.value })
+                });
+                const d = await res.json();
+                if (d.success) {
+                    badgeExitStatus.textContent = "GUARDADO OK";
+                    badgeExitStatus.style.color = "var(--green)";
+                    setTimeout(() => { badgeExitStatus.textContent = "EXIT CODE 0"; }, 2000);
+                }
+            } catch (err) {
+                alert("Error al guardar: " + err.message);
             }
         }
 
-        function renderCell(cellData) {
-            const card = document.createElement('div');
-            card.className = 'cell-card';
-            card.id = `cell-${cellData.id}`;
+        btnSaveFile.addEventListener('click', saveCurrentFile);
 
-            const header = document.createElement('div');
-            header.className = 'cell-header';
-            header.innerHTML = `
-                <div>
-                    <span class="cell-prompt-tag" id="tag-${cellData.id}">In [${cellData.executionCount !== null ? cellData.executionCount : ' '}]:</span>
-                    <span style="color:var(--text-muted); margin-left:8px;">Celda ${cellData.id + 1} (.mth)</span>
-                    <span style="color:var(--gold); margin-left:8px; font-size:0.65rem;" id="cell-params-${cellData.id}">[agent=A:${cellData.agent_a} | turing=T:${cellData.turing_t}]</span>
-                </div>
-                <div class="cell-actions">
-                    <button class="btn-cell-action" onclick="executeCell(${cellData.id})" title="Ejecutar (Shift+Enter)">&#9658; Correr</button>
-                    <button class="btn-cell-action" onclick="askAiAboutCell(${cellData.id})" title="Consultar con la IA">&#9733; IA</button>
-                    <button class="btn-cell-action" onclick="deleteCell(${cellData.id})" title="Eliminar celda">&#128465;</button>
-                </div>
-            `;
-
-            const editor = document.createElement('textarea');
-            editor.className = 'cell-editor';
-            editor.id = `editor-${cellData.id}`;
-            editor.spellcheck = false;
-            editor.value = cellData.code;
-
-            editor.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && e.shiftKey) {
-                    e.preventDefault();
-                    executeCell(cellData.id);
-                }
+        btnNewFile.addEventListener('click', async () => {
+            const name = prompt("Nombre del nuevo archivo (con extensión .mth o .ein):", "nuevo_programa.mth");
+            if (!name) return;
+            const fullPath = `${currentProject.root}\\${name}`;
+            await fetch(`${API_BASE}/api/file/write`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ path: fullPath, content: "# Nuevo Archivo MATHESIS\nROT_LIE_SO|DEST=0x1000|D=2048|SAGES=EULER\nHALT_EQUILIBRIUM|DEST=0x1000|D=2048" })
             });
+            await loadProjectTree(currentProject.id);
+            openFile(fullPath, name);
+        });
 
-            editor.addEventListener('input', () => {
-                editor.style.height = 'auto';
-                editor.style.height = editor.scrollHeight + 'px';
-                cellData.code = editor.value;
-            });
+        // -------------------------------------------------------------
+        // Ejecución en Silicio & Live Inspector ("Ver lo que estás produciendo")
+        // -------------------------------------------------------------
+        async function executeActiveCode() {
+            const code = codeEditor.value.trim();
+            if (!code) return;
 
-            const output = document.createElement('div');
-            output.className = 'cell-output';
-            output.id = `output-${cellData.id}`;
-
-            card.appendChild(header);
-            card.appendChild(editor);
-            card.appendChild(output);
-            cellsContainer.appendChild(card);
-
-            setTimeout(() => {
-                editor.style.height = editor.scrollHeight + 'px';
-            }, 10);
-        }
-
-        function deleteCell(id) {
-            const card = document.getElementById(`cell-${id}`);
-            if (card) card.remove();
-            cells = cells.filter(c => c.id !== id);
-        }
-
-        async function executeCell(id) {
-            const editor = document.getElementById(`editor-${id}`);
-            const output = document.getElementById(`output-${id}`);
-            const tag = document.getElementById(`tag-${id}`);
-            const paramLabel = document.getElementById(`cell-params-${id}`);
-            if (!editor || !output) return;
-
-            const code = editor.value;
             const a = parseInt(inputAgentA.value) || 2;
             const t = parseInt(inputTuringT.value) || 10;
 
-            if (paramLabel) paramLabel.textContent = `[agent=A:${a} | turing=T:${t}]`;
-
-            tag.textContent = 'In [*]:';
-            output.className = 'cell-output active';
-            output.innerHTML = '<span style="color:var(--cyan);">[SILICIO] Despachando a VM nativa de silicio...</span>';
+            termSummary.textContent = "[SILICIO] Compilando a tuplas de 64B y ejecutando en CPU AVX...";
+            termSummary.style.color = "var(--cyan)";
 
             try {
-                const resp = await fetch(`${API_BASE}/api/execute`, {
+                const res = await fetch(`${API_BASE}/api/execute`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1294,262 +1128,160 @@
                     })
                 });
 
-                const data = await resp.json();
-                const count = executionCounter++;
-                tag.textContent = `In [${count}]:`;
+                const data = await res.json();
 
                 if (data.success) {
-                    output.innerHTML = `
-                        <div class="cell-output-meta">
-                            <span class="meta-tag">EXIT CODE 0</span>
-                            <span style="color:var(--cyan);">${data.latency_us} &mu;s</span>
-                            <span style="color:var(--gold);">Deriva: ${data.neumaier_deriv}</span>
-                            <span style="color:var(--purple);">agent=A:${data.agent_a} | turing=T:${data.turing_t}</span>
-                            <span style="color:var(--text-muted);">${data.num_instructions} ops (${data.binary_size_bytes}B)</span>
-                        </div>
-                        <div>${escapeHtml(data.stdout)}</div>
-                    `;
+                    badgeExitStatus.textContent = "EXIT CODE 0";
+                    badgeExitStatus.style.borderColor = "var(--green)";
+                    badgeExitStatus.style.color = "var(--green)";
 
-                    if (data.pixel_hex) {
-                        pixelHex.textContent = data.pixel_hex;
-                        const argb = parseArgbHex(data.pixel_hex);
-                        pixelSample.style.backgroundColor = `rgb(${argb.r}, ${argb.g}, ${argb.b})`;
+                    termSummary.textContent = `[EXIT CODE 0] Certificado en Silicio | Latencia: ${data.latency_us} µs | Deriva Neumaier: ${data.neumaier_deriv}`;
+                    termSummary.style.color = "var(--green)";
+                    termRawOutput.textContent = data.stdout;
+
+                    // 1. Llenar tabla de Microcódigo 64B Emitido
+                    tbodyMicrocode.innerHTML = '';
+                    if (data.production_breakdown && data.production_breakdown.length > 0) {
+                        data.production_breakdown.forEach(item => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${item.index}</td>
+                                <td style="color:var(--cyan); font-weight:600;">${item.opcode_name}</td>
+                                <td>${item.opcode_hex}</td>
+                                <td style="color:var(--gold);">${item.dest_slab}</td>
+                                <td>${item.dim_d}</td>
+                                <td>${item.sage_mask}</td>
+                                <td style="font-family:var(--font-mono); color:#a5d6ff;">${item.bytes_64}</td>
+                            `;
+                            tbodyMicrocode.appendChild(tr);
+                        });
                     }
-                    if (data.neumaier_deriv) {
-                        topNeumaier.textContent = data.neumaier_deriv;
-                        hudDeriva.textContent = `DERIVA NEUMAIER: ${data.neumaier_deriv}`;
+
+                    // 2. Llenar tabla de Slabs de Memoria Viva
+                    tbodySlabs.innerHTML = '';
+                    if (data.slabs_state) {
+                        Object.keys(data.slabs_state).forEach(slabAddr => {
+                            const s = data.slabs_state[slabAddr];
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td style="color:var(--gold); font-weight:600;">${slabAddr}</td>
+                                <td>${s.dim_d}</td>
+                                <td style="color:var(--cyan);">${s.last_op}</td>
+                                <td style="color:var(--green);">${s.neumaier_norm.toFixed(15)}</td>
+                                <td style="color:#7ee787;">${s.status}</td>
+                            `;
+                            tbodySlabs.appendChild(tr);
+                        });
+                    }
+
+                    // 3. Colapso MMIO
+                    if (data.pixel_hex) {
+                        mmioPixelHex.textContent = data.pixel_hex;
+                        const argb = parseArgbHex(data.pixel_hex);
+                        mmioColorBox.style.backgroundColor = `rgb(${argb.r}, ${argb.g}, ${argb.b})`;
                     }
 
                     triggerGeodesicFlash();
                 } else {
-                    output.innerHTML = `
-                        <div class="cell-output-meta">
-                            <span style="padding:1px 6px; border-radius:3px; background:rgba(239,71,111,0.2); color:var(--red);">EXIT CODE ${data.exit_code}</span>
-                        </div>
-                        <div style="color:var(--red);">${escapeHtml(data.stderr || 'Fallo desconocido')}</div>
-                    `;
+                    badgeExitStatus.textContent = `EXIT CODE ${data.exit_code}`;
+                    badgeExitStatus.style.borderColor = "var(--red)";
+                    badgeExitStatus.style.color = "var(--red)";
+
+                    termSummary.textContent = `[FALLO] ${data.stderr || 'Error desconocido'}`;
+                    termSummary.style.color = "var(--red)";
+                    termRawOutput.textContent = data.stderr;
                 }
             } catch (err) {
-                tag.textContent = 'In [!]:';
-                output.innerHTML = `<span style="color:var(--red);">Error de conexión: ${err.message}</span>`;
+                termSummary.textContent = `Error de conexión: ${err.message}`;
+                termSummary.style.color = "var(--red)";
             }
         }
 
-        async function runAllCells() {
-            for (const c of cells) {
-                await executeCell(c.id);
+        btnRunMain.addEventListener('click', executeActiveCode);
+
+        // Pestañas del Inspector Inferior
+        document.querySelectorAll('.inspector-tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.inspector-tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const tab = btn.getAttribute('data-tab');
+                document.getElementById('viewSilicon').style.display = tab === 'tab-silicon' ? 'block' : 'none';
+                document.getElementById('viewMicrocode').style.display = tab === 'tab-microcode' ? 'block' : 'none';
+                document.getElementById('viewSlabs').style.display = tab === 'tab-slabs' ? 'block' : 'none';
+                document.getElementById('viewMmio').style.display = tab === 'tab-mmio' ? 'block' : 'none';
+            });
+        });
+
+        // -------------------------------------------------------------
+        // Agentes del Proyecto
+        // -------------------------------------------------------------
+        async function loadProjectAgents(projId) {
+            try {
+                const res = await fetch(`${API_BASE}/api/project/agents?project=${projId}`);
+                const d = await res.json();
+                projectAgents = d.agents || [];
+            } catch (e) {
+                console.error("Error al cargar agentes:", e);
             }
         }
 
-        btnAddCell.addEventListener('click', () => {
+        document.getElementById('actAgents').addEventListener('click', () => {
+            document.querySelectorAll('.activity-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('actAgents').classList.add('active');
+            document.getElementById('sidebarTitle').textContent = "Agentes del Proyecto";
+
+            treeContainer.innerHTML = '';
+            projectAgents.forEach(ag => {
+                const card = document.createElement('div');
+                card.style.background = '#141a27';
+                card.style.border = '1px solid var(--border)';
+                card.style.borderRadius = '5px';
+                card.style.padding = '8px';
+                card.style.marginBottom = '6px';
+                card.innerHTML = `
+                    <div style="font-weight:600; color:var(--cyan); font-size:0.75rem;">${ag.name}</div>
+                    <div style="color:var(--text-muted); font-size:0.68rem; margin:2px 0;">${ag.role}</div>
+                    <div style="color:var(--gold); font-size:0.65rem;">Sabios: ${(ag.sages || []).join(', ')}</div>
+                `;
+                treeContainer.appendChild(card);
+            });
+        });
+
+        document.getElementById('actFiles').addEventListener('click', () => {
+            document.querySelectorAll('.activity-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('actFiles').classList.add('active');
+            document.getElementById('sidebarTitle').textContent = "Explorador";
+            if (currentProject) loadProjectTree(currentProject.id);
+        });
+
+        // -------------------------------------------------------------
+        // Parámetros Swarm y Canvas 3D Stiefel
+        // -------------------------------------------------------------
+        function updateSagesDesc() {
             const a = parseInt(inputAgentA.value) || 2;
             const t = parseInt(inputTuringT.value) || 10;
-            addCell(`# Instruccion con agent=A=${a} y turing=T=${t}\nROT_LIE_SO|DEST=0x1000|D=2048|SAGES=EULER\nHALT_EQUILIBRIUM|DEST=0x1000|D=2048`);
-        });
-
-        btnRunAll.addEventListener('click', runAllCells);
-
-        btnClearOutputs.addEventListener('click', () => {
-            document.querySelectorAll('.cell-output').forEach(el => {
-                el.className = 'cell-output';
-                el.innerHTML = '';
-            });
-            document.querySelectorAll('.cell-prompt-tag').forEach(el => {
-                el.textContent = 'In [ ]:';
-            });
-        });
-
-        // -------------------------------------------------------------
-        // Carga de Ejemplos con A y T
-        // -------------------------------------------------------------
-        async function loadExample(exId) {
-            cellsContainer.innerHTML = '';
-            cells = [];
-
-            try {
-                const res = await fetch(`${API_BASE}/api/examples`);
-                const data = await res.json();
-                const ex = data.examples.find(e => e.id === exId);
-                if (ex) {
-                    if (ex.agent_a) inputAgentA.value = ex.agent_a;
-                    if (ex.turing_t) inputTuringT.value = ex.turing_t;
-                    updateSagesPreview();
-                    addCell(ex.code, true, ex.agent_a, ex.turing_t);
-                }
-            } catch (e) {
-                addCell("# Consenso Dialéctico de Sabios\nROT_LIE_SO|DEST=0x1000|D=2048|SAGES=EULER\nROT_LIE_SO|DEST=0x2000|D=2048|SAGES=GAUSS\nDIALECTIC_LYAPUNOV|DEST=0x3000|A=0x1000|B=0x2000|D=2048|DT=0.01|ALPHA=1.0|GAMMA=0.05|SAGES=EULER+GAUSS\nCOLLAPSE_MMIO|DEST=0x0000|A=0x3000|D=2048\nHALT_EQUILIBRIUM|DEST=0x3000|D=2048", true, 2, 10);
+            if (sagesCatalog.length > 0) {
+                const active = sagesCatalog.slice(0, a).map(s => s.name);
+                sagesActiveDesc.textContent = `SABIOS (${a}): ` + active.join(' + ');
+            } else {
+                sagesActiveDesc.textContent = `agent=A=${a} | turing=T=${t}`;
             }
         }
 
-        selectExample.addEventListener('change', (e) => {
-            loadExample(e.target.value);
-        });
+        inputAgentA.addEventListener('input', updateSagesDesc);
+        inputTuringT.addEventListener('input', updateSagesDesc);
 
         btnCopyPrompt.addEventListener('click', async () => {
-            try {
-                const res = await fetch(`${API_BASE}/api/system_prompt`);
-                const data = await res.json();
-                const a = inputAgentA.value;
-                const t = inputTuringT.value;
-                const fullPrompt = data.system_prompt + `\n[PARÁMETROS OBLIGATORIOS]: agent=A=${a}, turing=T=${t}`;
-                await navigator.clipboard.writeText(fullPrompt);
-                btnCopyPrompt.innerHTML = '<span>&#10004;</span> ¡Copiado con A y T!';
-                setTimeout(() => {
-                    btnCopyPrompt.innerHTML = '<span>&#128203;</span> Copiar Prompt Maestro';
-                }, 2000);
-            } catch (err) {
-                alert("Error al copiar prompt: " + err.message);
-            }
+            const a = inputAgentA.value;
+            const t = inputTuringT.value;
+            const text = `You are an expert AI pair programmer in MATHESIS and EinsofOS.\nMandatory Swarm Constraints: agent=A=${a}, turing=T=${t}.\nCompute over Stiefel Manifold S^{2047} preserving isometry with Neumaier accumulators.`;
+            await navigator.clipboard.writeText(text);
+            btnCopyPrompt.textContent = "¡Copiado!";
+            setTimeout(() => { btnCopyPrompt.innerHTML = "<span>&#128203;</span> Prompt Maestro"; }, 2000);
         });
 
-        // -------------------------------------------------------------
-        // Chat con Asistente Multi-IA y Enforcing de A y T
-        // -------------------------------------------------------------
-        async function sendAiMessage(promptText = null) {
-            const prompt = promptText || aiPromptInput.value.trim();
-            if (!prompt) return;
-
-            const a = parseInt(inputAgentA.value) || 2;
-            const t = parseInt(inputTuringT.value) || 10;
-            const currentCode = cells.length > 0 ? (document.getElementById(`editor-${cells[0].id}`)?.value || "") : "";
-
-            appendUserMessage(`[A=${a}, T=${t}] ${prompt}`);
-            if (!promptText) aiPromptInput.value = '';
-
-            const aiMsgEl = appendAiLoadingMessage();
-
-            try {
-                const payload = {
-                    provider: aiProvider.value,
-                    model: aiModel.value,
-                    api_key: aiApiKey.value.trim(),
-                    prompt: prompt,
-                    current_code: currentCode,
-                    agent_a: a,
-                    turing_t: t
-                };
-
-                const res = await fetch(`${API_BASE}/api/ai/chat`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await res.json();
-
-                if (data.success) {
-                    renderAiReply(aiMsgEl, data.reply, `${data.provider} [A=${data.agent_a}, T=${data.turing_t}]`);
-                } else {
-                    aiMsgEl.innerHTML = `
-                        <span class="chat-sender-tag" style="color:var(--red);">ERROR ${escapeHtml(data.provider || 'IA')}</span>
-                        <div class="chat-bubble" style="border-color:var(--red); color:var(--red);">
-                            ${escapeHtml(data.error || 'Fallo desconocido en el modelo')}
-                        </div>
-                    `;
-                }
-            } catch (err) {
-                aiMsgEl.innerHTML = `
-                    <span class="chat-sender-tag" style="color:var(--red);">ERROR DE RED</span>
-                    <div class="chat-bubble" style="border-color:var(--red); color:var(--red);">
-                        ${escapeHtml(err.message)}
-                    </div>
-                `;
-            }
-        }
-
-        function appendUserMessage(text) {
-            const msg = document.createElement('div');
-            msg.className = 'chat-msg user';
-            msg.innerHTML = `
-                <span class="chat-sender-tag">TÚ (INVESTIGADOR)</span>
-                <div class="chat-bubble">${escapeHtml(text)}</div>
-            `;
-            aiChatBody.appendChild(msg);
-            aiChatBody.scrollTop = aiChatBody.scrollHeight;
-        }
-
-        function appendAiLoadingMessage() {
-            const msg = document.createElement('div');
-            msg.className = 'chat-msg ai';
-            msg.innerHTML = `
-                <span class="chat-sender-tag">DELIBERANDO EN SILICIO...</span>
-                <div class="chat-bubble" style="color:var(--cyan);">[Orquestando agentes y ciclos de Lyapunov...]</div>
-            `;
-            aiChatBody.appendChild(msg);
-            aiChatBody.scrollTop = aiChatBody.scrollHeight;
-            return msg;
-        }
-
-        function renderAiReply(msgEl, rawText, providerName) {
-            msgEl.innerHTML = `
-                <span class="chat-sender-tag">${escapeHtml(providerName || 'IA')}</span>
-                <div class="chat-bubble"></div>
-            `;
-            const bubble = msgEl.querySelector('.chat-bubble');
-            const parts = rawText.split(/```(?:mathesis|mth)?/i);
-
-            parts.forEach((part, idx) => {
-                if (idx % 2 === 0) {
-                    const p = document.createElement('p');
-                    p.style.marginBottom = '6px';
-                    p.innerHTML = escapeHtml(part).replace(/\n/g, '<br>');
-                    bubble.appendChild(p);
-                } else {
-                    const snippet = part.trim();
-                    const box = document.createElement('div');
-                    box.className = 'code-snippet-box';
-                    box.innerHTML = `
-                        <div class="code-snippet-header">
-                            <span>CÓDIGO MATHESIS (.mth)</span>
-                            <button class="btn-insert-code">&#10133; Insertar en Nueva Celda</button>
-                        </div>
-                        <div class="code-snippet-body">${escapeHtml(snippet)}</div>
-                    `;
-                    box.querySelector('.btn-insert-code').addEventListener('click', () => {
-                        addCell(snippet, true);
-                    });
-                    bubble.appendChild(box);
-                }
-            });
-
-            aiChatBody.scrollTop = aiChatBody.scrollHeight;
-        }
-
-        btnAiSend.addEventListener('click', () => sendAiMessage());
-        aiPromptInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendAiMessage();
-            }
-        });
-
-        // Acciones rápidas
-        document.getElementById('btnAiExplain').addEventListener('click', () => {
-            sendAiMessage("Por favor explica paso a paso las matemáticas y operaciones de Stiefel de la celda activa con respecto a los parámetros agent=A y turing=T.");
-        });
-        document.getElementById('btnAiOptimize').addEventListener('click', () => {
-            sendAiMessage("Optimiza este código para maximizar el uso de microcódigo AVX+FMA3 en silicio y reducir la latencia de convergencia.");
-        });
-        document.getElementById('btnAiStiefel').addEventListener('click', () => {
-            sendAiMessage("Explica cómo el acumulador de Neumaier y la retracción polar de orden 4 garantizan deriva <= 10^-15 sin error acumulativo.");
-        });
-        document.getElementById('btnAiTribunal').addEventListener('click', () => {
-            inputAgentA.value = 7;
-            inputTuringT.value = 50;
-            updateSagesPreview();
-            sendAiMessage("Genera un programa para el Tribunal Pleno con agent=A=7 sabios y turing=T=50 iteraciones de relajación geodésica.");
-        });
-
-        function askAiAboutCell(id) {
-            const editor = document.getElementById(`editor-${id}`);
-            if (editor) {
-                sendAiMessage(`Revisa y optimiza esta celda de código:\n\n${editor.value}`);
-            }
-        }
-
-        // -------------------------------------------------------------
-        // Canvas 3D Stiefel Manifold Reactivo a agent=A y turing=T
-        // -------------------------------------------------------------
+        // Canvas 3D
         const canvas = document.getElementById('manifoldCanvas');
         const ctx = canvas.getContext('2d');
         let angle = 0;
@@ -1566,7 +1298,6 @@
             flashIntensity = 1.0;
         }
 
-        // Colores para los 8 sabios
         const SAGE_COLORS = ['#00e5ff', '#ffd166', '#06d6a0', '#9d4edd', '#ef476f', '#118ab2', '#073b4c', '#f72585'];
 
         function drawManifold() {
@@ -1595,16 +1326,6 @@
             const rotSpeed = 0.003 + (t * 0.0002);
             angle += rotSpeed;
 
-            // Geodésicas de fondo
-            ctx.lineWidth = 0.5;
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
-            for (let i = -2; i <= 2; i++) {
-                ctx.beginPath();
-                const rH = Math.sqrt(Math.max(0, R*R - (i*R*0.33)*(i*R*0.33)));
-                ctx.ellipse(cx, cy + i*R*0.33, rH, rH*0.28, 0, 0, Math.PI * 2);
-                ctx.stroke();
-            }
-
             function project(th, ph) {
                 const rotTh = th + angle;
                 const x = R * Math.sin(ph) * Math.cos(rotTh);
@@ -1612,16 +1333,13 @@
                 return { px: cx + x, py: cy + y };
             }
 
-            // Proyectar exactamente A sabios en la variedad
             const points = [];
             for (let i = 0; i < a; i++) {
                 const th = (i * (2 * Math.PI / a)) + 0.3;
                 const ph = 1.0 + (i % 3) * 0.4;
-                const p = project(th, ph);
-                points.push(p);
+                points.push(project(th, ph));
             }
 
-            // Trazar geodésicas de convergencia dialéctica entre sabios
             if (points.length > 1) {
                 ctx.beginPath();
                 ctx.moveTo(points[0].px, points[0].py);
@@ -1629,58 +1347,107 @@
                     ctx.lineTo(points[i].px, points[i].py);
                 }
                 ctx.closePath();
-                ctx.strokeStyle = 'rgba(0, 229, 255, 0.45)';
+                ctx.strokeStyle = 'rgba(0, 229, 255, 0.4)';
                 ctx.lineWidth = 1.2;
                 ctx.stroke();
             }
 
-            // Dibujar cada sabio activo
             for (let i = 0; i < points.length; i++) {
                 const sName = sagesCatalog[i] ? sagesCatalog[i].name : `Sabio ${i+1}`;
                 const col = SAGE_COLORS[i % SAGE_COLORS.length];
-                drawPoint(points[i].px, points[i].py, col, sName);
+                ctx.beginPath();
+                ctx.arc(points[i].px, points[i].py, 4, 0, Math.PI*2);
+                ctx.fillStyle = col;
+                ctx.fill();
+                ctx.font = '9px var(--font-mono)';
+                ctx.fillText(sName, points[i].px + 6, points[i].py + 3);
             }
 
             requestAnimationFrame(drawManifold);
         }
+        requestAnimationFrame(drawManifold);
 
-        function drawPoint(x, y, color, label) {
-            ctx.beginPath();
-            ctx.arc(x, y, 5, 0, Math.PI*2);
-            ctx.fillStyle = color;
-            ctx.fill();
-            ctx.font = '10px var(--font-mono)';
-            ctx.fillText(label, x + 8, y + 3);
+        // -------------------------------------------------------------
+        // Chat con IA del Proyecto
+        // -------------------------------------------------------------
+        btnSendAi.addEventListener('click', sendAiQuery);
+        aiInputPrompt.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendAiQuery();
+            }
+        });
+
+        async function sendAiQuery() {
+            const prompt = aiInputPrompt.value.trim();
+            if (!prompt) return;
+
+            appendMsg("TÚ", prompt, '#79c0ff');
+            aiInputPrompt.value = '';
+
+            const a = parseInt(inputAgentA.value) || 2;
+            const t = parseInt(inputTuringT.value) || 10;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/ai/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: selectAiModel.value,
+                        prompt: prompt,
+                        current_code: codeEditor.value,
+                        agent_a: a,
+                        turing_t: t,
+                        project_id: currentProject ? currentProject.id : 'mathesis'
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    appendMsg(data.provider, data.reply, '#d8b4fe');
+                } else {
+                    appendMsg("ERROR", data.error || "Fallo en IA", 'var(--red)');
+                }
+            } catch (err) {
+                appendMsg("ERROR", err.message, 'var(--red)');
+            }
         }
 
-        requestAnimationFrame(drawManifold);
+        function appendMsg(sender, text, color) {
+            const msg = document.createElement('div');
+            msg.style.fontSize = '0.74rem';
+            msg.style.lineHeight = '1.45';
+            msg.style.background = '#111622';
+            msg.style.padding = '8px';
+            msg.style.borderRadius = '4px';
+            msg.style.border = '1px solid var(--border)';
+            msg.innerHTML = `
+                <div style="font-size:0.65rem; color:${color}; font-weight:bold; margin-bottom:4px;">${sender}</div>
+                <div>${text.replace(/\n/g, '<br>')}</div>
+            `;
+            chatHistory.appendChild(msg);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        btnQuickOptimize.addEventListener('click', () => {
+            aiInputPrompt.value = "Por favor optimiza el microcódigo de este archivo en silicio reduciendo la latencia de CPU y preservando la variedad de Stiefel.";
+            sendAiQuery();
+        });
 
         function parseArgbHex(hexStr) {
             let hex = hexStr.replace('0x', '').replace('#', '');
             if (hex.length === 8) {
                 return {
-                    a: parseInt(hex.substring(0, 2), 16),
                     r: parseInt(hex.substring(2, 4), 16),
                     g: parseInt(hex.substring(4, 6), 16),
                     b: parseInt(hex.substring(6, 8), 16)
                 };
             }
-            return { a: 255, r: 130, g: 125, b: 124 };
+            return { r: 130, g: 125, b: 124 };
         }
 
-        function escapeHtml(text) {
-            if (!text) return '';
-            return text
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
-        // Inicialización al arrancar
-        fetchModels();
-        loadExample('consenso_sabios');
+        // Arrancar IDE
+        initIDE();
     </script>
 </body>
 </html>
