@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
 """
-DESAFÍO 1: VIOLACIÓN CORREGIDA DE MERMIN N=5 CON ALINEACIÓN DE FASE EN QPU FÍSICO
-=================================================================================
-Problema cuántico SOTA: En el experimento previo en QPU (Job dbmbbf674qds73ds02jg),
-el estado GHZ canonical sin fase (|00000> + |11111>)/sqrt(2) arrojó M_5 = -0.4790 (~0).
-Demostración analítica de Einsof:
-  Para N=5, <psi(phi)| M_5 |psi(phi)> = 16 * sin(phi).
-  - Con phi = 0 (GHZ estándar sin fase): sin(0) = 0 -> M_5 = 0.0 (anulación teórica).
-  - Con phi = pi/2 (Einsof Phase Alignment via compuerta S en q0): sin(pi/2) = 1.0 -> M_5 = +16.0!
-    Cota clásica: |M_5| <= 4.0. Máximo cuántico: 16.0 (Superación del 400%).
+EXPERIMENTO FÍSICO QPU: DESIGUALDAD DE MERMIN N=5 CON ALINEACIÓN DE FASE (IBM HERON 156Q)
+=========================================================================================
+Referencia teórica estándar: Mermin, N.D. (1990) PRL 65, 1838; Ardehali, M. (1992) PRA 46, 5375.
+
+En el control previo en QPU (Job dbmbbf674qds73ds02jg), el estado GHZ de 5 qubits sin fase
+relativa (|00000> + |11111>)/sqrt(2) arrojó M_5 = -0.4790 (~0).
+Por álgebra estándar de Pauli para el operador impar M_5 = Im[(X + iY)^5]:
+  <psi(phi)| M_5 |psi(phi)> = 16 * sin(phi)
+  - Con phi = 0 (control sin fase): sin(0) = 0 -> <M_5> = 0.0.
+  - Con phi = pi/2 (compuerta S en q0): sin(pi/2) = 1.0 -> <M_5> = +16.0 (cota clásica LHV: |M_5| <= 4.0).
 
 Este script:
-1. Compara mecánicamente el estado estándar sin fase (M_5 = 0) vs Einsof con fase S (M_5 = 16.0).
-2. Transpila y envía los 16 circuitos con compuerta S al hardware superconductor de IBM.
-3. Transfiere la matriz de los 16 correladores directamente a PMTP ShmBus (SLAB_ID = 0x504D0015)
-   aplicando retracción polar de Stiefel S^{15} con acumulador compensado de Neumaier.
-4. Persiste atómicamente el reporte y Job ID en PostgreSQL 16 con Exit Code 0.
+1. Verifica en simulador ideal el control phi=0 (<M_5> = 0) frente a phi=pi/2 (<M_5> = 16.0).
+2. Transpila y ejecuta los 16 circuitos con compuerta S en el QPU superconductor de IBM.
+3. Una vez descargadas las cuentas vía HTTPS, normaliza los 16 correladores continuos en un
+   slab local de memoria compartida (`PersistentMmapSlabBus`, SLAB_ID = 0x504D0015) con norma Neumaier.
+4. Persiste atómicamente el reporte y Job ID oficial en PostgreSQL 16 con Exit Code 0.
 
-Autor: Ariel García Traba (Independent Research / EinsofOS)
-Directiva: Honestidad radical, contrato de silicio, Exit Code 0.
+Autor: Ariel García Traba (UTN / Proyecto POLYDIM-EINSOF)
 """
 
 import sys
@@ -122,8 +122,8 @@ def main():
     backend_choice = sys.argv[1] if len(sys.argv) > 1 else "ibm_fez"
     
     print("=" * 80)
-    print("DESAFÍO CUÁNTICO SOTA 1: VIOLACIÓN CORREGIDA DE MERMIN N=5 EN QPU FÍSICO")
-    print("TEOREMA EINSOF: ALINEACIÓN DE FASE S (pi/2) vs GHZ CANÓNICO (0 CORRELACIÓN)")
+    print("EXPERIMENTO QPU: DESIGUALDAD DE MERMIN N=5 CON ALINEACIÓN DE FASE (MERMIN 1990)")
+    print("COMPARACIÓN CONTROL phi=0 vs FASE S (phi=pi/2) EN HARDWARE IBM QUANTUM")
     print("=" * 80)
     
     bases_signs = generate_mermin_5q_bases()
@@ -217,8 +217,8 @@ def main():
     
     # 4. Compilar y persistir en PostgreSQL 16
     report_data = {
-        "desafio": "SOTA Quantum Mermin-Ardehali-Belinskii-Klyshko N=5 Phase Aligned Violation",
-        "teorema_demostrado": "<psi(phi)| M_5 |psi(phi)> = 16 * sin(phi)",
+        "experimento": "Physical QPU Mermin-Ardehali N=5 Phase-Aligned Violation (Mermin 1990; Ardehali 1992)",
+        "identidad_analitica_estandar": "<psi(phi)| M_5 |psi(phi)> = 16 * sin(phi)",
         "simulacion_ideal": {
             "ghz_estandar_sin_fase": m5_std,
             "einsof_fase_pi_2": m5_einsof_ideal,
