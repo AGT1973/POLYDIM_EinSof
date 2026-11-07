@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EINSOF & MATHESIS AI-STUDIO (AIIDE) — Jupyter-Style Sovereign IDE</title>
+    <style>
+        :root {
+            --bg-base: #080a0f;
+            --bg-panel: rgba(14, 18, 27, 0.94);
+            --bg-subpanel: #111622;
+            --border: #1e2638;
+            --border-glow: #2a364f;
+            --cyan: #00e5ff;
+            --cyan-glow: rgba(0, 229, 255, 0.25);
+            --purple: #9d4edd;
+            --gold: #ffd166;
+            --green: #06d6a0;
+            --red: #ef476f;
+            --text-main: #f0f6fc;
+            --text-muted: #8b949e;
+            --font-mono: 'Fira Code', 'Consolas', 'Courier New', monospace;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Header */
+        header {
+            background: rgba(10, 13, 19, 0.98);
+            border-bottom: 1px solid var(--border);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10;
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-symbol {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: conic-gradient(from 180deg at 50% 50%, var(--cyan), var(--purple), var(--cyan));
+            box-shadow: 0 0 16px var(--cyan-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: #000;
+            font-size: 1.1rem;
+        }
+
+        .title-block h1 {
+            font-size: 1.1rem;
+            letter-spacing: 1.2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge {
+            font-size: 0.65rem;
+            padding: 2px 7px;
+            border-radius: 4px;
+            background: rgba(0, 229, 255, 0.12);
+            color: var(--cyan);
+            border: 1px solid var(--cyan);
+            font-family: var(--font-mono);
+            font-weight: bold;
+        }
+
+        .badge-green {
+            background: rgba(6, 214, 160, 0.12);
+            color: var(--green);
+            border-color: var(--green);
+        }
+
+        .subtitle {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-header {
+            background: var(--bg-subpanel);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-header:hover {
+            border-color: var(--cyan);
+            box-shadow: 0 0 8px var(--cyan-glow);
+        }
+
+        .btn-header.active {
+            background: rgba(0, 229, 255, 0.15);
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        .metrics-banner {
+            display: flex;
+            gap: 16px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+        }
+
+        .metric-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .metric-val {
+            color: var(--green);
+            font-weight: bold;
+        }
+
+        .metric-lbl {
+            color: var(--text-muted);
+            font-size: 0.62rem;
+        }
+
+        /* Main Workspace Layout */
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px 380px;
+            height: calc(100vh - 54px);
+            overflow: hidden;
+        }
+
+        /* Panel 1: Notebook & Code Cells */
+        .notebook-panel {
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .notebook-toolbar {
+            padding: 8px 12px;
+            background: rgba(17, 22, 34, 0.9);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-tool {
+            background: #19202f;
+            color: var(--text-main);
+            border: 1px solid #2a3449;
+            border-radius: 4px;
+            padding: 5px 9px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-tool:hover {
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        .btn-tool-run-all {
+            background: linear-gradient(135deg, #0077b6, #0096c7);
+            border-color: var(--cyan);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .select-example {
+            background: #19202f;
+            color: var(--text-main);
+            border: 1px solid #2a3449;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            outline: none;
+        }
+
+        .cells-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Jupyter Cell Card */
+        .cell-card {
+            background: var(--bg-subpanel);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .cell-card:focus-within, .cell-card.active {
+            border-color: var(--cyan);
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.15);
+        }
+
+        .cell-header {
+            background: rgba(22, 29, 44, 0.85);
+            border-bottom: 1px solid var(--border);
+            padding: 5px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+        }
+
+        .cell-prompt-tag {
+            color: var(--cyan);
+            font-weight: bold;
+        }
+
+        .cell-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-cell-action {
+            background: transparent;
+            color: var(--text-muted);
+            border: none;
+            cursor: pointer;
+            font-size: 0.75rem;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .btn-cell-action:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .cell-editor {
+            width: 100%;
+            background: #0a0d14;
+            color: #79c0ff;
+            border: none;
+            padding: 10px 12px;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            line-height: 1.45;
+            resize: vertical;
+            min-height: 90px;
+            outline: none;
+        }
+
+        .cell-output {
+            background: #040508;
+            border-top: 1px solid #1a2233;
+            padding: 8px 12px;
+            font-family: var(--font-mono);
+            font-size: 0.74rem;
+            color: #7ee787;
+            max-height: 180px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            display: none;
+        }
+
+        .cell-output.active {
+            display: block;
+        }
+
+        .cell-output-meta {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 6px;
+            padding-bottom: 4px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+            font-size: 0.68rem;
+        }
+
+        .meta-tag {
+            padding: 1px 6px;
+            border-radius: 3px;
+            background: rgba(6, 214, 160, 0.15);
+            color: var(--green);
+        }
+
+        /* Panel 2: 3D Stiefel Manifold & Silicon HUD */
+        .visual-panel {
+            background: radial-gradient(circle at center, #141b2a 0%, #090c12 100%);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .visual-header {
+            padding: 8px 12px;
+            background: rgba(14, 18, 27, 0.8);
+            border-bottom: 1px solid var(--border);
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .canvas-wrapper {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        canvas#manifoldCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .overlay-hud {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            pointer-events: none;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--cyan);
+            background: rgba(10, 13, 19, 0.75);
+            padding: 6px 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            backdrop-filter: blur(4px);
+        }
+
+        .ephemeral-collapse-hud {
+            position: absolute;
+            bottom: 12px;
+            left: 10px;
+            right: 10px;
+            background: rgba(14, 18, 27, 0.9);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+        }
+
+        .pixel-sample {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            border: 2px solid #fff;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+            background-color: #827D7C;
+        }
+
+        /* Panel 3: Multi-AI Pair Programmer */
+        .ai-panel {
+            background: var(--bg-panel);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ai-header {
+            padding: 8px 12px;
+            background: rgba(17, 22, 34, 0.95);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .ai-header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ai-provider-select {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        select.ai-select, input.ai-input {
+            width: 100%;
+            background: #111622;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 5px 8px;
+            font-size: 0.72rem;
+            outline: none;
+            font-family: var(--font-mono);
+        }
+
+        select.ai-select:focus, input.ai-input:focus {
+            border-color: var(--cyan);
+        }
+
+        .ai-quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            padding: 6px 12px;
+            background: rgba(12, 15, 23, 0.9);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .btn-quick-ai {
+            background: rgba(157, 78, 221, 0.12);
+            color: #d8b4fe;
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            border-radius: 3px;
+            padding: 3px 6px;
+            font-size: 0.68rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-quick-ai:hover {
+            background: rgba(157, 78, 221, 0.25);
+            border-color: var(--purple);
+            color: #fff;
+        }
+
+        .ai-chat-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-msg {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 0.78rem;
+            line-height: 1.45;
+        }
+
+        .chat-msg.user {
+            align-items: flex-end;
+        }
+
+        .chat-bubble {
+            max-width: 92%;
+            padding: 8px 11px;
+            border-radius: 6px;
+        }
+
+        .chat-msg.user .chat-bubble {
+            background: #1f3049;
+            color: var(--text-main);
+            border: 1px solid #2d4568;
+        }
+
+        .chat-msg.ai .chat-bubble {
+            background: #111827;
+            color: #e5e7eb;
+            border: 1px solid #1f293d;
+        }
+
+        .chat-sender-tag {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+
+        .code-snippet-box {
+            background: #090c12;
+            border: 1px solid #1e2638;
+            border-radius: 4px;
+            margin: 6px 0;
+            overflow: hidden;
+        }
+
+        .code-snippet-header {
+            background: #111622;
+            padding: 3px 8px;
+            font-size: 0.65rem;
+            color: var(--cyan);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1e2638;
+        }
+
+        .btn-insert-code {
+            background: rgba(0, 229, 255, 0.15);
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-size: 0.62rem;
+            cursor: pointer;
+        }
+
+        .btn-insert-code:hover {
+            background: var(--cyan);
+            color: #000;
+        }
+
+        .code-snippet-body {
+            padding: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.74rem;
+            color: #79c0ff;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .ai-chat-input-area {
+            padding: 10px;
+            background: rgba(17, 22, 34, 0.95);
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .chat-input-row {
+            display: flex;
+            gap: 6px;
+        }
+
+        textarea.ai-prompt-input {
+            flex: 1;
+            background: #0d111a;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 7px 10px;
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            resize: none;
+            height: 48px;
+            outline: none;
+        }
+
+        textarea.ai-prompt-input:focus {
+            border-color: var(--cyan);
+        }
+
+        .btn-ai-send {
+            background: linear-gradient(135deg, #7b2cbf, #9d4edd);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 0 14px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-ai-send:hover {
+            box-shadow: 0 0 10px rgba(157, 78, 221, 0.5);
+            transform: translateY(-1px);
+        }
+
+        /* Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #253046;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3b4d6e;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Principal -->
+    <header>
+        <div class="logo-group">
+            <div class="logo-symbol">&Omega;</div>
+            <div class="title-block">
+                <h1>EINSOF & MATHESIS AI-STUDIO <span class="badge">AIIDE v1.0</span></h1>
+                <div class="subtitle">Entorno Soberano de Cómputo Polidimensional con Asistente Multi-IA Integrado</div>
+            </div>
+        </div>
+
+        <div class="header-controls">
+            <button class="btn-header" id="btnCopyPrompt" title="Copia el System Prompt oficial para pegar en ChatGPT / Claude">
+                <span>&#128203;</span> Copiar Prompt Maestro
+            </button>
+            <button class="btn-header" id="btnSaveNotebook">
+                <span>&#128190;</span> Guardar .mthnb
+            </button>
+        </div>
+
+        <div class="metrics-banner">
+            <div class="metric-item">
+                <span class="metric-val" id="topHostCpu">AMD A4-6300</span>
+                <span class="metric-lbl">SILICIO JIT W&oplus;X (AVX+FMA3)</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-val" id="topAladinStatus" style="color:var(--green);">ALADIN (192.168.100.21)</span>
+                <span class="metric-lbl">NODO REMOTO OLLAMA</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-val" id="topNeumaier">&le; 10⁻¹⁵</span>
+                <span class="metric-lbl">DERIVA NEUMAIER S^{2047}</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace Grid -->
+    <div class="workspace-grid">
+
+        <!-- Panel 1: Notebook Cells -->
+        <div class="notebook-panel">
+            <div class="notebook-toolbar">
+                <div class="toolbar-group">
+                    <button class="btn-tool" id="btnAddCell" title="Agregar celda de código (Shift+A)">+ Celda</button>
+                    <button class="btn-tool btn-tool-run-all" id="btnRunAll" title="Ejecutar todas las celdas">▶ Ejecutar Todo</button>
+                    <button class="btn-tool" id="btnClearOutputs">Limpiar</button>
+                </div>
+
+                <div class="toolbar-group">
+                    <span style="font-size:0.7rem; color:var(--text-muted);">Ejemplo:</span>
+                    <select class="select-example" id="selectExample">
+                        <option value="consenso_sabios">1. Consenso Dialéctico (Euler + Gauss)</option>
+                        <option value="facturacion_sin_tokens">2. Facturación Soberana (0 Tokens)</option>
+                        <option value="lyapunov_dreaming">3. Sueño Geodésico (Memoria)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Celdas del Notebook -->
+            <div class="cells-container" id="cellsContainer">
+                <!-- Se poblarán dinámicamente -->
+            </div>
+        </div>
+
+        <!-- Panel 2: 3D Stiefel Manifold & Silicon HUD -->
+        <div class="visual-panel">
+            <div class="visual-header">
+                <span>VARIEDAD DE STIEFEL S^{2047} (SO(D) LIE)</span>
+                <span class="badge badge-green" id="hudBadge">EXIT CODE 0</span>
+            </div>
+
+            <div class="canvas-wrapper">
+                <div class="overlay-hud">
+                    <div>ESPACIO: Hiperesfera S^{D-1} (D=2048)</div>
+                    <div id="hudAtractor">ATRACTOR: Punto de Equilibrio Lyapunov</div>
+                    <div id="hudDeriva">DERIVA NEUMAIER: 0.00e+00</div>
+                </div>
+
+                <canvas id="manifoldCanvas"></canvas>
+
+                <div class="ephemeral-collapse-hud">
+                    <div class="pixel-sample" id="pixelSample"></div>
+                    <div>
+                        <div style="font-weight: bold; color: var(--text-main);">Colapso Efímero MMIO a 16.6 ms</div>
+                        <div style="color: var(--text-muted); font-size: 0.68rem;">
+                            Pixel ARGB: <span id="pixelHex" style="color:var(--cyan); font-weight:bold;">0xFF827D7C</span> | Destrucción en memoria viva O(1)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 3: Multi-AI Pair Programmer -->
+        <div class="ai-panel">
+            <div class="ai-header">
+                <div class="ai-header-top">
+                    <span style="font-size:0.8rem; font-weight:bold; color:var(--purple);">&#9733; ASISTENTE MULTI-IA</span>
+                    <span style="font-size:0.65rem; color:var(--text-muted);">Sin vendor lock-in</span>
+                </div>
+
+                <div class="ai-provider-select">
+                    <select class="ai-select" id="aiProvider">
+                        <option value="ollama_aladin" selected>Ollama ALADIN (192.168.100.21)</option>
+                        <option value="ollama_local">Ollama Local (127.0.0.1)</option>
+                        <option value="openai">OpenAI (GPT-4o / o3-mini)</option>
+                        <option value="anthropic">Anthropic (Claude 3.5)</option>
+                    </select>
+
+                    <select class="ai-select" id="aiModel">
+                        <option value="deepseek-r1:7b">deepseek-r1:7b (Aladín)</option>
+                        <option value="qwen2.5-coder:7b">qwen2.5-coder:7b (Aladín)</option>
+                        <option value="llama3.2:3b">llama3.2:3b (Aladín)</option>
+                    </select>
+                </div>
+
+                <div id="apiKeyRow" style="display:none; margin-top:2px;">
+                    <input type="password" class="ai-input" id="aiApiKey" placeholder="Pegar API Key aquí (se guarda solo en navegador)">
+                </div>
+            </div>
+
+            <div class="ai-quick-actions">
+                <button class="btn-quick-ai" id="btnAiExplain">⚡ Explicar celda</button>
+                <button class="btn-quick-ai" id="btnAiOptimize">⚡ Optimizar AVX</button>
+                <button class="btn-quick-ai" id="btnAiStiefel">⚡ Teorema Stiefel</button>
+                <button class="btn-quick-ai" id="btnAiFacturacion">⚡ Facturación 0 Tokens</button>
+            </div>
+
+            <div class="ai-chat-body" id="aiChatBody">
+                <div class="chat-msg ai">
+                    <span class="chat-sender-tag">SISTEMA SOSTENIBLE DE IA</span>
+                    <div class="chat-bubble">
+                        ¡Bienvenido al <b>AI-Studio Soberano</b>! Estoy listo para programar contigo en la variedad geométrica continua de MATHESIS y EinsofOS.
+                        <br><br>
+                        Puedes seleccionar <b>Ollama en el Nodo ALADIN (192.168.100.21)</b> para cómputo local con <b>$0 tokens</b>, o conectar tus API keys de OpenAI y Claude.
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-chat-input-area">
+                <div class="chat-input-row">
+                    <textarea class="ai-prompt-input" id="aiPromptInput" placeholder="Escribe tu consulta o pide un algoritmo de silicio... (Enter para enviar)"></textarea>
+                    <button class="btn-ai-send" id="btnAiSend">Enviar</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Script de Interactividad, Simulación 3D y Conectividad con aiide_server -->
+    <script>
+        // API Base URL (mismo origen del servidor local)
+        const API_BASE = window.location.origin;
+
+        // Estado Global del Notebook
+        let cells = [];
+        let activeCellIndex = 0;
+        let executionCounter = 1;
+
+        // Elementos UI
+        const cellsContainer = document.getElementById('cellsContainer');
+        const btnAddCell = document.getElementById('btnAddCell');
+        const btnRunAll = document.getElementById('btnRunAll');
+        const btnClearOutputs = document.getElementById('btnClearOutputs');
+        const selectExample = document.getElementById('selectExample');
+        const btnCopyPrompt = document.getElementById('btnCopyPrompt');
+        const btnSaveNotebook = document.getElementById('btnSaveNotebook');
+
+        // Elementos AI
+        const aiProvider = document.getElementById('aiProvider');
+        const aiModel = document.getElementById('aiModel');
+        const apiKeyRow = document.getElementById('apiKeyRow');
+        const aiApiKey = document.getElementById('aiApiKey');
+        const aiChatBody = document.getElementById('aiChatBody');
+        const aiPromptInput = document.getElementById('aiPromptInput');
+        const btnAiSend = document.getElementById('btnAiSend');
+
+        // Elementos HUD
+        const pixelSample = document.getElementById('pixelSample');
+        const pixelHex = document.getElementById('pixelHex');
+        const topNeumaier = document.getElementById('topNeumaier');
+        const hudDeriva = document.getElementById('hudDeriva');
+
+        // Inicialización de API Keys desde localStorage
+        if (localStorage.getItem('aiide_openai_key')) {
+            aiApiKey.value = localStorage.getItem('aiide_openai_key');
+        }
+
+        aiProvider.addEventListener('change', () => {
+            const p = aiProvider.value;
+            if (p === 'openai' || p === 'anthropic') {
+                apiKeyRow.style.display = 'block';
+                aiApiKey.placeholder = p === 'openai' ? 'sk-... (API Key OpenAI)' : 'sk-ant-... (API Key Anthropic)';
+                aiModel.innerHTML = p === 'openai' 
+                    ? '<option value="gpt-4o">gpt-4o</option><option value="o3-mini">o3-mini</option><option value="gpt-4o-mini">gpt-4o-mini</option>'
+                    : '<option value="claude-3-5-sonnet-20241022">claude-3-5-sonnet</option><option value="claude-3-5-haiku-20241022">claude-3-5-haiku</option>';
+            } else if (p === 'ollama_local') {
+                apiKeyRow.style.display = 'none';
+                aiModel.innerHTML = '<option value="deepseek-r1:latest">deepseek-r1:latest</option><option value="qwen2.5-coder:latest">qwen2.5-coder:latest</option>';
+            } else {
+                apiKeyRow.style.display = 'none';
+                aiModel.innerHTML = '<option value="deepseek-r1:7b">deepseek-r1:7b (Aladín)</option><option value="qwen2.5-coder:7b">qwen2.5-coder:7b (Aladín)</option><option value="llama3.2:3b">llama3.2:3b (Aladín)</option>';
+            }
+        });
+
+        aiApiKey.addEventListener('change', () => {
+            const p = aiProvider.value;
+            if (p === 'openai') localStorage.setItem('aiide_openai_key', aiApiKey.value);
+            if (p === 'anthropic') localStorage.setItem('aiide_anthropic_key', aiApiKey.value);
+        });
+
+        // -------------------------------------------------------------
+        // Gestión de Celdas estilo Jupyter
+        // -------------------------------------------------------------
+        function addCell(code = "", runImmediately = false) {
+            const cellId = cells.length;
+            const cellData = {
+                id: cellId,
+                code: code,
+                output: null,
+                executionCount: null
+            };
+            cells.push(cellData);
+            renderCell(cellData);
+            if (runImmediately) {
+                executeCell(cellId);
+            }
+        }
+
+        function renderCell(cellData) {
+            const card = document.createElement('div');
+            card.className = 'cell-card';
+            card.id = `cell-${cellData.id}`;
+
+            const header = document.createElement('div');
+            header.className = 'cell-header';
+            header.innerHTML = `
+                <div>
+                    <span class="cell-prompt-tag" id="tag-${cellData.id}">In [${cellData.executionCount !== null ? cellData.executionCount : ' '}]:</span>
+                    <span style="color:var(--text-muted); margin-left:8px;">Celda ${cellData.id + 1} (.mth)</span>
+                </div>
+                <div class="cell-actions">
+                    <button class="btn-cell-action" onclick="executeCell(${cellData.id})" title="Ejecutar (Shift+Enter)">&#9658; Correr</button>
+                    <button class="btn-cell-action" onclick="askAiAboutCell(${cellData.id})" title="Consultar con la IA">&#9733; IA</button>
+                    <button class="btn-cell-action" onclick="deleteCell(${cellData.id})" title="Eliminar celda">&#128465;</button>
+                </div>
+            `;
+
+            const editor = document.createElement('textarea');
+            editor.className = 'cell-editor';
+            editor.id = `editor-${cellData.id}`;
+            editor.spellcheck = false;
+            editor.value = cellData.code;
+
+            // Atajo Shift+Enter para correr celda
+            editor.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && e.shiftKey) {
+                    e.preventDefault();
+                    executeCell(cellData.id);
+                }
+            });
+
+            // Auto-ajustar altura
+            editor.addEventListener('input', () => {
+                editor.style.height = 'auto';
+                editor.style.height = editor.scrollHeight + 'px';
+                cellData.code = editor.value;
+            });
+
+            const output = document.createElement('div');
+            output.className = 'cell-output';
+            output.id = `output-${cellData.id}`;
+
+            card.appendChild(header);
+            card.appendChild(editor);
+            card.appendChild(output);
+            cellsContainer.appendChild(card);
+
+            // Ajustar altura inicial
+            setTimeout(() => {
+                editor.style.height = editor.scrollHeight + 'px';
+            }, 10);
+        }
+
+        function deleteCell(id) {
+            const card = document.getElementById(`cell-${id}`);
+            if (card) card.remove();
+            cells = cells.filter(c => c.id !== id);
+        }
+
+        async function executeCell(id) {
+            const editor = document.getElementById(`editor-${id}`);
+            const output = document.getElementById(`output-${id}`);
+            const tag = document.getElementById(`tag-${id}`);
+            if (!editor || !output) return;
+
+            const code = editor.value;
+            tag.textContent = 'In [*]:';
+            output.className = 'cell-output active';
+            output.innerHTML = '<span style="color:var(--cyan);">[SILICIO] Despachando a VM nativa...</span>';
+
+            try {
+                const resp = await fetch(`${API_BASE}/api/execute`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: code, mode: 'mathesis' })
+                });
+
+                const data = await resp.json();
+                const count = executionCounter++;
+                tag.textContent = `In [${count}]:`;
+
+                if (data.success) {
+                    output.innerHTML = `
+                        <div class="cell-output-meta">
+                            <span class="meta-tag">EXIT CODE 0</span>
+                            <span style="color:var(--cyan);">${data.latency_us} &mu;s</span>
+                            <span style="color:var(--gold);">Deriva: ${data.neumaier_deriv}</span>
+                            <span style="color:var(--text-muted);">${data.num_instructions} ops (${data.binary_size_bytes}B)</span>
+                        </div>
+                        <div>${escapeHtml(data.stdout)}</div>
+                    `;
+
+                    // Actualizar HUD Visualizador 3D
+                    if (data.pixel_hex) {
+                        pixelHex.textContent = data.pixel_hex;
+                        const argb = parseArgbHex(data.pixel_hex);
+                        pixelSample.style.backgroundColor = `rgb(${argb.r}, ${argb.g}, ${argb.b})`;
+                    }
+                    if (data.neumaier_deriv) {
+                        topNeumaier.textContent = data.neumaier_deriv;
+                        hudDeriva.textContent = `DERIVA NEUMAIER: ${data.neumaier_deriv}`;
+                    }
+
+                    triggerGeodesicFlash();
+                } else {
+                    output.innerHTML = `
+                        <div class="cell-output-meta">
+                            <span style="padding:1px 6px; border-radius:3px; background:rgba(239,71,111,0.2); color:var(--red);">EXIT CODE ${data.exit_code}</span>
+                        </div>
+                        <div style="color:var(--red);">${escapeHtml(data.stderr || 'Fallo desconocido')}</div>
+                    `;
+                }
+            } catch (err) {
+                tag.textContent = 'In [!]:';
+                output.innerHTML = `<span style="color:var(--red);">Error de conexión con el backend: ${err.message}</span>`;
+            }
+        }
+
+        async function runAllCells() {
+            for (const c of cells) {
+                await executeCell(c.id);
+            }
+        }
+
+        btnAddCell.addEventListener('click', () => {
+            addCell("# Nueva instruccion MATHESIS\nROT_LIE_SO|DEST=0x1000|D=2048|SAGES=EULER\nHALT_EQUILIBRIUM|DEST=0x1000|D=2048");
+        });
+
+        btnRunAll.addEventListener('click', runAllCells);
+
+        btnClearOutputs.addEventListener('click', () => {
+            document.querySelectorAll('.cell-output').forEach(el => {
+                el.className = 'cell-output';
+                el.innerHTML = '';
+            });
+            document.querySelectorAll('.cell-prompt-tag').forEach(el => {
+                el.textContent = 'In [ ]:';
+            });
+        });
+
+        // -------------------------------------------------------------
+        // Carga de Ejemplos
+        // -------------------------------------------------------------
+        async function loadExample(exId) {
+            cellsContainer.innerHTML = '';
+            cells = [];
+
+            try {
+                const res = await fetch(`${API_BASE}/api/examples`);
+                const data = await res.json();
+                const ex = data.examples.find(e => e.id === exId);
+                if (ex) {
+                    addCell(ex.code, true);
+                }
+            } catch (e) {
+                // Fallback por defecto si no responde
+                addCell("# Consenso Dialéctico de Sabios\nROT_LIE_SO|DEST=0x1000|D=2048|SAGES=EULER\nROT_LIE_SO|DEST=0x2000|D=2048|SAGES=GAUSS\nDIALECTIC_LYAPUNOV|DEST=0x3000|A=0x1000|B=0x2000|D=2048|DT=0.01|ALPHA=1.0|GAMMA=0.05|SAGES=EULER+GAUSS\nCOLLAPSE_MMIO|DEST=0x0000|A=0x3000|D=2048\nHALT_EQUILIBRIUM|DEST=0x3000|D=2048", true);
+            }
+        }
+
+        selectExample.addEventListener('change', (e) => {
+            loadExample(e.target.value);
+        });
+
+        // Copiar System Prompt Maestro al portapapeles
+        btnCopyPrompt.addEventListener('click', async () => {
+            try {
+                const res = await fetch(`${API_BASE}/api/system_prompt`);
+                const data = await res.json();
+                await navigator.clipboard.writeText(data.system_prompt);
+                btnCopyPrompt.innerHTML = '<span>&#10004;</span> ¡Copiado!';
+                setTimeout(() => {
+                    btnCopyPrompt.innerHTML = '<span>&#128203;</span> Copiar Prompt Maestro';
+                }, 2000);
+            } catch (err) {
+                alert("Error al copiar prompt: " + err.message);
+            }
+        });
+
+        // Guardar Notebook
+        btnSaveNotebook.addEventListener('click', async () => {
+            const nbData = {
+                version: "1.0",
+                cells: cells.map(c => {
+                    const editor = document.getElementById(`editor-${c.id}`);
+                    return {
+                        id: c.id,
+                        code: editor ? editor.value : c.code
+                    };
+                })
+            };
+
+            const name = prompt("Nombre del notebook:", "mi_algoritmo.mthnb");
+            if (!name) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/notebook/save`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name, data: nbData })
+                });
+                const r = await res.json();
+                if (r.success) {
+                    alert(`Notebook guardado como: ${r.saved_as}`);
+                }
+            } catch (e) {
+                alert("Error al guardar: " + e.message);
+            }
+        });
+
+        // -------------------------------------------------------------
+        // Chat con Asistente Multi-IA
+        // -------------------------------------------------------------
+        async function sendAiMessage(promptText = null) {
+            const prompt = promptText || aiPromptInput.value.trim();
+            if (!prompt) return;
+
+            // Obtener código de la celda activa o de la primera celda
+            const currentCode = cells.length > 0 ? (document.getElementById(`editor-${cells[0].id}`)?.value || "") : "";
+
+            appendUserMessage(prompt);
+            if (!promptText) aiPromptInput.value = '';
+
+            const aiMsgEl = appendAiLoadingMessage();
+
+            try {
+                const payload = {
+                    provider: aiProvider.value,
+                    model: aiModel.value,
+                    api_key: aiApiKey.value.trim(),
+                    prompt: prompt,
+                    current_code: currentCode
+                };
+
+                const res = await fetch(`${API_BASE}/api/ai/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    renderAiReply(aiMsgEl, data.reply, data.provider);
+                } else {
+                    aiMsgEl.innerHTML = `
+                        <span class="chat-sender-tag" style="color:var(--red);">ERROR ${escapeHtml(data.provider || 'IA')}</span>
+                        <div class="chat-bubble" style="border-color:var(--red); color:var(--red);">
+                            ${escapeHtml(data.error || 'Fallo desconocido en el modelo')}
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                aiMsgEl.innerHTML = `
+                    <span class="chat-sender-tag" style="color:var(--red);">ERROR DE RED</span>
+                    <div class="chat-bubble" style="border-color:var(--red); color:var(--red);">
+                        ${escapeHtml(err.message)}
+                    </div>
+                `;
+            }
+        }
+
+        function appendUserMessage(text) {
+            const msg = document.createElement('div');
+            msg.className = 'chat-msg user';
+            msg.innerHTML = `
+                <span class="chat-sender-tag">TÚ (INVESTIGADOR)</span>
+                <div class="chat-bubble">${escapeHtml(text)}</div>
+            `;
+            aiChatBody.appendChild(msg);
+            aiChatBody.scrollTop = aiChatBody.scrollHeight;
+        }
+
+        function appendAiLoadingMessage() {
+            const msg = document.createElement('div');
+            msg.className = 'chat-msg ai';
+            msg.innerHTML = `
+                <span class="chat-sender-tag">GENERANDO EN SILICIO...</span>
+                <div class="chat-bubble" style="color:var(--cyan);">[Pensando geodésicamente...]</div>
+            `;
+            aiChatBody.appendChild(msg);
+            aiChatBody.scrollTop = aiChatBody.scrollHeight;
+            return msg;
+        }
+
+        function renderAiReply(msgEl, rawText, providerName) {
+            msgEl.innerHTML = `
+                <span class="chat-sender-tag">${escapeHtml(providerName || 'IA')}</span>
+                <div class="chat-bubble" id="bubble-${Date.now()}"></div>
+            `;
+            const bubble = msgEl.querySelector('.chat-bubble');
+
+            // Parsear bloques de código
+            const parts = rawText.split(/```(?:mathesis|mth)?/i);
+
+            parts.forEach((part, idx) => {
+                if (idx % 2 === 0) {
+                    // Texto Markdown regular
+                    const p = document.createElement('p');
+                    p.style.marginBottom = '6px';
+                    p.innerHTML = escapeHtml(part).replace(/\n/g, '<br>');
+                    bubble.appendChild(p);
+                } else {
+                    // Bloque de código MATHESIS
+                    const snippet = part.trim();
+                    const box = document.createElement('div');
+                    box.className = 'code-snippet-box';
+                    box.innerHTML = `
+                        <div class="code-snippet-header">
+                            <span>CÓDIGO MATHESIS (.mth)</span>
+                            <button class="btn-insert-code">&#10133; Insertar en Nueva Celda</button>
+                        </div>
+                        <div class="code-snippet-body">${escapeHtml(snippet)}</div>
+                    `;
+                    box.querySelector('.btn-insert-code').addEventListener('click', () => {
+                        addCell(snippet, true);
+                    });
+                    bubble.appendChild(box);
+                }
+            });
+
+            aiChatBody.scrollTop = aiChatBody.scrollHeight;
+        }
+
+        btnAiSend.addEventListener('click', () => sendAiMessage());
+        aiPromptInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendAiMessage();
+            }
+        });
+
+        // Quick AI actions
+        document.getElementById('btnAiExplain').addEventListener('click', () => {
+            sendAiMessage("Por favor explica paso a paso las matemáticas y operaciones de Stiefel de la celda de código activa.");
+        });
+        document.getElementById('btnAiOptimize').addEventListener('click', () => {
+            sendAiMessage("Optimiza este código para maximizar el uso de microcódigo AVX+FMA3 en silicio y reducir la latencia de convergencia.");
+        });
+        document.getElementById('btnAiStiefel').addEventListener('click', () => {
+            sendAiMessage("Explica cómo el acumulador de Neumaier y la retracción polar de orden 4 garantizan deriva <= 10^-15 sin error acumulativo.");
+        });
+        document.getElementById('btnAiFacturacion').addEventListener('click', () => {
+            sendAiMessage("Genera un programa en MATHESIS para facturación geométrica instantánea con 0 tokens de API y colapso efímero MMIO.");
+        });
+
+        function askAiAboutCell(id) {
+            const editor = document.getElementById(`editor-${id}`);
+            if (editor) {
+                sendAiMessage(`Revisa y analiza esta celda de código:\n\n${editor.value}`);
+            }
+        }
+
+        // -------------------------------------------------------------
+        // Canvas 3D Stiefel Manifold (WebGL / Canvas2D)
+        // -------------------------------------------------------------
+        const canvas = document.getElementById('manifoldCanvas');
+        const ctx = canvas.getContext('2d');
+        let angle = 0;
+        let flashIntensity = 0;
+
+        function resizeCanvas() {
+            canvas.width = canvas.clientWidth * window.devicePixelRatio;
+            canvas.height = canvas.clientHeight * window.devicePixelRatio;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function triggerGeodesicFlash() {
+            flashIntensity = 1.0;
+        }
+
+        function drawManifold() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const R = Math.min(canvas.width, canvas.height) * 0.38;
+
+            // Fondo esfera
+            const grad = ctx.createRadialGradient(cx - R*0.3, cy - R*0.3, R*0.1, cx, cy, R);
+            grad.addColorStop(0, 'rgba(0, 229, 255, 0.18)');
+            grad.addColorStop(0.7, 'rgba(157, 78, 221, 0.10)');
+            grad.addColorStop(1, 'rgba(10, 13, 19, 0.95)');
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, R, 0, Math.PI * 2);
+            ctx.fillStyle = grad;
+            ctx.fill();
+            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = flashIntensity > 0 ? `rgba(6, 214, 160, ${0.4 + flashIntensity * 0.6})` : 'rgba(0, 229, 255, 0.4)';
+            ctx.stroke();
+
+            if (flashIntensity > 0) flashIntensity *= 0.92;
+
+            angle += 0.006;
+
+            // Geodésicas
+            ctx.lineWidth = 0.6;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
+            for (let i = -2; i <= 2; i++) {
+                ctx.beginPath();
+                const rH = Math.sqrt(Math.max(0, R*R - (i*R*0.33)*(i*R*0.33)));
+                ctx.ellipse(cx, cy + i*R*0.33, rH, rH*0.28, 0, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Atractores Euler & Gauss
+            function project(th, ph) {
+                const rotTh = th + angle;
+                const x = R * Math.sin(ph) * Math.cos(rotTh);
+                const y = R * Math.cos(ph);
+                return { px: cx + x, py: cy + y };
+            }
+
+            const pEuler = project(0.7, 1.3);
+            const pGauss = project(2.5, 1.8);
+            const pEquil = project((0.7+2.5)/2, (1.3+1.8)/2);
+
+            // Trayectoria geodésica entre sabios
+            ctx.beginPath();
+            ctx.moveTo(pEuler.px, pEuler.py);
+            ctx.lineTo(pEquil.px, pEquil.py);
+            ctx.lineTo(pGauss.px, pGauss.py);
+            ctx.strokeStyle = 'rgba(0, 229, 255, 0.6)';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // Puntos de sabios
+            drawPoint(pEuler.px, pEuler.py, 'var(--cyan)', 'Euler (SO(D))');
+            drawPoint(pGauss.px, pGauss.py, 'var(--gold)', 'Gauss (Stiefel)');
+            drawPoint(pEquil.px, pEquil.py, 'var(--green)', 'Equilibrio');
+
+            requestAnimationFrame(drawManifold);
+        }
+
+        function drawPoint(x, y, color, label) {
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, Math.PI*2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.font = '10px var(--font-mono)';
+            ctx.fillText(label, x + 8, y + 3);
+        }
+
+        requestAnimationFrame(drawManifold);
+
+        // -------------------------------------------------------------
+        // Helpers
+        // -------------------------------------------------------------
+        function parseArgbHex(hexStr) {
+            let hex = hexStr.replace('0x', '').replace('#', '');
+            if (hex.length === 8) {
+                return {
+                    a: parseInt(hex.substring(0, 2), 16),
+                    r: parseInt(hex.substring(2, 4), 16),
+                    g: parseInt(hex.substring(4, 6), 16),
+                    b: parseInt(hex.substring(6, 8), 16)
+                };
+            }
+            return { a: 255, r: 130, g: 125, b: 124 };
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Cargar ejemplo inicial al abrir
+        loadExample('consenso_sabios');
+    </script>
+</body>
+</html>
