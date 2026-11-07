@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EINSOF & MATHESIS AI-STUDIO (AIIDE) — Jupyter-Style Sovereign IDE</title>
+    <title>EINSOF & MATHESIS AI-STUDIO (AIIDE v2.0) — Sovereign Jupyter-Style IDE</title>
     <style>
         :root {
             --bg-base: #080a0f;
-            --bg-panel: rgba(14, 18, 27, 0.94);
+            --bg-panel: rgba(14, 18, 27, 0.95);
             --bg-subpanel: #111622;
             --border: #1e2638;
             --border-glow: #2a364f;
@@ -95,6 +95,12 @@
             border-color: var(--green);
         }
 
+        .badge-purple {
+            background: rgba(157, 78, 221, 0.15);
+            color: #d8b4fe;
+            border-color: var(--purple);
+        }
+
         .subtitle {
             font-size: 0.72rem;
             color: var(--text-muted);
@@ -103,7 +109,7 @@
         .header-controls {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .btn-header {
@@ -125,10 +131,10 @@
             box-shadow: 0 0 8px var(--cyan-glow);
         }
 
-        .btn-header.active {
-            background: rgba(0, 229, 255, 0.15);
-            border-color: var(--cyan);
-            color: var(--cyan);
+        .btn-header.highlight {
+            background: linear-gradient(135deg, rgba(157, 78, 221, 0.25), rgba(0, 229, 255, 0.25));
+            border-color: var(--purple);
+            color: #fff;
         }
 
         .metrics-banner {
@@ -154,11 +160,67 @@
             font-size: 0.62rem;
         }
 
+        /* Swarm Parameters Bar */
+        .swarm-control-bar {
+            background: #0d121c;
+            border-bottom: 1px solid var(--border);
+            padding: 6px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+            z-index: 9;
+        }
+
+        .param-group {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .param-badge-box {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #141a27;
+            padding: 4px 10px;
+            border-radius: 5px;
+            border: 1px solid #232c3f;
+        }
+
+        .param-badge-box label {
+            color: var(--cyan);
+            font-weight: bold;
+        }
+
+        .param-input-num {
+            width: 44px;
+            background: #080a0f;
+            border: 1px solid #2d3850;
+            color: #fff;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: var(--font-mono);
+            text-align: center;
+            font-size: 0.78rem;
+            outline: none;
+        }
+
+        .param-input-num:focus {
+            border-color: var(--cyan);
+        }
+
+        .sages-preview {
+            color: var(--gold);
+            font-size: 0.7rem;
+        }
+
         /* Main Workspace Layout */
         .workspace-grid {
             display: grid;
-            grid-template-columns: 1fr 340px 380px;
-            height: calc(100vh - 54px);
+            grid-template-columns: 1fr 340px 400px;
+            height: calc(100vh - 90px);
             overflow: hidden;
         }
 
@@ -370,7 +432,7 @@
             font-family: var(--font-mono);
             font-size: 0.72rem;
             color: var(--cyan);
-            background: rgba(10, 13, 19, 0.75);
+            background: rgba(10, 13, 19, 0.8);
             padding: 6px 10px;
             border-radius: 5px;
             border: 1px solid rgba(0, 229, 255, 0.3);
@@ -610,6 +672,71 @@
             transform: translateY(-1px);
         }
 
+        /* Modal Flotante de Registro de Fine-Tuning */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: #0f1420;
+            border: 1px solid var(--border-glow);
+            border-radius: 8px;
+            width: 480px;
+            max-width: 90vw;
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: #161d2d;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            font-size: 0.78rem;
+        }
+
+        .modal-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .modal-row label {
+            color: var(--cyan);
+            font-weight: bold;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+        }
+
+        .modal-footer {
+            background: #141a27;
+            padding: 10px 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
         /* Scrollbars */
         ::-webkit-scrollbar {
             width: 6px;
@@ -634,12 +761,15 @@
         <div class="logo-group">
             <div class="logo-symbol">&Omega;</div>
             <div class="title-block">
-                <h1>EINSOF & MATHESIS AI-STUDIO <span class="badge">AIIDE v1.0</span></h1>
-                <div class="subtitle">Entorno Soberano de Cómputo Polidimensional con Asistente Multi-IA Integrado</div>
+                <h1>EINSOF & MATHESIS AI-STUDIO <span class="badge">AIIDE v2.0</span></h1>
+                <div class="subtitle">Entorno Soberano de Cómputo Polidimensional con Parámetros Formales (agent=A, turing=T)</div>
             </div>
         </div>
 
         <div class="header-controls">
+            <button class="btn-header highlight" id="btnOpenFtModal" title="Incorporar nuevo modelo o checkpoint Fine-Tuned">
+                <span>&#10010;</span> Nuevo Fine-Tuning
+            </button>
             <button class="btn-header" id="btnCopyPrompt" title="Copia el System Prompt oficial para pegar en ChatGPT / Claude">
                 <span>&#128203;</span> Copiar Prompt Maestro
             </button>
@@ -664,6 +794,32 @@
         </div>
     </header>
 
+    <!-- Barra de Parámetros Formales Obligatorios: agent=A, turing=T -->
+    <div class="swarm-control-bar">
+        <div class="param-group">
+            <div class="param-badge-box">
+                <label for="inputAgentA">agent = A:</label>
+                <input type="number" class="param-input-num" id="inputAgentA" min="1" max="8" value="2" title="Cantidad mínima de agentes/sabios vectoriales obligados a deliberar">
+                <span style="color:var(--text-muted); font-size:0.68rem;">Sabios</span>
+            </div>
+
+            <div class="param-badge-box">
+                <label for="inputTuringT">turing = T:</label>
+                <input type="number" class="param-input-num" id="inputTuringT" min="1" max="100" value="10" title="Cantidad de vueltas o ciclos de convergencia de Turing/Lyapunov">
+                <span style="color:var(--text-muted); font-size:0.68rem;">Vueltas</span>
+            </div>
+
+            <div class="sages-preview" id="sagesPreview">
+                SABIOS ACTIVOS: Euler + Gauss (Topología & Curvatura)
+            </div>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:8px;">
+            <span class="badge badge-purple" id="badgeActiveModel">MODELO: deepseek-r1:7b</span>
+            <span class="badge badge-green" id="badgeSwarmStatus">SWARM ORQUESTADO</span>
+        </div>
+    </div>
+
     <!-- Main Workspace Grid -->
     <div class="workspace-grid">
 
@@ -671,7 +827,7 @@
         <div class="notebook-panel">
             <div class="notebook-toolbar">
                 <div class="toolbar-group">
-                    <button class="btn-tool" id="btnAddCell" title="Agregar celda de código (Shift+A)">+ Celda</button>
+                    <button class="btn-tool" id="btnAddCell" title="Agregar celda de código">+ Celda</button>
                     <button class="btn-tool btn-tool-run-all" id="btnRunAll" title="Ejecutar todas las celdas">▶ Ejecutar Todo</button>
                     <button class="btn-tool" id="btnClearOutputs">Limpiar</button>
                 </div>
@@ -679,9 +835,10 @@
                 <div class="toolbar-group">
                     <span style="font-size:0.7rem; color:var(--text-muted);">Ejemplo:</span>
                     <select class="select-example" id="selectExample">
-                        <option value="consenso_sabios">1. Consenso Dialéctico (Euler + Gauss)</option>
-                        <option value="facturacion_sin_tokens">2. Facturación Soberana (0 Tokens)</option>
-                        <option value="lyapunov_dreaming">3. Sueño Geodésico (Memoria)</option>
+                        <option value="consenso_sabios">1. Consenso Dialéctico (A=2, T=10)</option>
+                        <option value="tribunal_pleno_7_sabios">2. Tribunal Pleno 7 Sabios (A=7, T=50)</option>
+                        <option value="facturacion_sin_tokens">3. Facturación Soberana (A=2, T=15)</option>
+                        <option value="lyapunov_dreaming">4. Sueño Geodésico (A=1, T=30)</option>
                     </select>
                 </div>
             </div>
@@ -702,8 +859,9 @@
             <div class="canvas-wrapper">
                 <div class="overlay-hud">
                     <div>ESPACIO: Hiperesfera S^{D-1} (D=2048)</div>
-                    <div id="hudAtractor">ATRACTOR: Punto de Equilibrio Lyapunov</div>
+                    <div id="hudAtractor">ATRACTORES: <span id="hudSagesCount">2 Sabios</span></div>
                     <div id="hudDeriva">DERIVA NEUMAIER: 0.00e+00</div>
+                    <div id="hudVueltas">VUELTAS TURING: T=10</div>
                 </div>
 
                 <canvas id="manifoldCanvas"></canvas>
@@ -724,22 +882,21 @@
         <div class="ai-panel">
             <div class="ai-header">
                 <div class="ai-header-top">
-                    <span style="font-size:0.8rem; font-weight:bold; color:var(--purple);">&#9733; ASISTENTE MULTI-IA</span>
-                    <span style="font-size:0.65rem; color:var(--text-muted);">Sin vendor lock-in</span>
+                    <span style="font-size:0.8rem; font-weight:bold; color:var(--purple);">&#9733; ASISTENTE MULTI-IA EN EINSOF</span>
+                    <span style="font-size:0.65rem; color:var(--text-muted);" id="ftCountLabel">5 Fine-Tunings</span>
                 </div>
 
                 <div class="ai-provider-select">
                     <select class="ai-select" id="aiProvider">
                         <option value="ollama_aladin" selected>Ollama ALADIN (192.168.100.21)</option>
+                        <option value="einsof_finetuned">Einsof Fine-Tuned Models</option>
                         <option value="ollama_local">Ollama Local (127.0.0.1)</option>
                         <option value="openai">OpenAI (GPT-4o / o3-mini)</option>
                         <option value="anthropic">Anthropic (Claude 3.5)</option>
                     </select>
 
                     <select class="ai-select" id="aiModel">
-                        <option value="deepseek-r1:7b">deepseek-r1:7b (Aladín)</option>
-                        <option value="qwen2.5-coder:7b">qwen2.5-coder:7b (Aladín)</option>
-                        <option value="llama3.2:3b">llama3.2:3b (Aladín)</option>
+                        <!-- Poblado dinámicamente -->
                     </select>
                 </div>
 
@@ -752,16 +909,20 @@
                 <button class="btn-quick-ai" id="btnAiExplain">⚡ Explicar celda</button>
                 <button class="btn-quick-ai" id="btnAiOptimize">⚡ Optimizar AVX</button>
                 <button class="btn-quick-ai" id="btnAiStiefel">⚡ Teorema Stiefel</button>
-                <button class="btn-quick-ai" id="btnAiFacturacion">⚡ Facturación 0 Tokens</button>
+                <button class="btn-quick-ai" id="btnAiTribunal">⚡ Orquestar Sabios (A=7)</button>
             </div>
 
             <div class="ai-chat-body" id="aiChatBody">
                 <div class="chat-msg ai">
-                    <span class="chat-sender-tag">SISTEMA SOSTENIBLE DE IA</span>
+                    <span class="chat-sender-tag">SISTEMA SOBERANO DE IA</span>
                     <div class="chat-bubble">
-                        ¡Bienvenido al <b>AI-Studio Soberano</b>! Estoy listo para programar contigo en la variedad geométrica continua de MATHESIS y EinsofOS.
+                        ¡Bienvenido al <b>AI-Studio Soberano v2.0</b>!
                         <br><br>
-                        Puedes seleccionar <b>Ollama en el Nodo ALADIN (192.168.100.21)</b> para cómputo local con <b>$0 tokens</b>, o conectar tus API keys de OpenAI y Claude.
+                        Parámetros activos de enjambre:
+                        <br>• <b>agent = A:</b> Mínimo de agentes vectoriales obligados.
+                        <br>• <b>turing = T:</b> Vueltas o ciclos de convergencia de Turing/Lyapunov.
+                        <br><br>
+                        Puedes incorporar nuevos modelos Fine-Tuned con el botón <b>"+ Nuevo Fine-Tuning"</b> en cualquier momento.
                     </div>
                 </div>
             </div>
@@ -776,15 +937,59 @@
 
     </div>
 
-    <!-- Script de Interactividad, Simulación 3D y Conectividad con aiide_server -->
+    <!-- Modal para Incorporar Nuevo Modelo Fine-Tuned -->
+    <div class="modal-overlay" id="modalFtOverlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <span style="font-weight:bold; color:var(--cyan); font-size:0.85rem;">Incorporar Nuevo Modelo Fine-Tuned a Einsof</span>
+                <button class="btn-cell-action" id="btnCloseFtModal" style="font-size:1rem;">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-row">
+                    <label>Nombre del Modelo:</label>
+                    <input type="text" class="ai-input" id="ftName" placeholder="Ej: Qwen 2.5 Coder Stiefel Finetuned">
+                </div>
+                <div class="modal-row">
+                    <label>ID de Checkpoint / Modelo:</label>
+                    <input type="text" class="ai-input" id="ftId" placeholder="Ej: qwen3.8-27b-ft-20261107 o nombre en Ollama">
+                </div>
+                <div class="modal-row" style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                    <div>
+                        <label>Dimensión Geométrica (D):</label>
+                        <input type="number" class="ai-input" id="ftDimD" value="2048">
+                    </div>
+                    <div>
+                        <label>Plataforma:</label>
+                        <select class="ai-select" id="ftPlatform">
+                            <option value="Alibaba Bailian Cloud GPU">Alibaba Bailian Cloud</option>
+                            <option value="Google Colab A100/T4">Google Colab GPU</option>
+                            <option value="Debian 13 ALADIN Ollama">Debian 13 ALADIN Ollama</option>
+                            <option value="PmtpShmBus Shared Memory">PMTP ShmBus Host</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-row">
+                    <label>Descripción / Especialidad:</label>
+                    <input type="text" class="ai-input" id="ftDesc" placeholder="Ej: Fine-tuning LoRA en variedad S^{2047} para prueba de teoremas">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-tool" id="btnCancelFtModal">Cancelar</button>
+                <button class="btn-tool btn-tool-run-all" id="btnSaveFtModel">Registrar en Einsof</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script de Interactividad, Simulación 3D y Conectividad con aiide_server v2.0 -->
     <script>
-        // API Base URL (mismo origen del servidor local)
         const API_BASE = window.location.origin;
 
-        // Estado Global del Notebook
+        // Estado Global
         let cells = [];
-        let activeCellIndex = 0;
         let executionCounter = 1;
+        let sagesCatalog = [];
+        let finetunedModels = [];
+        let aladinModels = [];
 
         // Elementos UI
         const cellsContainer = document.getElementById('cellsContainer');
@@ -795,6 +1000,12 @@
         const btnCopyPrompt = document.getElementById('btnCopyPrompt');
         const btnSaveNotebook = document.getElementById('btnSaveNotebook');
 
+        // Elementos Parámetros Swarm
+        const inputAgentA = document.getElementById('inputAgentA');
+        const inputTuringT = document.getElementById('inputTuringT');
+        const sagesPreview = document.getElementById('sagesPreview');
+        const badgeActiveModel = document.getElementById('badgeActiveModel');
+
         // Elementos AI
         const aiProvider = document.getElementById('aiProvider');
         const aiModel = document.getElementById('aiModel');
@@ -803,33 +1014,116 @@
         const aiChatBody = document.getElementById('aiChatBody');
         const aiPromptInput = document.getElementById('aiPromptInput');
         const btnAiSend = document.getElementById('btnAiSend');
+        const ftCountLabel = document.getElementById('ftCountLabel');
+
+        // Modal Fine-Tuning
+        const modalFtOverlay = document.getElementById('modalFtOverlay');
+        const btnOpenFtModal = document.getElementById('btnOpenFtModal');
+        const btnCloseFtModal = document.getElementById('btnCloseFtModal');
+        const btnCancelFtModal = document.getElementById('btnCancelFtModal');
+        const btnSaveFtModel = document.getElementById('btnSaveFtModel');
+        const ftName = document.getElementById('ftName');
+        const ftId = document.getElementById('ftId');
+        const ftDimD = document.getElementById('ftDimD');
+        const ftPlatform = document.getElementById('ftPlatform');
+        const ftDesc = document.getElementById('ftDesc');
 
         // Elementos HUD
         const pixelSample = document.getElementById('pixelSample');
         const pixelHex = document.getElementById('pixelHex');
         const topNeumaier = document.getElementById('topNeumaier');
         const hudDeriva = document.getElementById('hudDeriva');
+        const hudSagesCount = document.getElementById('hudSagesCount');
+        const hudVueltas = document.getElementById('hudVueltas');
 
         // Inicialización de API Keys desde localStorage
         if (localStorage.getItem('aiide_openai_key')) {
             aiApiKey.value = localStorage.getItem('aiide_openai_key');
         }
 
-        aiProvider.addEventListener('change', () => {
+        // -------------------------------------------------------------
+        // Actualización de Sabios y Parámetros Swarm
+        // -------------------------------------------------------------
+        function updateSagesPreview() {
+            const a = parseInt(inputAgentA.value) || 2;
+            const t = parseInt(inputTuringT.value) || 10;
+            
+            hudVueltas.textContent = `VUELTAS TURING: T=${t}`;
+            hudSagesCount.textContent = `${a} Sabios`;
+
+            if (sagesCatalog.length > 0) {
+                const active = sagesCatalog.slice(0, a).map(s => s.name);
+                sagesPreview.textContent = `SABIOS ACTIVOS (${a}): ` + active.join(' + ');
+            } else {
+                sagesPreview.textContent = `agent=A=${a} Sabios | turing=T=${t} Vueltas`;
+            }
+        }
+
+        inputAgentA.addEventListener('input', updateSagesPreview);
+        inputTuringT.addEventListener('input', updateSagesPreview);
+
+        // -------------------------------------------------------------
+        // Catálogo de Modelos Dinámicos
+        // -------------------------------------------------------------
+        async function fetchModels() {
+            try {
+                const res = await fetch(`${API_BASE}/api/models`);
+                const data = await res.json();
+                aladinModels = data.aladin_native || [];
+                finetunedModels = data.finetuned_models || [];
+                sagesCatalog = data.sages || [];
+
+                ftCountLabel.textContent = `${finetunedModels.length} Fine-Tunings`;
+                updateSagesPreview();
+                populateModelDropdown();
+            } catch (e) {
+                console.error("Error al cargar modelos:", e);
+            }
+        }
+
+        function populateModelDropdown() {
             const p = aiProvider.value;
-            if (p === 'openai' || p === 'anthropic') {
+            aiModel.innerHTML = '';
+
+            if (p === 'ollama_aladin') {
+                apiKeyRow.style.display = 'none';
+                if (aladinModels.length > 0) {
+                    aladinModels.forEach(m => {
+                        const opt = document.createElement('option');
+                        opt.value = m.id;
+                        opt.textContent = m.name;
+                        aiModel.appendChild(opt);
+                    });
+                } else {
+                    aiModel.innerHTML = '<option value="deepseek-r1:7b">deepseek-r1:7b (Aladín)</option><option value="qwen2.5-coder:7b">qwen2.5-coder:7b</option>';
+                }
+            } else if (p === 'einsof_finetuned') {
+                apiKeyRow.style.display = 'none';
+                finetunedModels.forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = m.id;
+                    opt.textContent = `${m.name} (D=${m.dim_d})`;
+                    aiModel.appendChild(opt);
+                });
+            } else if (p === 'openai') {
                 apiKeyRow.style.display = 'block';
-                aiApiKey.placeholder = p === 'openai' ? 'sk-... (API Key OpenAI)' : 'sk-ant-... (API Key Anthropic)';
-                aiModel.innerHTML = p === 'openai' 
-                    ? '<option value="gpt-4o">gpt-4o</option><option value="o3-mini">o3-mini</option><option value="gpt-4o-mini">gpt-4o-mini</option>'
-                    : '<option value="claude-3-5-sonnet-20241022">claude-3-5-sonnet</option><option value="claude-3-5-haiku-20241022">claude-3-5-haiku</option>';
+                aiApiKey.placeholder = 'sk-... (API Key OpenAI)';
+                aiModel.innerHTML = '<option value="gpt-4o">gpt-4o</option><option value="o3-mini">o3-mini</option><option value="gpt-4o-mini">gpt-4o-mini</option>';
+            } else if (p === 'anthropic') {
+                apiKeyRow.style.display = 'block';
+                aiApiKey.placeholder = 'sk-ant-... (API Key Anthropic)';
+                aiModel.innerHTML = '<option value="claude-3-5-sonnet-20241022">claude-3-5-sonnet</option><option value="claude-3-5-haiku-20241022">claude-3-5-haiku</option>';
             } else if (p === 'ollama_local') {
                 apiKeyRow.style.display = 'none';
                 aiModel.innerHTML = '<option value="deepseek-r1:latest">deepseek-r1:latest</option><option value="qwen2.5-coder:latest">qwen2.5-coder:latest</option>';
-            } else {
-                apiKeyRow.style.display = 'none';
-                aiModel.innerHTML = '<option value="deepseek-r1:7b">deepseek-r1:7b (Aladín)</option><option value="qwen2.5-coder:7b">qwen2.5-coder:7b (Aladín)</option><option value="llama3.2:3b">llama3.2:3b (Aladín)</option>';
             }
+
+            badgeActiveModel.textContent = `MODELO: ${aiModel.value || 'auto'}`;
+        }
+
+        aiProvider.addEventListener('change', populateModelDropdown);
+        aiModel.addEventListener('change', () => {
+            badgeActiveModel.textContent = `MODELO: ${aiModel.value}`;
         });
 
         aiApiKey.addEventListener('change', () => {
@@ -839,15 +1133,71 @@
         });
 
         // -------------------------------------------------------------
-        // Gestión de Celdas estilo Jupyter
+        // Modal de Registro de Fine-Tuning
         // -------------------------------------------------------------
-        function addCell(code = "", runImmediately = false) {
+        btnOpenFtModal.addEventListener('click', () => {
+            modalFtOverlay.className = 'modal-overlay active';
+        });
+        function closeFtModal() {
+            modalFtOverlay.className = 'modal-overlay';
+        }
+        btnCloseFtModal.addEventListener('click', closeFtModal);
+        btnCancelFtModal.addEventListener('click', closeFtModal);
+
+        btnSaveFtModel.addEventListener('click', async () => {
+            const name = ftName.value.trim();
+            const id = ftId.value.trim();
+            const dim = parseInt(ftDimD.value) || 2048;
+            const platform = ftPlatform.value;
+            const desc = ftDesc.value.trim();
+
+            if (!id) {
+                alert("El ID o nombre del checkpoint es obligatorio.");
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/models/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: id,
+                        name: name || id,
+                        dim_d: dim,
+                        platform: platform,
+                        description: desc
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert(`Modelo '${data.registered_model.name}' registrado exitosamente en Einsof y PostgreSQL active_vault.`);
+                    closeFtModal();
+                    await fetchModels();
+                    aiProvider.value = 'einsof_finetuned';
+                    populateModelDropdown();
+                    aiModel.value = data.registered_model.id;
+                    badgeActiveModel.textContent = `MODELO: ${data.registered_model.name}`;
+                } else {
+                    alert("Error: " + (data.error || "Fallo al registrar"));
+                }
+            } catch (err) {
+                alert("Error de conexión: " + err.message);
+            }
+        });
+
+        // -------------------------------------------------------------
+        // Gestión de Celdas estilo Jupyter con A y T
+        // -------------------------------------------------------------
+        function addCell(code = "", runImmediately = false, a = null, t = null) {
             const cellId = cells.length;
             const cellData = {
                 id: cellId,
                 code: code,
                 output: null,
-                executionCount: null
+                executionCount: null,
+                agent_a: a !== null ? a : (parseInt(inputAgentA.value) || 2),
+                turing_t: t !== null ? t : (parseInt(inputTuringT.value) || 10)
             };
             cells.push(cellData);
             renderCell(cellData);
@@ -867,6 +1217,7 @@
                 <div>
                     <span class="cell-prompt-tag" id="tag-${cellData.id}">In [${cellData.executionCount !== null ? cellData.executionCount : ' '}]:</span>
                     <span style="color:var(--text-muted); margin-left:8px;">Celda ${cellData.id + 1} (.mth)</span>
+                    <span style="color:var(--gold); margin-left:8px; font-size:0.65rem;" id="cell-params-${cellData.id}">[agent=A:${cellData.agent_a} | turing=T:${cellData.turing_t}]</span>
                 </div>
                 <div class="cell-actions">
                     <button class="btn-cell-action" onclick="executeCell(${cellData.id})" title="Ejecutar (Shift+Enter)">&#9658; Correr</button>
@@ -881,7 +1232,6 @@
             editor.spellcheck = false;
             editor.value = cellData.code;
 
-            // Atajo Shift+Enter para correr celda
             editor.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && e.shiftKey) {
                     e.preventDefault();
@@ -889,7 +1239,6 @@
                 }
             });
 
-            // Auto-ajustar altura
             editor.addEventListener('input', () => {
                 editor.style.height = 'auto';
                 editor.style.height = editor.scrollHeight + 'px';
@@ -905,7 +1254,6 @@
             card.appendChild(output);
             cellsContainer.appendChild(card);
 
-            // Ajustar altura inicial
             setTimeout(() => {
                 editor.style.height = editor.scrollHeight + 'px';
             }, 10);
@@ -921,18 +1269,29 @@
             const editor = document.getElementById(`editor-${id}`);
             const output = document.getElementById(`output-${id}`);
             const tag = document.getElementById(`tag-${id}`);
+            const paramLabel = document.getElementById(`cell-params-${id}`);
             if (!editor || !output) return;
 
             const code = editor.value;
+            const a = parseInt(inputAgentA.value) || 2;
+            const t = parseInt(inputTuringT.value) || 10;
+
+            if (paramLabel) paramLabel.textContent = `[agent=A:${a} | turing=T:${t}]`;
+
             tag.textContent = 'In [*]:';
             output.className = 'cell-output active';
-            output.innerHTML = '<span style="color:var(--cyan);">[SILICIO] Despachando a VM nativa...</span>';
+            output.innerHTML = '<span style="color:var(--cyan);">[SILICIO] Despachando a VM nativa de silicio...</span>';
 
             try {
                 const resp = await fetch(`${API_BASE}/api/execute`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ code: code, mode: 'mathesis' })
+                    body: JSON.stringify({
+                        code: code,
+                        mode: 'mathesis',
+                        agent_a: a,
+                        turing_t: t
+                    })
                 });
 
                 const data = await resp.json();
@@ -945,12 +1304,12 @@
                             <span class="meta-tag">EXIT CODE 0</span>
                             <span style="color:var(--cyan);">${data.latency_us} &mu;s</span>
                             <span style="color:var(--gold);">Deriva: ${data.neumaier_deriv}</span>
+                            <span style="color:var(--purple);">agent=A:${data.agent_a} | turing=T:${data.turing_t}</span>
                             <span style="color:var(--text-muted);">${data.num_instructions} ops (${data.binary_size_bytes}B)</span>
                         </div>
                         <div>${escapeHtml(data.stdout)}</div>
                     `;
 
-                    // Actualizar HUD Visualizador 3D
                     if (data.pixel_hex) {
                         pixelHex.textContent = data.pixel_hex;
                         const argb = parseArgbHex(data.pixel_hex);
@@ -972,7 +1331,7 @@
                 }
             } catch (err) {
                 tag.textContent = 'In [!]:';
-                output.innerHTML = `<span style="color:var(--red);">Error de conexión con el backend: ${err.message}</span>`;
+                output.innerHTML = `<span style="color:var(--red);">Error de conexión: ${err.message}</span>`;
             }
         }
 
@@ -983,7 +1342,9 @@
         }
 
         btnAddCell.addEventListener('click', () => {
-            addCell("# Nueva instruccion MATHESIS\nROT_LIE_SO|DEST=0x1000|D=2048|SAGES=EULER\nHALT_EQUILIBRIUM|DEST=0x1000|D=2048");
+            const a = parseInt(inputAgentA.value) || 2;
+            const t = parseInt(inputTuringT.value) || 10;
+            addCell(`# Instruccion con agent=A=${a} y turing=T=${t}\nROT_LIE_SO|DEST=0x1000|D=2048|SAGES=EULER\nHALT_EQUILIBRIUM|DEST=0x1000|D=2048`);
         });
 
         btnRunAll.addEventListener('click', runAllCells);
@@ -999,7 +1360,7 @@
         });
 
         // -------------------------------------------------------------
-        // Carga de Ejemplos
+        // Carga de Ejemplos con A y T
         // -------------------------------------------------------------
         async function loadExample(exId) {
             cellsContainer.innerHTML = '';
@@ -1010,11 +1371,13 @@
                 const data = await res.json();
                 const ex = data.examples.find(e => e.id === exId);
                 if (ex) {
-                    addCell(ex.code, true);
+                    if (ex.agent_a) inputAgentA.value = ex.agent_a;
+                    if (ex.turing_t) inputTuringT.value = ex.turing_t;
+                    updateSagesPreview();
+                    addCell(ex.code, true, ex.agent_a, ex.turing_t);
                 }
             } catch (e) {
-                // Fallback por defecto si no responde
-                addCell("# Consenso Dialéctico de Sabios\nROT_LIE_SO|DEST=0x1000|D=2048|SAGES=EULER\nROT_LIE_SO|DEST=0x2000|D=2048|SAGES=GAUSS\nDIALECTIC_LYAPUNOV|DEST=0x3000|A=0x1000|B=0x2000|D=2048|DT=0.01|ALPHA=1.0|GAMMA=0.05|SAGES=EULER+GAUSS\nCOLLAPSE_MMIO|DEST=0x0000|A=0x3000|D=2048\nHALT_EQUILIBRIUM|DEST=0x3000|D=2048", true);
+                addCell("# Consenso Dialéctico de Sabios\nROT_LIE_SO|DEST=0x1000|D=2048|SAGES=EULER\nROT_LIE_SO|DEST=0x2000|D=2048|SAGES=GAUSS\nDIALECTIC_LYAPUNOV|DEST=0x3000|A=0x1000|B=0x2000|D=2048|DT=0.01|ALPHA=1.0|GAMMA=0.05|SAGES=EULER+GAUSS\nCOLLAPSE_MMIO|DEST=0x0000|A=0x3000|D=2048\nHALT_EQUILIBRIUM|DEST=0x3000|D=2048", true, 2, 10);
             }
         }
 
@@ -1022,13 +1385,15 @@
             loadExample(e.target.value);
         });
 
-        // Copiar System Prompt Maestro al portapapeles
         btnCopyPrompt.addEventListener('click', async () => {
             try {
                 const res = await fetch(`${API_BASE}/api/system_prompt`);
                 const data = await res.json();
-                await navigator.clipboard.writeText(data.system_prompt);
-                btnCopyPrompt.innerHTML = '<span>&#10004;</span> ¡Copiado!';
+                const a = inputAgentA.value;
+                const t = inputTuringT.value;
+                const fullPrompt = data.system_prompt + `\n[PARÁMETROS OBLIGATORIOS]: agent=A=${a}, turing=T=${t}`;
+                await navigator.clipboard.writeText(fullPrompt);
+                btnCopyPrompt.innerHTML = '<span>&#10004;</span> ¡Copiado con A y T!';
                 setTimeout(() => {
                     btnCopyPrompt.innerHTML = '<span>&#128203;</span> Copiar Prompt Maestro';
                 }, 2000);
@@ -1037,48 +1402,18 @@
             }
         });
 
-        // Guardar Notebook
-        btnSaveNotebook.addEventListener('click', async () => {
-            const nbData = {
-                version: "1.0",
-                cells: cells.map(c => {
-                    const editor = document.getElementById(`editor-${c.id}`);
-                    return {
-                        id: c.id,
-                        code: editor ? editor.value : c.code
-                    };
-                })
-            };
-
-            const name = prompt("Nombre del notebook:", "mi_algoritmo.mthnb");
-            if (!name) return;
-
-            try {
-                const res = await fetch(`${API_BASE}/api/notebook/save`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: name, data: nbData })
-                });
-                const r = await res.json();
-                if (r.success) {
-                    alert(`Notebook guardado como: ${r.saved_as}`);
-                }
-            } catch (e) {
-                alert("Error al guardar: " + e.message);
-            }
-        });
-
         // -------------------------------------------------------------
-        // Chat con Asistente Multi-IA
+        // Chat con Asistente Multi-IA y Enforcing de A y T
         // -------------------------------------------------------------
         async function sendAiMessage(promptText = null) {
             const prompt = promptText || aiPromptInput.value.trim();
             if (!prompt) return;
 
-            // Obtener código de la celda activa o de la primera celda
+            const a = parseInt(inputAgentA.value) || 2;
+            const t = parseInt(inputTuringT.value) || 10;
             const currentCode = cells.length > 0 ? (document.getElementById(`editor-${cells[0].id}`)?.value || "") : "";
 
-            appendUserMessage(prompt);
+            appendUserMessage(`[A=${a}, T=${t}] ${prompt}`);
             if (!promptText) aiPromptInput.value = '';
 
             const aiMsgEl = appendAiLoadingMessage();
@@ -1089,7 +1424,9 @@
                     model: aiModel.value,
                     api_key: aiApiKey.value.trim(),
                     prompt: prompt,
-                    current_code: currentCode
+                    current_code: currentCode,
+                    agent_a: a,
+                    turing_t: t
                 };
 
                 const res = await fetch(`${API_BASE}/api/ai/chat`, {
@@ -1101,7 +1438,7 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    renderAiReply(aiMsgEl, data.reply, data.provider);
+                    renderAiReply(aiMsgEl, data.reply, `${data.provider} [A=${data.agent_a}, T=${data.turing_t}]`);
                 } else {
                     aiMsgEl.innerHTML = `
                         <span class="chat-sender-tag" style="color:var(--red);">ERROR ${escapeHtml(data.provider || 'IA')}</span>
@@ -1135,8 +1472,8 @@
             const msg = document.createElement('div');
             msg.className = 'chat-msg ai';
             msg.innerHTML = `
-                <span class="chat-sender-tag">GENERANDO EN SILICIO...</span>
-                <div class="chat-bubble" style="color:var(--cyan);">[Pensando geodésicamente...]</div>
+                <span class="chat-sender-tag">DELIBERANDO EN SILICIO...</span>
+                <div class="chat-bubble" style="color:var(--cyan);">[Orquestando agentes y ciclos de Lyapunov...]</div>
             `;
             aiChatBody.appendChild(msg);
             aiChatBody.scrollTop = aiChatBody.scrollHeight;
@@ -1146,22 +1483,18 @@
         function renderAiReply(msgEl, rawText, providerName) {
             msgEl.innerHTML = `
                 <span class="chat-sender-tag">${escapeHtml(providerName || 'IA')}</span>
-                <div class="chat-bubble" id="bubble-${Date.now()}"></div>
+                <div class="chat-bubble"></div>
             `;
             const bubble = msgEl.querySelector('.chat-bubble');
-
-            // Parsear bloques de código
             const parts = rawText.split(/```(?:mathesis|mth)?/i);
 
             parts.forEach((part, idx) => {
                 if (idx % 2 === 0) {
-                    // Texto Markdown regular
                     const p = document.createElement('p');
                     p.style.marginBottom = '6px';
                     p.innerHTML = escapeHtml(part).replace(/\n/g, '<br>');
                     bubble.appendChild(p);
                 } else {
-                    // Bloque de código MATHESIS
                     const snippet = part.trim();
                     const box = document.createElement('div');
                     box.className = 'code-snippet-box';
@@ -1190,9 +1523,9 @@
             }
         });
 
-        // Quick AI actions
+        // Acciones rápidas
         document.getElementById('btnAiExplain').addEventListener('click', () => {
-            sendAiMessage("Por favor explica paso a paso las matemáticas y operaciones de Stiefel de la celda de código activa.");
+            sendAiMessage("Por favor explica paso a paso las matemáticas y operaciones de Stiefel de la celda activa con respecto a los parámetros agent=A y turing=T.");
         });
         document.getElementById('btnAiOptimize').addEventListener('click', () => {
             sendAiMessage("Optimiza este código para maximizar el uso de microcódigo AVX+FMA3 en silicio y reducir la latencia de convergencia.");
@@ -1200,19 +1533,22 @@
         document.getElementById('btnAiStiefel').addEventListener('click', () => {
             sendAiMessage("Explica cómo el acumulador de Neumaier y la retracción polar de orden 4 garantizan deriva <= 10^-15 sin error acumulativo.");
         });
-        document.getElementById('btnAiFacturacion').addEventListener('click', () => {
-            sendAiMessage("Genera un programa en MATHESIS para facturación geométrica instantánea con 0 tokens de API y colapso efímero MMIO.");
+        document.getElementById('btnAiTribunal').addEventListener('click', () => {
+            inputAgentA.value = 7;
+            inputTuringT.value = 50;
+            updateSagesPreview();
+            sendAiMessage("Genera un programa para el Tribunal Pleno con agent=A=7 sabios y turing=T=50 iteraciones de relajación geodésica.");
         });
 
         function askAiAboutCell(id) {
             const editor = document.getElementById(`editor-${id}`);
             if (editor) {
-                sendAiMessage(`Revisa y analiza esta celda de código:\n\n${editor.value}`);
+                sendAiMessage(`Revisa y optimiza esta celda de código:\n\n${editor.value}`);
             }
         }
 
         // -------------------------------------------------------------
-        // Canvas 3D Stiefel Manifold (WebGL / Canvas2D)
+        // Canvas 3D Stiefel Manifold Reactivo a agent=A y turing=T
         // -------------------------------------------------------------
         const canvas = document.getElementById('manifoldCanvas');
         const ctx = canvas.getContext('2d');
@@ -1230,13 +1566,15 @@
             flashIntensity = 1.0;
         }
 
+        // Colores para los 8 sabios
+        const SAGE_COLORS = ['#00e5ff', '#ffd166', '#06d6a0', '#9d4edd', '#ef476f', '#118ab2', '#073b4c', '#f72585'];
+
         function drawManifold() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const cx = canvas.width / 2;
             const cy = canvas.height / 2;
             const R = Math.min(canvas.width, canvas.height) * 0.38;
 
-            // Fondo esfera
             const grad = ctx.createRadialGradient(cx - R*0.3, cy - R*0.3, R*0.1, cx, cy, R);
             grad.addColorStop(0, 'rgba(0, 229, 255, 0.18)');
             grad.addColorStop(0.7, 'rgba(157, 78, 221, 0.10)');
@@ -1252,11 +1590,14 @@
 
             if (flashIntensity > 0) flashIntensity *= 0.92;
 
-            angle += 0.006;
+            const a = parseInt(inputAgentA.value) || 2;
+            const t = parseInt(inputTuringT.value) || 10;
+            const rotSpeed = 0.003 + (t * 0.0002);
+            angle += rotSpeed;
 
-            // Geodésicas
-            ctx.lineWidth = 0.6;
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
+            // Geodésicas de fondo
+            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
             for (let i = -2; i <= 2; i++) {
                 ctx.beginPath();
                 const rH = Math.sqrt(Math.max(0, R*R - (i*R*0.33)*(i*R*0.33)));
@@ -1264,7 +1605,6 @@
                 ctx.stroke();
             }
 
-            // Atractores Euler & Gauss
             function project(th, ph) {
                 const rotTh = th + angle;
                 const x = R * Math.sin(ph) * Math.cos(rotTh);
@@ -1272,23 +1612,34 @@
                 return { px: cx + x, py: cy + y };
             }
 
-            const pEuler = project(0.7, 1.3);
-            const pGauss = project(2.5, 1.8);
-            const pEquil = project((0.7+2.5)/2, (1.3+1.8)/2);
+            // Proyectar exactamente A sabios en la variedad
+            const points = [];
+            for (let i = 0; i < a; i++) {
+                const th = (i * (2 * Math.PI / a)) + 0.3;
+                const ph = 1.0 + (i % 3) * 0.4;
+                const p = project(th, ph);
+                points.push(p);
+            }
 
-            // Trayectoria geodésica entre sabios
-            ctx.beginPath();
-            ctx.moveTo(pEuler.px, pEuler.py);
-            ctx.lineTo(pEquil.px, pEquil.py);
-            ctx.lineTo(pGauss.px, pGauss.py);
-            ctx.strokeStyle = 'rgba(0, 229, 255, 0.6)';
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
+            // Trazar geodésicas de convergencia dialéctica entre sabios
+            if (points.length > 1) {
+                ctx.beginPath();
+                ctx.moveTo(points[0].px, points[0].py);
+                for (let i = 1; i < points.length; i++) {
+                    ctx.lineTo(points[i].px, points[i].py);
+                }
+                ctx.closePath();
+                ctx.strokeStyle = 'rgba(0, 229, 255, 0.45)';
+                ctx.lineWidth = 1.2;
+                ctx.stroke();
+            }
 
-            // Puntos de sabios
-            drawPoint(pEuler.px, pEuler.py, 'var(--cyan)', 'Euler (SO(D))');
-            drawPoint(pGauss.px, pGauss.py, 'var(--gold)', 'Gauss (Stiefel)');
-            drawPoint(pEquil.px, pEquil.py, 'var(--green)', 'Equilibrio');
+            // Dibujar cada sabio activo
+            for (let i = 0; i < points.length; i++) {
+                const sName = sagesCatalog[i] ? sagesCatalog[i].name : `Sabio ${i+1}`;
+                const col = SAGE_COLORS[i % SAGE_COLORS.length];
+                drawPoint(points[i].px, points[i].py, col, sName);
+            }
 
             requestAnimationFrame(drawManifold);
         }
@@ -1304,9 +1655,6 @@
 
         requestAnimationFrame(drawManifold);
 
-        // -------------------------------------------------------------
-        // Helpers
-        // -------------------------------------------------------------
         function parseArgbHex(hexStr) {
             let hex = hexStr.replace('0x', '').replace('#', '');
             if (hex.length === 8) {
@@ -1330,7 +1678,8 @@
                 .replace(/'/g, "&#039;");
         }
 
-        // Cargar ejemplo inicial al abrir
+        // Inicialización al arrancar
+        fetchModels();
         loadExample('consenso_sabios');
     </script>
 </body>
