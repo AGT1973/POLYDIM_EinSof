@@ -1,0 +1,27 @@
+# ==============================================================================
+# MATHESIS CONTINUOUS MANIFOLD: ICOSAHEDRON REGULAR ISING MODEL (12 VERTICES)
+# ==============================================================================
+# Solido Platonico {3,5}: 12 vertices, 30 aristas triangulares antiferromagneticas.
+# Maxima frustracion geometrica sobre la 2-esfera S^2 incrustada en S^{2047}.
+# ==============================================================================
+
+# 1. Ingesta de los 12 vertices de Clifford en S^{2047} (Slab 0x1000)
+ROT_LIE_SO|DEST=0x1000|D=2048|A=0x1000|B=0x0000|DT=0.0100|ALPHA=1.00|GAMMA=0.05|THETA=0.1047|AGENT=3|TURING=20|SAGES=EULER+GAUSS
+
+# 2. Ingesta de las 30 aristas de acoplamiento antiferromagnetico J = +1 (Slab 0x2000)
+ROT_LIE_SO|DEST=0x2000|D=2048|A=0x2000|B=0x0000|DT=0.0100|ALPHA=1.00|GAMMA=0.05|THETA=0.2094|AGENT=3|TURING=20|SAGES=LEIBNIZ+POINCARE
+
+# 3. Deliberacion Dialectica de Lyapunov: Resolucion de la frustracion geometrica
+DIALECTIC_LYAPUNOV|DEST=0x3000|D=2048|A=0x1000|B=0x2000|DT=0.0100|ALPHA=1.40|GAMMA=0.08|THETA=0.0000|AGENT=3|TURING=20|SAGES=EULER+GAUSS+POINCARE
+
+# 4. Retraccion Polar a Stiefel S^{2047} (Deriva Neumaier <= 1e-15)
+RETRACT_STIEFEL|DEST=0x3000|D=2048|A=0x3000|B=0x0000|DT=0.0100|ALPHA=1.00|GAMMA=0.05|THETA=0.0000|AGENT=3|TURING=20|SAGES=POINCARE
+
+# 5. Telepatia PMTP Silicio Directo hacia QPU IBM (12 Qubits)
+PMTP_TELEPATHY|DEST=0x4000|D=2048|A=0x3000|B=0x0000|DT=0.0100|ALPHA=1.00|GAMMA=0.05|THETA=0.0000|AGENT=3|TURING=20|SAGES=TURING
+
+# 6. Colapso Efimero MMIO a 16.6 ms (GOP Framebuffer MMIO)
+COLLAPSE_MMIO|DEST=0x0000|D=2048|A=0x3000|B=0x0000|DT=0.0100|ALPHA=1.00|GAMMA=0.05|THETA=0.0000|AGENT=3|TURING=20|SAGES=NONE
+
+# 7. Halt de Punto Fijo
+HALT_EQUILIBRIUM|DEST=0x3000|D=2048|A=0x0000|B=0x0000|DT=0.0100|ALPHA=1.00|GAMMA=0.05|THETA=0.0000|AGENT=3|TURING=20|SAGES=NONE

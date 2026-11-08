@@ -1,0 +1,30 @@
+# ==============================================================================
+# MATHESIS CONTINUOUS MANIFOLD: DODECAHEDRON REGULAR ISING MODEL (20 VERTICES)
+# ==============================================================================
+# Solido Platonico {5,3}: 20 vertices, 30 aristas pentagonales antiferromagneticas.
+# Ciclos impares (pentagonos) de maxima frustracion cuantica incrustados en S^{2047}.
+# ==============================================================================
+
+# 1. Ingesta de los 20 vertices en S^{2047} (Slab 0x1000)
+ROT_LIE_SO|DEST=0x1000|D=2048|A=0x1000|B=0x0000|DT=0.0100|ALPHA=1.00|GAMMA=0.05|THETA=0.1571|AGENT=3|TURING=20|SAGES=EULER+GAUSS
+
+# 2. Ingesta de las 30 aristas pentagonales de acoplamiento antiferromagnetico (Slab 0x2000)
+ROT_LIE_SO|DEST=0x2000|D=2048|A=0x2000|B=0x0000|DT=0.0100|ALPHA=1.00|GAMMA=0.05|THETA=0.3142|AGENT=3|TURING=20|SAGES=LEIBNIZ+POINCARE
+
+# 3. Deliberacion Dialectica de Lyapunov: Descenso de gradiente en cuenca de potencial
+DIALECTIC_LYAPUNOV|DEST=0x3000|D=2048|A=0x1000|B=0x2000|DT=0.0100|ALPHA=1.40|GAMMA=0.08|THETA=0.0000|AGENT=3|TURING=20|SAGES=EULER+GAUSS+POINCARE
+
+# 4. Poda de memoria de Lyapunov (Lyapunov Dream)
+LYAPUNOV_DREAM|DEST=0x3000|D=2048|A=0x3000|B=0x2000|DT=0.0100|ALPHA=0.90|GAMMA=0.10|THETA=0.0000|AGENT=3|TURING=20|SAGES=NONE
+
+# 5. Retraccion Polar a Stiefel S^{2047} (Deriva Neumaier <= 1e-15)
+RETRACT_STIEFEL|DEST=0x3000|D=2048|A=0x3000|B=0x0000|DT=0.0100|ALPHA=1.00|GAMMA=0.05|THETA=0.0000|AGENT=3|TURING=20|SAGES=POINCARE
+
+# 6. Telepatia PMTP Silicio Directo hacia QPU IBM (20 Qubits)
+PMTP_TELEPATHY|DEST=0x4000|D=2048|A=0x3000|B=0x0000|DT=0.0100|ALPHA=1.00|GAMMA=0.05|THETA=0.0000|AGENT=3|TURING=20|SAGES=TURING
+
+# 7. Colapso Efimero MMIO a 16.6 ms (GOP Framebuffer MMIO)
+COLLAPSE_MMIO|DEST=0x0000|D=2048|A=0x3000|B=0x0000|DT=0.0100|ALPHA=1.00|GAMMA=0.05|THETA=0.0000|AGENT=3|TURING=20|SAGES=NONE
+
+# 8. Halt de Punto Fijo
+HALT_EQUILIBRIUM|DEST=0x3000|D=2048|A=0x0000|B=0x0000|DT=0.0100|ALPHA=1.00|GAMMA=0.05|THETA=0.0000|AGENT=3|TURING=20|SAGES=NONE
