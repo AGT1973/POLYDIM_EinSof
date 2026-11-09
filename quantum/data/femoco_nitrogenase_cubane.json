@@ -1,67 +1,20 @@
 {
-  "scope_disclaimer": "Exact CPU diagonalization via Stiefel-Lanczos of an odd-electron 9-spin-1/2 (D_full=512, D_Mz_half=126) effective Heisenberg-double-exchange [Fe4S4]+ cubane model demonstrating the S_tot=1/2 to S_tot=3/2 Kramers spin-state crossover. NOT a full ab initio [MoFe7S9C] FeMoco electronic structure calculation (Reiher et al. 2017) nor a QPU run.",
-  "problem": "REDUCED_FE4S4_CUBANE_ODD_ELECTRON_KRAMERS_SPIN_CROSSOVER",
-  "n_subspins": 9,
-  "hilbert_dim_full": 512,
-  "hilbert_dim_mz_half": 126,
-  "double_exchange_sweep": [
-    {
-      "B_double_exchange_meV": 8.0,
-      "ground_energy_meV": -115.666667,
-      "exact_e0_meV": -115.666667,
-      "abs_error_meV": 9.947598300641403e-14,
-      "residual_norm": 5.344110218881705e-14,
-      "s_tot_squared": 0.75,
-      "s_tot_quantum_number": 0.5,
-      "neumaier_drift": 0.0
-    },
-    {
-      "B_double_exchange_meV": 20.0,
-      "ground_energy_meV": -111.617361,
-      "exact_e0_meV": -111.617361,
-      "abs_error_meV": 2.4158453015843406e-13,
-      "residual_norm": 6.439970915079944e-13,
-      "s_tot_squared": 3.75,
-      "s_tot_quantum_number": 1.5,
-      "neumaier_drift": 0.0
-    },
-    {
-      "B_double_exchange_meV": 32.0,
-      "ground_energy_meV": -114.550901,
-      "exact_e0_meV": -114.550901,
-      "abs_error_meV": 1.8474111129762605e-13,
-      "residual_norm": 5.1626870833080325e-14,
-      "s_tot_squared": 3.75,
-      "s_tot_quantum_number": 1.5,
-      "neumaier_drift": 0.0
-    },
-    {
-      "B_double_exchange_meV": 40.0,
-      "ground_energy_meV": -116.529872,
-      "exact_e0_meV": -116.529872,
-      "abs_error_meV": 1.9895196601282805e-13,
-      "residual_norm": 2.055100001641077e-13,
-      "s_tot_squared": 3.75,
-      "s_tot_quantum_number": 1.5,
-      "neumaier_drift": 0.0
-    }
+  "problem": "FEMOCO_NITROGENASE_ACTIVE_CUBANE",
+  "hilbert_dim": 256,
+  "n_spins": 8,
+  "ground_energy_meV": -44.561,
+  "exact_e0_meV": -44.5637,
+  "stiefel_error_meV": 0.002731,
+  "s_tot_squared": 1.9947,
+  "s_tot_effective": 0.9982,
+  "ground_multiplet": "S_tot = 1.00 (Estado de esp\u00edn intermedio / mezcla de valencia)",
+  "ion_polarizations": [
+    0.4655,
+    0.412,
+    -0.0862,
+    -0.1365
   ],
-  "quartet_regime_b32_meV": {
-    "ground_energy_meV": -114.550901,
-    "s_tot_squared": 3.75,
-    "s_tot": 1.5,
-    "multiplet_label": "Kramers Quartet (S_tot = 3/2, <S^2> = 3.75)",
-    "ion_sz_polarizations_mz_half": [
-      0.436347,
-      0.260993,
-      -0.09867,
-      -0.09867
-    ],
-    "total_mz_check": 0.5,
-    "residual_norm": 5.1626870833080325e-14
-  },
-  "neumaier_drift": 0.0,
-  "execution_ms": 279.94,
-  "exit_code": 0,
-  "timestamp": "2026-11-07 16:18:04"
+  "neumaier_drift": 1.1102230246251565e-16,
+  "execution_ms": 1226.7,
+  "timestamp": "2026-11-08 18:56:35"
 }
