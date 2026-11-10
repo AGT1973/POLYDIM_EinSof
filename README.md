@@ -53,9 +53,12 @@ Simplemente abre el chat con tu Inteligencia Artificial (**Claude, ChatGPT, Anti
 
 ## 🖥️ Paneles Visuales Interactivos
 
-1. **Introducción Pedagógica y Ahorro de Tokens:**
+1. **Introducción Pedagógica, Gráficos y Ahorro de Tokens:**
    👉 `introduction/index.html`  
-   *Muestra de forma visual e interactiva cómo viajan los paquetes tensoriales, la comparativa de consumo de tokens (Método Tradicional vs PMTP-CORE) y cómo las 3 skills resuelven los problemas diarios del estudiante.*
+   *Contiene:*
+   * **Simulador Gráfico en Canvas de la Hiperesfera de Stiefel $S^{D-1}$:** Muestra en tiempo real cómo los vectores de pensamiento continuo mantienen la ortogonalidad sin deformarse.
+   * **Calculadora Interactiva de la Economía de Tokens:** Arrastra el control de pasos de razonamiento para ver la diferencia entre miles de dólares en APIs tradicionales vs \$0.00 con PMTP-CORE.
+   * **Módulo de Decisión Explicado de `mathesis2bin`:** Explica detalladamente al usuario y a la IA qué es el compilador nativo para que el usuario decida libremente si compilarlo o mantenerse en el Modo Estándar seguro.
 
 2. **Centro de Control y Cockpit Principal:**
    👉 `ui/suite_cockpit.html`  

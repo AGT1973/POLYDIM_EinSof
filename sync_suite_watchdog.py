@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 """
-sync_suite_watchdog.py — POLYDIM SUITE Automated Daily Maintenance & Synchronization Watchdog
-Scheduled via cron to audit core changes, maintain student assets, check links, and push updates to GitHub.
+sync_suite_watchdog.py — POLYDIM SUITE Opportunistic & Daily Sync Watchdog
+Handles irregular workstation uptime (powered on at 6, 7, 8, 9, 10, 11, 12 or 14 hs).
+Executes on boot / session start and at 14:00 hs, with an 18-hour smart cooldown.
 """
 
 import os
 import subprocess
 import json
 import psycopg2
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 SUITE_DIR = r"E:\SUITE"
 REMOTE_REPO = "https://github.com/AGT1973/polydim-suite.git"
+COOLDOWN_HOURS = 18
 
 def run_cmd(cmd, cwd=SUITE_DIR):
     res = subprocess.run(cmd, cwd=cwd, shell=True, capture_output=True, text=True)
@@ -20,6 +22,23 @@ def run_cmd(cmd, cwd=SUITE_DIR):
 def check_git_status():
     rc, out, err = run_cmd("git status --porcelain")
     return out
+
+def get_last_run_timestamp():
+    try:
+        conn = psycopg2.connect(dbname="polydim_active_db", user="postgres", host="localhost")
+        cur = conn.cursor()
+        cur.execute("SELECT value FROM active_vault WHERE category='MONITORING_STATE' AND key_name='SUITE_DAILY_WATCHDOG_LAST_RUN';")
+        row = cur.fetchone()
+        cur.close()
+        conn.close()
+        if row and row[0]:
+            data = row[0] if isinstance(row[0], dict) else json.loads(row[0])
+            ts_str = data.get("timestamp")
+            if ts_str:
+                return datetime.fromisoformat(ts_str)
+    except Exception as e:
+        print(f"[WARN] Error reading last run from PostgreSQL: {e}")
+    return None
 
 def audit_suite_files():
     required_files = [
@@ -36,10 +55,9 @@ def sync_to_github():
     if not status:
         return "No local changes in E:\\SUITE. Repository is clean and synchronized."
     
-    # Commit and push
     run_cmd("git add .")
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
-    msg = f"chore(sync): automated daily suite maintenance and student asset audit [{timestamp}]"
+    msg = f"chore(sync): automated suite maintenance and student asset sync [{timestamp}]"
     rc, out, err = run_cmd(f'git commit -m "{msg}"')
     if rc != 0 and "nothing to commit" not in out:
         return f"Commit failed: {err}"
@@ -71,8 +89,17 @@ def log_to_postgres(log_message, status="OK"):
     except Exception as e:
         print(f"[WARN] PostgreSQL log error: {e}")
 
-def main():
-    print(f"[{datetime.now().isoformat()}] Starting POLYDIM SUITE daily watchdog...")
+def main(force=False):
+    now = datetime.now(timezone.utc)
+    print(f"[{now.isoformat()}] Starting POLYDIM SUITE watchdog check...")
+    
+    last_run = get_last_run_timestamp()
+    if not force and last_run:
+        time_since_last = now - last_run
+        if time_since_last < timedelta(hours=COOLDOWN_HOURS):
+            print(f"[COOLDOWN] Last sync was {time_since_last.total_seconds() / 3600:.1f}h ago (< {COOLDOWN_HOURS}h). Skipping redundant sync.")
+            return 0
+    
     missing = audit_suite_files()
     if missing:
         msg = f"CRITICAL: Missing required suite files: {missing}"
@@ -86,4 +113,6 @@ def main():
     return 0
 
 if __name__ == "__main__":
-    exit(main())
+    import sys
+    force_run = "--force" in sys.argv
+    exit(main(force=force_run))

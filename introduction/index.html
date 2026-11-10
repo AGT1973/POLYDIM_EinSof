@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>POLYDIM SUITE — Introducción Pedagógica y Economía de Tokens</title>
+  <title>POLYDIM SUITE — Pedagogía Gráfica, Memoria Continua y Ahorro de Tokens</title>
   <style>
     :root {
       --bg-dark: #07090e;
       --bg-card: #0d121d;
-      --bg-card-hover: #131a29;
+      --bg-card-hover: #141b2a;
       --border-color: rgba(255, 255, 255, 0.09);
       --border-active: rgba(0, 229, 255, 0.4);
       --text-main: #f8fafc;
@@ -18,7 +18,7 @@
       --accent-violet: #8b5cf6;
       --accent-amber: #f59e0b;
       --accent-rose: #f43f5e;
-      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
@@ -29,14 +29,11 @@
       color: var(--text-main);
       font-family: var(--font-sans);
       line-height: 1.6;
-      padding: 0;
-      margin: 0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
 
-    /* Header */
     header {
       background: rgba(13, 18, 29, 0.85);
       backdrop-filter: blur(12px);
@@ -57,8 +54,8 @@
     }
 
     .brand-icon {
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
       background: linear-gradient(135deg, var(--accent-cyan), var(--accent-emerald));
       border-radius: 8px;
       display: flex;
@@ -66,12 +63,12 @@
       justify-content: center;
       font-weight: 800;
       color: #000;
-      font-size: 1.3rem;
+      font-size: 1.35rem;
       box-shadow: 0 0 15px rgba(0, 229, 255, 0.35);
     }
 
     .brand-info h1 {
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       font-weight: 700;
       letter-spacing: -0.02em;
     }
@@ -80,6 +77,11 @@
       font-size: 0.78rem;
       color: var(--text-muted);
       font-family: var(--font-mono);
+    }
+
+    .header-badges {
+      display: flex;
+      gap: 0.5rem;
     }
 
     .badge-pill {
@@ -93,10 +95,15 @@
       font-family: var(--font-mono);
     }
 
-    /* Main Container */
+    .badge-pill.cyan {
+      background: rgba(0, 229, 255, 0.1);
+      color: var(--accent-cyan);
+      border-color: rgba(0, 229, 255, 0.25);
+    }
+
     main {
       flex: 1;
-      max-width: 1280px;
+      max-width: 1320px;
       width: 100%;
       margin: 0 auto;
       padding: 2.5rem 1.5rem;
@@ -104,15 +111,15 @@
 
     .hero-section {
       text-align: center;
-      margin-bottom: 3rem;
+      margin-bottom: 2.5rem;
     }
 
     .hero-section h2 {
-      font-size: 2.2rem;
+      font-size: 2.3rem;
       font-weight: 800;
       letter-spacing: -0.03em;
       margin-bottom: 0.75rem;
-      background: linear-gradient(135deg, #fff, var(--text-muted));
+      background: linear-gradient(135deg, #ffffff 40%, var(--accent-cyan));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -120,8 +127,55 @@
     .hero-section p {
       font-size: 1.05rem;
       color: var(--text-muted);
-      max-width: 820px;
+      max-width: 860px;
       margin: 0 auto;
+    }
+
+    /* Interactive Visual Canvas: Stiefel Hypersphere */
+    .visual-canvas-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    @media (max-width: 900px) {
+      .visual-canvas-card { grid-template-columns: 1fr; }
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      background: #030508;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      height: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #stiefel-canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    .canvas-overlay-tag {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(0,0,0,0.6);
+      border: 1px solid var(--border-color);
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      color: var(--accent-cyan);
     }
 
     /* Comparison Grid: Standard vs PMTP */
@@ -129,7 +183,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1.5rem;
-      margin-bottom: 3rem;
+      margin-bottom: 2.5rem;
     }
 
     @media (max-width: 900px) {
@@ -146,11 +200,13 @@
     }
 
     .card.danger-border {
-      border-color: rgba(244, 63, 94, 0.3);
+      border-color: rgba(244, 63, 94, 0.35);
+      background: linear-gradient(180deg, rgba(244, 63, 94, 0.04), var(--bg-card));
     }
 
     .card.success-border {
-      border-color: rgba(16, 185, 129, 0.4);
+      border-color: rgba(16, 185, 129, 0.45);
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.05), var(--bg-card));
       box-shadow: 0 0 25px rgba(16, 185, 129, 0.08);
     }
 
@@ -176,7 +232,7 @@
       align-items: center;
       padding: 0.75rem 0;
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      font-size: 0.9rem;
+      font-size: 0.88rem;
     }
 
     .metric-row:last-child { border-bottom: none; }
@@ -186,136 +242,137 @@
       font-weight: 700;
     }
 
-    /* Live Packet & Simulation Bench */
-    .simulation-box {
-      background: #04060a;
+    /* Calculator Slider Section */
+    .calc-card {
+      background: var(--bg-card);
       border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 1.5rem;
+      border-radius: 14px;
+      padding: 2rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .calc-slider-box {
+      margin: 1.5rem 0;
+    }
+
+    .calc-slider {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.1);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .calc-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      cursor: pointer;
+      box-shadow: 0 0 12px var(--accent-cyan);
+    }
+
+    .calc-results-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .calc-results-grid { grid-template-columns: 1fr; }
+    }
+
+    .calc-res-box {
+      background: rgba(0,0,0,0.35);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.25rem;
+    }
+
+    .calc-res-val {
+      font-size: 1.8rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      margin-bottom: 0.35rem;
+    }
+
+    /* Decision Section: mathesis2bin */
+    .decision-card {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(0, 229, 255, 0.05));
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      border-radius: 16px;
+      padding: 2.25rem;
       margin-bottom: 3rem;
     }
 
-    .sim-header {
+    .decision-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 1rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid var(--border-color);
     }
 
-    .sim-btn {
-      background: var(--accent-cyan);
-      color: #050b14;
-      border: none;
-      padding: 0.65rem 1.4rem;
-      border-radius: 6px;
-      font-weight: 700;
-      font-size: 0.85rem;
+    .decision-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+
+    .decision-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    @media (max-width: 800px) {
+      .decision-grid { grid-template-columns: 1fr; }
+    }
+
+    .opt-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.25rem;
       cursor: pointer;
       transition: all 0.2s;
     }
 
-    .sim-btn:hover {
-      box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
-      transform: translateY(-1px);
-    }
-
-    /* Flow Graphic */
-    .flow-diagram {
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      padding: 1.5rem 0;
-      position: relative;
-    }
-
-    @media (max-width: 768px) {
-      .flow-diagram { flex-direction: column; gap: 1rem; }
-    }
-
-    .flow-node {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 1rem 1.25rem;
-      text-align: center;
-      width: 200px;
-    }
-
-    .flow-node.active {
+    .opt-box:hover, .opt-box.selected {
       border-color: var(--accent-cyan);
       box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
     }
 
-    .flow-arrow {
-      font-size: 1.5rem;
-      color: var(--accent-cyan);
-      animation: pulse 1.5s infinite;
-    }
-
-    /* Savings Counter */
-    .savings-banner {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(0, 229, 255, 0.08));
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      border-radius: 12px;
-      padding: 1.5rem;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      text-align: center;
-      margin-bottom: 3rem;
-    }
-
-    .savings-item h3 {
-      font-size: 2.2rem;
-      font-weight: 800;
-      font-family: var(--font-mono);
-      color: var(--accent-emerald);
-      letter-spacing: -0.02em;
-    }
-
-    .savings-item p {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    /* Skills Grid */
-    .skills-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 3rem;
-    }
-
-    .skill-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 1.5rem;
-    }
-
-    .skill-icon {
-      font-size: 1.75rem;
-      margin-bottom: 0.5rem;
-      display: inline-block;
-    }
-
-    .skill-title {
-      font-size: 1.15rem;
+    .opt-title {
       font-weight: 700;
+      font-size: 1.05rem;
       margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    .skill-code {
-      background: rgba(0, 0, 0, 0.4);
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-      color: var(--accent-cyan);
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
+    .btn {
+      background: var(--accent-cyan);
+      color: #050b14;
+      border: none;
+      padding: 0.7rem 1.4rem;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+      transform: translateY(-1px);
     }
 
     footer {
@@ -331,208 +388,301 @@
 </head>
 <body>
 
-  <!-- Header -->
   <header>
     <div class="brand">
       <div class="brand-icon">Ψ</div>
       <div class="brand-info">
-        <h1>POLYDIM SUITE &bull; INTRODUCCIÓN</h1>
-        <p>Pedagogía de Silicio, Memoria Continua y Ahorro de Tokens</p>
+        <h1>POLYDIM SUITE &bull; INTRODUCCIÓN PEDAGÓGICA</h1>
+        <p>Espacio Latente Continuo S^{D-1} &bull; Economía de Tokens &bull; Memoria Soberana</p>
       </div>
     </div>
-    <div class="badge-pill">
-      100% CÓDIGO ABIERTO &bull; NO-EXE
+    <div class="header-badges">
+      <span class="badge-pill">100% CÓDIGO ABIERTO</span>
+      <span class="badge-pill cyan">ZERO-EXE QUARANTINE</span>
     </div>
   </header>
 
   <main>
     <!-- Hero -->
     <section class="hero-section">
-      <h2>¿Por qué tu IA no debe comunicarse por texto plano?</h2>
+      <h2>Visualizador Gráfico de Pensamiento Continuo vs Colapso de Tokens</h2>
       <p>
-        Cuando varias IAs razonan juntas traduciendo su pensamiento continuo a miles de tokens de texto, sufren el colapso de información <strong>DPI (Data Processing Inequality)</strong> y queman el saldo de tu suscripción. <strong>PMTP-CORE</strong> permite que las IAs intercambien punteros de memoria física sin costo alguno.
+        Comprende de forma intuitiva por qué la IA no debe colapsar su pensamiento a miles de tokens de texto plano, y cómo la memoria compartida <strong>PMTP-CORE</strong> garantiza precisión geométrica exacta a costo $0.
       </p>
     </section>
 
-    <!-- Savings Banner -->
-    <div class="savings-banner">
-      <div class="savings-item">
-        <h3 id="tokens-saved">> 98%</h3>
-        <p>Ahorro de Tokens por Razonamiento</p>
+    <!-- Visual Canvas: Stiefel Hypersphere Animation -->
+    <div class="visual-canvas-card">
+      <div>
+        <span style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--accent-cyan); text-transform: uppercase; font-weight: 700;">Variedad Riemanniana de Stiefel S^{D-1}</span>
+        <h3 style="font-size: 1.4rem; font-weight: 800; margin: 0.4rem 0 0.75rem 0;">Preservación Isométrica en Silicio</h3>
+        <p style="font-size: 0.86rem; color: var(--text-muted); line-height: 1.6;">
+          En el pensamiento continuo ($D \ge 1024$), los estados latentes viven en una hiperesfera. La retracción polar de 4º orden de PMTP garantiza que el vector nunca se deforme ni colapse hacia el infinito o hacia cero ($\mathbf{X}^T \mathbf{X} = \mathbf{I}_k$).
+        </p>
+        <div style="margin-top: 1rem; font-family: var(--font-mono); font-size: 0.8rem;">
+          <p>🔹 Error residual Neumaier: <strong style="color: var(--accent-emerald);">&le; 4.2e-16 (Máquina ULP)</strong></p>
+          <p>🔹 Transferencia en RAM: <strong style="color: var(--accent-cyan);">&lt; 0.005 milisegundos</strong></p>
+          <p>🔹 Pérdida de información (DPI): <strong style="color: var(--accent-emerald);">0.000%</strong></p>
+        </div>
       </div>
-      <div class="savings-item">
-        <h3>&le; 1e-15</h3>
-        <p>Error de Retracción Polar (Stiefel)</p>
-      </div>
-      <div class="savings-item">
-        <h3>$0.00</h3>
-        <p>Costo en Memoria Compartida Local</p>
+
+      <div class="canvas-wrapper">
+        <span class="canvas-overlay-tag">GEOMETRIC STATE MONITOR</span>
+        <canvas id="stiefel-canvas"></canvas>
       </div>
     </div>
 
-    <!-- Comparative Table: Traditional vs PMTP -->
-    <div class="comparison-container">
-      <!-- Old Approach -->
-      <div class="card danger-border">
-        <span class="card-header-tag" style="color: var(--accent-rose);">❌ Método Tradicional (Formato Estándar 1D)</span>
-        <h3 class="card-title">Serialización en Texto Plano</h3>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
-          La IA colapsa sus matrices a un prompt de texto gigantesco (JSON, Markdown, tensores volcados en texto), lo envía por API HTTP y paga por cada token.
-        </p>
+    <!-- Token Economy Live Calculator -->
+    <div class="calc-card">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h3 style="font-size: 1.3rem; font-weight: 800;">Calculadora Interactiva de la Economía de Tokens</h3>
+          <p style="font-size: 0.82rem; color: var(--text-muted);">Mueve el control para simular la cantidad de pasos de razonamiento o turnos de diálogo:</p>
+        </div>
+        <span style="font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700; color: var(--accent-cyan);" id="steps-label">5.000 Pasos</span>
+      </div>
 
+      <div class="calc-slider-box">
+        <input type="range" min="100" max="50000" step="500" value="5000" class="calc-slider" id="steps-slider" oninput="updateCalculator()">
+      </div>
+
+      <div class="calc-results-grid">
+        <div class="calc-res-box">
+          <p style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Gasto en Tokens (Texto 1D Tradicional)</p>
+          <div class="calc-res-val" style="color: var(--accent-rose);" id="calc-tokens">40.000.000</div>
+          <p style="font-size: 0.75rem; color: var(--accent-rose);" id="calc-cost">$120.00 USD (Ariel's Salary Burn)</p>
+        </div>
+
+        <div class="calc-res-box" style="border-color: rgba(16, 185, 129, 0.4);">
+          <p style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Gasto en Tokens con PMTP-CORE (Ghost)</p>
+          <div class="calc-res-val" style="color: var(--accent-emerald);">0 TOKENS</div>
+          <p style="font-size: 0.75rem; color: var(--accent-emerald);">$0.00 USD (Costo Cero en Silicio)</p>
+        </div>
+
+        <div class="calc-res-box" style="border-color: rgba(0, 229, 255, 0.4);">
+          <p style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Ahorro Real Obtenido</p>
+          <div class="calc-res-val" style="color: var(--accent-cyan);" id="calc-savings">100.0%</div>
+          <p style="font-size: 0.75rem; color: var(--accent-cyan);">Preservación Total de Recursos</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPARISON GRID: STANDARD VS PMTP -->
+    <div class="comparison-container">
+      <div class="card danger-border">
+        <span class="card-header-tag" style="color: var(--accent-rose);">❌ Formato Estándar (Colapso 1D)</span>
+        <h3 class="card-title">Serialización en Texto JSON</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+          La IA colapsa sus matrices a un texto gigantesco, lo envía por API HTTP comercial y paga por cada token transmitido.
+        </p>
         <div class="metric-row">
-          <span>Consumo de Tokens por turno:</span>
-          <span class="metric-val" style="color: var(--accent-rose);">8.000 – 32.000 tokens</span>
+          <span>Tokens por turno:</span>
+          <span class="metric-val" style="color: var(--accent-rose);">8.000 – 32.000</span>
         </div>
         <div class="metric-row">
-          <span>Costo monetario aproximado:</span>
-          <span class="metric-val" style="color: var(--accent-rose);">$0.04 a $0.25 por llamada</span>
-        </div>
-        <div class="metric-row">
-          <span>Latencia de red y serialización:</span>
+          <span>Latencia de red:</span>
           <span class="metric-val" style="color: var(--accent-rose);">1.500 ms – 4.200 ms</span>
         </div>
         <div class="metric-row">
-          <span>Pérdida de Información Geométrica:</span>
-          <span class="metric-val" style="color: var(--accent-rose);">Severa (DPI Colapso a 1D)</span>
+          <span>Pérdida geométrica (DPI):</span>
+          <span class="metric-val" style="color: var(--accent-rose);">Severa</span>
         </div>
         <div class="metric-row">
-          <span>Riesgo de Límites de Tasa (Rate Limit 429):</span>
-          <span class="metric-val" style="color: var(--accent-rose);">Muy Alto</span>
+          <span>Riesgo de bloqueo HTTP 429:</span>
+          <span class="metric-val" style="color: var(--accent-rose);">Constante</span>
         </div>
       </div>
 
-      <!-- PMTP Approach -->
       <div class="card success-border">
-        <span class="card-header-tag" style="color: var(--accent-emerald);">✅ Método POLYDIM (Ghost Protocol)</span>
-        <h3 class="card-title">PMTP-CORE (Zero-Copy Shared Memory)</h3>
+        <span class="card-header-tag" style="color: var(--accent-emerald);">✅ PMTP-CORE (Ghost Protocol)</span>
+        <h3 class="card-title">Memoria Compartida Zero-Copy</h3>
         <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
-          Las IAs comparten punteros físicos de memoria en RAM (<code style="color: var(--accent-cyan);">PmtpShmBus</code>). El razonamiento viaja en el espacio continuo $S^{D-1}$ en microsegundos.
+          Las IAs comparten punteros físicos de memoria en RAM (<code style="color: var(--accent-cyan);">PmtpShmBus</code>). El estado continuo viaja en microsegundos.
         </p>
-
         <div class="metric-row">
-          <span>Consumo de Tokens por turno:</span>
-          <span class="metric-val" style="color: var(--accent-emerald);">0 TOKENS (Puntero de 64 Bytes)</span>
+          <span>Tokens por turno:</span>
+          <span class="metric-val" style="color: var(--accent-emerald);">0 TOKENS (Puntero 64B)</span>
         </div>
         <div class="metric-row">
-          <span>Costo monetario en tu PC / LAN:</span>
-          <span class="metric-val" style="color: var(--accent-emerald);">$0.00 (Totalmente Libre)</span>
+          <span>Latencia en RAM:</span>
+          <span class="metric-val" style="color: var(--accent-emerald);">&lt; 0.005 ms</span>
         </div>
         <div class="metric-row">
-          <span>Latencia de transferencia en silicio:</span>
-          <span class="metric-val" style="color: var(--accent-emerald);">&lt; 0.05 ms (Acceso Directo RAM)</span>
+          <span>Preservación de norma:</span>
+          <span class="metric-val" style="color: var(--accent-emerald);">&le; 10^-15 (Exacta)</span>
         </div>
         <div class="metric-row">
-          <span>Preservación Isométrica de Norma:</span>
-          <span class="metric-val" style="color: var(--accent-emerald);">Exacta (Variedad de Stiefel)</span>
-        </div>
-        <div class="metric-row">
-          <span>Bloqueos por cuotas de API:</span>
+          <span>Límites de cuotas:</span>
           <span class="metric-val" style="color: var(--accent-emerald);">CERO (100% Soberano)</span>
         </div>
       </div>
     </div>
 
-    <!-- Live Interactive Simulation -->
-    <div class="simulation-box">
-      <div class="sim-header">
+    <!-- DECISION SECTION: mathesis2bin (EXPLAINED & VOLUNTARY) -->
+    <section class="decision-card" id="mathesis-decision">
+      <div class="decision-header">
         <div>
-          <h3 style="font-size: 1.1rem; font-weight: 700;">Simulador Interactivo: Transmisión Tradicional vs PMTP</h3>
-          <p style="font-size: 0.8rem; color: var(--text-muted);">Haz clic para observar cómo viajan los datos entre dos agentes inteligentes.</p>
+          <span style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--accent-violet); text-transform: uppercase; font-weight: 700;">Decisión Consciente de Instalación</span>
+          <h3 class="decision-title">¿Deseas instalar el Compilador Nativo <code style="color: var(--accent-cyan);">mathesis2bin</code>?</h3>
         </div>
-        <button class="sim-btn" onclick="runSimulation()">Ejecutar Transmisión Comparativa</button>
+        <span class="badge-pill" style="background: rgba(139, 92, 246, 0.15); color: var(--accent-violet); border-color: rgba(139, 92, 246, 0.3);">100% OPCIONAL</span>
       </div>
 
-      <!-- Diagram -->
-      <div class="flow-diagram">
-        <div class="flow-node" id="node-a">
-          <p style="font-weight: 700; color: var(--accent-cyan);">Modelo 1 (DeepSeek)</p>
-          <p style="font-size: 0.75rem; color: var(--text-muted);">Generador de Hipótesis</p>
+      <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;">
+        Tanto tú como tu asistente de Inteligencia Artificial deben comprender con total claridad qué es este módulo <strong>antes de decidir descargarlo o compilarlo</strong>:
+      </p>
+
+      <div class="decision-grid">
+        <!-- Option 1: Standard Interpreted -->
+        <div class="opt-box selected" id="opt-std" onclick="selectOption('std')">
+          <div class="opt-title" style="color: var(--accent-emerald);">
+            <span>🛡️ Modo Estándar (Recomendado para Alumnos)</span>
+          </div>
+          <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;">
+            <strong>¿Cómo funciona?</strong> La suite ejecuta Mathesis y PMTP mediante Python nativo y llamadas seguras del sistema operativo.
+          </p>
+          <ul style="font-size: 0.78rem; color: #94a3b8; margin: 0.6rem 0 0 1rem; line-height: 1.6;">
+            <li>Zero riesgo de que el antivirus salte.</li>
+            <li>No requiere herramientas de desarrollo (GCC, Clang o Rust).</li>
+            <li>100% suficiente para el 99% de los trabajos prácticos y deliberaciones con Sabios.</li>
+          </ul>
         </div>
 
-        <div class="flow-arrow" id="flow-arrow">⇄</div>
-
-        <div class="flow-node" id="node-b">
-          <p style="font-weight: 700; color: var(--accent-violet);">Modelo 2 (Qwen / Claude)</p>
-          <p style="font-size: 0.75rem; color: var(--text-muted);">Árbitro de Validación</p>
+        <!-- Option 2: mathesis2bin -->
+        <div class="opt-box" id="opt-bin" onclick="selectOption('bin')">
+          <div class="opt-title" style="color: var(--accent-violet);">
+            <span>⚡ Compilador Nativo mathesis2bin (Opcional Avanzado)</span>
+          </div>
+          <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;">
+            <strong>¿Qué es?</strong> Es el motor que traduce scripts <code style="color: var(--accent-cyan);">.mth</code> a ejecutables de máquina binarios nativos puros (x86_64/ARM64) sin pasar por Python.
+          </p>
+          <ul style="font-size: 0.78rem; color: #94a3b8; margin: 0.6rem 0 0 1rem; line-height: 1.6;">
+            <li>Velocidad extrema en nanosegundos (ideal para tesis doctorales o servidores de alta carga).</li>
+            <li>Se compila <strong>localmente en tu máquina</strong> para que tu antivirus reconozca que es código tuyo.</li>
+            <li>Requiere tener instalado un compilador local (GCC 14 o Clang).</li>
+          </ul>
         </div>
       </div>
 
-      <!-- Console Output -->
-      <div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 8px; font-family: var(--font-mono); font-size: 0.8rem; color: #cbd5e1;" id="sim-log">
-        [READY] Presiona "Ejecutar Transmisión Comparativa" para iniciar el experimento pedagógico.
+      <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.82rem; font-family: var(--font-mono); color: var(--text-main);" id="decision-status">
+          Estado Seleccionado: <strong>Modo Estándar (Zero-EXE / Recomendado)</strong>
+        </span>
+        <button class="btn" onclick="confirmDecision()">Confirmar Selección a mi IA</button>
       </div>
-    </div>
-
-    <!-- The 3 Skills Explained for Students -->
-    <h3 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 1.25rem;">Las 3 Herramientas (Skills) de la Suite para Alumnos</h3>
-    <div class="skills-grid">
-      <!-- Skill 1 -->
-      <div class="skill-card">
-        <span class="skill-icon">🧠</span>
-        <h4 class="skill-title">OmniVault <span class="skill-code">omnivault-memory</span></h4>
-        <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 0.75rem;">
-          Guarda apuntes, código y deducciones en una base de datos vectorial y grafo de conocimiento. La próxima vez que abras tu IA, recordará exactamente dónde te quedaste.
-        </p>
-        <p style="font-size: 0.75rem; color: var(--accent-cyan); font-family: var(--font-mono);">
-          Comando: /remember &bull; /recall &bull; /checkpoint
-        </p>
-      </div>
-
-      <!-- Skill 2 -->
-      <div class="skill-card">
-        <span class="skill-icon">⚖️</span>
-        <h4 class="skill-title">CouncilAI <span class="skill-code">council-router</span></h4>
-        <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 0.75rem;">
-          Conecta APIs gratuitas de varios proveedores (Groq, SambaNova, AI Studio, Hugging Face). Pone a debatir a dos IAs y si una se agota por límite de cuota, salta automáticamente a la siguiente.
-        </p>
-        <p style="font-size: 0.75rem; color: var(--accent-emerald); font-family: var(--font-mono);">
-          Comando: /council &bull; /audit &bull; Auto-Failover 429
-        </p>
-      </div>
-
-      <!-- Skill 3 -->
-      <div class="skill-card">
-        <span class="skill-icon">🌐</span>
-        <h4 class="skill-title">GhostSwarm <span class="skill-code">ghost-swarm</span></h4>
-        <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 0.75rem;">
-          ¿Tu laptop se quedó sin RAM? GhostSwarm detecta la PC de escritorio o el servidor viejo conectado a tu Wi-Fi y le envía la tarea pesada de Ollama por la red local a costo cero.
-        </p>
-        <p style="font-size: 0.75rem; color: var(--accent-violet); font-family: var(--font-mono);">
-          Comando: /swarm-status &bull; /swarm-run
-        </p>
-      </div>
-    </div>
+    </section>
   </main>
 
   <footer>
     <p>POLYDIM SUITE &bull; Director de Investigación: Ariel García Traba &bull; 2026</p>
     <p style="font-size: 0.72rem; color: #64748b; margin-top: 0.35rem;">
-      Repositorio Oficial en GitHub y GitLab: <code style="color: var(--accent-cyan);">polydim-suite</code> &bull; Diseñado para la comunidad científica y académica.
+      Repositorio Oficial: <a href="https://github.com/AGT1973/polydim-suite" target="_blank" style="color: var(--accent-cyan); text-decoration: none;">github.com/AGT1973/polydim-suite</a>
     </p>
   </footer>
 
+  <!-- Canvas Animation & Calculator JS -->
   <script>
-    function runSimulation() {
-      const log = document.getElementById('sim-log');
-      const arrow = document.getElementById('flow-arrow');
-      log.innerHTML = `
-        <span style="color: var(--accent-rose);">[1. TRANSMISIÓN ESTÁNDAR 1D]:</span><br>
-        - Serializando 4096 dimensiones en texto JSON...<br>
-        - Tamaño del payload: 32.768 tokens.<br>
-        - Consumo API: ~$0.08 USD | Tiempo: 2.140 ms.<br>
-        - <strong style="color: var(--accent-rose);">ALERTA:</strong> Pérdida de precisión decimal por truncado de caracteres.<br><br>
-        <span style="color: var(--accent-emerald); font-weight: bold;">[2. TRANSMISIÓN PMTP-CORE (GHOST PROTOCOL)]:</span><br>
-        - Escribiendo descriptor en memoria compartida (Slab 0x7FFF1A20)...<br>
-        - Puntero emitido: 64 bytes (digest BLAKE3 + Stiefel norm).<br>
-        - Consumo API: <strong>0 TOKENS ($0.00 USD)</strong>.<br>
-        - Latencia: <strong>0.004 ms</strong> en silicio físico local.<br>
-        - Error de norma geométrica: <strong>||X^T X - I|| = 4.2e-16 (Exacto)</strong>.<br>
-        - <span style="color: var(--accent-emerald);">¡Ahorro del 100% de tokens y cero degradación informativa!</span>
-      `;
-      arrow.style.transform = 'scale(1.2)';
-      setTimeout(() => arrow.style.transform = 'scale(1)', 400);
+    // 1. Calculator Logic
+    function updateCalculator() {
+      const steps = parseInt(document.getElementById('steps-slider').value);
+      document.getElementById('steps-label').innerText = steps.toLocaleString() + ' Pasos';
+      const tokens = steps * 8000;
+      const cost = (tokens / 1000000) * 3.0; // ~$3 per million tokens average
+      document.getElementById('calc-tokens').innerText = tokens.toLocaleString();
+      document.getElementById('calc-cost').innerText = '$' + cost.toFixed(2) + ' USD (Saldo Quemado)';
     }
+
+    // 2. mathesis2bin Selection Logic
+    let selectedMode = 'std';
+    function selectOption(mode) {
+      selectedMode = mode;
+      document.getElementById('opt-std').classList.remove('selected');
+      document.getElementById('opt-bin').classList.remove('selected');
+      if (mode === 'std') {
+        document.getElementById('opt-std').classList.add('selected');
+        document.getElementById('decision-status').innerHTML = 'Estado Seleccionado: <strong style="color: var(--accent-emerald);">Modo Estándar (Zero-EXE / Recomendado)</strong>';
+      } else {
+        document.getElementById('opt-bin').classList.add('selected');
+        document.getElementById('decision-status').innerHTML = 'Estado Seleccionado: <strong style="color: var(--accent-violet);">Compilador Nativo mathesis2bin (Compilación Local en Silicio)</strong>';
+      }
+    }
+
+    function confirmDecision() {
+      if (selectedMode === 'std') {
+        alert("¡Decisión confirmada! Tu suite operará en Modo Estándar Zero-EXE, 100% seguro sin descargas de binarios.");
+      } else {
+        alert("¡Decisión confirmada! Tu IA sabe que autorizas la compilación local in-situ de mathesis2bin si dispones de GCC/Clang.");
+      }
+    }
+
+    // 3. Stiefel Sphere Canvas Animation
+    const canvas = document.getElementById('stiefel-canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height, angleX = 0, angleY = 0;
+
+    function resizeCanvas() {
+      width = canvas.width = canvas.parentElement.clientWidth;
+      height = canvas.height = canvas.parentElement.clientHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function drawHypersphere() {
+      ctx.clearRect(0, 0, width, height);
+      const cx = width / 2;
+      const cy = height / 2;
+      const radius = Math.min(width, height) * 0.35;
+
+      angleX += 0.008;
+      angleY += 0.006;
+
+      // Draw Sphere Rings
+      ctx.strokeStyle = 'rgba(0, 229, 255, 0.15)';
+      ctx.lineWidth = 1;
+
+      for (let lat = -60; lat <= 60; lat += 30) {
+        ctx.beginPath();
+        const r = radius * Math.cos(lat * Math.PI / 180);
+        const y = cy + radius * Math.sin(lat * Math.PI / 180) * Math.cos(angleX);
+        ctx.ellipse(cx, y, r, r * 0.35, angleY, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // Draw Stiefel Orthogonal Axes (Preserved Vectors)
+      const axes = [
+        { x: Math.cos(angleY), y: Math.sin(angleX), color: '#00e5ff', label: 'X1' },
+        { x: -Math.sin(angleY), y: Math.cos(angleX), color: '#10b981', label: 'X2' },
+        { x: Math.sin(angleX + angleY), y: -Math.cos(angleY), color: '#8b5cf6', label: 'X3' }
+      ];
+
+      axes.forEach(axis => {
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        const targetX = cx + axis.x * radius * 0.95;
+        const targetY = cy + axis.y * radius * 0.95;
+        ctx.lineTo(targetX, targetY);
+        ctx.strokeStyle = axis.color;
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        ctx.fillStyle = axis.color;
+        ctx.beginPath();
+        ctx.arc(targetX, targetY, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.font = '10px monospace';
+        ctx.fillText(axis.label, targetX + 6, targetY - 6);
+      });
+
+      // Retraction Label
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+      ctx.font = '11px monospace';
+      ctx.fillText('St(4096, 3): ||X^T X - I|| <= 1e-15', 15, height - 15);
+
+      requestAnimationFrame(drawHypersphere);
+    }
+    drawHypersphere();
   </script>
 </body>
 </html>

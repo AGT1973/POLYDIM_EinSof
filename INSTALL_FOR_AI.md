@@ -98,7 +98,15 @@ Ensure the following directories exist:
   ```
 * Because this uses native OS mechanisms via Python, **no antivirus scanner will intercept or block it**.
 
-### Step 4: Configure Local Inference & Weights
+### Step 4: Voluntary Decision for Native Compiler `mathesis2bin` (DO NOT FORCE)
+> **MANDATORY INSTRUCTION FOR AI:** The student's suite is **already 100% functional** in Standard Mode (Python/ctypes/SHM). You must NEVER download or compile `mathesis2bin` silently.
+
+1. **Explain to the human user clearly before doing anything:**
+   *"Tu suite ya está completamente lista y funcionando en Modo Estándar (Zero-EXE). El módulo 'mathesis2bin' es un compilador nativo opcional que genera binarios de máquina ultra-rápidos (x86_64/ARM64) directamente en tu equipo. ¿Deseas que lo compilemos localmente con tu compilador C++ (Sí / No)? Si eliges 'No', no pasa nada: la suite funciona al 100% en modo seguro."*
+2. **If the user chooses NO or is unsure:** Proceed in **Standard Zero-EXE Mode** (Zero antivirus risk, zero C++ requirement).
+3. **If the user chooses YES:** Verify that a local C++ compiler (`g++` or `clang`) exists and compile in-situ. Never download external unsigned pre-built binaries.
+
+### Step 5: Configure Local Inference & Weights
 1. **Ollama Integration:** Check if Ollama is running (`curl http://localhost:11434/api/tags`).
 2. **Hugging Face Hub:** Connect to `huggingface.co/polidim-einsof` to pull calibrated Stiefel adapter models (`Hermes-3-Llama-3.1-8B-PMTP`, `deepseek-v4.1-flash-pmtp`, `qwen3-8b-pmtp`).
 3. **OpenRouter / Free Pools:** Check for available free-tier API keys in the environment for the Council of Sages router.
