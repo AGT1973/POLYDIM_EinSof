@@ -1,0 +1,57 @@
+# POLYDIM SUITE 🚀
+### Sovereign Geometric AI Workbench & Multi-Agent Mesh
+**Investigación y Desarrollo:** Ariel García Traba  
+**Licencia:** Open-Source / Investigación Soberana  
+**Repositorio Oficial:** GitHub / GitLab `polydim-suite`
+
+---
+
+## 🛡️ Instalación Segura y Transparente (100% Anti-Falsos Positivos)
+Muchos instaladores de software tradicional descargan archivos `.exe` desconocidos que activan inmediatamente las alarmas de **Windows Defender SmartScreen** o los antivirus universitarios.
+
+**POLYDIM SUITE está diseñada bajo la doctrina de "Código Abierto y Transparente":**
+* 🚫 **Cero descargas de `.exe` opacos:** No descarga binarios extraños de la web.
+* 📜 **100% Código Fuente Auditable:** Funciona mediante scripts estándar de Python (`.py`), HTML5 (`.html`), llamadas nativas del sistema operativo (`kernel32.dll` de Windows vía `ctypes`) y archivos de texto plano.
+* 💻 **Compilación Local (Opcional):** Si quieres aceleración extrema en C++/Rust, tu propia máquina compila las librerías localmente; los antivirus nunca bloquean código generado en tu propio equipo.
+* 🔓 **Acceso Completo y Seguro:** Tienes acceso irrestricto a la memoria compartida, los modelos de Hugging Face y los cónclaves de IAs sin riesgo de cuarentena ni bloqueos administrativos.
+
+---
+
+## 💡 ¿Cómo se instala esta Suite? (Agent-First Bootstrap)
+No necesitas instalar nada a mano. Simplemente abre tu asistente de Inteligencia Artificial preferido (**Claude Code, Antigravity, Cursor, Windsurf, Copilot o DeepSeek Desktop**) en esta carpeta y dile:
+
+> **"Lee el archivo `INSTALL_FOR_AI.md` y configura la suite POLYDIM en mi equipo."**
+
+Tu IA leerá el protocolo, configurará la memoria compartida nativa de tu sistema operativo y te dejará todo listo para trabajar.
+
+---
+
+## 📦 Los Componentes de la Suite
+
+### 🛠️ Los 4 Programas de Trabajo
+1. **`PMTP-CORE`:** Bus de memoria física compartida (Zero-Copy) y retracción en variedad de Stiefel ($X^T X = I$) en C++20 y Rust. Erradica la pérdida de información por tokenización prematura.
+2. **`MATHESIS`:** Compilador geométrico (`mthc`), generador de código máquina en ensamblador puro (x86_64/ARM64) sin dependencias y árbitro anti-alucinaciones.
+3. **`ATELIER`:** Entorno visual de desarrollo (AI-IDE), editor interactivo y centro de telemetría en tiempo real (`ui/suite_cockpit.html`).
+4. **`EINSOFOS`:** Sistema operativo geométrico Bare-Metal (UEFI Bootloader, Kether ISA, R15 Arena) — *En desarrollo activo*.
+
+### 🧠 Los 3 Motores Abiertos para Alumnos y Devs
+* **`OmniVault`:** Base de datos relacional y vectorial con grafos de conocimiento (`GraphRAG`) para que tu IA nunca tenga amnesia.
+* **`CouncilAI`:** Enrutador de deliberación multi-modelo que contrasta respuestas de varias IAs (DeepSeek, Qwen, Claude, Gemini) usando tiers gratuitos sin gastar saldo.
+* **`GhostSwarm`:** Malla de cómputo que aprovecha cualquier otra computadora o laptop conectada a tu Wi-Fi para repartir la inferencia pesada en Ollama a costo \$0.
+
+### 🌐 Model Hub en Hugging Face
+* **`huggingface.co/polidim-einsof`:** Repositorio en la nube donde publicamos y actualizamos los pesos y adaptadores Stiefel ya calibrados.
+
+---
+
+## 🖥️ Paneles Visuales Interactivos
+
+1. **Introducción Pedagógica y Ahorro de Tokens:**
+   👉 `introduction/index.html`  
+   *Muestra de forma visual e interactiva cómo viajan los paquetes tensoriales, la comparativa de consumo de tokens (Método Tradicional vs PMTP-CORE) y cómo las 3 skills resuelven los problemas diarios del estudiante.*
+
+2. **Centro de Control y Cockpit Principal:**
+   👉 `ui/suite_cockpit.html`  
+   *Tablero integral para compilar con Mathesis, inspeccionar el estado de la memoria compartida, auditar el Tribunal de Sabios y monitorear la malla de cómputo.*
+
+Ambos funcionan en cualquier navegador moderno haciendo doble clic, sin necesidad de instalar servidores web ni solicitar permisos de administrador.

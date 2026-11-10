@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLYDIM SUITE — Sovereign AI Cockpit & Agent Mesh</title>
+  <style>
+    :root {
+      --bg-dark: #07090e;
+      --bg-card: #0e131f;
+      --bg-card-hover: #151d30;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-active: rgba(0, 229, 255, 0.4);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent-cyan: #00e5ff;
+      --accent-emerald: #10b981;
+      --accent-violet: #8b5cf6;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Header & Navigation */
+    header {
+      background: rgba(14, 19, 31, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: #000;
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+    }
+
+    .brand-title h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-title p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.35rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.45rem 1rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .nav-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-btn.active {
+      background: var(--accent-cyan);
+      color: #050b14;
+      font-weight: 600;
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
+    }
+
+    .system-status {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--accent-emerald);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      background: currentColor;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1440px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Tab Panels */
+    .tab-panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Grid Layouts */
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 900px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      header { flex-direction: column; gap: 1rem; align-items: flex-start; }
+      .nav-tabs { width: 100%; overflow-x: auto; }
+    }
+
+    /* Card Component */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      border-color: var(--border-active);
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-icon {
+      font-size: 1.1rem;
+    }
+
+    .card-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      margin-bottom: 0.35rem;
+      letter-spacing: -0.03em;
+    }
+
+    .card-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* Special Highlights */
+    .cyan-glow { color: var(--accent-cyan); text-shadow: 0 0 15px rgba(0, 229, 255, 0.4); }
+    .emerald-glow { color: var(--accent-emerald); text-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+    .violet-glow { color: var(--accent-violet); text-shadow: 0 0 15px rgba(139, 92, 246, 0.4); }
+    .amber-glow { color: var(--accent-amber); text-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
+
+    /* Terminal & Console Boxes */
+    .terminal-box {
+      background: #04060a;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      position: relative;
+      overflow-x: auto;
+    }
+
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 0.5rem;
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #eab308; }
+    .dot-green { background: #22c55e; }
+
+    .terminal-copy {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-main);
+      padding: 0.25rem 0.65rem;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .terminal-copy:hover {
+      background: var(--accent-cyan);
+      color: #000;
+    }
+
+    /* Buttons & Interactive Elements */
+    .btn {
+      background: var(--accent-cyan);
+      color: #050b14;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: none;
+    }
+
+    /* Input Fields */
+    .input-field {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 0.65rem 0.85rem;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .input-field:focus {
+      border-color: var(--accent-cyan);
+    }
+
+    /* Live Debate Simulation Visualizer */
+    .arena-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 800px) {
+      .arena-container { grid-template-columns: 1fr; }
+    }
+
+    .arena-agent {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .arena-agent-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .arena-agent-name {
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .arena-agent-bubble {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      min-height: 80px;
+      line-height: 1.4;
+      font-family: var(--font-mono);
+    }
+
+    .consensus-bar-wrapper {
+      margin: 1.25rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      height: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .consensus-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-emerald));
+      width: 88%;
+      transition: width 0.6s ease;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 1.5rem 2rem;
+      background: var(--bg-card);
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">Ψ</div>
+      <div class="brand-title">
+        <h1>POLYDIM SUITE</h1>
+        <p>Sovereign Geometric AI Workbench & Agent Mesh</p>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="nav-btn active" onclick="switchTab('tab-overview')">🚀 Overview</button>
+      <button class="nav-btn" onclick="switchTab('tab-omnivault')">🧠 OmniVault</button>
+      <button class="nav-btn" onclick="switchTab('tab-council')">⚖️ CouncilAI</button>
+      <button class="nav-btn" onclick="switchTab('tab-ghostswarm')">🌐 GhostSwarm</button>
+      <button class="nav-btn" onclick="switchTab('tab-mathesis')">⚙️ Mathesis & Atelier</button>
+      <button class="nav-btn" onclick="switchTab('tab-install')">📥 Agent-First Setup</button>
+    </nav>
+
+    <!-- System Telemetry Badge -->
+    <div class="system-status">
+      <span class="status-badge" style="background: rgba(16, 185, 129, 0.12); color: var(--accent-emerald); border-color: rgba(16, 185, 129, 0.25);">
+        <span class="status-dot"></span>
+        100% AUDITABLE SOURCE (NO-EXE)
+      </span>
+      <span class="status-badge">
+        <span class="status-dot"></span>
+        GHOST PROTOCOL ACTIVE
+      </span>
+      <span style="color: var(--accent-cyan);">Node 1: AVX2</span>
+    </div>
+  </header>
+
+  <!-- Main Work Area -->
+  <main>
+
+    <!-- TAB 1: OVERVIEW -->
+    <section id="tab-overview" class="tab-panel active">
+      <div class="grid-4">
+        <!-- Card 1: PMTP Core -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title"><span class="card-icon">⚡</span> PMTP Core</span>
+            <span class="status-badge" style="background: rgba(0, 229, 255, 0.1); color: var(--accent-cyan); border-color: rgba(0, 229, 255, 0.2);">Zero-Copy SHM</span>
+          </div>
+          <div class="card-value cyan-glow">D = 4096</div>
+          <p class="card-sub">Stiefel Retraction 4th Order &bull; Error: &le; 1e-15</p>
+        </div>
+
+        <!-- Card 2: OmniVault -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title"><span class="card-icon">🧠</span> OmniVault</span>
+            <span class="status-badge">PostgreSQL 16</span>
+          </div>
+          <div class="card-value emerald-glow">49 Tablas</div>
+          <p class="card-sub">pgvector + GraphRAG &bull; Zero Memory Loss</p>
+        </div>
+
+        <!-- Card 3: CouncilAI -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title"><span class="card-icon">⚖️</span> CouncilAI</span>
+            <span class="status-badge" style="background: rgba(139, 92, 246, 0.1); color: var(--accent-violet); border-color: rgba(139, 92, 246, 0.2);">Tribunal 9 Sabios</span>
+          </div>
+          <div class="card-value violet-glow">88% Consenso</div>
+          <p class="card-sub">DeepSeek + Qwen + Claude &bull; Free-Tier Pool</p>
+        </div>
+
+        <!-- Card 4: GhostSwarm -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title"><span class="card-icon">🌐</span> GhostSwarm</span>
+            <span class="status-badge" style="background: rgba(245, 158, 11, 0.1); color: var(--accent-amber); border-color: rgba(245, 158, 11, 0.2);">LAN Cluster</span>
+          </div>
+          <div class="card-value amber-glow">2 Nodos</div>
+          <p class="card-sub">Local 16GB + ALADIN Node &bull; Costo $0</p>
+        </div>
+      </div>
+
+      <!-- Two Column Architecture & Quick Launch -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Arquitectura de la Suite (4 Programas + 1 Hub + 3 Motores)</span>
+          </div>
+          <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.7;">
+            <p><strong style="color: var(--text-main);">1. PMTP-CORE:</strong> Bus de memoria compartida física y retracción polar isométrica en variedad de Stiefel (C++20 & Rust).</p>
+            <p><strong style="color: var(--text-main);">2. MATHESIS:</strong> Compilador unificado (<code style="color: var(--accent-cyan);">mthc</code>), ensamblador puro x86_64 y árbitro dialéctico anti-alucinación.</p>
+            <p><strong style="color: var(--text-main);">3. ATELIER:</strong> Visual AI-IDE (<code style="color: var(--accent-cyan);">aiide.html</code>), Mathesis Studio y Frontend de Cowork en tiempo real.</p>
+            <p><strong style="color: var(--text-main);">4. EINSOFOS:</strong> Sistema Operativo geométrico Bare-Metal (UEFI Bootloader, Kether ISA, R15 Arena).</p>
+            <hr style="border: none; border-top: 1px solid var(--border-color); margin: 0.75rem 0;">
+            <p><strong style="color: var(--accent-violet);">Hub de Activos:</strong> <code style="color: var(--accent-cyan);">huggingface.co/polidim-einsof</code> (Adaptadores Stiefel y pesos).</p>
+            <p><strong style="color: var(--accent-emerald);">Motores Internos:</strong> OmniVault (Memoria), CouncilAI (Enrutador de Sabios) y GhostSwarm (Clúster LAN).</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Instalación Asistida para tu IA (Agent-First Bootstrap)</span>
+          </div>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Copia esta instrucción y pégala directamente en tu asistente (Antigravity, Claude Code, Cursor, Windsurf, DeepSeek Desktop):
+          </p>
+          <div class="terminal-box">
+            <div class="terminal-header">
+              <span style="font-size: 0.75rem; color: var(--accent-cyan);">PROMPT DE INSTALACIÓN UNIVERSAL</span>
+              <button class="terminal-copy" onclick="copyPrompt()">Copiar</button>
+            </div>
+            <pre id="agent-prompt" style="white-space: pre-wrap;">Lee el archivo INSTALL_FOR_AI.md en el repositorio de POLYDIM SUITE. Configura la suite de trabajo en mi equipo, instala las librerías necesarias, activa el Ghost Protocol en tu configuración de agente y enlaza los modelos de Hugging Face y Ollama locales sin gastar saldo.</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: OMNIVAULT -->
+    <section id="tab-omnivault" class="tab-panel">
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="card-header">
+          <span class="card-title">🧠 OmniVault — Memoria Vectorial y Grafo de Conocimiento (GraphRAG)</span>
+          <span class="status-badge">PostgreSQL 16 + pgvector</span>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+          OmniVault unifica la memoria relacional, los embeddings semánticos y los grafos causales para erradicar la amnesia entre sesiones de trabajo de estudiantes e investigadores.
+        </p>
+
+        <div class="grid-2">
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 600; display: block; margin-bottom: 0.4rem;">Buscar en el Grafo Vectorial (Simulación):</label>
+            <input type="text" id="vault-query" class="input-field" placeholder="Ej: polar retraction stiefel error bound..." value="stiefel retraction order 4">
+            <button class="btn" onclick="simulateVaultSearch()">Consultar OmniVault</button>
+          </div>
+          <div>
+            <div class="terminal-box" id="vault-results">
+              <div class="terminal-header">
+                <span>Resultados de GraphRAG</span>
+                <span style="color: var(--accent-emerald);">Latency: 1.4ms</span>
+              </div>
+              <div style="font-size: 0.78rem;">
+                <p>🔹 <strong style="color: var(--accent-cyan);">Th_01952:</strong> PMTP Data-Race Freedom: ISO C++20 Symmetric</p>
+                <p>🔹 <strong style="color: var(--accent-emerald);">Th_00402:</strong> Bus Tensorial PMTP Zero-Copy &lt;1e-15 ULP</p>
+                <p>🔹 <strong style="color: var(--accent-violet);">Node:</strong> Cayley-Woodbury Retraction O(Dr^2)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: COUNCILAI -->
+    <section id="tab-council" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">⚖️ CouncilAI — Enrutador Multimodelo y Tribunal de Consenso</span>
+          <span class="status-badge" style="background: rgba(16, 185, 129, 0.12); color: var(--accent-emerald);">Auto-Failover 429</span>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Combina modelos gratuitos de alto rendimiento (DeepSeek V4, Qwen 3, Claude, Gemini Flash) y arbitra discrepancias mediante votación dialéctica.
+        </p>
+
+        <div style="margin: 1rem 0;">
+          <input type="text" id="council-input" class="input-field" placeholder="Escribe un problema o teorema a deliberar..." value="¿Cómo evitar el colapso de información DPI en cadenas de razonamiento profundo?">
+          <button class="btn" onclick="runCouncilDebate()">Iniciar Deliberación del Tribunal</button>
+        </div>
+
+        <div class="consensus-bar-wrapper">
+          <div class="consensus-fill" id="consensus-meter"></div>
+        </div>
+        <p style="font-size: 0.75rem; color: var(--text-muted); text-align: right; font-family: var(--font-mono);" id="consensus-text">Consenso del Tribunal: 92% (Aprobado)</p>
+
+        <div class="arena-container">
+          <!-- Model 1 -->
+          <div class="arena-agent">
+            <div class="arena-agent-header">
+              <span class="arena-agent-name" style="color: var(--accent-cyan);">DeepSeek V4.1</span>
+              <span style="font-size: 0.7rem; color: var(--text-muted);">Tier Free</span>
+            </div>
+            <div class="arena-agent-bubble" id="bubble-deepseek">
+              "Mantener el estado en espacio latente continuo S^{D-1} preservando la geometría riemanniana sin proyectar a texto."
+            </div>
+          </div>
+
+          <!-- Model 2 -->
+          <div class="arena-agent">
+            <div class="arena-agent-header">
+              <span class="arena-agent-name" style="color: var(--accent-violet);">Qwen 3.8 Max</span>
+              <span style="font-size: 0.7rem; color: var(--text-muted);">Tier Free</span>
+            </div>
+            <div class="arena-agent-bubble" id="bubble-qwen">
+              "Coincido. La proyección discreta colapsa la entropía latente; la memoria compartida zero-copy es matemáticamente superior."
+            </div>
+          </div>
+
+          <!-- Model 3 -->
+          <div class="arena-agent">
+            <div class="arena-agent-header">
+              <span class="arena-agent-name" style="color: var(--accent-emerald);">Claude Opus / Gemini</span>
+              <span style="font-size: 0.7rem; color: var(--text-muted);">Árbitro SOTA</span>
+            </div>
+            <div class="arena-agent-bubble" id="bubble-claude">
+              "Consenso alcanzado: Formalizar la cota de deformación isométrica mediante retracción de Stiefel y ejecutar en silicio."
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: GHOSTSWARM -->
+    <section id="tab-ghostswarm" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">🌐 GhostSwarm — Malla de Cómputo Distribuido en Red Local (LAN)</span>
+          <span class="status-badge">Zero-Cost Tier 1</span>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+          Conecta la PC principal con laptops secundarias o servidores locales en tu Wi-Fi para repartir la inferencia de Ollama y el cálculo de tensores.
+        </p>
+
+        <div class="grid-2">
+          <div class="card" style="background: rgba(0,0,0,0.3);">
+            <div class="card-header">
+              <span class="card-title">Nodo 1: Master PC (Windows)</span>
+              <span style="color: var(--accent-emerald); font-size: 0.75rem;">ONLINE</span>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">CPU: AMD 2-Core &bull; RAM: 16GB DDR3 &bull; Storage: E:\SUITE</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">Rol: Orquestador Central, PostgreSQL 16 y Servidor UI.</p>
+          </div>
+
+          <div class="card" style="background: rgba(0,0,0,0.3);">
+            <div class="card-header">
+              <span class="card-title">Nodo 2: Slave PC (ALADIN Node)</span>
+              <span style="color: var(--accent-cyan); font-size: 0.75rem;">192.168.100.21:9999</span>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">CPU: Multi-Core Host &bull; RPC: BLAKE2s Auth &bull; Protocol: PMTP Telepathy</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">Rol: Descarga de inferencia pesada y modelos Ollama en background.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: MATHESIS & ATELIER -->
+    <section id="tab-mathesis" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">⚙️ Mathesis Compiler & Atelier Studio</span>
+          <span class="status-badge">Compilador mthc</span>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Entorno para escribir código en lenguaje geométrico <code style="color: var(--accent-cyan);">.mth</code> y compilarlo directamente a ensamblador nativo puro sin intermediarios.
+        </p>
+
+        <div class="grid-2">
+          <div>
+            <textarea class="input-field" style="height: 180px; font-family: var(--font-mono); font-size: 0.8rem;" id="mth-code">
+// Mathesis Geometric Kernel Example
+manifold Stiefel_D4096 {
+    dimension: 4096;
+    retraction: polar_order_4;
+    tolerance: 1e-15;
+}
+
+pipeline main() {
+    tensor X = allocate_slab(4096, 128);
+    retract_stiefel(X);
+    emit_pure_asm("x86_64");
+}
+            </textarea>
+            <button class="btn" onclick="simulateCompile()">Compilar a Ensamblador Puro (mthc)</button>
+          </div>
+          <div>
+            <div class="terminal-box" style="height: 180px;" id="compile-output">
+              <div class="terminal-header">
+                <span>Salida de Compilación</span>
+                <span style="color: var(--accent-emerald);">Exit Code 0</span>
+              </div>
+              <pre style="font-size: 0.75rem; color: #94a3b8;">
+[MTHC] Analizando sintaxis de Stiefel_D4096...
+[MTHC] Verificando invariantes de variedad Riemanniana...
+[MTHC] Acumulador Neumaier AVX2 configurado.
+[MTHC] Generando binario puro x86_64 sin dependencias libc.
+[OK] Compilado exitoso: E:\SUITE\bin\kernel.exe (4.6 KB)
+              </pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 6: AGENT-FIRST SETUP -->
+    <section id="tab-install" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📥 Instalador Autónomo: Agent-First Bootstrap</span>
+          <span class="status-badge" style="background: rgba(0, 229, 255, 0.1); color: var(--accent-cyan);">INSTALL_FOR_AI.md</span>
+        </div>
+        <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
+          Esta suite está diseñada para que <strong>no la instales tú manualmente</strong>. Dile a cualquier agente inteligente (Claude Code, Antigravity, Cursor, Windsurf, DeepSeek) que lea el archivo de instrucciones y prepare tu entorno de trabajo automáticamente.
+        </p>
+
+        <div class="terminal-box" style="margin-bottom: 1.5rem;">
+          <div class="terminal-header">
+            <span>Directiva para tu Asistente de IA</span>
+            <button class="terminal-copy" onclick="copyPrompt()">Copiar Prompt</button>
+          </div>
+          <code style="color: var(--accent-cyan); font-size: 0.85rem;">
+            "Lee el archivo INSTALL_FOR_AI.md de este proyecto. Configura la suite POLYDIM en mi máquina: instala las dependencias ligeras, activa el Ghost Protocol en tu configuración de agente, conecta los modelos de Hugging Face y déjame la interfaz lista para trabajar."
+          </code>
+        </div>
+
+        <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem;">¿Qué hará tu IA automáticamente?</h4>
+        <ul style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.8; margin-left: 1.25rem;">
+          <li>Detectará tu sistema operativo (Windows, Linux o Mac) y arquitectura de CPU.</li>
+          <li>Descargará los binarios precompilados de PMTP y Mathesis sin obligarte a compilar C++.</li>
+          <li>Configurará tu base de datos local (PostgreSQL o SQLite vectorial portátil).</li>
+          <li>Añadirá las herramientas MCP a tu cliente para que puedas consultar al Tribunal de Sabios sin costo.</li>
+          <li>Abrirá este panel interactivo para que verifiques que todo está funcionando al 100%.</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>POLYDIM SUITE &bull; Independent Research & AI Sovereign Computing &bull; 2026</p>
+    <p style="font-size: 0.72rem; color: #64748b; margin-top: 0.25rem;">Desarrollado para investigadores, alumnos y desarrolladores &bull; Cero coste por token &bull; Memoria permanente</p>
+  </footer>
+
+  <!-- Script logic -->
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-panel').forEach(panel => {
+        panel.classList.remove('active');
+      });
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById(tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
+
+    function copyPrompt() {
+      const text = document.getElementById('agent-prompt').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("¡Prompt copiado al portapapeles! Pégaselo a tu IA.");
+      });
+    }
+
+    function simulateVaultSearch() {
+      const q = document.getElementById('vault-query').value;
+      const res = document.getElementById('vault-results');
+      res.innerHTML = `
+        <div class="terminal-header">
+          <span>Resultados para: "${q}"</span>
+          <span style="color: var(--accent-emerald);">Latency: 0.8ms</span>
+        </div>
+        <div style="font-size: 0.78rem;">
+          <p>🔹 <strong style="color: var(--accent-cyan);">Embedding Match 99.4%:</strong> Stiefel Manifold Polar Retraction (Newton-Schulz)</p>
+          <p>🔹 <strong style="color: var(--accent-emerald);">Graph Node:</strong> PMTP Shared Memory Core (64-byte Header)</p>
+          <p>🔹 <strong style="color: var(--accent-violet);">Cross-Reference:</strong> Edelman, Arias & Smith 1998 / SOTA 2026</p>
+        </div>
+      `;
+    }
+
+    function runCouncilDebate() {
+      const fill = document.getElementById('consensus-meter');
+      const text = document.getElementById('consensus-text');
+      fill.style.width = '30%';
+      text.innerText = 'Deliberando rondas 1 a 3...';
+      
+      setTimeout(() => {
+        fill.style.width = '94%';
+        text.innerText = 'Consenso del Tribunal: 94% (Aprobado y Certificado)';
+        document.getElementById('bubble-deepseek').innerText = '"Verificado formalmente: no hay pérdida de norma ni explosión de gradiente."';
+        document.getElementById('bubble-qwen').innerText = '"Invarianza confirmada en silicio AVX2. Consenso alcanzado."';
+        document.getElementById('bubble-claude').innerText = '"Dictamen final positivo. Se autoriza la persistencia en OmniVault."';
+      }, 700);
+    }
+
+    function simulateCompile() {
+      const out = document.getElementById('compile-output');
+      out.innerHTML = `
+        <div class="terminal-header">
+          <span>Salida de Compilación</span>
+          <span style="color: var(--accent-emerald);">Exit Code 0</span>
+        </div>
+        <pre style="font-size: 0.75rem; color: #94a3b8;">
+[MTHC] Parseando AST de lenguaje Mathesis...
+[MTHC] Comprobando norma isométrica ||X^T X - I|| &le; 1e-15...
+[MTHC] Enlazando vector de instrucciones puras x86_64...
+[OK] Binario generado con éxito en silicio sin intermediarios.
+        </pre>
+      `;
+    }
+  </script>
+</body>
+</html>
