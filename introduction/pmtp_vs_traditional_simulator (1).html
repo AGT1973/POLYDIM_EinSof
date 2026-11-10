@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full bg-slate-950 text-slate-100">
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -61,7 +61,7 @@
 </head>
 <body class="h-full flex flex-col font-sans overflow-x-hidden selection:bg-cyan-500 selection:text-slate-950">
 
-  <!-- Header Header / HUD Nav -->
+  <!-- Header Nav -->
   <header class="glass-panel sticky top-0 z-50 border-b border-cyan-950/50 px-4 py-3 flex flex-wrap justify-between items-center gap-4">
     <div class="flex items-center gap-3">
       <div class="relative flex h-3 w-3">
@@ -80,7 +80,7 @@
     <div class="flex flex-wrap items-center gap-3">
       <button id="btnTriggerQuery" class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs uppercase tracking-wider shadow-lg shadow-cyan-500/20 active:scale-95 transition-all flex items-center gap-1.5">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-        Disparar Consulta (Query)
+        Run Benchmark Query
       </button>
 
       <button id="btnPlayPause" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-mono text-xs transition-all flex items-center gap-1.5">
@@ -88,9 +88,9 @@
       </button>
 
       <div class="flex items-center gap-2 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800">
-        <label for="speedRange" class="text-xs font-mono text-slate-400">Velocidad:</label>
-        <input type="range" id="speedRange" min="0.2" max="3.0" step="0.1" value="1.0" class="w-20 accent-cyan-400 cursor-pointer">
-        <span id="speedVal" class="text-xs font-mono text-cyan-400 w-8">1.0x</span>
+        <label for="speedRange" class="text-xs font-mono text-slate-400">Speed:</label>
+        <input type="range" id="speedRange" min="1.7" max="2.5" step="0.1" value="1.7" class="w-20 accent-cyan-400 cursor-pointer">
+        <span id="speedVal" class="text-xs font-mono text-cyan-400 w-10">1.7x</span>
       </div>
 
       <button id="btnReset" class="px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-slate-200 font-mono text-xs border border-slate-800 transition-all">
@@ -100,190 +100,183 @@
   </header>
 
   <!-- Main Container -->
-  <main class="flex-1 p-3 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-4 max-w-[1920px] mx-auto w-full">
+  <main class="flex-1 p-3 md:p-6 flex flex-col gap-4 max-w-[1920px] mx-auto w-full">
 
     <!-- Metrics Summary Top Bar -->
-    <section class="lg:col-span-12 grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <section class="grid grid-cols-2 sm:grid-cols-4 gap-3">
       <!-- Metric 1 -->
       <div class="glass-panel p-3 rounded-xl border-l-4 border-l-amber-500">
-        <div class="text-[10px] font-mono uppercase text-slate-400 tracking-wider">Latencia Promedio</div>
+        <div class="text-[10px] font-mono uppercase text-slate-400 tracking-wider">Average Latency</div>
         <div class="flex items-baseline justify-between mt-1">
           <span class="text-xs text-amber-400 font-mono">Trad: <span id="mTradLat">1,450</span> ms</span>
           <span class="text-sm font-bold text-cyan-400 font-mono">PMTP: <span id="mPmtpLat">0.005</span> ms</span>
         </div>
-        <div class="text-[10px] text-emerald-400 mt-1 font-mono">⚡ 290,000x más rápido</div>
+        <div class="text-[10px] text-emerald-400 mt-1 font-mono">⚡ ~290,000x Speedup</div>
       </div>
 
       <!-- Metric 2 -->
       <div class="glass-panel p-3 rounded-xl border-l-4 border-l-red-500">
-        <div class="text-[10px] font-mono uppercase text-slate-400 tracking-wider">Costo Peaje (Tokens API)</div>
+        <div class="text-[10px] font-mono uppercase text-slate-400 tracking-wider">API Token Toll Cost</div>
         <div class="flex items-baseline justify-between mt-1">
           <span class="text-xs text-amber-400 font-mono">Trad: $<span id="mTradCost">14.82</span></span>
           <span class="text-sm font-bold text-cyan-400 font-mono">PMTP: $0.00</span>
         </div>
-        <div class="text-[10px] text-cyan-400 mt-1 font-mono">💎 0 Tokens en tránsito (PmtpShmBus)</div>
+        <div class="text-[10px] text-cyan-400 mt-1 font-mono">💎 0 Tokens in transit (PmtpShmBus)</div>
       </div>
 
       <!-- Metric 3 -->
       <div class="glass-panel p-3 rounded-xl border-l-4 border-l-cyan-500">
-        <div class="text-[10px] font-mono uppercase text-slate-400 tracking-wider">Preservación Información (DPI)</div>
+        <div class="text-[10px] font-mono uppercase text-slate-400 tracking-wider">Information Fidelity (DPI)</div>
         <div class="flex items-baseline justify-between mt-1">
           <span class="text-xs text-amber-400 font-mono">Trad: <span id="mTradDpi">38.4</span>% $I(X;\text{Tok})$</span>
           <span class="text-sm font-bold text-cyan-400 font-mono">PMTP: 99.999% ($\epsilon_{\text{mach}}$)</span>
         </div>
-        <div class="text-[10px] text-cyan-300 mt-1 font-mono">📐 Retracción Newton-Schulz Ord 4</div>
+        <div class="text-[10px] text-cyan-300 mt-1 font-mono">📐 Newton-Schulz Ord 4 Retraction</div>
       </div>
 
       <!-- Metric 4 -->
       <div class="glass-panel p-3 rounded-xl border-l-4 border-l-violet-500">
-        <div class="text-[10px] font-mono uppercase text-slate-400 tracking-wider">Tasa Alucinaciones / Errores</div>
+        <div class="text-[10px] font-mono uppercase text-slate-400 tracking-wider">Hallucination / Error Rate</div>
         <div class="flex items-baseline justify-between mt-1">
           <span class="text-xs text-amber-400 font-mono">Trad: <span id="mTradHallu">14.2</span>%</span>
           <span class="text-sm font-bold text-violet-400 font-mono">PMTP: 0.00%</span>
         </div>
-        <div class="text-[10px] text-violet-300 mt-1 font-mono">🌌 Isomorfismo Espacio Hilbert $\mathcal{H}$</div>
+        <div class="text-[10px] text-violet-300 mt-1 font-mono">🌌 Hilbert Space Isomorphism $\mathcal{H}$</div>
       </div>
     </section>
 
-    <!-- Canvas Simulation Area (Middle 8/12 or full width) -->
-    <section class="lg:col-span-9 flex flex-col gap-4">
-      
-      <!-- Split Visualizer Card -->
-      <div class="glass-panel rounded-2xl p-4 flex flex-col h-[650px] relative overflow-hidden border border-slate-800">
-        <!-- Canvas Overlay Controls/Legend -->
-        <div class="flex justify-between items-center mb-2 z-10">
-          <div class="flex items-center gap-4 text-xs font-mono">
-            <span class="flex items-center gap-1.5 text-amber-400">
-              <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span> Tradicional (Tokens 1D)
-            </span>
-            <span class="flex items-center gap-1.5 text-cyan-400">
-              <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400"></span> PMTP (Tensores Continuos)
-            </span>
-          </div>
-          <span class="text-[11px] font-mono text-slate-400">FPS: <span id="fpsCounter" class="text-emerald-400">60</span></span>
-        </div>
-
-        <!-- Simulation Canvas -->
-        <div class="relative flex-1 w-full h-full rounded-xl overflow-hidden bg-slate-950/90 border border-slate-900">
-          <canvas id="simCanvas" class="w-full h-full block cursor-crosshair"></canvas>
-          
-          <!-- Floating Annotations overlay -->
-          <div id="canvasOverlay" class="absolute inset-0 pointer-events-none p-4 flex flex-col justify-between">
-            <!-- Top Lane Info -->
-            <div class="flex justify-between items-start text-xs font-mono">
-              <div class="bg-amber-950/40 border border-amber-800/40 backdrop-filter backdrop-blur px-2.5 py-1 rounded text-amber-300">
-                LÍNEA TRADICIONAL: Colapso DPI en Tokenizador 1D $\rightarrow$ Truncamiento $\rightarrow$ Peaje API
-              </div>
-              <div class="bg-amber-950/40 border border-amber-800/40 backdrop-filter backdrop-blur px-2.5 py-1 rounded text-amber-300 text-right">
-                Agentes dispersos intercambiando Texto Plano
-              </div>
-            </div>
-
-            <!-- Divider Line Label -->
-            <div class="w-full text-center">
-              <span class="bg-slate-900/90 border border-slate-700 text-slate-400 font-mono text-[10px] uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">
-                Frontera de Paradigma: Serial 1D Text vs Continuum Variedad Stiefels $\text{St}(D,r)$
+    <!-- Main Content Area: Visualizer + Sidebar -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <!-- Visualizer Canvas -->
+      <section class="lg:col-span-9 flex flex-col gap-4">
+        <div class="glass-panel rounded-2xl p-4 flex flex-col h-[520px] relative overflow-hidden border border-slate-800">
+          <div class="flex justify-between items-center mb-2 z-10">
+            <div class="flex items-center gap-4 text-xs font-mono">
+              <span class="flex items-center gap-1.5 text-amber-400">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span> Traditional (1D Tokens)
+              </span>
+              <span class="flex items-center gap-1.5 text-cyan-400">
+                <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400"></span> PMTP (Continuous Tensors)
               </span>
             </div>
+            <span class="text-[11px] font-mono text-slate-400">FPS: <span id="fpsCounter" class="text-emerald-400">60</span></span>
+          </div>
 
-            <!-- Bottom Lane Info -->
-            <div class="flex justify-between items-end text-xs font-mono">
-              <div class="bg-cyan-950/40 border border-cyan-800/40 backdrop-filter backdrop-blur px-2.5 py-1 rounded text-cyan-300">
-                LÍNEA PMTP: Directo a Bus de Memoria RAM <code class="text-cyan-200 font-bold">PmtpShmBus</code> [64B Header + 16KB Slab]
+          <div class="relative flex-1 w-full h-full rounded-xl overflow-hidden bg-slate-950/90 border border-slate-900">
+            <canvas id="simCanvas" class="w-full h-full block cursor-crosshair"></canvas>
+            
+            <div id="canvasOverlay" class="absolute inset-0 pointer-events-none p-4 flex flex-col justify-between">
+              <div class="flex justify-between items-start text-xs font-mono">
+                <div class="bg-amber-950/40 border border-amber-800/40 backdrop-filter backdrop-blur px-2.5 py-1 rounded text-amber-300">
+                  TRADITIONAL LANE: DPI Loss in 1D Tokenizer $\rightarrow$ Context Truncation $\rightarrow$ API Tolls
+                </div>
+                <div class="bg-amber-950/40 border border-amber-800/40 backdrop-filter backdrop-blur px-2.5 py-1 rounded text-amber-300 text-right">
+                  Dispersed Agents Exchanging Plain English Text
+                </div>
               </div>
-              <div class="bg-cyan-950/40 border border-cyan-800/40 backdrop-filter backdrop-blur px-2.5 py-1 rounded text-cyan-300 text-right">
-                Intersección Hilbert Quantum $\mathcal{H}$ $\rightarrow$ <span class="text-violet-300 font-bold">Colapso 1D Final</span>
+
+              <div class="w-full text-center">
+                <span class="bg-slate-900/90 border border-slate-700 text-slate-400 font-mono text-[10px] uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">
+                  Paradigm Divide: Serial 1D Text vs Continuum Stiefel Manifold $\text{St}(D,r)$
+                </span>
+              </div>
+
+              <div class="flex justify-between items-end text-xs font-mono">
+                <div class="bg-cyan-950/40 border border-cyan-800/40 backdrop-filter backdrop-blur px-2.5 py-1 rounded text-cyan-300">
+                  PMTP LANE: Direct RAM Bus <code class="text-cyan-200 font-bold">PmtpShmBus</code> [64B Header + 16KB Slab]
+                </div>
+                <div class="bg-cyan-950/40 border border-cyan-800/40 backdrop-filter backdrop-blur px-2.5 py-1 rounded text-cyan-300 text-right">
+                  Hilbert Quantum Mesh $\mathcal{H}$ $\rightarrow$ <span class="text-violet-300 font-bold">1D Collapse Stage</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-    </section>
+      <!-- Technical Equations Sidebar -->
+      <aside class="lg:col-span-3 flex flex-col gap-3">
+        <div class="glass-panel-pmtp p-4 rounded-xl flex flex-col gap-3 h-full justify-between">
+          <h3 class="text-sm font-bold text-cyan-300 font-mono uppercase tracking-wider flex items-center gap-2">
+            <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+            PMTP Math Formalism
+          </h3>
 
-    <!-- Sidebar Technical Infographic Panel (3/12 Columns) -->
-    <aside class="lg:col-span-3 flex flex-col gap-4">
-      
-      <!-- PMTP Core Equations Card -->
-      <div class="glass-panel-pmtp p-4 rounded-xl flex flex-col gap-3">
-        <h3 class="text-sm font-bold text-cyan-300 font-mono uppercase tracking-wider flex items-center gap-2">
-          <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-          Ecuaciones Matemáticas PMTP
-        </h3>
+          <div class="bg-slate-900/80 p-2.5 rounded-lg border border-cyan-900/50">
+            <div class="text-[10px] font-mono text-cyan-400 uppercase font-bold">1. Stiefel Manifold $\text{St}(D,r)$</div>
+            <div class="text-xs font-mono text-slate-200 mt-1">
+              $\mathbf{W} \in \mathbb{R}^{D \times r} : \mathbf{W}^T \mathbf{W} = \mathbf{I}_r$
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">$D=4096, r=64$. Orthonormal reasoning path on $S^{D-1}$.</p>
+          </div>
 
-        <!-- Eq 1 -->
-        <div class="bg-slate-900/80 p-2.5 rounded-lg border border-cyan-900/50">
-          <div class="text-[10px] font-mono text-cyan-400 uppercase font-bold">1. Variedad de Stiefels $\text{St}(D,r)$</div>
-          <div class="text-xs font-mono text-slate-200 mt-1">
-            $\mathbf{W} \in \mathbb{R}^{D \times r} : \mathbf{W}^T \mathbf{W} = \mathbf{I}_r$
+          <div class="bg-slate-900/80 p-2.5 rounded-lg border border-cyan-900/50">
+            <div class="text-[10px] font-mono text-cyan-400 uppercase font-bold">2. Newton-Schulz Ord 4 Retraction</div>
+            <div class="text-xs font-mono text-cyan-200 mt-1 overflow-x-auto">
+              $\mathbf{X}_{k+1} = \mathbf{X}_k \left( \frac{15}{8} \mathbf{I}_r - \frac{5}{4} \mathbf{S}_k + \frac{3}{8} \mathbf{S}_k^2 \right)$
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">Cost $\mathcal{O}(Dr^2) \ll \mathcal{O}(D^3)$. $>60\times$ speedup.</p>
           </div>
-          <p class="text-[10px] text-slate-400 mt-1">Con $D=4096$, $r=64$. Las columnas son estrictamente ortonormales en la hiperesfera $S^{D-1}$.</p>
-        </div>
 
-        <!-- Eq 2 -->
-        <div class="bg-slate-900/80 p-2.5 rounded-lg border border-cyan-900/50">
-          <div class="text-[10px] font-mono text-cyan-400 uppercase font-bold">2. Retracción Newton-Schulz Ord 4</div>
-          <div class="text-xs font-mono text-cyan-200 mt-1 overflow-x-auto">
-            $\mathbf{X}_{k+1} = \mathbf{X}_k \left( \frac{15}{8} \mathbf{I}_r - \frac{5}{4} \mathbf{S}_k + \frac{3}{8} \mathbf{S}_k^2 \right)$
+          <div class="bg-slate-900/80 p-2.5 rounded-lg border border-cyan-900/50">
+            <div class="text-[10px] font-mono text-cyan-400 uppercase font-bold">3. Neumaier Accumulator (C++20)</div>
+            <div class="text-[11px] font-mono text-slate-300 mt-1">
+              $c \leftarrow c + \begin{cases} (s - t) + x_i & \text{if } |s| \ge |x_i| \\ (x_i - t) + s & \text{if } |s| < |x_i| \end{cases}$
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">Error compensation for $\Vert \mathbf{X}^T \mathbf{X} - \mathbf{I}_r \Vert_\infty \le 10^{-15}$.</p>
           </div>
-          <p class="text-[10px] text-slate-400 mt-1">Costo $\mathcal{O}(Dr^2) \ll \mathcal{O}(D^3)$. Aceleración $>60\times$ sin deriva numérica.</p>
-        </div>
 
-        <!-- Eq 3 -->
-        <div class="bg-slate-900/80 p-2.5 rounded-lg border border-cyan-900/50">
-          <div class="text-[10px] font-mono text-cyan-400 uppercase font-bold">3. Acumulador Neumaier en C++20</div>
-          <div class="text-[11px] font-mono text-slate-300 mt-1">
-            $c \leftarrow c + \begin{cases} (s - t) + x_i & \text{si } |s| \ge |x_i| \\ (x_i - t) + s & \text{si } |s| < |x_i| \end{cases}$
+          <div class="bg-slate-900/80 p-2.5 rounded-lg border border-cyan-900/50">
+            <div class="text-[10px] font-mono text-violet-400 uppercase font-bold">4. Hilbert Space Mapping $\mathcal{H}$</div>
+            <div class="text-xs font-mono text-violet-200 mt-1">
+              $|\psi\rangle = \sum_{j=0}^{D-1} v_j |j\rangle, \quad |\psi(t)\rangle = e^{-i \mathbf{H} t} |\psi(0)\rangle$
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">Unitary collapse-free evolution until final 1D output step.</p>
           </div>
-          <p class="text-[10px] text-slate-400 mt-1">Compensa error flotante para $\Vert \mathbf{X}^T \mathbf{X} - \mathbf{I}_r \Vert_\infty \le 10^{-15}$.</p>
-        </div>
 
-        <!-- Eq 4 -->
-        <div class="bg-slate-900/80 p-2.5 rounded-lg border border-cyan-900/50">
-          <div class="text-[10px] font-mono text-violet-400 uppercase font-bold">4. Mapeo a Espacio de Hilbert $\mathcal{H}$</div>
-          <div class="text-xs font-mono text-violet-200 mt-1">
-            $|\psi\rangle = \sum_{j=0}^{D-1} v_j |j\rangle, \quad |\psi(t)\rangle = e^{-i \mathbf{H} t} |\psi(0)\rangle$
-          </div>
-          <p class="text-[10px] text-slate-400 mt-1">Evolución unitaria libre de colapsos hasta la etapa final de entrega 1D.</p>
-        </div>
-      </div>
-
-      <!-- Binary Header Info Card -->
-      <div class="glass-panel p-4 rounded-xl flex flex-col gap-2">
-        <h3 class="text-xs font-bold text-slate-300 font-mono uppercase tracking-wider flex items-center justify-between">
-          <span>Cabecera ShmBus (64 Bytes)</span>
-          <span class="text-[10px] text-cyan-400">Wait-Free / Lock-Free</span>
-        </h3>
-        
-        <div class="grid grid-cols-2 gap-1.5 text-[10px] font-mono">
-          <div class="bg-slate-900 p-1.5 rounded border border-slate-800">
-            <span class="text-slate-500">MAGIC:</span> <span class="text-cyan-400 font-bold">0x504D5450</span>
-          </div>
-          <div class="bg-slate-900 p-1.5 rounded border border-slate-800">
-            <span class="text-slate-500">VERSION:</span> <span class="text-cyan-400 font-bold">0x0004</span>
-          </div>
-          <div class="bg-slate-900 p-1.5 rounded border border-slate-800">
-            <span class="text-slate-500">DIMS:</span> <span class="text-cyan-400 font-bold">[1, 1, 4096]</span>
-          </div>
-          <div class="bg-slate-900 p-1.5 rounded border border-slate-800">
-            <span class="text-slate-500">HASH:</span> <span class="text-emerald-400 font-bold">BLAKE3 32B</span>
+          <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 text-[10px] font-mono">
+            <div class="text-slate-400 font-bold mb-1">ShmBus Header (64 Bytes):</div>
+            <div class="grid grid-cols-2 gap-1 text-[9px]">
+              <div><span class="text-slate-500">MAGIC:</span> <span class="text-cyan-400">0x504D5450</span></div>
+              <div><span class="text-slate-500">DIMS:</span> <span class="text-cyan-400">[1,1,4096]</span></div>
+              <div><span class="text-slate-500">SEQLOCK:</span> <span class="text-cyan-400">Atomic 4x</span></div>
+              <div><span class="text-slate-500">HASH:</span> <span class="text-emerald-400">BLAKE3 32B</span></div>
+            </div>
           </div>
         </div>
-        <p class="text-[10px] text-slate-400 mt-1">Sincronización mediante Seqlock atómico cuádruple en RAM física.</p>
-      </div>
+      </aside>
+    </div>
 
-      <!-- Live Event Log -->
-      <div class="glass-panel p-3 rounded-xl flex-1 flex flex-col min-h-[160px]">
-        <div class="text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1 flex justify-between">
-          <span>Log de Eventos en Tiempo Real</span>
-          <span class="animate-pulse text-cyan-400">● LIVE</span>
+    <!-- Full Width Bottom Horizontal Log Terminal -->
+    <section class="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Left Panel: Traditional Token Pipeline Log -->
+      <div class="glass-panel-trad p-3 rounded-xl flex flex-col h-[200px]">
+        <div class="text-[10px] font-mono text-amber-400 uppercase tracking-wider mb-2 flex justify-between items-center border-b border-amber-900/40 pb-1.5">
+          <span class="flex items-center gap-1.5 font-bold">
+            <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+            TRADITIONAL TOKEN PIPELINE LOGS (1D SERIAL TEXT)
+          </span>
+          <span class="text-slate-500 text-[9px]">HIGH LATENCY & API TOLLS</span>
         </div>
-        <div id="eventLog" class="flex-1 font-mono text-[10px] space-y-1 overflow-y-auto max-h-[180px] pr-1">
+        <div id="tradLog" class="flex-1 font-mono text-[10px] space-y-1 overflow-y-auto pr-1">
           <!-- JS inserted logs -->
         </div>
       </div>
 
-    </aside>
+      <!-- Right Panel: PMTP Vector Pipeline Log -->
+      <div class="glass-panel-pmtp p-3 rounded-xl flex flex-col h-[200px]">
+        <div class="text-[10px] font-mono text-cyan-400 uppercase tracking-wider mb-2 flex justify-between items-center border-b border-cyan-900/40 pb-1.5">
+          <span class="flex items-center gap-1.5 font-bold">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+            PMTP VECTOR PIPELINE LOGS (STIEFEL MANIFOLD CONTINUUM)
+          </span>
+          <span class="text-emerald-400 text-[9px]">0 TOKENS • ZERO-COPY SHMBUS</span>
+        </div>
+        <div id="pmtpLog" class="flex-1 font-mono text-[10px] space-y-1 overflow-y-auto pr-1">
+          <!-- JS inserted logs -->
+        </div>
+      </div>
+    </section>
 
   </main>
 
@@ -293,7 +286,7 @@
     const canvas = document.getElementById('simCanvas');
     const ctx = canvas.getContext('2d');
 
-    let simSpeed = 1.0;
+    let simSpeed = 1.7;
     let isRunning = true;
     let lastTime = performance.now();
     let frameCount = 0;
@@ -321,53 +314,54 @@
     // Dynamic Nodes / Agents Layout Definition
     let nodes = {
       // Traditional Pipeline Nodes
-      tradClient: { x: 0.1, y: 0.25, label: 'PC Local', sub: 'Tokenizador 1D' },
-      tradToll: { x: 0.32, y: 0.25, label: 'API Toll Gate', sub: 'Peaje $$ / Red 1D' },
-      tradCloud1: { x: 0.58, y: 0.18, label: 'Agente A', sub: 'Detokenizing' },
-      tradCloud2: { x: 0.72, y: 0.30, label: 'Agente B', sub: 'Hallucination Risk' },
-      tradCloud3: { x: 0.86, y: 0.20, label: 'Agente C', sub: 'LLM Re-processing' },
+      tradClient: { x: 0.1, y: 0.25, label: 'Local PC', sub: '1D Tokenizer' },
+      tradToll: { x: 0.32, y: 0.25, label: 'API Toll Gate', sub: 'Toll $$ / 1D Net' },
+      tradCloud1: { x: 0.58, y: 0.18, label: 'Agent A', sub: 'Detokenizing' },
+      tradCloud2: { x: 0.72, y: 0.30, label: 'Agent B', sub: 'Hallucination Risk' },
+      tradCloud3: { x: 0.86, y: 0.20, label: 'Agent C', sub: 'LLM Re-processing' },
 
       // PMTP Pipeline Nodes
-      pmtpClient: { x: 0.1, y: 0.75, label: 'PC Local PMTP', sub: 'Tensor Latente (D=4096)' },
+      pmtpClient: { x: 0.1, y: 0.75, label: 'PMTP Local PC', sub: 'Latent Tensor (D=4096)' },
       pmtpShm: { x: 0.32, y: 0.75, label: 'PmtpShmBus', sub: '0 Tokens (16KB RAM)' },
-      pmtpHilbert1: { x: 0.58, y: 0.68, label: 'Nodo Hilbert A', sub: 'Retracción Newton-Schulz' },
-      pmtpHilbert2: { x: 0.72, y: 0.82, label: 'Nodo Hilbert B', sub: 'Operador Unitario U(t)' },
-      pmtpHilbert3: { x: 0.86, y: 0.72, label: 'Colapso 1D', sub: 'Respuesta Pura Instantánea' },
+      pmtpHilbert1: { x: 0.58, y: 0.68, label: 'Hilbert Node A', sub: 'Newton-Schulz Retraction' },
+      pmtpHilbert2: { x: 0.72, y: 0.82, label: 'Hilbert Node B', sub: 'Unitary Operator U(t)' },
+      pmtpHilbert3: { x: 0.86, y: 0.72, label: '1D Collapse Stage', sub: 'Instant Pure Output' },
     };
 
     // Entities in motion
     let tradParticles = [];
     let pmtpRibbons = [];
-    let pmtpWaveFronts = [];
     let errorPulses = [];
     let collapsePulses = [];
 
-    // Helper: Log message
-    const eventLogEl = document.getElementById('eventLog');
+    // Log elements
+    const tradLogEl = document.getElementById('tradLog');
+    const pmtpLogEl = document.getElementById('pmtpLog');
+
     function logEvent(msg, type = 'info') {
       const timeStr = new Date().toLocaleTimeString().split(' ')[0] + '.' + Math.floor(Math.random()*900+100);
       const div = document.createElement('div');
-      let colorClass = 'text-slate-300';
-      if (type === 'trad') colorClass = 'text-amber-400';
-      if (type === 'pmtp') colorClass = 'text-cyan-400';
-      if (type === 'err') colorClass = 'text-red-400 font-bold';
-      if (type === 'collapse') colorClass = 'text-violet-400 font-bold';
-
-      div.className = `${colorClass} flex items-start gap-1.5`;
-      div.innerHTML = `<span class="text-slate-600">[${timeStr}]</span> <span>${msg}</span>`;
-      eventLogEl.appendChild(div);
-      eventLogEl.scrollTop = eventLogEl.scrollHeight;
-
-      // Limit log entries
-      if (eventLogEl.children.length > 30) {
-        eventLogEl.removeChild(eventLogEl.children[0]);
+      
+      if (type === 'trad' || type === 'err') {
+        const colorClass = type === 'err' ? 'text-red-400 font-bold' : 'text-amber-300';
+        div.className = `${colorClass} flex items-start gap-1.5`;
+        div.innerHTML = `<span class="text-amber-600/70">[${timeStr}]</span> <span>${msg}</span>`;
+        tradLogEl.appendChild(div);
+        tradLogEl.scrollTop = tradLogEl.scrollHeight;
+        if (tradLogEl.children.length > 40) tradLogEl.removeChild(tradLogEl.children[0]);
+      } else {
+        const colorClass = type === 'collapse' ? 'text-violet-300 font-bold' : 'text-cyan-300';
+        div.className = `${colorClass} flex items-start gap-1.5`;
+        div.innerHTML = `<span class="text-cyan-600/70">[${timeStr}]</span> <span>${msg}</span>`;
+        pmtpLogEl.appendChild(div);
+        pmtpLogEl.scrollTop = pmtpLogEl.scrollHeight;
+        if (pmtpLogEl.children.length > 40) pmtpLogEl.removeChild(pmtpLogEl.children[0]);
       }
     }
 
     // --- Particle Spawn & Logic ---
 
     function spawnTradTokenFlow() {
-      // Spawn discrete text token dots from client -> toll -> agents
       const words = ["Thinking...", "Prompt", "Token_492", "Context_Truncated", "Attention_Map", "API_Cost+$", "Hallucinating?", "JSON_Schema", "Embedding", "Response_Stream"];
       const word = words[Math.floor(Math.random() * words.length)];
       
@@ -379,19 +373,20 @@
         speed: 0.002 * (0.8 + Math.random() * 0.4),
         progress: 0,
         text: word,
-        isError: Math.random() < 0.18, // 18% hallucination pulse chance
+        isError: Math.random() < 0.18,
       });
 
       stats.tradTokensTotal += 1;
-      stats.tradCostTotal += 0.0025; // $0.0025 per token payload
+      stats.tradCostTotal += 0.0025;
       updateHUD();
+
+      logEvent(`Token serializing: "${word}" payload dispatch (DPI Information Loss applied)`, 'trad');
     }
 
     function spawnPmtpVectorWave() {
-      // Continuous high-dimensional tensor wave
       pmtpRibbons.push({
         progress: 0,
-        speed: 0.008, // Much faster transmission
+        speed: 0.008,
         path: [nodes.pmtpClient, nodes.pmtpShm, nodes.pmtpHilbert1, nodes.pmtpHilbert2, nodes.pmtpHilbert3, nodes.pmtpClient],
         targetIndex: 1,
         amplitude: 15 + Math.random() * 10,
@@ -400,7 +395,7 @@
       });
 
       stats.pmtpQueriesTotal += 1;
-      logEvent("PmtpShmBus: Transfiriendo tensor latente 4096-float sin tokens", "pmtp");
+      logEvent("PmtpShmBus: Zero-copy transmission of 4096-float continuous tensor slab", "pmtp");
     }
 
     function triggerManualQuery() {
@@ -408,7 +403,8 @@
         setTimeout(spawnTradTokenFlow, i * 250);
       }
       spawnPmtpVectorWave();
-      logEvent("🚀 Consulta simultánea iniciada: Tradicional vs PMTP", "info");
+      logEvent("🚀 Parallel benchmark query initiated: Traditional Token vs PMTP Vector", "pmtp");
+      logEvent("🚀 Dispatching text payload over 1D network wire...", "trad");
     }
 
     // Interval Spawners
@@ -427,7 +423,6 @@
       document.getElementById('mTradCost').innerText = stats.tradCostTotal.toFixed(2);
       document.getElementById('mTradLat').innerText = (1200 + Math.floor(Math.random()*400)).toLocaleString();
       
-      // Dynamic DPI loss tick
       const dpiVal = Math.max(22.0, (45.0 - (stats.tradTokensTotal * 0.05))).toFixed(1);
       document.getElementById('mTradDpi').innerText = dpiVal;
 
@@ -441,7 +436,6 @@
       const px = node.x * width;
       const py = node.y * height;
 
-      // Glow behind node
       const grad = ctx.createRadialGradient(px, py, 2, px, py, 30);
       grad.addColorStop(0, glowColor);
       grad.addColorStop(1, 'transparent');
@@ -450,7 +444,6 @@
       ctx.arc(px, py, 30, 0, Math.PI * 2);
       ctx.fill();
 
-      // Node box / circle
       ctx.fillStyle = '#0f172a';
       ctx.strokeStyle = color;
       ctx.lineWidth = 2;
@@ -459,13 +452,11 @@
       ctx.fill();
       ctx.stroke();
 
-      // Inner core
       ctx.fillStyle = color;
       ctx.beginPath();
       ctx.arc(px, py, 5, 0, Math.PI * 2);
       ctx.fill();
 
-      // Text labels
       ctx.fillStyle = '#f8fafc';
       ctx.font = '600 11px Inter, sans-serif';
       ctx.textAlign = 'center';
@@ -507,7 +498,7 @@
       ctx.lineTo(nodes.pmtpHilbert3.x * width, nodes.pmtpHilbert3.y * height);
       ctx.stroke();
 
-      // Hilbert Space Interconnected Mesh (PMTP Multi-Agent Tensor Interconnect)
+      // Hilbert Space Interconnected Mesh
       ctx.strokeStyle = 'rgba(139, 92, 246, 0.25)';
       ctx.lineWidth = 1.5;
       const h1x = nodes.pmtpHilbert1.x * width, h1y = nodes.pmtpHilbert1.y * height;
@@ -539,7 +530,6 @@
       const dt = (currentTime - lastTime) / 1000;
       lastTime = currentTime;
 
-      // Calculate FPS
       frameCount++;
       if (currentTime - fpsTimer >= 1000) {
         fps = frameCount;
@@ -580,7 +570,6 @@
         const curX = startX + (endX - startX) * p.progress;
         const curY = startY + (endY - startY) * p.progress;
 
-        // Draw Token Dot
         ctx.fillStyle = p.isError ? '#ef4444' : '#f59e0b';
         ctx.shadowColor = p.isError ? 'rgba(239, 68, 68, 0.8)' : 'rgba(245, 158, 11, 0.8)';
         ctx.shadowBlur = 10;
@@ -589,31 +578,28 @@
         ctx.fill();
         ctx.shadowBlur = 0;
 
-        // Draw floating Token string text
         ctx.fillStyle = p.isError ? '#fca5a5' : '#fde68a';
         ctx.font = '500 9px Fira Code, monospace';
         ctx.textAlign = 'center';
         ctx.fillText(p.text, curX, curY - 10);
 
-        // Check node arrival
         if (p.progress >= 1.0) {
           p.progress = 0;
           p.targetIndex++;
 
-          // Hallucination Warning trigger
           if (p.isError && p.targetIndex === 3) {
-            logEvent("⚠️ ALUCINACIÓN EN TRADICIONAL: Colapso DPI en reconversión a texto!", "err");
+            logEvent("⚠️ TRADITIONAL HALLUCINATION: DPI truncation error in text reconversion!", "err");
             errorPulses.push({ x: curX, y: curY, radius: 5, alpha: 1.0 });
           }
 
           if (p.targetIndex >= p.path.length) {
             tradParticles.splice(i, 1);
-            logEvent("Respuesta tradicional de texto completada (Lenta / Con peaje)", "trad");
+            logEvent("Traditional text response completed (High Latency + API Toll Paid)", "trad");
           }
         }
       }
 
-      // 3. Animate PMTP Continuous Vector Waves (Geometric Tensor Ribbons)
+      // 3. Animate PMTP Continuous Vector Waves
       for (let i = pmtpRibbons.length - 1; i >= 0; i--) {
         const r = pmtpRibbons[i];
         r.progress += r.speed * simSpeed;
@@ -626,7 +612,6 @@
         const endX = nextNode.x * width;
         const endY = nextNode.y * height;
 
-        // Draw Sine Wave Tensor Ribbon along segment
         const segmentLen = Math.hypot(endX - startX, endY - startY);
         const steps = 30;
         
@@ -643,7 +628,6 @@
           const px = startX + (endX - startX) * t;
           const py = startY + (endY - startY) * t;
 
-          // Normal vector offset for sine wave
           const dx = endX - startX;
           const dy = endY - startY;
           const nx = -dy / segmentLen;
@@ -660,19 +644,16 @@
         ctx.stroke();
         ctx.shadowBlur = 0;
 
-        // Segment End Check
         if (r.progress >= 1.0) {
           r.progress = 0;
           r.targetIndex++;
 
-          // Stiefel Retraction Newton-Schulz pulse trigger
           if (r.targetIndex === 3) {
-            logEvent("⚡ PMTP Retracción Newton-Schulz (Ord 4): Preservando isometría ||XᵀX - I|| < 10⁻¹⁵", "pmtp");
+            logEvent("⚡ Newton-Schulz Ord 4 Retraction: Preserving isometry ||XᵀX - I|| < 10⁻¹⁵", "pmtp");
           }
 
-          // 1D Collapse Step at final destination
           if (r.targetIndex === 5) {
-            logEvent("🔮 COLAPSO EN 1D (Final Step): Tensor latente continuo → Respuesta exacta", "collapse");
+            logEvent("🔮 1D COLLAPSE STAGE: Latent continuous tensor projected to exact response", "collapse");
             collapsePulses.push({
               x: nextNode.x * width,
               y: nextNode.y * height,
@@ -701,18 +682,17 @@
 
         ctx.fillStyle = `rgba(239, 68, 68, ${ep.alpha})`;
         ctx.font = '700 10px Inter, sans-serif';
-        ctx.fillText('! ERROR DPI / ALUCINACIÓN !', ep.x, ep.y - ep.radius - 4);
+        ctx.fillText('! DPI LOSS / HALLUCINATION !', ep.x, ep.y - ep.radius - 4);
 
         if (ep.alpha <= 0) errorPulses.splice(i, 1);
       }
 
-      // 5. Render 1D Collapse Pulses (PMTP Quantum Hilbert Collapse)
+      // 5. Render 1D Collapse Pulses (PMTP)
       for (let i = collapsePulses.length - 1; i >= 0; i--) {
         const cp = collapsePulses[i];
         cp.radius += 3.0;
         cp.alpha -= 0.025;
 
-        // Concentric violet/cyan collapse rings
         ctx.strokeStyle = `rgba(139, 92, 246, ${cp.alpha})`;
         ctx.lineWidth = 3;
         ctx.beginPath();
@@ -728,7 +708,7 @@
         ctx.fillStyle = `rgba(216, 180, 254, ${cp.alpha})`;
         ctx.font = '700 11px Fira Code, monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('COLAPSO EN 1D COMPLETADO (0 ALUCINACIONES)', cp.x, cp.y + cp.radius + 15);
+        ctx.fillText('1D COLLAPSE COMPLETE (ZERO DEFECTS)', cp.x, cp.y + cp.radius + 15);
 
         if (cp.alpha <= 0) collapsePulses.splice(i, 1);
       }
@@ -759,14 +739,15 @@
       errorPulses = [];
       collapsePulses = [];
       updateHUD();
-      logEvent("Métricas reiniciadas", "info");
+      logEvent("Metrics & counters reset", "trad");
+      logEvent("Metrics & counters reset", "pmtp");
     });
 
     // Initial Logs & Boot
     window.onload = () => {
       resizeCanvas();
-      logEvent("Sistema PMTP Inicializado: Memoria compartida PmtpShmBus lista", "pmtp");
-      logEvent("Simulador de doble canal iniciado a 60 FPS", "info");
+      logEvent("PMTP System Initialized: Lock-free memory bus PmtpShmBus ready", "pmtp");
+      logEvent("Traditional Pipeline: 1D Tokenizer listener active", "trad");
       requestAnimationFrame(animate);
     };
   </script>
