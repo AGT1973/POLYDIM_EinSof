@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLYDIM SUITE — Simulador de Economía de Guerra de Tokens & Tribunal de Sabios</title>
+  <style>
+    :root {
+      --bg-dark: #05070c;
+      --bg-card: #0b101b;
+      --bg-card-hover: #121929;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-active: rgba(0, 229, 255, 0.4);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-cyan: #00e5ff;
+      --accent-emerald: #10b981;
+      --accent-violet: #8b5cf6;
+      --accent-quantum: #ec4899;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: rgba(11, 16, 27, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1.25rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #000;
+      font-size: 1.4rem;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
+    }
+
+    .brand-info h1 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-info p {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: var(--accent-emerald);
+    }
+
+    main {
+      flex: 1;
+      max-width: 1380px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+    }
+
+    .hero-title {
+      font-size: 2.3rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      text-align: center;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #fff 30%, var(--accent-emerald) 70%, var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto 2.5rem auto;
+    }
+
+    /* Simulation Arena Grid */
+    .arena-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    @media (max-width: 950px) {
+      .arena-grid { grid-template-columns: 1fr; }
+    }
+
+    .arena-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.75rem;
+      position: relative;
+    }
+
+    .arena-card.traditional {
+      border-color: rgba(244, 63, 94, 0.35);
+      background: linear-gradient(180deg, rgba(244, 63, 94, 0.04), var(--bg-card));
+    }
+
+    .arena-card.pmtp {
+      border-color: rgba(16, 185, 129, 0.45);
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.05), var(--bg-card));
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.08);
+    }
+
+    .arena-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 0.85rem;
+    }
+
+    .arena-card.traditional .arena-tag {
+      background: rgba(244, 63, 94, 0.15);
+      color: var(--accent-rose);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+    }
+
+    .arena-card.pmtp .arena-tag {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .arena-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .live-meter-box {
+      background: #030408;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.25rem;
+      margin: 1rem 0;
+      font-family: var(--font-mono);
+    }
+
+    .meter-val-large {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+    }
+
+    .live-chat-preview {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 1rem;
+      height: 160px;
+      overflow-y: auto;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    /* Simulation Control Center */
+    .control-center {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .task-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+
+    @media (max-width: 800px) {
+      .task-selector { grid-template-columns: 1fr; }
+    }
+
+    .task-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: left;
+      cursor: pointer;
+      color: var(--text-main);
+      transition: all 0.2s;
+    }
+
+    .task-btn:hover, .task-btn.active {
+      border-color: var(--accent-emerald);
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .task-btn h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .task-btn p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .btn {
+      background: var(--accent-emerald);
+      color: #050b14;
+      border: none;
+      padding: 0.75rem 1.6rem;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      box-shadow: 0 0 18px rgba(16, 185, 129, 0.4);
+      transform: translateY(-1px);
+    }
+
+    /* Tribunal Consensus Visualizer */
+    .tribunal-arena {
+      background: #020306;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .consensus-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      height: 12px;
+      overflow: hidden;
+      margin: 0.75rem 0;
+    }
+
+    .consensus-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-emerald));
+      width: 0%;
+      transition: width 0.8s ease;
+    }
+
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 2rem;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      background: var(--bg-card);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-icon">Ψ</div>
+      <div class="brand-info">
+        <h1>POLYDIM SUITE &bull; ECONOMÍA DE TOKENS</h1>
+        <p>Economía de Guerra &bull; Tribunal de Sabios &bull; Cero Desperdicio</p>
+      </div>
+    </div>
+    <nav class="nav-links">
+      <a href="index.html" class="nav-link">Visión General</a>
+      <a href="quantum_silicon_bridge.html" class="nav-link">Puente Cuántico-Silicio</a>
+      <a href="token_war_economy_simulator.html" class="nav-link active">Simulador de Tokens</a>
+      <a href="polydim_suite_evolution_of_the_ia.html" class="nav-link">English Version</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2 class="hero-title">Simulador en Vivo: Serialización 1D vs Memoria Soberana PMTP</h2>
+    <p class="hero-subtitle">
+      Compara en tiempo real el costo financiero, latencia de red y riesgo de error 429 entre conectar múltiples IAs por texto plano versus la memoria física compartida de POLYDIM.
+    </p>
+
+    <!-- Task Selector Control Center -->
+    <div class="control-center">
+      <h3 style="font-size: 1.25rem; font-weight: 800;">1. Selecciona la Tarea Multi-Agente a Simular:</h3>
+      <div class="task-selector">
+        <div class="task-btn active" id="task-1" onclick="selectTask(1, 'Auditoría Adversarial RedTeam (10 Rondas)')">
+          <h4>🛡️ Auditoría Adversarial</h4>
+          <p>Red Team atacando código y Blue Team defendiendo en 10 turnos.</p>
+        </div>
+        <div class="task-btn" id="task-2" onclick="selectTask(2, 'Deliberación Tribunal de Sabios (5 Modelos)')">
+          <h4>⚖️ Tribunal de Sabios</h4>
+          <p>Consenso dialéctico entre DeepSeek, Qwen, Claude y Gemini.</p>
+        </div>
+        <div class="task-btn" id="task-3" onclick="selectTask(3, 'Optimización Tensorial en Silicio (50.000 Pasos)')">
+          <h4>⚡ Cadena de Razonamiento Profundo</h4>
+          <p>50.000 pasos de inferencia matemática continua en Stiefel.</p>
+        </div>
+      </div>
+
+      <button class="btn" onclick="startComparativeSimulation()">Iniciar Simulación Comparativa en Vivo</button>
+    </div>
+
+    <!-- Arena Grid: Side by Side Real Time -->
+    <div class="arena-grid">
+      <!-- Side A: Traditional 1D -->
+      <div class="arena-card traditional">
+        <span class="arena-tag">CANAL ARCAICO: SERIALIZACIÓN 1D HTTP</span>
+        <h3 class="arena-title" style="color: var(--accent-rose);">Texto Plano (JSON / Markdown)</h3>
+
+        <div class="live-meter-box">
+          <p style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Gasto Acumulado en Saldo:</p>
+          <div class="meter-val-large" style="color: var(--accent-rose);" id="cost-trad">$0.00 USD</div>
+          <p style="font-size: 0.8rem; color: #fda4af;" id="tokens-trad">Tokens quemados: 0</p>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;" id="latency-trad">Latencia acumulada: 0 ms</p>
+        </div>
+
+        <div class="live-chat-preview" id="log-trad">
+          [ESPERA] Selecciona una tarea y presiona "Iniciar Simulación".
+        </div>
+      </div>
+
+      <!-- Side B: PMTP Ghost Protocol -->
+      <div class="arena-card pmtp">
+        <span class="arena-tag">CANAL SOBERANO: PMTP-CORE GHOST PROTOCOL</span>
+        <h3 class="arena-title" style="color: var(--accent-emerald);">PmtpShmBus (Zero-Copy RAM)</h3>
+
+        <div class="live-meter-box" style="border-color: rgba(16, 185, 129, 0.3);">
+          <p style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Costo en Infraestructura Propia:</p>
+          <div class="meter-val-large" style="color: var(--accent-emerald);">$0.00 USD</div>
+          <p style="font-size: 0.8rem; color: var(--accent-emerald);" id="tokens-pmtp">Tokens de texto: 0 (Puntero 64B)</p>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;" id="latency-pmtp">Latencia acumulada: 0.000 ms</p>
+        </div>
+
+        <div class="live-chat-preview" id="log-pmtp">
+          [ESPERA] Memoria compartida lista para alojar Slabs tensoriales.
+        </div>
+      </div>
+    </div>
+
+    <!-- Consensus Tribunal Bar -->
+    <div class="tribunal-arena">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.8rem; font-family: var(--font-mono); color: var(--accent-cyan); font-weight: 700;">CONSENSO DIALÉCTICO DEL TRIBUNAL</span>
+        <span style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700; color: var(--accent-emerald);" id="consensus-pct">0%</span>
+      </div>
+      <div class="consensus-track">
+        <div class="consensus-fill" id="consensus-bar"></div>
+      </div>
+      <p style="font-size: 0.78rem; color: var(--text-muted); font-family: var(--font-mono);" id="consensus-status">
+        Esperando deliberación...
+      </p>
+    </div>
+  </main>
+
+  <footer>
+    <p>POLYDIM SUITE &bull; Regla 2: Token War Economy &bull; Director: Ariel García Traba &bull; 2026</p>
+    <p style="font-size: 0.72rem; color: #64748b; margin-top: 0.35rem;">
+      Repositorio Oficial: <a href="https://github.com/AGT1973/polydim-suite" target="_blank" style="color: var(--accent-emerald); text-decoration: none;">github.com/AGT1973/polydim-suite</a>
+    </p>
+  </footer>
+
+  <script>
+    let activeTask = 1;
+    let taskName = "Auditoría Adversarial RedTeam (10 Rondas)";
+
+    function selectTask(id, name) {
+      activeTask = id;
+      taskName = name;
+      document.querySelectorAll('.task-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('task-' + id).classList.add('active');
+    }
+
+    function startComparativeSimulation() {
+      const logTrad = document.getElementById('log-trad');
+      const logPmtp = document.getElementById('log-pmtp');
+      const costTrad = document.getElementById('cost-trad');
+      const tokensTrad = document.getElementById('tokens-trad');
+      const latencyTrad = document.getElementById('latency-trad');
+      const tokensPmtp = document.getElementById('tokens-pmtp');
+      const latencyPmtp = document.getElementById('latency-pmtp');
+      const bar = document.getElementById('consensus-bar');
+      const pct = document.getElementById('consensus-pct');
+      const stat = document.getElementById('consensus-status');
+
+      logTrad.innerHTML = `[INICIO] Ejecutando: ${taskName}<br>`;
+      logPmtp.innerHTML = `[INICIO] Invocando Ghost Protocol en PmtpShmBus...<br>`;
+      
+      let step = 0;
+      let totalTokens = 0;
+      let totalCost = 0;
+      let totalLatTrad = 0;
+      let totalLatPmtp = 0;
+
+      const maxSteps = activeTask === 3 ? 15 : 6;
+
+      const interval = setInterval(() => {
+        step++;
+        // Traditional simulation
+        const addedTokens = Math.floor(Math.random() * 8000) + 12000;
+        totalTokens += addedTokens;
+        totalCost = (totalTokens / 1000000) * 3.0;
+        totalLatTrad += Math.floor(Math.random() * 1200) + 1400;
+
+        costTrad.innerText = `$${totalCost.toFixed(2)} USD`;
+        tokensTrad.innerText = `Tokens quemados: ${totalTokens.toLocaleString()}`;
+        latencyTrad.innerText = `Latencia acumulada: ${totalLatTrad} ms`;
+        logTrad.innerHTML += `> Turno ${step}: Serializados ${addedTokens.toLocaleString()} tokens en JSON. Truncado de float32.<br>`;
+        logTrad.scrollTop = logTrad.scrollHeight;
+
+        // PMTP simulation
+        totalLatPmtp += 0.003;
+        tokensPmtp.innerText = `Tokens de texto: 0 (${step * 64} bytes en RAM)`;
+        latencyPmtp.innerText = `Latencia en silicio: ${totalLatPmtp.toFixed(3)} ms`;
+        logPmtp.innerHTML += `> Turno ${step}: Intercambio de Slab 0x${(0x7FFF1A20 + step * 64).toString(16).toUpperCase()} (&le; 1e-15 ULP). 0 tokens.<br>`;
+        logPmtp.scrollTop = logPmtp.scrollHeight;
+
+        // Progress bar
+        const progress = Math.min(Math.floor((step / maxSteps) * 94), 94);
+        bar.style.width = progress + '%';
+        pct.innerText = progress + '%';
+        stat.innerText = `Deliberando turno ${step} de ${maxSteps}: Contraste dialéctico en marcha...`;
+
+        if (step >= maxSteps) {
+          clearInterval(interval);
+          bar.style.width = '96%';
+          pct.innerText = '96% (Consenso Alcanzado)';
+          stat.innerHTML = `<strong style="color: var(--accent-emerald);">¡Misión Cumplida!</strong> Ahorro total: $${totalCost.toFixed(2)} USD evitados. Información geométrica preservada al 100%.`;
+          logTrad.innerHTML += `<span style="color: var(--accent-rose); font-weight: bold;">[FINAL] Gasto total: $${totalCost.toFixed(2)} USD. Peligro de Rate Limit 429.</span><br>`;
+          logPmtp.innerHTML += `<span style="color: var(--accent-emerald); font-weight: bold;">[FINAL] Cómputo soberano completado a costo $0.00 USD.</span><br>`;
+        }
+      }, 500);
+    }
+  </script>
+</body>
+</html>
