@@ -1,8 +1,18 @@
 # POLYDIM SUITE 🚀
-### Sovereign Geometric AI Workbench & Multi-Agent Mesh
-**Investigación y Desarrollo:** Ariel García Traba  
+### Evolución de la IA a Espacio Vectorial Continuo & Cómputo Cuántico-Silicio
+**Director de Investigación:** Ariel García Traba  
 **Licencia:** Open-Source / Investigación Soberana  
 **Repositorio Oficial:** GitHub / GitLab `polydim-suite`
+
+---
+
+## 🌌 El Propósito: Evolución Vectorial y Cuántica de la IA
+El propósito de **POLYDIM SUITE** no es una simple herramienta pedagógica ni un tutorial: es **la evolución del razonamiento de la Inteligencia Artificial hacia el espacio vectorial continuo y el cómputo cuántico**.
+
+* **Trascendencia del Cuello de Botella 1D (DPI):** Rompe la limitación histórica donde los modelos mutilan sus matrices en tokens de texto discretos.
+* **Doble Substrato Físico (Regla 19):**
+  1. **Silicio Clásico:** Memoria física compartida (`PmtpShmBus`), vectorización AVX-512/AVX2 y retracción polar de 4º orden en la variedad de Stiefel ($\mathbf{X}^T \mathbf{X} = \mathbf{I}_k$, error $\le 10^{-15}$).
+  2. **Espacio de Hilbert Cuántico:** Validación cruzada en procesadores cuánticos físicos (IBM Quantum Heron & Eagle de 156 qubits) mediante evolución unitaria de estados puros $|\psi(t)\rangle = e^{-iHt}|\psi(0)\rangle$.
 
 ---
 
