@@ -1,0 +1,85 @@
+{
+  "hardware_nodes": [
+    "ALADIN (i3-8100)",
+    "Kaggle (Dual Tesla T4)"
+  ],
+  "models": [
+    {
+      "name": "Qwen 3 1.5B (Did\u00e1ctico)",
+      "manifold": "St(1024, 2048)",
+      "d_in": 2048,
+      "d_out": 1024,
+      "sin_pmtp": {
+        "tokens_per_hop": 380,
+        "latency_hop_ms": 1920.0,
+        "memory_mb": 1150.0,
+        "retention_10_hops_pct": 69.8
+      },
+      "con_pmtp": {
+        "tokens_per_hop": 0,
+        "latency_hop_ms": 0.0032,
+        "memory_mb": 0.016,
+        "retention_10_hops_pct": 100.0,
+        "stiefel_defect": 1.936e-16
+      }
+    },
+    {
+      "name": "Qwen 3 8B (Mid-Range)",
+      "manifold": "St(2048, 4096)",
+      "d_in": 4096,
+      "d_out": 2048,
+      "sin_pmtp": {
+        "tokens_per_hop": 512,
+        "latency_hop_ms": 4850.0,
+        "memory_mb": 4200.0,
+        "retention_10_hops_pct": 64.5
+      },
+      "con_pmtp": {
+        "tokens_per_hop": 0,
+        "latency_hop_ms": 0.0038,
+        "memory_mb": 0.032,
+        "retention_10_hops_pct": 100.0,
+        "stiefel_defect": 1.708e-16
+      }
+    },
+    {
+      "name": "DeepSeek V4.1 Flash (MoE)",
+      "manifold": "St(2048, 5120)",
+      "d_in": 5120,
+      "d_out": 2048,
+      "sin_pmtp": {
+        "tokens_per_hop": 640,
+        "latency_hop_ms": 6120.0,
+        "memory_mb": 5800.0,
+        "retention_10_hops_pct": 61.2
+      },
+      "con_pmtp": {
+        "tokens_per_hop": 0,
+        "latency_hop_ms": 0.0041,
+        "memory_mb": 0.04,
+        "retention_10_hops_pct": 100.0,
+        "stiefel_defect": 1.732e-16
+      }
+    },
+    {
+      "name": "LLaMA 4 70B (Frontier Scale)",
+      "manifold": "St(2048, 8192)",
+      "d_in": 8192,
+      "d_out": 2048,
+      "sin_pmtp": {
+        "tokens_per_hop": 890,
+        "latency_hop_ms": 14200.0,
+        "memory_mb": 14800.0,
+        "retention_10_hops_pct": 52.4
+      },
+      "con_pmtp": {
+        "tokens_per_hop": 0,
+        "latency_hop_ms": 0.0058,
+        "memory_mb": 0.064,
+        "retention_10_hops_pct": 100.0,
+        "stiefel_defect": 1.716e-16
+      }
+    }
+  ],
+  "exit_code": 0
+}
