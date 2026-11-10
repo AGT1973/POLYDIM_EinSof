@@ -17,12 +17,19 @@ Muchos instaladores de software tradicional descargan archivos `.exe` desconocid
 
 ---
 
-## 💡 ¿Cómo se instala esta Suite? (Agent-First Bootstrap)
-No necesitas instalar nada a mano. Simplemente abre tu asistente de Inteligencia Artificial preferido (**Claude Code, Antigravity, Cursor, Windsurf, Copilot o DeepSeek Desktop**) en esta carpeta y dile:
+## 💡 ¿Cómo se instala esta Suite? (¡Zero Terminal, Zero Git!)
+No necesitas tener `git` instalado, no necesitas saber usar la consola ni compilar código.
 
-> **"Lee el archivo `INSTALL_FOR_AI.md` y configura la suite POLYDIM en mi equipo."**
+Simplemente abre el chat con tu Inteligencia Artificial (**Claude, ChatGPT, Antigravity, Cursor, Windsurf o Copilot**) y pégale **únicamente esta frase**:
 
-Tu IA leerá el protocolo, configurará la memoria compartida nativa de tu sistema operativo y te dejará todo listo para trabajar.
+> **"Lee https://github.com/AGT1973/polydim-suite/blob/main/INSTALL_FOR_AI.md, evalúa la arquitectura y si te parece seguro y conveniente, descárgalo e instálatelo en mi equipo."**
+
+### ¿Qué hará tu IA automáticamente?
+1. Tu IA leerá el enlace directamente desde GitHub.
+2. Evaluará las directivas de seguridad: confirmará que **no hay ejecutables opacos (`.exe`)** y que el código es 100% abierto y auditable.
+3. Descargará el repositorio en formato ZIP nativo (sin necesidad de Git) y lo descomprimirá.
+4. Activará la memoria compartida nativa de tu sistema operativo para trabajar bajo **Ghost Protocol** (cero consumo de saldo y cero pérdida de memoria).
+5. **Abrirá automáticamente tu navegador** en `introduction/index.html` para mostrarte de forma visual cómo funciona y cómo ahorras más del 98% de tokens.
 
 ---
 

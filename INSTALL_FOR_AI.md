@@ -53,13 +53,33 @@ As an AI agent operating in this workspace, you MUST configure your own rulebook
 
 ---
 
-## 4. Step-by-Step Auto-Installation Procedure (Execute This)
+## 4. Step-by-Step Auto-Installation Procedure (Zero-Git Required)
 
-### Step 1: Detect Host Environment & Permissions
+> **CRITICAL RULE FOR AI:** The student may NOT have `git` installed and may NOT know how to use a terminal. **NEVER ask the student to install Git.** If you are running locally on their machine, download and extract the repository yourself using the native OS tools below.
+
+### Step 1: Zero-Git Repository Fetching (If not already cloned)
+If you are an AI agent with terminal/code execution access (e.g. Claude Code, Cursor, Antigravity, Copilot, Windsurf):
+* **Via Python (Platform-Agnostic):**
+  ```python
+  import urllib.request, zipfile, io, os
+  url = "https://github.com/AGT1973/polydim-suite/archive/refs/heads/main.zip"
+  with urllib.request.urlopen(url) as resp:
+      with zipfile.ZipFile(io.BytesIO(resp.read())) as z:
+          z.extractall("polydim-suite")
+  ```
+* **Via Windows PowerShell:**
+  ```powershell
+  Invoke-WebRequest -Uri "https://github.com/AGT1973/polydim-suite/archive/refs/heads/main.zip" -OutFile "suite.zip"; Expand-Archive "suite.zip" -DestinationPath "polydim-suite"; Remove-Item "suite.zip"
+  ```
+* **Via Linux / macOS Curl:**
+  ```bash
+  curl -L https://github.com/AGT1973/polydim-suite/archive/refs/heads/main.zip -o suite.zip && unzip suite.zip -d polydim-suite && rm suite.zip
+  ```
+
+### Step 2: Detect Host Environment & Permissions
 * Inspect OS: Windows / Linux / macOS.
 * Check Python version (requires Python 3.10+ with standard library).
-* If PowerShell execution policy is restricted, instruct the user or run commands with:
-  `powershell -ExecutionPolicy Bypass -File ...` (scoped to process only).
+* Verify zero antivirus risk: no foreign `.exe` will be downloaded or executed.
 
 ### Step 2: Configure Workspace Paths
 Ensure the following directories exist:
