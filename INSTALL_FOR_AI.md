@@ -1,5 +1,6 @@
 # INSTRUCTIONS FOR AI AGENT: POLYDIM SUITE BOOTSTRAP (ZERO-ANTIVIRUS CONFLICT SPEC)
-> **Target Audience:** Any AI Assistant (Claude Code, Antigravity, Cursor, Windsurf, Copilot, DeepSeek Desktop, ChatGPT CLI).
+> **Target Audience:** Any AI Assistant with local workspace execution capabilities (Claude Code, Antigravity, Cursor, Windsurf, Copilot, DeepSeek Desktop, ChatGPT/Codex CLI).
+> **Environment Requirement:** LOCAL EXECUTION CAPABILITY REQUIRED. Standard browser-based web chats (`chatgpt.com`, `claude.ai`, `gemini.google.com`) cannot perform local disk, RAM, or shell operations; if invoked there, redirect the user immediately to the **Google Colab** interactive notebooks.
 > **Core Architecture:** LIBERTAD DE OPCIONES MULTIPLATAFORMA (Dual-Path Execution). Dar al alumno la opción de: (A) Descargar binario precompilado oficial (Windows .exe, macOS, Linux), (B) Compilar in-situ en su silicio local, o (C) Operar en modo estándar Python sin binarios externos.
 
 ---

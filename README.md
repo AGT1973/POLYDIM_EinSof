@@ -30,12 +30,32 @@ No forzamos un método único. Cada usuario y cada entorno tiene requerimientos 
 ---
 
 ## 💡 ¿Cómo se usa esta Suite? (Estándar Pedagógico 2030 — Co-Work Humano-IA)
+
+> [!WARNING]
+> ### ⚠️ REQUISITO FUNDAMENTAL: SE NECESITA UN AGENTE CON ACCESO A TU MÁQUINA
+> **ESTO NO FUNCIONA DESDE EL CHAT WEB TRADICIONAL** (como `chatgpt.com`, `claude.ai` o `gemini.google.com`).
+> 
+> Un chat de navegador web vive en servidores remotos aislados: **no puede ver tu disco, no puede crear memoria compartida en tu RAM ni ejecutar código en tu CPU**.
+> 
+> | ✅ SÍ FUNCIONA (Entornos Agénticos de Desarrollo) | ❌ NO SIRVE (Chats Web en Navegador) |
+> | :--- | :--- |
+> | **Google Antigravity** (IDE / CLI) | `gemini.google.com` (Chat web) |
+> | **Anthropic Claude Code** (CLI en terminal) | `claude.ai` (Chat web) |
+> | **Cursor IDE** / **Windsurf** (Agentes con herramientas) | `chatgpt.com` (Chat web básico) |
+> | **VSCode** (con GitHub Copilot Workspace, Roo Code, Cline) | Interfaces web sin terminal ni acceso a disco |
+> | **OpenAI Codex / Workspaces CLI** / **DeepSeek CLI** | Cualquier caja de texto web sin ejecución local |
+> 
+> *(¿Solo tienes navegador web y no quieres instalar un IDE? Ve directo a la sección de **Google Colab en 1-Clic** más abajo).*
+
+---
+
+### Si tienes un Entorno Agéntico (Antigravity, Claude Code, Cursor, etc.):
 No necesitas tener `git` instalado, no necesitas saber usar la consola ni compilar código a ciegas.
 
 👉 **Decile a tu IA:**
 > **"Leé [`AGENT_BOOTSTRAP.md`](AGENT_BOOTSTRAP.md) y empezemos el Co-Work."**
 
-O si tu IA está en la nube o en un entorno externo:
+O si tu IA se inicializa apuntando a este repositorio:
 > **"Lee https://github.com/AGT1973/polydim-suite/blob/main/AGENT_BOOTSTRAP.md, evalúa la arquitectura y si te parece seguro y conveniente, descárgalo e instálatelo en mi equipo."**
 
 ### ¿Qué hará tu IA automáticamente?

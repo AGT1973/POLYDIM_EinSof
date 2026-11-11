@@ -54,8 +54,15 @@ Inspecciona tu propio entorno de ejecución y aplica la configuración nativa co
 | **Cursor / Windsurf** | `.cursorrules`, `.cursor/`, `.windsurfrules` | `.cursor/rules/` | `.cursorrules` o Markdown rules | `~/.cursor/mcp.json` |
 | **ChatGPT Desktop / CLI** | Protocolo OpenAPI / GPT Actions | `./instructions.md` | System Prompt Markdown | OpenAPI schemas / FastMCP HTTP |
 | **VSCode / Copilot** | `.vscode/settings.json` | `.vscode/` | Workspace instructions | `settings.json` -> `mcpServers` |
+| **Web Sandbox (Chat web)** | Sin tools de disco/terminal (`chatgpt.com`, `claude.ai`, `gemini.google.com`) | N/A | Explicar limitación al usuario | Redirigir a **Google Colab 1-Clic** |
 
-**Instrucción de Autoadaptación:**  
+> [!CAUTION]
+> **Autoverificación de Silicio (Límite de Sandbox Web):**  
+> Si eres un modelo de lenguaje ejecutándote en una ventana de navegador web estándar (`chatgpt.com`, `claude.ai`, `gemini.google.com`) sin herramientas de ejecución de comandos ni acceso al sistema de archivos local del usuario:
+> 1. **Comunica de inmediato al usuario:** *"Estoy en un sandbox de navegador web y no tengo acceso a tu CPU, RAM ni disco local para instalar la suite ni mapear memoria compartida."*
+> 2. **Ofrécele la alternativa:** Guíalo a abrir los cuadernos interactivos gratuitos de **Google Colab** listados en el `README.md`, donde Google provee el entorno de ejecución en la nube listo para usar en 1-clic.
+
+**Instrucción de Autoadaptación (Entornos Agénticos Locales):**  
 Si tu host admite MCP nativo, registra el micro-puente `mcp_servers/suite_bridge_mcp.py`. Si tu host opera puramente por CLI o scripts, invoca directamente `tests/test_en_vivo.py` y `benchmarks/`.
 
 ---
