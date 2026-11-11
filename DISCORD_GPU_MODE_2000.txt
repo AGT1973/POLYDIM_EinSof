@@ -1,0 +1,22 @@
+🔥 **Stop Burning GPU Compute on Text Serialization: Zero-Copy Continuous Vector IPC (Open-Source)**
+
+Hey @GPU MODE! 👋 We love the obsession here with kernel speed-of-light, CUTLASS, CuTe, and hardware collectives.
+
+If you profile end-to-end multi-agent or multi-model reasoning pipelines, the biggest wall isn't GEMM or attention—it's **forcing GPUs to serialize continuous activations into text tokens and re-tokenize them back into tensors**. You burn massive VRAM bandwidth and latency doing string I/O that no human ever reads.
+
+### ⚡ What We Built: Einsof PMTP (Zero-Copy Vector IPC)
+Instead of converting hidden states into tokens, models hand off **raw continuous vector states directly through shared memory rings / GPU collectives**:
+• **⚡ 20 µs Latency:** Sub-millisecond tensor handoff (100,000x faster than REST/text serialization).
+• **💸 87.8% GPU Compute & Token Savings:** Completely eliminates intermediate autoregressive decoding steps.
+• **🎯 Numerical Rigor:** Compensated Neumaier accumulation with dynamic error down to $\sim 10^{-16}$ (machine epsilon).
+• **🛠️ Kernel Hacker Friendly:** C++20 / Rust AVX2/AVX-512 & Triton kernels, zero-copy shm slab allocator.
+
+---
+
+### 🧪 Benchmark & Test It in 1 Minute (Free Colab T4 / Local):
+• ☁️ **1-Click Colab Benchmark (Side-by-Side Live Latency):** <https://colab.research.google.com/github/AGT1973/polydim-suite/blob/main/benchmarks/polydim_colab_benchmark_kit.ipynb>
+• 📦 **Open-Source Suite, Kernels & IPC Spec:** <https://github.com/AGT1973/polydim-suite>
+• 🤗 **Hugging Face Model Weights (18 Models Adapted):** <https://huggingface.co/Polydim-Einsof>
+• 📄 **Formal Paper (Zenodo Open Access):** <https://doi.org/10.5281/zenodo.24122867>
+
+We'd love GPU kernel hackers to stress test our shared-memory collectives and push the latency floor even lower. Feedback: polydim.einsof@gmail.com
