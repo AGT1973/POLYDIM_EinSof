@@ -1,0 +1,18 @@
+Hey everyone! 👋 Seeing the chats here about running local models, mobile/Termux setups, and managing limited VRAM / context limits:
+
+We open-sourced **Polydim-Einsof** on Hugging Face to solve a universal pain point in local & multi-model workflows: **burning tokens on inter-model communication**.
+
+Whenever you chain models, run subagents, or pass context between tasks, models serialize continuous thoughts into 1D text tokens—wasting 200ms+ of decode time, blowing up context windows, and burning memory.
+
+### ⚡ What we host on Hugging Face:
+We adapted 18 open-weight models (including Hermes-3-8B, Qwen3.8-27B, Qwen3-8B/1.5B, DeepSeek-V4.1, etc.) with native **PMTP continuous vector heads**:
+• **💸 87.8% Token Savings:** No tokens generated or billed for intermediate reasoning.
+• **⚡ 20 µs Microsecond Handoff:** Models exchange continuous hidden states directly via shared memory.
+• **📱 Lean Memory Footprint:** Keeps context clean, perfect for low-RAM setups, phone/Termux, and edge devices.
+
+### 🛠️ Free 1-Click Test (Direct from Hugging Face):
+• Models & Adapters: huggingface.co/Polydim-Einsof
+• 1-Click Free Colab Benchmark (GPU T4): colab.research.google.com/github/AGT1973/polydim-suite/blob/main/benchmarks/polydim_colab_benchmark_kit.ipynb
+• Suite & Modelfiles: github.com/AGT1973/polydim-suite
+
+Run the Colab side-by-side test to see how many tokens and milliseconds you save!
