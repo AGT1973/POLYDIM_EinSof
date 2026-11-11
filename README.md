@@ -111,4 +111,9 @@ Si no deseas descargar nada en tu máquina local o prefieres correr los benchmar
    👉 `ui/suite_cockpit.html`  
    *Tablero integral para compilar con Mathesis, inspeccionar el estado de la memoria compartida, auditar el Tribunal de Sabios y monitorear la malla de cómputo.*
 
+3. **Simuladores de Arquitectura en Tiempo Real (Ejemplos Educativos):**
+   * 🇪🇸 **Español:** [`examples/pmtp_vs_traditional_simulator_es.html`](examples/pmtp_vs_traditional_simulator_es.html) (o [`introduction/pmtp_vs_traditional_simulator_es.html`](introduction/pmtp_vs_traditional_simulator_es.html))
+   * 🇬🇧 **English:** [`examples/pmtp_vs_traditional_simulator_en.html`](examples/pmtp_vs_traditional_simulator_en.html) (o [`introduction/pmtp_vs_traditional_simulator_en.html`](introduction/pmtp_vs_traditional_simulator_en.html))  
+   *Visualizador interactivo a 60 FPS con tipografía matemática KaTeX: compara el carril tradicional 1D (peajes de API, pérdida DPI y alucinación) frente al carril continuo PMTP sobre variedad de Stiefel $\text{St}(D,r)$ a $0$ tokens.*
+
 Ambos funcionan en cualquier navegador moderno haciendo doble clic, sin necesidad de instalar servidores web ni solicitar permisos de administrador.

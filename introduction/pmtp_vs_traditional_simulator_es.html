@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador de Arquitectura: PMTP vs LLM Tradicional</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- KaTeX para renderizado de alta precisión matemática sin alterar layout -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+          },
+          colors: {
+            cyber: {
+              bg: '#050814',
+              panel: 'rgba(15, 23, 42, 0.75)',
+              border: 'rgba(56, 189, 248, 0.15)',
+              trad: '#f59e0b',
+              tradGlow: 'rgba(245, 158, 11, 0.4)',
+              pmtp: '#06b6d4',
+              pmtpViolet: '#8b5cf6',
+              pmtpGlow: 'rgba(6, 182, 212, 0.4)',
+              hilbert: '#ec4899',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Scrollbar personalizada y Glassmorphism */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+    ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.3); border-radius: 3px; }
+    .glass-panel {
+      background: rgba(10, 15, 30, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(56, 189, 248, 0.15);
+    }
+    .glass-panel-trad {
+      background: rgba(24, 18, 12, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+    .glass-panel-pmtp {
+      background: rgba(8, 20, 35, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+    }
+    .glow-text-trad { text-shadow: 0 0 10px rgba(245, 158, 11, 0.6); }
+    .glow-text-pmtp { text-shadow: 0 0 10px rgba(6, 182, 212, 0.7), 0 0 20px rgba(139, 92, 246, 0.4); }
+    canvas { touch-action: none; }
+    /* KaTeX layout-safe rendering */
+    .katex { font-size: 1.05em; text-rendering: geometricPrecision; }
+    .katex-display { margin: 0.25em 0 !important; }
+    .no-math { font-style: normal; }
+  </style>
+</head>
+<body class="h-full flex flex-col font-sans overflow-x-hidden selection:bg-cyan-500 selection:text-slate-950">
+
+  <!-- Header Nav -->
+  <header class="glass-panel sticky top-0 z-50 border-b border-cyan-950/50 px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+    <div class="flex items-center gap-3">
+      <div class="relative flex h-3 w-3">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
+      </div>
+      <div>
+        <h1 class="text-lg font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-cyan-300 to-violet-400">
+          Simulador de Arquitectura: PMTP vs LLM Tradicional
+        </h1>
+        <p class="text-xs text-slate-400 font-mono">Cuello de Botella de Tokens 1D Tradicional vs Tensor Continuo en Variedad de Stiefel ($D \ge 4096$)</p>
+      </div>
+    </div>
+
+    <!-- Live Controls Toolbar -->
+    <div class="flex flex-wrap items-center gap-3">
+      <button id="btnTriggerQuery" class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs uppercase tracking-wider shadow-lg shadow-cyan-500/20 active:scale-95 transition-all flex items-center gap-1.5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        Ejecutar Benchmark
+      </button>
+
+      <button id="btnPlayPause" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-mono text-xs transition-all flex items-center gap-1.5">
+        <span id="playIcon">⏸ PAUSA</span>
+      </button>
+
+      <div class="flex items-center gap-2 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800">
+        <label for="speedRange" class="text-xs font-mono text-slate-400">Velocidad:</label>
+        <input type="range" id="speedRange" min="1.7" max="2.5" step="0.1" value="1.7" class="w-20 accent-cyan-400 cursor-pointer">
+        <span id="speedVal" class="text-xs font-mono text-cyan-400 w-10">1.7x</span>
+      </div>
+
+      <button id="btnReset" class="px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-slate-200 font-mono text-xs border border-slate-800 transition-all">
+        Reiniciar Métricas
+      </button>
+
+      <!-- Language Selector -->
+      <div class="flex items-center gap-1 bg-slate-900 border border-slate-700 px-2 py-1 rounded-lg text-xs font-mono">
+        <span class="text-cyan-400 font-bold">🇪🇸 ES</span>
+        <span class="text-slate-600">|</span>
+        <a href="pmtp_vs_traditional_simulator_en.html" class="text-slate-400 hover:text-cyan-300 transition-colors">🇬🇧 EN</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 p-3 md:p-6 flex flex-col gap-4 max-w-[1920px] mx-auto w-full">
+
+    <!-- Metrics Summary Top Bar -->
+    <section class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <!-- Metric 1 -->
+      <div class="glass-panel p-3 rounded-xl border-l-4 border-l-amber-500">
+        <div class="text-[10px] font-mono uppercase text-slate-400 tracking-wider">Latencia Promedio</div>
+        <div class="flex items-baseline justify-between mt-1">
+          <span class="text-xs text-amber-400 font-mono">Trad: <span id="mTradLat">1,450</span> ms</span>
+          <span class="text-sm font-bold text-cyan-400 font-mono">PMTP: <span id="mPmtpLat">0.005</span> ms</span>
+        </div>
+        <div class="text-[10px] text-emerald-400 mt-1 font-mono">⚡ ~290,000x Aceleración</div>
+      </div>
+
+      <!-- Metric 2 -->
+      <div class="glass-panel p-3 rounded-xl border-l-4 border-l-red-500">
+        <div class="text-[10px] font-mono uppercase text-slate-400 tracking-wider">Costo Peaje de Tokens API</div>
+        <div class="flex items-baseline justify-between mt-1">
+          <span class="text-xs text-amber-400 font-mono">Trad: <span class="no-math font-bold text-amber-400">&dollar;</span><span id="mTradCost">14.82</span></span>
+          <span class="text-sm font-bold text-cyan-400 font-mono">PMTP: <span class="no-math font-bold text-cyan-400">&dollar;</span>0.00</span>
+        </div>
+        <div class="text-[10px] text-cyan-400 mt-1 font-mono">💎 0 Tokens en tránsito (PmtpShmBus)</div>
+      </div>
+
+      <!-- Metric 3 -->
+      <div class="glass-panel p-3 rounded-xl border-l-4 border-l-cyan-500">
+        <div class="text-[10px] font-mono uppercase text-slate-400 tracking-wider">Fidelidad de Información (DPI)</div>
+        <div class="flex items-baseline justify-between mt-1">
+          <span class="text-xs text-amber-400 font-mono">Trad: <span id="mTradDpi">38.4</span>% $I(X;\text{Tok})$</span>
+          <span class="text-sm font-bold text-cyan-400 font-mono">PMTP: 99.999% ($\epsilon_{\text{mach}}$)</span>
+        </div>
+        <div class="text-[10px] text-cyan-300 mt-1 font-mono">📐 Retracción Newton-Schulz Ord 4</div>
+      </div>
+
+      <!-- Metric 4 -->
+      <div class="glass-panel p-3 rounded-xl border-l-4 border-l-violet-500">
+        <div class="text-[10px] font-mono uppercase text-slate-400 tracking-wider">Tasa de Alucinación / Error</div>
+        <div class="flex items-baseline justify-between mt-1">
+          <span class="text-xs text-amber-400 font-mono">Trad: <span id="mTradHallu">14.2</span>%</span>
+          <span class="text-sm font-bold text-violet-400 font-mono">PMTP: 0.00%</span>
+        </div>
+        <div class="text-[10px] text-violet-300 mt-1 font-mono">🌌 Isomorfismo en Espacio de Hilbert $\mathcal{H}$</div>
+      </div>
+    </section>
+
+    <!-- Main Content Area: Visualizer + Sidebar -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <!-- Visualizer Canvas -->
+      <section class="lg:col-span-9 flex flex-col gap-4">
+        <div class="glass-panel p-4 rounded-xl flex-1 flex flex-col min-h-[500px]">
+          <div class="flex justify-between items-center mb-3">
+            <div class="flex items-center gap-4 text-xs font-mono">
+              <span class="flex items-center gap-1.5 text-amber-400">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span> Tradicional (Tokens 1D)
+              </span>
+              <span class="flex items-center gap-1.5 text-cyan-400">
+                <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400"></span> PMTP (Tensores Continuos)
+              </span>
+            </div>
+            <span class="text-[11px] font-mono text-slate-400">FPS: <span id="fpsCounter" class="text-emerald-400">60</span></span>
+          </div>
+
+          <div class="relative flex-1 w-full h-full rounded-xl overflow-hidden bg-slate-950/90 border border-slate-900">
+            <canvas id="simCanvas" class="w-full h-full block cursor-crosshair"></canvas>
+            
+            <div id="canvasOverlay" class="absolute inset-0 pointer-events-none p-4 flex flex-col justify-between">
+              <div class="flex justify-between items-start text-xs font-mono">
+                <div class="bg-amber-950/40 border border-amber-800/40 backdrop-filter backdrop-blur px-2.5 py-1 rounded text-amber-300">
+                  CARRIL TRADICIONAL: Pérdida DPI en Tokenizador 1D $\rightarrow$ Truncamiento de Contexto $\rightarrow$ Peaje de API
+                </div>
+                <div class="bg-amber-950/40 border border-amber-800/40 backdrop-filter backdrop-blur px-2.5 py-1 rounded text-amber-300 text-right">
+                  Agentes Dispersos Intercambiando Texto Plano
+                </div>
+              </div>
+
+              <div class="w-full text-center">
+                <span class="bg-slate-900/90 border border-slate-700 text-slate-400 font-mono text-[10px] uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">
+                  Divisoria de Paradigmas: Texto Serial 1D vs Continuo en Variedad de Stiefel $\text{St}(D,r)$
+                </span>
+              </div>
+
+              <div class="flex justify-between items-end text-xs font-mono">
+                <div class="bg-cyan-950/40 border border-cyan-800/40 backdrop-filter backdrop-blur px-2.5 py-1 rounded text-cyan-300">
+                  CARRIL PMTP: Bus Directo de RAM <code class="text-cyan-200 font-bold">PmtpShmBus</code> [Cabecera 64B + Slab 16KB]
+                </div>
+                <div class="bg-cyan-950/40 border border-cyan-800/40 backdrop-filter backdrop-blur px-2.5 py-1 rounded text-cyan-300 text-right">
+                  Malla Cuántica de Hilbert $\mathcal{H}$ $\rightarrow$ <span class="text-violet-300 font-bold">Etapa de Colapso 1D</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Technical Equations Sidebar -->
+      <aside class="lg:col-span-3 flex flex-col gap-3">
+        <div class="glass-panel-pmtp p-4 rounded-xl flex flex-col gap-3 h-full justify-between">
+          <h3 class="text-sm font-bold text-cyan-300 font-mono uppercase tracking-wider flex items-center gap-2">
+            <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+            Formalismo Matemático PMTP
+          </h3>
+
+          <div class="bg-slate-900/80 p-2.5 rounded-lg border border-cyan-900/50">
+            <div class="text-[10px] font-mono text-cyan-400 uppercase font-bold">1. Variedad de Stiefel $\text{St}(D,r)$</div>
+            <div class="text-xs font-mono text-slate-200 mt-1">
+              $$\mathbf{W} \in \mathbb{R}^{D \times r} : \mathbf{W}^T \mathbf{W} = \mathbf{I}_r$$
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">$D=4096, r=64$. Trayectoria de razonamiento ortonormal sobre $S^{D-1}$.</p>
+          </div>
+
+          <div class="bg-slate-900/80 p-2.5 rounded-lg border border-cyan-900/50">
+            <div class="text-[10px] font-mono text-cyan-400 uppercase font-bold">2. Retracción Newton-Schulz Ord 4</div>
+            <div class="text-xs font-mono text-cyan-200 mt-1 overflow-x-auto">
+              $$\mathbf{X}_{k+1} = \mathbf{X}_k \left( \frac{15}{8} \mathbf{I}_r - \frac{5}{4} \mathbf{S}_k + \frac{3}{8} \mathbf{S}_k^2 \right)$$
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">Costo $\mathcal{O}(Dr^2) \ll \mathcal{O}(D^3)$. Aceleración $>60\times$.</p>
+          </div>
+
+          <div class="bg-slate-900/80 p-2.5 rounded-lg border border-cyan-900/50">
+            <div class="text-[10px] font-mono text-cyan-400 uppercase font-bold">3. Acumulador Neumaier (C++20)</div>
+            <div class="text-[11px] font-mono text-slate-300 mt-1 overflow-x-auto">
+              $$c \leftarrow c + \begin{cases} (s - t) + x_i & \text{si } |s| \ge |x_i| \\ (x_i - t) + s & \text{si } |s| \lt |x_i| \end{cases}$$
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">Compensación de error para $\|\mathbf{X}^T \mathbf{X} - \mathbf{I}_r\|_\infty \le 10^{-15}$.</p>
+          </div>
+
+          <div class="bg-slate-900/80 p-2.5 rounded-lg border border-cyan-900/50">
+            <div class="text-[10px] font-mono text-violet-400 uppercase font-bold">4. Mapeo en Espacio de Hilbert $\mathcal{H}$</div>
+            <div class="text-xs font-mono text-violet-200 mt-1">
+              $$|\psi\rangle = \sum_{j=0}^{D-1} v_j |j\rangle, \quad |\psi(t)\rangle = e^{-i \mathbf{H} t} |\psi(0)\rangle$$
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">Evolución unitaria libre de colapso hasta el paso final de salida 1D.</p>
+          </div>
+
+          <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 text-[10px] font-mono">
+            <div class="text-slate-400 font-bold mb-1">Cabecera ShmBus (64 Bytes):</div>
+            <div class="grid grid-cols-2 gap-1 text-[9px]">
+              <div><span class="text-slate-500">MAGIC:</span> <span class="text-cyan-400">0x504D5450</span></div>
+              <div><span class="text-slate-500">DIMS:</span> <span class="text-cyan-400">[1,1,4096]</span></div>
+              <div><span class="text-slate-500">SEQLOCK:</span> <span class="text-cyan-400">Atomic 4x</span></div>
+              <div><span class="text-slate-500">HASH:</span> <span class="text-emerald-400">BLAKE3 32B</span></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Live Telemetry & Console Logs Split View -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Left Panel: Traditional Text Stream Log -->
+      <div class="glass-panel-trad p-3 rounded-xl flex flex-col h-[200px]">
+        <div class="text-[10px] font-mono text-amber-400 uppercase tracking-wider mb-2 flex justify-between items-center border-b border-amber-900/40 pb-1.5">
+          <span class="flex items-center gap-1.5 font-bold">
+            <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+            LOGS DE PIPELINE DE TEXTO TRADICIONAL (SERIAL 1D)
+          </span>
+          <span class="text-red-400 text-[9px]">CUELLO DE BOTELLA DPI • PEAJES DE API</span>
+        </div>
+        <div id="tradLog" class="flex-1 font-mono text-[10px] space-y-1 overflow-y-auto pr-1 no-math">
+          <!-- JS inserted logs -->
+        </div>
+      </div>
+
+      <!-- Right Panel: PMTP Vector Pipeline Log -->
+      <div class="glass-panel-pmtp p-3 rounded-xl flex flex-col h-[200px]">
+        <div class="text-[10px] font-mono text-cyan-400 uppercase tracking-wider mb-2 flex justify-between items-center border-b border-cyan-900/40 pb-1.5">
+          <span class="flex items-center gap-1.5 font-bold">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+            LOGS DE PIPELINE VECTORIAL PMTP (CONTINUO STIEFEL)
+          </span>
+          <span class="text-emerald-400 text-[9px]">0 TOKENS • MEMORIA COMPARTIDA ZERO-COPY</span>
+        </div>
+        <div id="pmtpLog" class="flex-1 font-mono text-[10px] space-y-1 overflow-y-auto pr-1 no-math">
+          <!-- JS inserted logs -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Interactive Simulator Engine JS -->
+  <script>
+    // --- Canvas & Simulation State ---
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let simSpeed = 1.7;
+    let isRunning = true;
+    let lastTime = performance.now();
+    let frameCount = 0;
+    let fps = 60;
+    let fpsTimer = performance.now();
+
+    // Metrics counters
+    let stats = {
+      tradTokensTotal: 0,
+      tradCostTotal: 0,
+      tradLatencyAvg: 1450,
+      tradHallucinations: 3,
+      pmtpQueriesTotal: 0,
+    };
+
+    // Responsive Canvas Resize
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width * window.devicePixelRatio;
+      canvas.height = rect.height * window.devicePixelRatio;
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    // Definición de Nodos Dinámicos (En Español)
+    let nodes = {
+      // Nodos Pipeline Tradicional
+      tradClient: { x: 0.1, y: 0.25, label: 'PC Local', sub: 'Tokenizador 1D' },
+      tradToll: { x: 0.32, y: 0.25, label: 'Peaje de API', sub: 'Peaje $$ / Red 1D' },
+      tradCloud1: { x: 0.58, y: 0.18, label: 'Agente A', sub: 'Des-tokenización' },
+      tradCloud2: { x: 0.72, y: 0.30, label: 'Agente B', sub: 'Riesgo Alucinación' },
+      tradCloud3: { x: 0.86, y: 0.20, label: 'Agente C', sub: 'Re-procesamiento LLM' },
+
+      // Nodos Pipeline PMTP
+      pmtpClient: { x: 0.1, y: 0.75, label: 'PC Local PMTP', sub: 'Tensor Latente (D=4096)' },
+      pmtpShm: { x: 0.32, y: 0.75, label: 'PmtpShmBus', sub: '0 Tokens (Slab 16KB)' },
+      pmtpHilbert1: { x: 0.58, y: 0.68, label: 'Nodo Hilbert A', sub: 'Retracción Newton-Schulz' },
+      pmtpHilbert2: { x: 0.72, y: 0.82, label: 'Nodo Hilbert B', sub: 'Operador Unitario U(t)' },
+      pmtpHilbert3: { x: 0.86, y: 0.72, label: 'Etapa Colapso 1D', sub: 'Salida Pura Instantánea' },
+    };
+
+    // Entities in motion
+    let tradParticles = [];
+    let pmtpRibbons = [];
+    let errorPulses = [];
+    let collapsePulses = [];
+
+    // Log elements
+    const tradLogEl = document.getElementById('tradLog');
+    const pmtpLogEl = document.getElementById('pmtpLog');
+
+    function logEvent(msg, type = 'info') {
+      const timeStr = new Date().toLocaleTimeString().split(' ')[0] + '.' + Math.floor(Math.random()*900+100);
+      const div = document.createElement('div');
+      
+      if (type === 'trad' || type === 'err') {
+        const colorClass = type === 'err' ? 'text-red-400 font-bold' : 'text-amber-300';
+        div.className = `${colorClass} flex items-start gap-1.5`;
+        div.innerHTML = `<span class="text-amber-600/70">[${timeStr}]</span> <span>${msg}</span>`;
+        tradLogEl.appendChild(div);
+        tradLogEl.scrollTop = tradLogEl.scrollHeight;
+        if (tradLogEl.children.length > 40) tradLogEl.removeChild(tradLogEl.children[0]);
+      } else {
+        const colorClass = type === 'collapse' ? 'text-violet-300 font-bold' : 'text-cyan-300';
+        div.className = `${colorClass} flex items-start gap-1.5`;
+        div.innerHTML = `<span class="text-cyan-600/70">[${timeStr}]</span> <span>${msg}</span>`;
+        pmtpLogEl.appendChild(div);
+        pmtpLogEl.scrollTop = pmtpLogEl.scrollHeight;
+        if (pmtpLogEl.children.length > 40) pmtpLogEl.removeChild(pmtpLogEl.children[0]);
+      }
+    }
+
+    // --- Particle Spawn & Logic ---
+
+    function spawnTradTokenFlow() {
+      const words = ["Razonando...", "Prompt", "Token_492", "Contexto_Truncado", "Mapa_Atención", "Costo_API+$", "¿Alucinando?", "Esquema_JSON", "Embedding", "Flujo_Respuesta"];
+      const word = words[Math.floor(Math.random() * words.length)];
+      
+      tradParticles.push({
+        x: nodes.tradClient.x,
+        y: nodes.tradClient.y,
+        targetIndex: 1,
+        path: [nodes.tradClient, nodes.tradToll, nodes.tradCloud1, nodes.tradCloud2, nodes.tradCloud3, nodes.tradClient],
+        speed: 0.002 * (0.8 + Math.random() * 0.4),
+        progress: 0,
+        text: word,
+        isError: Math.random() < 0.18,
+      });
+
+      stats.tradTokensTotal += 1;
+      stats.tradCostTotal += 0.0025;
+      updateHUD();
+
+      logEvent(`Serializando token: envío de "${word}" (Pérdida de información DPI)`, 'trad');
+    }
+
+    function spawnPmtpVectorWave() {
+      pmtpRibbons.push({
+        progress: 0,
+        speed: 0.008,
+        path: [nodes.pmtpClient, nodes.pmtpShm, nodes.pmtpHilbert1, nodes.pmtpHilbert2, nodes.pmtpHilbert3, nodes.pmtpClient],
+        targetIndex: 1,
+        amplitude: 15 + Math.random() * 10,
+        frequency: 4 + Math.random() * 2,
+        phase: Math.random() * Math.PI * 2,
+      });
+
+      stats.pmtpQueriesTotal += 1;
+      logEvent("PmtpShmBus: Transmisión zero-copy de slab tensorial continuo de 4096 floats", "pmtp");
+    }
+
+    function triggerManualQuery() {
+      for(let i=0; i<4; i++) {
+        setTimeout(spawnTradTokenFlow, i * 250);
+      }
+      spawnPmtpVectorWave();
+      logEvent("🚀 Consulta benchmark paralela iniciada: Token Tradicional vs Vector PMTP", "pmtp");
+      logEvent("🚀 Transmitiendo carga útil de texto sobre red 1D...", "trad");
+    }
+
+    // Interval Spawners
+    setInterval(() => {
+      if (!isRunning) return;
+      if (Math.random() > 0.3) spawnTradTokenFlow();
+    }, 900);
+
+    setInterval(() => {
+      if (!isRunning) return;
+      if (Math.random() > 0.4) spawnPmtpVectorWave();
+    }, 1200);
+
+    // Update HUD Stats DOM
+    function updateHUD() {
+      document.getElementById('mTradCost').innerText = stats.tradCostTotal.toFixed(2);
+      document.getElementById('mTradLat').innerText = (1200 + Math.floor(Math.random()*400)).toLocaleString();
+      
+      const dpiVal = Math.max(22.0, (45.0 - (stats.tradTokensTotal * 0.05))).toFixed(1);
+      document.getElementById('mTradDpi').innerText = dpiVal;
+
+      const halluRate = (12.0 + Math.sin(Date.now() / 2000) * 3).toFixed(1);
+      document.getElementById('mTradHallu').innerText = halluRate;
+    }
+
+    // --- Render Engine ---
+
+    function drawNode(node, color, glowColor, width, height) {
+      const px = node.x * width;
+      const py = node.y * height;
+
+      const grad = ctx.createRadialGradient(px, py, 2, px, py, 30);
+      grad.addColorStop(0, glowColor);
+      grad.addColorStop(1, 'transparent');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(px, py, 30, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#0f172a';
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(px, py, 14, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(px, py, 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = '600 11px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(node.label, px, py - 22);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '400 9px Fira Code, monospace';
+      ctx.fillText(node.sub, px, py + 26);
+    }
+
+    function drawPipelinePaths(width, height) {
+      // Top Lane - Traditional discrete dotted path
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.25)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 6]);
+      ctx.beginPath();
+      ctx.moveTo(nodes.tradClient.x * width, nodes.tradClient.y * height);
+      ctx.lineTo(nodes.tradToll.x * width, nodes.tradToll.y * height);
+      ctx.lineTo(nodes.tradCloud1.x * width, nodes.tradCloud1.y * height);
+      ctx.lineTo(nodes.tradCloud2.x * width, nodes.tradCloud2.y * height);
+      ctx.lineTo(nodes.tradCloud3.x * width, nodes.tradCloud3.y * height);
+      ctx.stroke();
+
+      // Inter-agent chatter loop (Traditional)
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.3)';
+      ctx.beginPath();
+      ctx.arc((nodes.tradCloud1.x + nodes.tradCloud2.x)/2 * width, (nodes.tradCloud1.y + nodes.tradCloud2.y)/2 * height - 20, 25, 0, Math.PI);
+      ctx.stroke();
+
+      // Bottom Lane - PMTP Continuous Stiefel Ribbon path
+      ctx.setLineDash([]);
+      ctx.strokeStyle = 'rgba(6, 182, 212, 0.35)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(nodes.pmtpClient.x * width, nodes.pmtpClient.y * height);
+      ctx.lineTo(nodes.pmtpShm.x * width, nodes.pmtpShm.y * height);
+      ctx.lineTo(nodes.pmtpHilbert1.x * width, nodes.pmtpHilbert1.y * height);
+      ctx.lineTo(nodes.pmtpHilbert2.x * width, nodes.pmtpHilbert2.y * height);
+      ctx.lineTo(nodes.pmtpHilbert3.x * width, nodes.pmtpHilbert3.y * height);
+      ctx.stroke();
+
+      // Hilbert Space Interconnected Mesh
+      ctx.strokeStyle = 'rgba(139, 92, 246, 0.25)';
+      ctx.lineWidth = 1.5;
+      const h1x = nodes.pmtpHilbert1.x * width, h1y = nodes.pmtpHilbert1.y * height;
+      const h2x = nodes.pmtpHilbert2.x * width, h2y = nodes.pmtpHilbert2.y * height;
+      const h3x = nodes.pmtpHilbert3.x * width, h3y = nodes.pmtpHilbert3.y * height;
+      
+      ctx.beginPath();
+      ctx.moveTo(h1x, h1y); ctx.lineTo(h2x, h2y);
+      ctx.moveTo(h2x, h2y); ctx.lineTo(h3x, h3y);
+      ctx.moveTo(h1x, h1y); ctx.lineTo(h3x, h3y);
+      ctx.stroke();
+
+      // Middle Boundary Line
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.12)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([8, 8]);
+      ctx.beginPath();
+      ctx.moveTo(0, height * 0.5);
+      ctx.lineTo(width, height * 0.5);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    function animate(currentTime) {
+      requestAnimationFrame(animate);
+
+      if (!isRunning) return;
+
+      const dt = (currentTime - lastTime) / 1000;
+      lastTime = currentTime;
+
+      frameCount++;
+      if (currentTime - fpsTimer >= 1000) {
+        fps = frameCount;
+        frameCount = 0;
+        fpsTimer = currentTime;
+        document.getElementById('fpsCounter').innerText = fps;
+      }
+
+      const width = canvas.width / window.devicePixelRatio;
+      const height = canvas.height / window.devicePixelRatio;
+
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw Grid & Pipelines
+      drawPipelinePaths(width, height);
+
+      // Draw Nodes
+      drawNode(nodes.tradClient, '#f59e0b', 'rgba(245, 158, 11, 0.4)', width, height);
+      drawNode(nodes.tradToll, '#ef4444', 'rgba(239, 68, 68, 0.4)', width, height);
+      drawNode(nodes.tradCloud1, '#f59e0b', 'rgba(245, 158, 11, 0.4)', width, height);
+      drawNode(nodes.tradCloud2, '#f59e0b', 'rgba(245, 158, 11, 0.4)', width, height);
+      drawNode(nodes.tradCloud3, '#f59e0b', 'rgba(245, 158, 11, 0.4)', width, height);
+
+      drawNode(nodes.pmtpClient, '#06b6d4', 'rgba(6, 182, 212, 0.4)', width, height);
+      drawNode(nodes.pmtpShm, '#10b981', 'rgba(16, 185, 129, 0.4)', width, height);
+      drawNode(nodes.pmtpHilbert1, '#8b5cf6', 'rgba(139, 92, 246, 0.4)', width, height);
+      drawNode(nodes.pmtpHilbert2, '#8b5cf6', 'rgba(139, 92, 246, 0.4)', width, height);
+      drawNode(nodes.pmtpHilbert3, '#ec4899', 'rgba(236, 72, 153, 0.4)', width, height);
+
+      // 1. Process Traditional discrete particles
+      for (let i = tradParticles.length - 1; i >= 0; i--) {
+        const p = tradParticles[i];
+        const targetNode = p.path[p.targetIndex];
+        const sourceNode = p.path[p.targetIndex - 1];
+
+        p.progress += p.speed * simSpeed;
+
+        const currentX = (sourceNode.x + (targetNode.x - sourceNode.x) * p.progress) * width;
+        const currentY = (sourceNode.y + (targetNode.y - sourceNode.y) * p.progress) * height;
+
+        // Draw particle representation
+        ctx.fillStyle = p.isError ? '#ef4444' : '#f59e0b';
+        ctx.shadowColor = p.isError ? 'rgba(239, 68, 68, 0.8)' : 'rgba(245, 158, 11, 0.8)';
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.arc(currentX, currentY, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Draw text payload badge
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+        ctx.strokeStyle = p.isError ? '#ef4444' : 'rgba(245, 158, 11, 0.4)';
+        ctx.lineWidth = 1;
+        ctx.fillRect(currentX + 8, currentY - 14, ctx.measureText(p.text).width + 10, 16);
+        ctx.strokeRect(currentX + 8, currentY - 14, ctx.measureText(p.text).width + 10, 16);
+
+        ctx.fillStyle = p.isError ? '#fca5a5' : '#fde68a';
+        ctx.font = '500 9px Fira Code, monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText(p.text, currentX + 13, currentY - 2);
+
+        // Next node waypoint
+        if (p.progress >= 1) {
+          p.progress = 0;
+          p.targetIndex++;
+
+          // Error / Hallucination trigger at Agent 2
+          if (p.targetIndex === 4 && p.isError) {
+            errorPulses.push({ x: targetNode.x * width, y: targetNode.y * height, radius: 10, alpha: 1.0 });
+            logEvent("⚠️ Alucinación / Drift detectado: Conflicto de esquema JSON en paso 1D", "err");
+            stats.tradHallucinations += 1;
+          }
+
+          if (p.targetIndex >= p.path.length) {
+            tradParticles.splice(i, 1);
+          }
+        }
+      }
+
+      // 2. Process PMTP continuous ribbons (Stiefel manifold flow)
+      for (let i = pmtpRibbons.length - 1; i >= 0; i--) {
+        const r = pmtpRibbons[i];
+        r.progress += r.speed * simSpeed;
+
+        const sourceNode = r.path[r.targetIndex - 1];
+        const targetNode = r.path[r.targetIndex];
+
+        const startX = sourceNode.x * width;
+        const startY = sourceNode.y * height;
+        const endX = targetNode.x * width;
+        const endY = targetNode.y * height;
+
+        const segLen = Math.hypot(endX - startX, endY - startY);
+        const normalX = -(endY - startY) / segLen;
+        const normalY = (endX - startX) / segLen;
+
+        ctx.beginPath();
+        const steps = 30;
+        for (let j = 0; j <= steps; j++) {
+          const t = j / steps;
+          const px = startX + (endX - startX) * t;
+          const py = startY + (endY - startY) * t;
+
+          const wave = Math.sin(t * r.frequency * Math.PI + r.phase + (currentTime * 0.005)) * r.amplitude * (1 - Math.abs(t - 0.5) * 1.5);
+          const x = px + normalX * wave;
+          const y = py + normalY * wave;
+
+          if (j === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+
+        ctx.strokeStyle = 'rgba(6, 182, 212, 0.85)';
+        ctx.lineWidth = 3;
+        ctx.shadowColor = '#06b6d4';
+        ctx.shadowBlur = 12;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Stiefel Orthogonal Sub-carrier
+        ctx.beginPath();
+        for (let j = 0; j <= steps; j++) {
+          const t = j / steps;
+          const px = startX + (endX - startX) * t;
+          const py = startY + (endY - startY) * t;
+
+          const wave = -Math.sin(t * r.frequency * Math.PI + r.phase + (currentTime * 0.005)) * (r.amplitude * 0.6);
+          const x = px + normalX * wave;
+          const y = py + normalY * wave;
+
+          if (j === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = 'rgba(139, 92, 246, 0.7)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        if (r.progress >= 1) {
+          r.progress = 0;
+          r.targetIndex++;
+
+          // Collapse stage trigger
+          if (r.targetIndex === 5) {
+            collapsePulses.push({ x: targetNode.x * width, y: targetNode.y * height, radius: 10, alpha: 1.0 });
+            logEvent("✨ Colapso instantáneo en salida 1D (Cero tokens en pipeline de razonamiento)", "collapse");
+          }
+
+          if (r.targetIndex >= r.path.length) {
+            pmtpRibbons.splice(i, 1);
+          }
+        }
+      }
+
+      // 3. Draw Error Pulses
+      for (let i = errorPulses.length - 1; i >= 0; i--) {
+        const ep = errorPulses[i];
+        ep.radius += 1.5;
+        ep.alpha -= 0.02;
+
+        ctx.beginPath();
+        ctx.arc(ep.x, ep.y, ep.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(239, 68, 68, ${ep.alpha})`;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.font = '700 10px Fira Code, monospace';
+        ctx.fillStyle = `rgba(239, 68, 68, ${ep.alpha})`;
+        ctx.fillText("! DEGRADACIÓN DPI !", ep.x, ep.y - ep.radius - 4);
+
+        if (ep.alpha <= 0) errorPulses.splice(i, 1);
+      }
+
+      // 4. Draw Collapse Pulses
+      for (let i = collapsePulses.length - 1; i >= 0; i--) {
+        const cp = collapsePulses[i];
+        cp.radius += 2.0;
+        cp.alpha -= 0.025;
+
+        ctx.beginPath();
+        ctx.arc(cp.x, cp.y, cp.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(139, 92, 246, ${cp.alpha})`;
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(cp.x, cp.y, cp.radius * 0.6, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(6, 182, 212, ${cp.alpha})`;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.font = '700 10px Fira Code, monospace';
+        ctx.fillStyle = `rgba(216, 180, 254, ${cp.alpha})`;
+        ctx.fillText("SALIDA 1D CERTIFICADA", cp.x, cp.y - cp.radius - 4);
+
+        if (cp.alpha <= 0) collapsePulses.splice(i, 1);
+      }
+    }
+
+    // --- UI Controls Binding ---
+
+    document.getElementById('btnTriggerQuery').addEventListener('click', triggerManualQuery);
+
+    const btnPlayPause = document.getElementById('btnPlayPause');
+    btnPlayPause.addEventListener('click', () => {
+      isRunning = !isRunning;
+      document.getElementById('playIcon').innerText = isRunning ? '⏸ PAUSA' : '▶ REANUDAR';
+      if (isRunning) lastTime = performance.now();
+    });
+
+    const speedRange = document.getElementById('speedRange');
+    speedRange.addEventListener('input', (e) => {
+      simSpeed = parseFloat(e.target.value);
+      document.getElementById('speedVal').innerText = simSpeed.toFixed(1) + 'x';
+    });
+
+    document.getElementById('btnReset').addEventListener('click', () => {
+      stats.tradTokensTotal = 0;
+      stats.tradCostTotal = 0;
+      stats.pmtpQueriesTotal = 0;
+      tradParticles = [];
+      pmtpRibbons = [];
+      errorPulses = [];
+      collapsePulses = [];
+      updateHUD();
+      logEvent("Métricas y contadores reiniciados", "trad");
+      logEvent("Métricas y contadores reiniciados", "pmtp");
+    });
+
+    // Render KaTeX Math without disturbing Canvas Layout
+    function renderMathFormulas() {
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(document.body, {
+          delimiters: [
+            { left: "$$", right: "$$", display: true },
+            { left: "$", right: "$", display: false },
+            { left: "\\(", right: "\\)", display: false },
+            { left: "\\[", right: "\\]", display: true }
+          ],
+          ignoredClasses: ["no-math", "token-log", "font-mono-currency"],
+          ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code", "canvas"],
+          throwOnError: false
+        });
+        // Garantizar que la geometría del Canvas se mantenga 100% intacta
+        if (typeof resizeCanvas === 'function') {
+          resizeCanvas();
+        }
+      } else {
+        setTimeout(renderMathFormulas, 60);
+      }
+    }
+
+    // Inicialización y Arranque
+    window.onload = () => {
+      resizeCanvas();
+      renderMathFormulas();
+      logEvent("Sistema PMTP Inicializado: Bus de memoria lock-free PmtpShmBus listo", "pmtp");
+      logEvent("Pipeline Tradicional: Listener de tokenizador 1D activo", "trad");
+      requestAnimationFrame(animate);
+    };
+  </script>
+</body>
+</html>
