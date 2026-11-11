@@ -43,6 +43,18 @@ Simplemente abre el chat con tu Inteligencia Artificial (**Claude, ChatGPT, Anti
 
 ---
 
+## ⚡ ¿Prefieres probarlo sin instalar nada? (Google Colab Gratis 1-Clic)
+Si no deseas descargar nada en tu máquina local o prefieres correr los benchmarks y la transferencia tensorial en una GPU NVIDIA T4 gratuita en la nube de Google, puedes abrir directamente los cuadernos interactivos con 1-clic:
+
+| Cuaderno Interactivo | Substrato / Acelerador | Lanzar en 1-Clic |
+| :--- | :---: | :---: |
+| **`polydim_colab_benchmark_kit.ipynb`** *(Kit Completo de Evaluación)* | GPU NVIDIA T4 / CPU | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AGT1973/polydim-suite/blob/main/benchmarks/polydim_colab_benchmark_kit.ipynb) |
+| **`polydim_colab_suite_20_benchmarks.ipynb`** *(Suite 20 Kernels)* | GPU NVIDIA T4 / TPU | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AGT1973/polydim-suite/blob/main/benchmarks/polydim_colab_suite_20_benchmarks.ipynb) |
+| **`polydim_colab_turing_t4_benchmark.ipynb`** *(Test de Aceleración T4)* | GPU NVIDIA T4 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AGT1973/polydim-suite/blob/main/benchmarks/polydim_colab_turing_t4_benchmark.ipynb) |
+| **`polydim_two_models_transfer_colab.ipynb`** *(Transferencia Dual Stiefel)* | CPU / RAM Compartida | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AGT1973/polydim-suite/blob/main/benchmarks/polydim_two_models_transfer_colab.ipynb) |
+
+---
+
 ## 📦 Los Componentes de la Suite
 
 ### 🛠️ Los 4 Programas de Trabajo
