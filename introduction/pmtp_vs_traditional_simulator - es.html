@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PMTP Protocol Visual Simulator</title>
-    <!-- MathJax para renderizado dinámico de LaTeX -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- KaTeX para renderizado de alto rendimiento sin alterar layout -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
     <style>
         :root {
             --bg-dark: #07090e;
@@ -445,8 +446,30 @@
             requestAnimationFrame(animate);
         }
 
+        function renderMathFormulas() {
+            if (typeof renderMathInElement === 'function') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        { left: "$$", right: "$$", display: true },
+                        { left: "$", right: "$", display: false },
+                        { left: "\\(", right: "\\)", display: false },
+                        { left: "\\[", right: "\\]", display: true }
+                    ],
+                    ignoredClasses: ["no-math", "token-log", "log-column"],
+                    ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code", "canvas"],
+                    throwOnError: false
+                });
+                if (typeof resizeCanvas === 'function') {
+                    resizeCanvas();
+                }
+            } else {
+                setTimeout(renderMathFormulas, 60);
+            }
+        }
+
         window.addEventListener('load', () => {
             resizeCanvas();
+            renderMathFormulas();
             animate();
             appendLog('logTrad', 'SYSTEM READY: Pipeline 1D listo.');
             appendLog('logPmtp', 'SYSTEM READY: Bus de silicio continuo PMTP activo.');
