@@ -56,11 +56,11 @@ $$S = \frac{1}{1 - 0.80} = 5.0\times \quad \text{up to} \quad S = \frac{1}{1 - 0
 **Conclusión Decisiva del Estudio de Ablación (C vs B):**  
 Un vector latente no ortogonalizado (Modo B) acumula distorsión métrica en saltos sucesivos ($\|E\| \approx 1.45 \times 10^{-2}$), provocando una degradación de 12.6 puntos porcentuales frente al texto. La variedad de Stiefel (Modo C) restaura la isometría estricta con defecto sub-épsilon ($1.73 \times 10^{-16}$), alcanzando **82.4% Pass@1** con **cero consumo de tokens**.
 
-All benchmarks can be executed with zero local setup via public Jupyter notebooks:
-- [`polydim_two_models_transfer_colab.ipynb`](benchmarks/polydim_two_models_transfer_colab.ipynb)
-- [`polydim_colab_suite_20_benchmarks.ipynb`](benchmarks/polydim_colab_suite_20_benchmarks.ipynb)
-- [`polydim_colab_turing_t4_benchmark.ipynb`](benchmarks/polydim_colab_turing_t4_benchmark.ipynb)
-- [`polydim_colab_benchmark_kit.ipynb`](benchmarks/polydim_colab_benchmark_kit.ipynb)
+All benchmarks can be executed with zero local setup via public Jupyter notebooks (1-click free Google Colab):
+- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AGT1973/polydim-suite/blob/main/benchmarks/polydim_colab_benchmark_kit.ipynb) **[`polydim_colab_benchmark_kit.ipynb`](benchmarks/polydim_colab_benchmark_kit.ipynb)** *(Kit Completo de Benchmarks y Evaluación en Silicio)*
+- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AGT1973/polydim-suite/blob/main/benchmarks/polydim_colab_suite_20_benchmarks.ipynb) **[`polydim_colab_suite_20_benchmarks.ipynb`](benchmarks/polydim_colab_suite_20_benchmarks.ipynb)** *(Suite de 20 Benchmarks y Validación Asintótica)*
+- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AGT1973/polydim-suite/blob/main/benchmarks/polydim_colab_turing_t4_benchmark.ipynb) **[`polydim_colab_turing_t4_benchmark.ipynb`](benchmarks/polydim_colab_turing_t4_benchmark.ipynb)** *(Test de Aceleración y Defecto en GPU NVIDIA T4)*
+- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AGT1973/polydim-suite/blob/main/benchmarks/polydim_two_models_transfer_colab.ipynb) **[`polydim_two_models_transfer_colab.ipynb`](benchmarks/polydim_two_models_transfer_colab.ipynb)** *(Transferencia Tensorial Directa Entre Dos Modelos)*
 
 
 ---
