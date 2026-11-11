@@ -16,14 +16,16 @@ El propósito de **POLYDIM SUITE** no es una simple herramienta pedagógica ni u
 
 ---
 
-## 🛡️ Instalación Segura y Transparente (100% Anti-Falsos Positivos)
-Muchos instaladores de software tradicional descargan archivos `.exe` desconocidos que activan inmediatamente las alarmas de **Windows Defender SmartScreen** o los antivirus universitarios.
+## 🛡️ Libertad de Ejecución y Multiplataforma (3 Caminos Transparentes)
+No forzamos un método único. Cada usuario y cada entorno tiene requerimientos distintos:
 
-**POLYDIM SUITE está diseñada bajo la doctrina de "Código Abierto y Transparente":**
-* 🚫 **Cero descargas de `.exe` opacos:** No descarga binarios extraños de la web.
-* 📜 **100% Código Fuente Auditable:** Funciona mediante scripts estándar de Python (`.py`), HTML5 (`.html`), llamadas nativas del sistema operativo (`kernel32.dll` de Windows vía `ctypes`) y archivos de texto plano.
-* 💻 **Compilación Local (Opcional):** Si quieres aceleración extrema en C++/Rust, tu propia máquina compila las librerías localmente; los antivirus nunca bloquean código generado en tu propio equipo.
-* 🔓 **Acceso Completo y Seguro:** Tienes acceso irrestricto a la memoria compartida, los modelos de Hugging Face y los cónclaves de IAs sin riesgo de cuarentena ni bloqueos administrativos.
+![Los 3 Caminos de Ejecución de POLYDIM SUITE](assets/polydim_3_caminos.svg)
+
+| Opción / Camino | ¿Para quién es? | Requisitos | Seguridad / Antivirus |
+| :--- | :--- | :--- | :--- |
+| **⚡ Camino A: Binario Precompilado** | Quien busca inmediatez y velocidad máxima nativa en 1-clic | Descargar binario oficial (Windows `.exe`, Linux ELF, macOS) con SHA-256 | Puede requerir confirmación del usuario en SmartScreen / Gatekeeper |
+| **🛠️ Camino B: Compilación Local** | Quien desea soberanía de silicio y optimización a su CPU | Compilador local (`g++`, `clang`, `rustc` o `zig`) | **100% libre de alertas:** Los antivirus confían en binarios generados en tu propia máquina |
+| **🐍 Camino C: Estándar Python** | Quien no desea compilar ni descargar binarios externos | Python 3.10+ estándar (usa `ctypes` y memoria compartida del OS) | **100% código fuente auditable en texto plano:** Imposible de bloquear |
 
 ---
 

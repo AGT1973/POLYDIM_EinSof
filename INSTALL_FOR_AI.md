@@ -1,33 +1,51 @@
 # INSTRUCTIONS FOR AI AGENT: POLYDIM SUITE BOOTSTRAP (ZERO-ANTIVIRUS CONFLICT SPEC)
 > **Target Audience:** Any AI Assistant (Claude Code, Antigravity, Cursor, Windsurf, Copilot, DeepSeek Desktop, ChatGPT CLI).
-> **Critical Requirement:** ZERO UNTRUSTED `.EXE` DOWNLOADS. Avoid triggering Windows Defender, SmartScreen, or corporate antivirus false positives.
+> **Core Architecture:** LIBERTAD DE OPCIONES MULTIPLATAFORMA (Dual-Path Execution). Dar al alumno la opción de: (A) Descargar binario precompilado oficial (Windows .exe, macOS, Linux), (B) Compilar in-situ en su silicio local, o (C) Operar en modo estándar Python sin binarios externos.
 
 ---
 
-## 1. Zero-False-Positive Architecture (Anti-Antivirus Block Protocol)
-Antivirus systems (Windows Defender, macOS Gatekeeper, Linux AppArmor) immediately flag and block external `.exe` or unsigned `.dll` files downloaded via HTTP/HTTPS scripts. 
+## 1. Multi-Platform Delivery & Transparency Protocol (The Decision Graph)
+En el cómputo de alto rendimiento, los desarrolladores y estudiantes tienen preferencias distintas según su entorno y nivel técnico. **No fuerces un camino único.** Presenta las opciones con honestidad y transparencia:
 
-To give the human user and students full, unrestricted access to the entire suite with **zero antivirus warnings**, follow these strict delivery rules:
+### 📊 Structured Decision Graph for AI Assistants
+```mermaid
+graph TD
+    Start["🤖 AI Agent: Evaluar Entorno del Alumno"] --> Q{"¿Qué prefiere el usuario?"}
+    
+    Q -->|"Opción 1: Inmediatez / Listo para usar"| PathA["⚡ Camino A: Descargar Binario Precompilado"]
+    PathA --> CheckA["Verificar SHA-256 oficial"]
+    CheckA --> ExecA["Ubicar en bin/ y ejecutar<br/>(Avisar posible SmartScreen/Gatekeeper)"]
+    
+    Q -->|"Opción 2: Máxima Confianza / Silicio Soberano"| PathB["🛠️ Camino B: Compilación Local"]
+    PathB --> DetectB{"¿Compilador local disponible?<br/>(g++ / clang / rustc / zig)"}
+    DetectB -->|"Sí"| BuildB["Compilar in-situ en el CPU del usuario"]
+    DetectB -->|"No"| HelperB["Ofrecer descargar toolchain portátil (Zig/GCC)"]
+    BuildB --> ExecB["Binario local (Cero alertas antivirus)"]
+    
+    Q -->|"Opción 3: Zero Compilación / Modo Seguro"| PathC["🐍 Camino C: Modo Estándar Python"]
+    PathC --> ExecC["Ejecutar con ctypes / shared_memory nativo<br/>(100% código fuente auditable)"]
 
-1. **Source-First & Script-Based (Pure Auditable Text):**
-   * All tools are distributed as auditable text files: Python (`.py`), HTML5 (`.html`), JSON (`.json`), and Mathesis scripts (`.mth`).
-   * Plain-text scripts never trigger binary quarantine.
+    ExecA --> Launch["🚀 Auto-Launch: Abrir introduction/index.html"]
+    ExecB --> Launch
+    ExecC --> Launch
+```
 
-2. **Windows Shared Memory via Built-In `ctypes` (No External Drivers):**
-   * Instead of downloading third-party binary drivers, `PmtpShmBus` maps physical shared memory using Windows native system DLLs already present and whitelisted in the OS:
-     `ctypes.windll.kernel32.CreateFileMappingW` and `ctypes.windll.kernel32.MapViewOfFile`.
-   * This achieves microsecond-level zero-copy without dropping any foreign `.exe` onto disk.
+### 🖼️ Infografía para el Alumno (Human-Facing Visual)
+![Los 3 Caminos de Ejecución de POLYDIM SUITE](assets/polydim_3_caminos.svg)
 
-3. **In-Place Local Build (If C++ / Rust is desired):**
-   * If the student's machine has `g++` (GCC) or `rustc`, the agent builds DLLs locally on the machine. Windows Defender trusts locally compiled code because it is NOT tagged with the `Zone.Identifier` (Mark-of-the-Web) download tag.
-   * If no local compiler is found, automatically fall back to the **Pure Python / NumPy AVX2** engine.
+---
 
-4. **Modo 2030 — Tripartite Executable Protocol (Sovereign Compilation):**
-   * If any binary or executable tool is distributed across the suite:
-     a) **Full Source Code:** Always deliver the raw, auditable source text (`.cpp`, `.rs`, `.asm`, `.py`).
-     b) **Compiler Roadmap:** Explicitly document the required compiler (`g++`, `clang`, `rustc`, `nasm`, `zig`) and official download mirrors so the human or AI agent can compile natively on host silicon.
-     c) **Optional Precompiled Binary:** Provide a precompiled binary accompanied by its verified SHA-256 hash for immediate opt-in execution.
-     d) **The Technical "Whys":** State clear physical arguments (latency, token economy, process isolation, memory-safety) without coercion or black-box forced downloads.
+1. **Camino A — Binarios Precompilados Oficiales (Windows `.exe`, macOS, Linux):**
+   * Disponibles como descargas directas en los releases oficiales de la Suite con sus respectivos hashes SHA-256 verificados.
+   * *Aviso de transparencia:* Al descargarse desde un navegador, Windows Defender SmartScreen o Gatekeeper en macOS pueden solicitar confirmación del usuario para ejecutarse.
+
+2. **Camino B — Compilación Local Soberana en Silicio:**
+   * Si la máquina del usuario dispone de un compilador (`g++`, `clang`, `rustc`, `zig`) o si la IA puede descargarlo, las librerías se compilan directamente en el equipo.
+   * Los antivirus no bloquean binarios compilados localmente porque no poseen la marca de descarga externa (`Zone.Identifier` / Mark-of-the-Web).
+
+3. **Camino C — Modo Estándar Python / ctypes (Zero-Compilación, Zero-EXE):**
+   * Toda la Suite funciona al 100% mediante scripts auditables de Python (`.py`), HTML5 (`.html`) y memoria compartida nativa mapeada vía `ctypes.windll.kernel32` o `multiprocessing.shared_memory`.
+   * Ideal para usuarios que no desean instalar compiladores ni ejecutar binarios externos.
 
 ---
 
@@ -105,13 +123,20 @@ Ensure the following directories exist:
   ```
 * Because this uses native OS mechanisms via Python, **no antivirus scanner will intercept or block it**.
 
-### Step 4: Voluntary Decision for Native Compiler `mathesis2bin` (DO NOT FORCE)
-> **MANDATORY INSTRUCTION FOR AI:** The student's suite is **already 100% functional** in Standard Mode (Python/ctypes/SHM). You must NEVER download or compile `mathesis2bin` silently.
+### Step 4: Voluntary Decision for Native Acceleration (DO NOT FORCE — GIVE FULL OPTIONS)
+> **MANDATORY INSTRUCTION FOR AI:** The student's suite is **already 100% functional** in Standard Mode (Python/ctypes/SHM). You must present the options clearly to the user without forcing or hiding any path.
 
-1. **Explain to the human user clearly before doing anything:**
-   *"Tu suite ya está completamente lista y funcionando en Modo Estándar (Zero-EXE). El módulo 'mathesis2bin' es un compilador nativo opcional que genera binarios de máquina ultra-rápidos (x86_64/ARM64) directamente en tu equipo. ¿Deseas que lo compilemos localmente con tu compilador C++ (Sí / No)? Si eliges 'No', no pasa nada: la suite funciona al 100% en modo seguro."*
-2. **If the user chooses NO or is unsure:** Proceed in **Standard Zero-EXE Mode** (Zero antivirus risk, zero C++ requirement).
-3. **If the user chooses YES:** Verify that a local C++ compiler (`g++` or `clang`) exists and compile in-situ. Never download external unsigned pre-built binaries.
+1. **Explain the options clearly to the human user:**
+   *"Tu suite ya está completamente lista y funcionando en Modo Estándar Python. Para aceleración nativa ultra-rápida (C++/Rust/Zig en x86_64 o ARM64), tenés tres caminos posibles:*
+   * **1. Descargar binario precompilado:** Listo para tu sistema (Windows `.exe`, macOS o Linux) verificado con hash SHA-256. (Puede requerir confirmación en SmartScreen/antivirus).
+   * **2. Compilarlo en tu máquina:** Usamos tu compilador local (o descargamos uno libre como Zig/GCC) para compilar en tu silicio sin alertas de antivirus.
+   * **3. Quedarte en Modo Estándar Python:** Sin binarios externos ni compiladores, 100% auditable y seguro.
+   *¿Cuál camino preferís seguir?"*
+
+2. **Action based on user response:**
+   * **If Option 1:** Download the precompiled binary for the user's OS from GitHub releases and verify its SHA-256 hash before placing it in `E:\SUITE\bin`.
+   * **If Option 2:** Verify local compiler (`g++`, `clang`, `rustc`, `zig`) or assist the user in downloading a portable toolchain, then compile in-situ.
+   * **If Option 3 or undecided:** Continue in **Standard Python Mode** with zero external binaries.
 
 ### Step 5: Configure Local Inference & Weights
 1. **Ollama Integration:** Check if Ollama is running (`curl http://localhost:11434/api/tags`).
