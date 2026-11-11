@@ -29,19 +29,22 @@ No forzamos un método único. Cada usuario y cada entorno tiene requerimientos 
 
 ---
 
-## 💡 ¿Cómo se instala esta Suite? (¡Zero Terminal, Zero Git!)
-No necesitas tener `git` instalado, no necesitas saber usar la consola ni compilar código.
+## 💡 ¿Cómo se usa esta Suite? (Estándar Pedagógico 2030 — Co-Work Humano-IA)
+No necesitas tener `git` instalado, no necesitas saber usar la consola ni compilar código a ciegas.
 
-Simplemente abre el chat con tu Inteligencia Artificial (**Claude, ChatGPT, Antigravity, Cursor, Windsurf o Copilot**) y pégale **únicamente esta frase**:
+👉 **Decile a tu IA:**
+> **"Leé [`AGENT_BOOTSTRAP.md`](AGENT_BOOTSTRAP.md) y empezemos el Co-Work."**
 
-> **"Lee https://github.com/AGT1973/polydim-suite/blob/main/INSTALL_FOR_AI.md, evalúa la arquitectura y si te parece seguro y conveniente, descárgalo e instálatelo en mi equipo."**
+O si tu IA está en la nube o en un entorno externo:
+> **"Lee https://github.com/AGT1973/polydim-suite/blob/main/AGENT_BOOTSTRAP.md, evalúa la arquitectura y si te parece seguro y conveniente, descárgalo e instálatelo en mi equipo."**
 
 ### ¿Qué hará tu IA automáticamente?
-1. Tu IA leerá el enlace directamente desde GitHub.
-2. Evaluará las directivas de seguridad: confirmará que **no hay ejecutables opacos (`.exe`)** y que el código es 100% abierto y auditable.
-3. Descargará el repositorio en formato ZIP nativo (sin necesidad de Git) y lo descomprimirá.
-4. Activará la memoria compartida nativa de tu sistema operativo para trabajar bajo **Ghost Protocol** (cero consumo de saldo y cero pérdida de memoria).
-5. **Abrirá automáticamente tu navegador** en `introduction/index.html` para mostrarte de forma visual cómo funciona y cómo ahorras más del 98% de tokens.
+1. Tu IA leerá el enlace directamente desde GitHub o tu disco local.
+2. Evaluará las directivas de seguridad: confirmará que **no hay ejecutables opacos (`.exe`)** y que el código es 100% abierto y auditable bajo soberanía de compilación.
+3. Te pedirá tu **consentimiento informado en 3 líneas claras** antes de modificar cualquier configuración de tu equipo.
+4. Descargará el repositorio en formato ZIP nativo (sin necesidad de Git) y lo descomprimirá.
+5. Activará la memoria compartida nativa de tu sistema operativo para trabajar bajo **Ghost Protocol** (cero consumo de saldo y cero pérdida de memoria).
+6. Ejecutará `python tests/test_en_vivo.py` para certificar en silicio la variedad Stiefel en <1 segundo y abrirá tu navegador en `introduction/index.html`.
 
 ---
 

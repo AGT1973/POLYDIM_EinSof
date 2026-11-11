@@ -50,6 +50,25 @@ def audit_suite_files():
     missing = [f for f in required_files if not os.path.exists(f)]
     return missing
 
+GDRIVE_DESTINATIONS = [
+    r"Z:\Mi unidad\Clase_AGT_2026_IA\POLYDIM_SUITE",
+    r"Z:\Mi unidad\POLYDIM_SUITE"
+]
+
+def sync_to_gdrive():
+    results = []
+    for dst in GDRIVE_DESTINATIONS:
+        if os.path.exists(os.path.splitdrive(dst)[0] + "\\"):
+            os.makedirs(dst, exist_ok=True)
+            cmd = f'robocopy "{SUITE_DIR}" "{dst}" /MIR /XD .git /R:1 /W:1'
+            rc, out, err = run_cmd(cmd)
+            # Robocopy return codes 0 to 7 indicate success
+            if rc <= 7:
+                results.append(f"Gドライブ sincronizado a {dst} (RC={rc})")
+            else:
+                results.append(f"Error robocopy a {dst} (RC={rc}): {err}")
+    return "; ".join(results) if results else "Google Drive no disponible en este ciclo."
+
 def sync_to_github():
     status = check_git_status()
     if not status:
@@ -107,9 +126,12 @@ def main(force=False):
         log_to_postgres(msg, status="ERROR")
         return 1
     
+    gdrive_result = sync_to_gdrive()
+    print(f"Result GDrive: {gdrive_result}")
+    
     sync_result = sync_to_github()
-    print(f"Result: {sync_result}")
-    log_to_postgres(sync_result, status="OK")
+    print(f"Result GitHub: {sync_result}")
+    log_to_postgres(f"{sync_result} | {gdrive_result}", status="OK")
     return 0
 
 if __name__ == "__main__":
