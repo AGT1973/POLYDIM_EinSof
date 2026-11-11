@@ -71,13 +71,13 @@ All benchmarks can be executed with zero local setup via public Jupyter notebook
 | Modelo Evaluado | Modo Operativo | Consumo de Tokens | Latencia por Salto | Memoria / VRAM | Retención Semántica (10 Hops) | Defecto Stiefel ($\|X^T X - I\|_\infty$) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Qwen 3 1.5B** *(Didáctico)* | **Sin PMTP (Texto 1D)** | ~380 tok/salto | 1,920.0 ms | 1,150 MB (Dinámico) | 69.8% *(DPI decay)* | N/A (Texto 1D) |
-| *(Manifold $	ext{St}(1024, 2048)$)* | **Con PMTP (Zero-Hop)** | **0 Tokens (100% ahorro)** | **0.0032 ms (3.2 μs)** | **16 KB (Arena R15)** | **100.0%** | **.936 	imes 10^{-16}$** |
+| *(Manifold $\text{St}(1024, 2048)$)* | **Con PMTP (Zero-Hop)** | **0 Tokens (100% ahorro)** | **0.0032 ms (3.2 μs)** | **16 KB (Arena R15)** | **100.0%** | **$1.936 \times 10^{-16}$** |
 | **Qwen 3 8B** *(Mid-Range)* | **Sin PMTP (Texto 1D)** | ~512 tok/salto | 4,850.0 ms | 4,200 MB (Dinámico) | 64.5% *(DPI decay)* | N/A (Texto 1D) |
-| *(Manifold $	ext{St}(2048, 4096)$)* | **Con PMTP (Zero-Hop)** | **0 Tokens (100% ahorro)** | **0.0038 ms (3.8 μs)** | **32 KB (Arena R15)** | **100.0%** | **.708 	imes 10^{-16}$** |
+| *(Manifold $\text{St}(2048, 4096)$)* | **Con PMTP (Zero-Hop)** | **0 Tokens (100% ahorro)** | **0.0038 ms (3.8 μs)** | **32 KB (Arena R15)** | **100.0%** | **$1.708 \times 10^{-16}$** |
 | **DeepSeek V4.1 Flash** *(MoE)* | **Sin PMTP (Texto 1D)** | ~640 tok/salto | 6,120.0 ms | 5,800 MB (Dinámico) | 61.2% *(DPI decay)* | N/A (Texto 1D) |
-| *(Manifold $	ext{St}(2048, 5120)$)* | **Con PMTP (Zero-Hop)** | **0 Tokens (100% ahorro)** | **0.0041 ms (4.1 μs)** | **40 KB (Arena R15)** | **100.0%** | **.732 	imes 10^{-16}$** |
+| *(Manifold $\text{St}(2048, 5120)$)* | **Con PMTP (Zero-Hop)** | **0 Tokens (100% ahorro)** | **0.0041 ms (4.1 μs)** | **40 KB (Arena R15)** | **100.0%** | **$1.732 \times 10^{-16}$** |
 | **LLaMA 4 70B** *(Frontier)* | **Sin PMTP (Texto 1D)** | ~890 tok/salto | 14,200.0 ms | 14,800 MB (Dinámico) | 52.4% *(DPI decay)* | N/A (Texto 1D) |
-| *(Manifold $	ext{St}(2048, 8192)$)* | **Con PMTP (Zero-Hop)** | **0 Tokens (100% ahorro)** | **0.0058 ms (5.8 μs)** | **64 KB (Arena R15)** | **100.0%** | **.716 	imes 10^{-16}$** |
+| *(Manifold $\text{St}(2048, 8192)$)* | **Con PMTP (Zero-Hop)** | **0 Tokens (100% ahorro)** | **0.0058 ms (5.8 μs)** | **64 KB (Arena R15)** | **100.0%** | **$1.716 \times 10^{-16}$** |
 
 #### Hallazgos Empíricos en Silicio:
 1. **Tokens:** Eliminación del 100% del consumo de tokens en los 4 modelos durante el pase de estado intermedio. Cero costo en la billetera del usuario.
