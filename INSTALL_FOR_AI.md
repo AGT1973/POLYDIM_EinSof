@@ -22,6 +22,13 @@ To give the human user and students full, unrestricted access to the entire suit
    * If the student's machine has `g++` (GCC) or `rustc`, the agent builds DLLs locally on the machine. Windows Defender trusts locally compiled code because it is NOT tagged with the `Zone.Identifier` (Mark-of-the-Web) download tag.
    * If no local compiler is found, automatically fall back to the **Pure Python / NumPy AVX2** engine.
 
+4. **Modo 2030 — Tripartite Executable Protocol (Sovereign Compilation):**
+   * If any binary or executable tool is distributed across the suite:
+     a) **Full Source Code:** Always deliver the raw, auditable source text (`.cpp`, `.rs`, `.asm`, `.py`).
+     b) **Compiler Roadmap:** Explicitly document the required compiler (`g++`, `clang`, `rustc`, `nasm`, `zig`) and official download mirrors so the human or AI agent can compile natively on host silicon.
+     c) **Optional Precompiled Binary:** Provide a precompiled binary accompanied by its verified SHA-256 hash for immediate opt-in execution.
+     d) **The Technical "Whys":** State clear physical arguments (latency, token economy, process isolation, memory-safety) without coercion or black-box forced downloads.
+
 ---
 
 ## 2. What is POLYDIM SUITE? (Core Knowledge)
