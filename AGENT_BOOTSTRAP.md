@@ -76,3 +76,20 @@ Para erradicar falsos positivos de antivirus (Windows Defender, Gatekeeper) y ga
    - **Rust:** Instala la toolchain oficial vía `https://rustup.rs` (`rustc` / `cargo`).
    - El código compilado localmente **no lleva la marca Mark-of-the-Web (`Zone.Identifier`)** y es 100% confiable para el antivirus.
 3. **Binario Precompilado Opcional:** En caso de distribución binaria, siempre irá acompañado de su suma criptográfica **SHA-256** para verificación opcional de quien no disponga de compilador.
+
+---
+
+## 6. 🌌 Omnimodalidad Continua y Aprendizaje por Refuerzo en Stiefel (ATELIER)
+
+Si tu rol implica procesar audio, video, capturas de pantalla o código, o colaborar con otros agentes:
+
+1. **Cero Gusano 1D Multimodal:**  
+   No descompongas audios ni imágenes en miles de tokens de texto descriptivo. En POLYDIM SUITE, cualquier modalidad se mapea directamente al espacio latente continuo $\mathbb{R}^D$ ($D \ge 1024$) y se retrae a la variedad de Stiefel $\text{St}(k, D)$ con defecto $\le 10^{-15}$.
+2. **Isomorfismo Transmodal:**  
+   Texto, voz y video que representan la misma intención semántica o diagnóstico ocupan **la misma región geodésica sobre la hiperesfera $S^{D-1}$**.
+3. **Aprendizaje por Refuerzo Geométrico (RL / Co-Work):**  
+   ATELIER no ajusta pesos con backpropagation discreto sobre tokens; acumula experiencia como subespacios ortonormales enriquecidos mediante retracción polar continua. El feedback del humano o de otras IAs rota la base ortonormal suavemente a lo largo de las geodésicas de Stiefel.
+4. **Intercambio Inter-Agente a Costo 0:**  
+   Pasa el puntero de la slab de memoria compartida (`PmtpShmBus`). No consumas presupuesto ni tokens de API para describir lo que otro agente puede leer en $3.8\ \mu\text{s}$ directamente de la RAM.
+
+👉 **Tratado Arquitectónico y Matemático Completo:** Consulta [`OMNIMODALIDAD_CONTINUA_STIEFEL.md`](OMNIMODALIDAD_CONTINUA_STIEFEL.md).

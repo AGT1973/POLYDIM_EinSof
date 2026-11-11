@@ -85,7 +85,7 @@ Si no deseas descargar nada en tu máquina local o prefieres correr los benchmar
 ### 🛠️ Los 4 Programas de Trabajo
 1. **`PMTP-CORE`:** Bus de memoria física compartida (Zero-Copy) y retracción en variedad de Stiefel ($X^T X = I$) en C++20 y Rust. Erradica la pérdida de información por tokenización prematura.
 2. **`MATHESIS`:** Compilador geométrico (`mthc`), generador de código máquina en ensamblador puro (x86_64/ARM64) sin dependencias y árbitro anti-alucinaciones.
-3. **`ATELIER`:** Entorno visual de desarrollo (AI-IDE), editor interactivo y centro de telemetría en tiempo real (`ui/suite_cockpit.html`).
+3. **`ATELIER`:** Entorno visual de desarrollo (AI-IDE), centro de telemetría (`ui/suite_cockpit.html`) y motor de aprendizaje por refuerzo continuo (RL / Co-Work). Procesa texto, audio y video de forma isomorfa sobre la variedad de Stiefel sin pasar por el costoso gusano 1D de tokens. Ver tratado canónico en [`OMNIMODALIDAD_CONTINUA_STIEFEL.md`](OMNIMODALIDAD_CONTINUA_STIEFEL.md).
 4. **`EINSOFOS`:** Sistema operativo geométrico Bare-Metal (UEFI Bootloader, Kether ISA, R15 Arena) — *En desarrollo activo*.
 
 ### 🧠 Los 3 Motores Abiertos para Alumnos y Devs

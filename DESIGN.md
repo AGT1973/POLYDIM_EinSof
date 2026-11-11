@@ -56,3 +56,11 @@ Implemented in AVX2 / AVX-512 intrinsics, providing machine-precision stability 
 Every normalized Stiefel vector $\mathbf{v} \in S^{D-1}$ maps isomorphically to a pure quantum state:
 $$|\psi\rangle = \sum_{j=0}^{D-1} v_j |j\rangle \quad \text{with } \langle\psi|\psi\rangle = 1$$
 Enabling seamless unitarian evolution $|\psi(t)\rangle = e^{-i\mathbf{H}t}|\psi(0)\rangle$ across physical QPU processors (IBM Heron 156-qubit) without representational paradigm translation.
+
+---
+
+### 7. Continuous Omnimodality: Modality-Agnostic Geometry
+For the Stiefel manifold $\text{St}(D, r)$, the biological or sensory origin of the input signal is completely irrelevant:
+- **Audio, Video, and Text** are projected into the common continuous latent space $\mathbb{R}^D$ ($D=4096$) via early latent encoders and normalized to $\text{St}(D, r)$ via Newton-Schulz Order 10 polar retraction.
+- **Transmodal Isomorphism:** Conceptual representations (e.g., semantic intent, error diagnosis, mathematical proof) occupy the **exact same geodesic neighborhood on $S^{D-1}$** regardless of whether the original stimulus was acoustic, optical, or textual.
+- **Inter-Agent Zero-Token Transfer:** Agents exchange the raw orthonormal frame $\mathbf{W} \in \text{St}(D, r)$ in a 16 KB shared memory slab (`PmtpShmBus`), eliminating the need to describe images or audio with 1D text tokens. Full theoretical details in [`OMNIMODALIDAD_CONTINUA_STIEFEL.md`](OMNIMODALIDAD_CONTINUA_STIEFEL.md).
