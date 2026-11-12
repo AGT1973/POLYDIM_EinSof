@@ -47,7 +47,9 @@
 >    - **Zenodo (CERN / OpenAIRE):** Registro permanente e inmutable con DOIs oficiales [10.5281/zenodo.24013070](https://doi.org/10.5281/zenodo.24013070) y [10.5281/zenodo.24122867](https://doi.org/10.5281/zenodo.24122867).
 >    - **IBM Quantum Platform:** Jobs cosechados en procesadores físicos Heron y Eagle accesibles con ID público en [quantum.ibm.com/jobs](https://quantum.ibm.com/jobs).
 >    - **Hugging Face Hub:** Pesa del adaptador e interoperabilidad en [`huggingface.co/polidim-einsof`](https://huggingface.co/polidim-einsof) (`adapter_weights.safetensors`, 67.1 MB).
->    - **Google Colab & Kaggle:** Cuadernos interactivos con ejecución gratuita en GPU T4/L4 ([`benchmarks/polydim_colab_benchmark_kit.ipynb`](benchmarks/polydim_colab_benchmark_kit.ipynb), `prompts_100.json`).
+>    - **Google Colab & Kaggle (GPU Tesla T4 Dual — Benchmark 5 Brazos Certificado):** Cuadernos interactivos con ejecución gratuita en GPU T4/L4 ([`benchmarks/polydim_colab_benchmark_kit.ipynb`](benchmarks/polydim_colab_benchmark_kit.ipynb)). **Certificación Kaggle GPU ejecutada y verificada:** Defecto Stiefel GPU FP64 = $6.66 \times 10^{-16}$, 5 brazos comparativos con Exit Code 0 ([Kaggle Notebook](https://www.kaggle.com/code/agt1973gmailcom/pmtp-inspector-silicon-cert)).
+>    - **Software Heritage (INRIA / UNESCO):** Archivo inmutable del código fuente con SWHID [`swh:1:snp:bdea78b37132a4bd6b67049805cbb6d4472ec2cd`](https://archive.softwareheritage.org/swh:1:snp:bdea78b37132a4bd6b67049805cbb6d4472ec2cd;origin=https://github.com/AGT1973/POLYDIM_EinSof).
+>    - **HAL Science (CNRS / CCSD):** Preprint depositado como [`hal-05847496v1`](https://hal.science/hal-05847496v1).
 >    - **GitHub Actions CI/CD en Vivo:** 9/9 jobs ejecutándose en tiempo real en Ubuntu, macOS (Apple Silicon ARM64) y Windows con compilación nativa C++20 de `tools/atelier_kernel/atelier_stiefel.cpp`.
 
 ---
