@@ -30,7 +30,7 @@ $$S = \frac{1}{1 - 0.80} = 5.0\times \quad \text{up to} \quad S = \frac{1}{1 - 0
 ---
 
 ### 3. Local Physical Hardware Audit (Rule 19 Certification)
-**Script**: `E:\PMTP\test_pmtp_silicon.py` (AVX2 + FP64 + Qwen2.5 on host silicon)
+**Script**: `tests/test_pmtp_silicon.py` (AVX2 + FP64 + Qwen2.5 on host silicon)
 - **T-MP15 / T-MP17 / T-MP20**: Atomic concurrency, monitor and leases: **PASS**
 - **T-MP18**: PolarSafe V2 scale-invariance:
   $$\|\mathbf{W}^T \mathbf{W} - \mathbf{I}\|_\infty = \mathbf{1.11 \times 10^{-15}} \quad (\text{Newton-Schulz Order 5})$$

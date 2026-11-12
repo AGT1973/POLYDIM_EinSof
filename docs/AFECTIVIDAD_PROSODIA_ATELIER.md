@@ -2,7 +2,7 @@
 
 > **POLYDIM SUITE & ATELIER Architecture Document (2026)**  
 > Ecosistema Soberano POLYDIM-EINSOF | Ariel García Traba  
-> Ubicación: `E:\SUITE\docs\AFECTIVIDAD_PROSODIA_ATELIER.md`
+> Ubicación: `docs/AFECTIVIDAD_PROSODIA_ATELIER.md`
 
 ---
 
@@ -81,7 +81,7 @@ El sistema de agentes de ATELIER consume el tensor continuo $(V, A, D)$ y modifi
 
 ## 5. Implementación en el Cockpit Visual (`suite_cockpit.html`)
 
-En `E:\SUITE\ui\suite_cockpit.html`, la pestaña **Sensores Zero-IA** (`#tab-sensors`) cuenta con:
+En `ui/suite_cockpit.html`, la pestaña **Sensores Zero-IA** (`#tab-sensors`) cuenta con:
 * **Canvas Radar 2D Afectivo (`canvas-radar`):** Dibuja los cuatro cuadrantes emocionales con el vector en tiempo real.
 * **Gauges de silicio:** Indicadores dinámicos de $F_0$, Jitter, Ataque RMS y modo de diálogo activo.
 * **Simulador de calibración manual:** Botones de estrés para probar los 5 perfiles afectivos sin requerir micrófono físico.
