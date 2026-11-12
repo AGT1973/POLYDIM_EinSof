@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "polydim-suite"
+name = "polydim-einsof"
 version = "1.0.0"
-description = "POLYDIM SUITE: High-Dimensional Manifold Transport & Inter-Process Latent Alignment"
+description = "POLYDIM-EINSOF: High-Dimensional Stiefel Manifold Continuous Optimization & PMTP Core Engine"
 readme = "README.md"
 authors = [
   { name = "Ariel H. Garcia Traba", email = "polydim.einsof@gmail.com" }
