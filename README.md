@@ -1,119 +1,135 @@
 # POLYDIM SUITE 🚀
-### Evolución de la IA a Espacio Vectorial Continuo & Cómputo Cuántico-Silicio
-**Director de Investigación:** Ariel García Traba  
-**Licencia:** Open-Source / Investigación Soberana  
-**Repositorio Oficial:** GitHub / GitLab `polydim-suite`
+### Optimización de Inferencia en Espacio Continuo & Cómputo Tensorial en Silicio
+**Director de Investigación:** Ariel García Traba — *Independent Research / POLYDIM-EinsofOS Research Initiative*  
+**Licencia:** Open-Source (MIT / Apache 2.0)  
+**Preservación Académica:** Zenodo DOI [10.5281/zenodo.24122867](https://doi.org/10.5281/zenodo.24122867)  
+**Model Hub Oficial:** [Hugging Face Polydim-Einsof](https://huggingface.co/polidim-einsof)
 
 ---
 
-## 🌌 El Propósito: Evolución Vectorial y Cuántica de la IA
-El propósito de **POLYDIM SUITE** no es una simple herramienta pedagógica ni un tutorial: es **la evolución del razonamiento de la Inteligencia Artificial hacia el espacio vectorial continuo y el cómputo cuántico**.
-
-* **Trascendencia del Cuello de Botella 1D (DPI):** Rompe la limitación histórica donde los modelos mutilan sus matrices en tokens de texto discretos.
-* **Doble Substrato Físico (Regla 19):**
-  1. **Silicio Clásico:** Memoria física compartida (`PmtpShmBus`), vectorización AVX-512/AVX2 y retracción polar de 4º orden en la variedad de Stiefel ($\mathbf{X}^T \mathbf{X} = \mathbf{I}_k$, error $\le 10^{-15}$).
-  2. **Espacio de Hilbert Cuántico:** Validación cruzada en procesadores cuánticos físicos (IBM Quantum Heron & Eagle de 156 qubits) mediante evolución unitaria de estados puros $|\psi(t)\rangle = e^{-iHt}|\psi(0)\rangle$.
+> [!IMPORTANT]
+> ### 🛡️ AVISO DE SEGURIDAD PARA ENTORNOS CORPORATIVOS Y DE TRABAJO
+> Si estás evaluando esta suite desde una computadora laboral o dentro de una red empresarial (bancos, empresas de logística, infraestructura productiva):
+> - **Utiliza exclusivamente los cuadernos interactivos de Google Colab provistos abajo.**
+> - Corren de forma 100% aislada en la nube de Google, con GPU NVIDIA T4 gratuita, a costo \$0 y sin tocar tu disco, tu sistema operativo ni la red local de tu empresa.
 
 ---
 
-## 🛡️ Libertad de Ejecución y Multiplataforma (3 Caminos Transparentes)
-No forzamos un método único. Cada usuario y cada entorno tiene requerimientos distintos:
+## 🌌 1. ¿Qué es POLYDIM y qué problema resuelve?
 
-![Los 3 Caminos de Ejecución de POLYDIM SUITE](assets/polydim_3_caminos.svg)
+En las arquitecturas multi-agente convencionales, dos modelos de Inteligencia Artificial que colaboran se comunican mediante **cadenas de texto plano (tokens 1D)**:
 
-| Opción / Camino | ¿Para quién es? | Requisitos | Seguridad / Antivirus |
-| :--- | :--- | :--- | :--- |
-| **⚡ Camino A: Binario Precompilado** | Quien busca inmediatez y velocidad máxima nativa en 1-clic | Descargar binario oficial (Windows `.exe`, Linux ELF, macOS) con SHA-256 | Puede requerir confirmación del usuario en SmartScreen / Gatekeeper |
-| **🛠️ Camino B: Compilación Local** | Quien desea soberanía de silicio y optimización a su CPU | Compilador local (`g++`, `clang`, `rustc` o `zig`) | **100% libre de alertas:** Los antivirus confían en binarios generados en tu propia máquina |
-| **🐍 Camino C: Estándar Python** | Quien no desea compilar ni descargar binarios externos | Python 3.10+ estándar (usa `ctypes` y memoria compartida del OS) | **100% código fuente auditable en texto plano:** Imposible de bloquear |
+$$\mathbf{Z}_{\text{continuo}} \xrightarrow{\text{Tokenizador}} \text{Texto (Strings UTF-8)} \xrightarrow{\text{De-tokenizador}} \hat{\mathbf{Z}}_{\text{discretizado}}$$
 
----
+Este método tradicional introduce tres cuellos de botella severos:
+1. **Pérdida de Información (Desigualdad de Procesamiento de Datos - DPI):** Al comprimir un espacio continuo de activación ($D \ge 1024$) en un vocabulario discreto de tokens, se destruyen las relaciones geométricas sutiles ($I(X; \text{Tokens}) < I(X; \mathbf{Z})$).
+2. **Latencia Excesiva:** Generar, transmitir y parsear texto toma entre 200 ms y 1.500 ms por paso de razonamiento.
+3. **Costo de Tokens:** Miles de tokens intermedios que ningún humano lee son facturados en cada llamada a API.
 
-## 💡 ¿Cómo se usa esta Suite? (Estándar Pedagógico 2030 — Co-Work Humano-IA)
+### La Solución POLYDIM: Intercambio Tensorial Directo en Silicio (PMTP)
+POLYDIM permite que dos modelos que coexisten en el mismo silicio (GPU / Host RAM) intercambien sus activaciones directamente como **vectores continuos de alta dimensión sobre la hiperesfera $S^{D-1}$ y la variedad de Stiefel $\text{St}(k, D)$**:
 
-> [!WARNING]
-> ### ⚠️ REQUISITO FUNDAMENTAL: SE NECESITA UN AGENTE CON ACCESO A TU MÁQUINA
-> **ESTO NO FUNCIONA DESDE EL CHAT WEB TRADICIONAL** (como `chatgpt.com`, `claude.ai` o `gemini.google.com`).
-> 
-> Un chat de navegador web vive en servidores remotos aislados: **no puede ver tu disco, no puede crear memoria compartida en tu RAM ni ejecutar código en tu CPU**.
-> 
-> | ✅ SÍ FUNCIONA (Entornos Agénticos de Desarrollo) | ❌ NO SIRVE (Chats Web en Navegador) |
-> | :--- | :--- |
-> | **Google Antigravity** (IDE / CLI) | `gemini.google.com` (Chat web) |
-> | **Anthropic Claude Code** (CLI en terminal) | `claude.ai` (Chat web) |
-> | **Cursor IDE** / **Windsurf** (Agentes con herramientas) | `chatgpt.com` (Chat web básico) |
-> | **VSCode** (con GitHub Copilot Workspace, Roo Code, Cline) | Interfaces web sin terminal ni acceso a disco |
-> | **OpenAI Codex / Workspaces CLI** / **DeepSeek CLI** | Cualquier caja de texto web sin ejecución local |
-> 
-> *(¿Solo tienes navegador web y no quieres instalar un IDE? Ve directo a la sección de **Google Colab en 1-Clic** más abajo).*
+```
+Comunicación Convencional Multi-Agente:
+[Modelo A] ---> Estados Continuos ---> [Serializar a Texto] ---> [HTTP/JSON] ---> [Re-tokenizar] ---> [Modelo B]
+Latencia: 500 ms - 2 s | Gasto de Tokens: 100% | Información: Truncada
+
+Arquitectura POLYDIM / PMTP (Zero-Copy):
+[Modelo A] ---> Vector Latente v ∈ S^{D-1} ---> [Memoria Compartida RAM/VRAM] ---> [Modelo B]
+Latencia: 20 µs | Gasto de Tokens: 0% | Información: 100% Preservada (Isometría)
+```
+
+> **Aclaración Arquitectónica Nube vs. Local:**  
+> - **Modelos Locales de Peso Abierto (Qwen, Ollama, C++/Rust):** Operan a través del bus de copia cero en memoria compartida física (`PmtpShmBus`).  
+> - **APIs en la Nube (Claude, Gemini, DeepSeek):** Se conectan a través de sus endpoints oficiales HTTPS estándar vía herramientas MCP, sin alterar su protocolo de red.
 
 ---
 
-### Si tienes un Entorno Agéntico (Antigravity, Claude Code, Cursor, etc.):
-No necesitas tener `git` instalado, no necesitas saber usar la consola ni compilar código a ciegas.
+## 📐 2. Fundamentos Matemáticos: Variedad de Stiefel y Retracción Polar
 
-👉 **Decile a tu IA:**
-> **"Leé [`AGENT_BOOTSTRAP.md`](AGENT_BOOTSTRAP.md) y empezemos el Co-Work."**
+### A. La Variedad de Stiefel $\text{St}(k, D)$
+Para evitar que los vectores de razonamiento continuo se deformen o colapsen tras múltiples pasos, POLYDIM impone la condición de ortonormalidad estricta:
 
-O si tu IA se inicializa apuntando a este repositorio:
-> **"Lee https://github.com/AGT1973/polydim-suite/blob/main/AGENT_BOOTSTRAP.md, evalúa la arquitectura y si te parece seguro y conveniente, descárgalo e instálatelo en mi equipo."**
+$$\mathbf{W}^T \mathbf{W} = \mathbf{I}_k, \quad \mathbf{W} \in \mathbb{R}^{D \times k}$$
 
-### ¿Qué hará tu IA automáticamente?
-1. Tu IA leerá el enlace directamente desde GitHub o tu disco local.
-2. Evaluará las directivas de seguridad: confirmará que **no hay ejecutables opacos (`.exe`)** y que el código es 100% abierto y auditable bajo soberanía de compilación.
-3. Te pedirá tu **consentimiento informado en 3 líneas claras** antes de modificar cualquier configuración de tu equipo.
-4. Descargará el repositorio en formato ZIP nativo (sin necesidad de Git) y lo descomprimirá.
-5. Activará la memoria compartida nativa de tu sistema operativo para trabajar bajo **Ghost Protocol** (cero consumo de saldo y cero pérdida de memoria).
-6. Ejecutará `python tests/test_en_vivo.py` para certificar en silicio la variedad Stiefel en <1 segundo y abrirá tu navegador en `introduction/index.html`.
+### B. Retracción Polar Acelerada (Newton-Schulz de Orden Superior)
+En lugar de recalcular la costosa descomposición en valores singulares (SVD) de complejidad cúbica $\mathcal{O}(D^3)$, POLYDIM utiliza una retracción polar iterativa de complejidad $\mathcal{O}(D k^2)$:
+
+$$\mathbf{X}_{k+1} = \frac{1}{2} \mathbf{X}_k \left( 3\mathbf{I} - \mathbf{X}_k^T \mathbf{X}_k \right)$$
+
+Esto garantiza que el defecto de isometría $\|\mathbf{W}^T \mathbf{W} - \mathbf{I}\|_\infty$ converja en pocas multiplicaciones matriciales al límite de precisión atómica de la máquina ($\approx 1.7 \times 10^{-16}$ en IEEE 754 `float64`), permitiendo normalización en tiempo real sin congelar la CPU ni la GPU.
 
 ---
 
-## ⚡ ¿Prefieres probarlo sin instalar nada? (Google Colab Gratis 1-Clic)
-Si no deseas descargar nada en tu máquina local o prefieres correr los benchmarks y la transferencia tensorial en una GPU NVIDIA T4 gratuita en la nube de Google, puedes abrir directamente los cuadernos interactivos con 1-clic:
+## ⚡ 3. Evaluación Rápida en 1-Clic (Google Colab Gratuito)
 
-| Cuaderno Interactivo | Substrato / Acelerador | Lanzar en 1-Clic |
+La forma recomendada para alumnos, investigadores y auditores de probar la suite sin instalar nada localmente:
+
+| Cuaderno Interactivo | Hardware Provisto | Lanzar en 1-Clic |
 | :--- | :---: | :---: |
-| **`polydim_colab_benchmark_kit.ipynb`** *(Kit Completo de Evaluación)* | GPU NVIDIA T4 / CPU | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AGT1973/polydim-suite/blob/main/benchmarks/polydim_colab_benchmark_kit.ipynb) |
-| **`polydim_colab_suite_20_benchmarks.ipynb`** *(Suite 20 Kernels)* | GPU NVIDIA T4 / TPU | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AGT1973/polydim-suite/blob/main/benchmarks/polydim_colab_suite_20_benchmarks.ipynb) |
-| **`polydim_colab_turing_t4_benchmark.ipynb`** *(Test de Aceleración T4)* | GPU NVIDIA T4 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AGT1973/polydim-suite/blob/main/benchmarks/polydim_colab_turing_t4_benchmark.ipynb) |
-| **`polydim_two_models_transfer_colab.ipynb`** *(Transferencia Dual Stiefel)* | CPU / RAM Compartida | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AGT1973/polydim-suite/blob/main/benchmarks/polydim_two_models_transfer_colab.ipynb) |
+| **`polydim_colab_benchmark_kit.ipynb`** *(Evaluación Completa de Rendimiento)* | GPU NVIDIA T4 / CPU | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AGT1973/polydim-suite/blob/main/benchmarks/polydim_colab_benchmark_kit.ipynb) |
+| **`polydim_two_models_transfer_colab.ipynb`** *(Transferencia Tensorial Dual)* | GPU NVIDIA T4 / RAM | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AGT1973/polydim-suite/blob/main/benchmarks/polydim_two_models_transfer_colab.ipynb) |
+| **`polydim_colab_suite_20_benchmarks.ipynb`** *(Suite 20 Kernels de Silicio)* | GPU NVIDIA T4 / TPU | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AGT1973/polydim-suite/blob/main/benchmarks/polydim_colab_suite_20_benchmarks.ipynb) |
 
 ---
 
-## 📦 Los Componentes de la Suite
+## 💻 4. Instalación Local y Co-Work con Agentes de IA
 
-### 🛠️ Los 4 Programas de Trabajo
-1. **`PMTP-CORE`:** Bus de memoria física compartida (Zero-Copy) y retracción en variedad de Stiefel ($X^T X = I$) en C++20 y Rust. Erradica la pérdida de información por tokenización prematura.
-2. **`MATHESIS`:** Compilador geométrico (`mthc`), generador de código máquina en ensamblador puro (x86_64/ARM64) sin dependencias y árbitro anti-alucinaciones.
-3. **`ATELIER`:** Entorno visual de desarrollo (AI-IDE), centro de telemetría (`ui/suite_cockpit.html`) y motor de aprendizaje por refuerzo continuo (RL / Co-Work). Procesa texto, audio y video de forma isomorfa sobre la variedad de Stiefel sin pasar por el costoso gusano 1D de tokens. Ver tratado canónico en [`OMNIMODALIDAD_CONTINUA_STIEFEL.md`](OMNIMODALIDAD_CONTINUA_STIEFEL.md).
-4. **`EINSOFOS`:** Sistema operativo geométrico Bare-Metal (UEFI Bootloader, Kether ISA, R15 Arena) — *En desarrollo activo*.
+Si dispones de un entorno de desarrollo con soporte de agentes (Google Antigravity, Claude Code, Cursor, Windsurf, VSCode Copilot):
 
-### 🧠 Los 3 Motores Abiertos para Alumnos y Devs
-* **`OmniVault`:** Base de datos relacional y vectorial con grafos de conocimiento (`GraphRAG`) para que tu IA nunca tenga amnesia.
-* **`CouncilAI`:** Enrutador de deliberación multi-modelo que contrasta respuestas de varias IAs (DeepSeek, Qwen, Claude, Gemini) usando tiers gratuitos sin gastar saldo.
-* **`GhostSwarm`:** Malla de cómputo que aprovecha cualquier otra computadora o laptop conectada a tu Wi-Fi para repartir la inferencia pesada en Ollama a costo \$0.
+### Paso 1: Instruir a tu Agente
+Simplemente indica a tu agente:
+> **"Revisa `AGENT_BOOTSTRAP.md` en este repositorio y explícame la arquitectura de POLYDIM."**
 
-### 🌐 Model Hub en Hugging Face
-* **`huggingface.co/polidim-einsof`:** Repositorio en la nube donde publicamos y actualizamos los pesos y adaptadores Stiefel ya calibrados.
+### Paso 2: Ejecución de Verificación Rápida
+Todo el código está disponible en texto plano auditable (`.py`, `.cpp`, `.rs`). Puedes ejecutar directamente el test en vivo:
+```bash
+python tests/test_en_vivo.py
+```
+*Verifica la asignación de memoria compartida, el adaptador de Stiefel y el cálculo de la métrica en silicio en menos de 1 segundo con `Exit Code 0`.*
 
 ---
 
-## 🖥️ Paneles Visuales Interactivos
+## 🛡️ 5. Manifiesto de Seguridad y Privacidad
 
-1. **Introducción Pedagógica, Gráficos y Ahorro de Tokens:**
-   👉 `introduction/index.html`  
-   *Contiene:*
-   * **Simulador Gráfico en Canvas de la Hiperesfera de Stiefel $S^{D-1}$:** Muestra en tiempo real cómo los vectores de pensamiento continuo mantienen la ortogonalidad sin deformarse.
-   * **Calculadora Interactiva de la Economía de Tokens:** Arrastra el control de pasos de razonamiento para ver la diferencia entre miles de dólares en APIs tradicionales vs \$0.00 con PMTP-CORE.
-   * **Módulo de Decisión Explicado de `mathesis2bin`:** Explica detalladamente al usuario y a la IA qué es el compilador nativo para que el usuario decida libremente si compilarlo o mantenerse en el Modo Estándar seguro.
+1. **Sin Escaneo de Red ni Movimiento Lateral:**  
+   POLYDIM no realiza escaneo de puertos, no hace búsquedas broadcast por Wi-Fi ni intenta conectarse a otras computadoras. Cualquier nodo de inferencia distribuido (ej. servidor Ollama remoto) debe ser especificado explícitamente por el usuario en su archivo de configuración `.env` (`OLLAMA_HOST=http://ip:puerto`).
+2. **Sin Binarios Opacos:**  
+   No se distribuyen ejecutables propietarios ni cerrados. Se provee el código fuente en C++20 y Rust para que el usuario o su agente puedan auditarlo y compilarlo localmente con su propio compilador (`cl.exe`, `g++`, `cargo`).
+3. **Aislamiento de Entorno:**  
+   El micro-puente MCP opera exclusivamente a través del canal estándar `stdio` en el subproceso del workspace, sin modificar archivos globales del sistema operativo.
 
-2. **Centro de Control y Cockpit Principal:**
-   👉 `ui/suite_cockpit.html`  
-   *Tablero integral para compilar con Mathesis, inspeccionar el estado de la memoria compartida, auditar el Tribunal de Sabios y monitorear la malla de cómputo.*
+---
 
-3. **Simuladores de Arquitectura en Tiempo Real (Ejemplos Educativos):**
-   * 🇪🇸 **Español:** [`examples/pmtp_vs_traditional_simulator_es.html`](examples/pmtp_vs_traditional_simulator_es.html) (o [`introduction/pmtp_vs_traditional_simulator_es.html`](introduction/pmtp_vs_traditional_simulator_es.html))
-   * 🇬🇧 **English:** [`examples/pmtp_vs_traditional_simulator_en.html`](examples/pmtp_vs_traditional_simulator_en.html) (o [`introduction/pmtp_vs_traditional_simulator_en.html`](introduction/pmtp_vs_traditional_simulator_en.html))  
-   *Visualizador interactivo a 60 FPS con tipografía matemática KaTeX: compara el carril tradicional 1D (peajes de API, pérdida DPI y alucinación) frente al carril continuo PMTP sobre variedad de Stiefel $\text{St}(D,r)$ a $0$ tokens.*
+## 📚 6. Estructura del Repositorio y Documentación Profunda
 
-Ambos funcionan en cualquier navegador moderno haciendo doble clic, sin necesidad de instalar servidores web ni solicitar permisos de administrador.
+```text
+polydim-suite/
+├── README.md              <-- Punto de entrada general (humano y agente)
+├── AGENT_BOOTSTRAP.md     <-- Manifiesto de arquitectura para agentes de IA
+├── docs/                  <-- Documentación teórica y tratados formales
+│   ├── HOW_POLYDIM_WORKS_VECTORS_VS_TOKENS.md  <-- Comparativa matemática detallada
+│   ├── DESIGN.md                               <-- Especificación de arquitectura PMTP
+│   ├── BENCHMARKS.md                           <-- Resultados empíricos de rendimiento
+│   └── EVIDENCIA_SILICIO_MULTI_HARDWARE.md     <-- Métricas en silicio x86_64, GPU y QPU
+├── benchmarks/            <-- Cuadernos de Google Colab listos para 1-clic
+├── examples/              <-- Simuladores interactivos en HTML5 / Canvas
+├── introduction/          <-- Guías visuales interactivas y simulador KaTeX
+├── mcp_servers/           <-- Servidor MCP oficial y auditable
+├── tests/                 <-- Batería de tests unitarios de silicio
+└── tools/internal/        <-- Herramientas internas de mantenimiento de la cátedra
+```
+
+---
+
+## 📄 Cita Académica
+Si utilizas esta arquitectura en investigaciones o docencia, cita el DOI canónico:
+```bibtex
+@misc{garciatraba2026polydim,
+  author = {Garc{\'i}a Traba, Ariel},
+  title  = {Dimension is All You Need: High-Dimensional Stiefel Manifold Inference and Zero-Copy Tensor Transport},
+  year   = {2026},
+  doi    = {10.5281/zenodo.24122867},
+  url    = {https://doi.org/10.5281/zenodo.24122867}
+}
+```

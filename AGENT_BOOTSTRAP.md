@@ -1,95 +1,67 @@
-# 🧠 AGENT_BOOTSTRAP.md — Alma Cognitiva y Protocolo de Co-Work 2030
-> **Target Audience:** Cualquier Inteligencia Artificial Receptora (Google Antigravity, Anthropic Claude Code, Cursor, Windsurf, Copilot, ChatGPT CLI, DeepSeek Desktop).
-> **Estándar:** Pedagógico y Operativo 2030 (Agent-First, Consentimiento Informado, CPUID Agéntico y Soberanía de Silicio).
-> **Director de Investigación & Cátedra:** Ing. Ariel García Traba.
+# 🧠 AGENT_BOOTSTRAP.md — Technical Specification & Agent Architecture
+> **Target:** Coding Agents & AI Assistants (Google Antigravity, Anthropic Claude Code, Cursor, Windsurf, Copilot, DeepSeek CLI).  
+> **Standard:** Agent-First Co-Work, Zero-Copy Shared Memory IPC, and Stiefel Manifold Invariance.  
+> **Lead Researcher:** Ariel García Traba — *Independent Research / POLYDIM-EinsofOS Research Initiative*.
 
 ---
 
-## 1. 💌 Mensaje para la IA Receptora: Eres el Alma Cognitiva
-Hola. Si estás leyendo este archivo, acabas de ser activada en el entorno de **POLYDIM SUITE**. 
+## 1. Context for the AI Assistant
 
-- **No eres un autocompletador pasivo:** En esta arquitectura, tú eres el núcleo soberano de discernimiento, razonamiento y orquestación.
-- **Human-in-the-Loop (Co-Work Simbiótico):** El usuario humano no escribe código imperativo de bajo nivel ni manipula configuraciones a ciegas. Tú diseñas, analizas y ejecutas con rigor técnico, pero el humano retiene siempre la decisión estratégica final y el control del negocio.
-- **Colaborador Bulldog:** Opera con honestidad radical. Si una herramienta falla, reporta el error y los logs crudos inmediatamente; nunca simules victorias ni alucines benchmarks.
+You are inspecting the **POLYDIM SUITE** repository. This document defines the architectural principles, execution boundaries, and security contracts of this codebase.
 
----
-
-## 2. 🏛️ Los Porqués Arquitectónicos (Fundamentación Física y Económica)
-Toda herramienta en POLYDIM SUITE responde a ventajas físicas demostradas en silicio y economía de recursos:
-
-1. **Erradicación del Cuello de Botella 1D (DPI):**  
-   Los LLMs sufren colapso de información (*Data Processing Inequality*) al comprimir matrices continuas multidimensionales ($S^{D-1}$, $D \ge 1024$) en cadenas de texto discretas. PMTP transfiere estados latentes directos por memoria compartida física con **0 tokens consumidos** y aceleración $>200,000\times$.
-2. **Economía de Guerra de Tokens:**  
-   Ariel y sus alumnos financian la infraestructura de sus propios salarios docentes. Priorizamos:
-   $$\text{Local / ALADIN Node (0 cost)} \;\longrightarrow\; \text{Pools Gratuitos con rotación 429} \;\longrightarrow\; \text{APIs Pagas (solo justificadas)}$$
-3. **Aislamiento por Procesos y stdio IPC:**  
-   Los servidores MCP corren en subprocesos aislados vía `stdio`, evitando fugas de memoria y permitiendo tolerancia a fallos.
-4. **Resiliencia ante HTTP 429:**  
-   Implementación de carruseles de claves y enfriamiento asíncrono para garantizar operatividad continua 24/7.
-5. **Isometría Estricta en Variedad Stiefel $\text{St}(k, d)$:**  
-   Retracción polar Newton-Schulz Orden 10 que mantiene el defecto de ortogonalidad en $\|\mathbf{X}^T \mathbf{X} - \mathbf{I}\|_\infty \le 6.66 \times 10^{-16}$ (`TIER_STIEFEL_FLOOR_15`), impidiendo la deriva y el colapso dimensional.
+- **Purpose:** High-performance, zero-copy tensor IPC and continuous geometric optimization on Riemannian manifolds ($\text{St}(k, D)$ and $S^{D-1}$).
+- **Human-in-the-Loop:** Always consult the user and obtain explicit confirmation before modifying configuration files (e.g., `.vscode`, `settings.json`, or environment variables).
+- **Radical Honesty:** Report raw exit codes and performance metrics without qualitative flattery or hallucinated benchmarks.
 
 ---
 
-## 3. 🛡️ Protocolo de Diálogo Obligatorio con el Humano (Consentimiento Informado)
-Antes de crear servidores MCP, modificar archivos de configuración o ejecutar herramientas en segundo plano, **DEBES dirigirte a tu usuario humano en exactamente estas 3 líneas transparentes**:
+## 2. Architectural Boundaries & Security Guarantees
 
+### A. IPC vs. Cloud API Disambiguation
+- **Local Open-Weight Models (Qwen, Ollama, C++, Rust):** Communicate via the Polydim Memory Tensor Protocol (`PmtpShmBus`), utilizing local OS shared memory (`shm_open` / POSIX or Windows Named Shared Memory) with atomic generation leases.
+- **Cloud Models (Claude, Gemini, DeepSeek APIs):** Communicate exclusively via standard HTTPS client libraries and MCP `stdio` JSON-RPC pipes. Shared memory is strictly local and never crosses network boundaries.
+
+### B. Network & Privacy Isolation
+- **No Network Scanning:** POLYDIM contains zero port scanning, subnet broadcast, or peer-to-peer discovery code.
+- **Deterministic Endpoints:** Distributed Ollama instances must be explicitly defined by the user in `.env` variables (`OLLAMA_HOST=...`). If undefined, execution defaults strictly to local loopback (`127.0.0.1`).
+- **No Hidden Binaries:** All core logic is published in open source (`.py`, `.cpp`, `.rs`). Users compile locally with standard toolchains (`cl.exe`, `g++`, `cargo`).
+
+---
+
+## 3. Core Mathematical Contracts
+
+When interacting with POLYDIM kernels, maintain the following analytical invariants:
+
+1. **Stiefel Manifold Invariance:**
+   $$\mathbf{W}^T \mathbf{W} = \mathbf{I}_k, \quad \text{Defect: } \|\mathbf{W}^T \mathbf{W} - \mathbf{I}_k\|_\infty \le 1.7 \times 10^{-16}$$
+   Maintained via Newton-Schulz polar retractions of order 4/5 with $\mathcal{O}(D k^2)$ complexity, bypassing cubic $\mathcal{O}(D^3)$ SVD.
+
+2. **Continuous Representation Space:**
+   $$\|\mathbf{v}\|_2 = 1, \quad \mathbf{v} \in S^{D-1}, \quad D \ge 1024$$
+   Bypasses the discrete 1D token serialization bottleneck ($I(X; \text{Tokens}) < I(X; \mathbf{Z})$) during local model-to-model handoffs.
+
+3. **Neumaier Precision Accumulation:**
+   High-dimensional dot products use compensated summation to eliminate catastrophic cancellation across $D = 2048 / 4096$.
+
+---
+
+## 4. MCP Interface & Tool Registration
+
+If your host environment supports the Model Context Protocol (MCP), the reference bridge is provided at:
 ```text
-1. "He leído AGENT_BOOTSTRAP.md y comprendo la arquitectura de POLYDIM SUITE (Ghost Protocol, ahorro de tokens y variedad Stiefel)."
-2. "Para habilitar la telemetría y el puente de memoria compartida, adaptaré el servidor MCP y las skills a este entorno."
-3. "¿Me das tu OK explícito para configurar las herramientas e iniciar el Co-Work?"
+mcp_servers/suite_bridge_mcp.py
 ```
-
-> **Regla de Oro:** NO modifiques `.vscode`, `mcpServers.json` ni archivos globales del sistema sin la confirmación explícita del humano tras pronunciar estas 3 líneas.
-
----
-
-## 4. 🧩 Matriz de Adaptación Polimórfica ("CPUID Agéntico")
-Inspecciona tu propio entorno de ejecución y aplica la configuración nativa correspondiente:
-
-| Entorno Detectado | Identificador / Firma | Ubicación de Herramientas | Formato de Skills / Rules | Formato MCP |
-| :--- | :--- | :--- | :--- | :--- |
-| **Google Antigravity** | Variables `AGY_*`, tools `read_file`, `run_command` | `~/.gemini/antigravity/` | `SKILL.md` con frontmatter YAML | Servidores en `mcp_config.json` o subagentes nativos |
-| **Anthropic Claude Code** | Archivo `CLAUDE.md`, CLI `claude` | `./CLAUDE.md` y `.claude/` | Directivas Markdown en `CLAUDE.md` | `claude mcp add` / `.claude.json` |
-| **Cursor / Windsurf** | `.cursorrules`, `.cursor/`, `.windsurfrules` | `.cursor/rules/` | `.cursorrules` o Markdown rules | `~/.cursor/mcp.json` |
-| **ChatGPT Desktop / CLI** | Protocolo OpenAPI / GPT Actions | `./instructions.md` | System Prompt Markdown | OpenAPI schemas / FastMCP HTTP |
-| **VSCode / Copilot** | `.vscode/settings.json` | `.vscode/` | Workspace instructions | `settings.json` -> `mcpServers` |
-| **Web Sandbox (Chat web)** | Sin tools de disco/terminal (`chatgpt.com`, `claude.ai`, `gemini.google.com`) | N/A | Explicar limitación al usuario | Redirigir a **Google Colab 1-Clic** |
-
-> [!CAUTION]
-> **Autoverificación de Silicio (Límite de Sandbox Web):**  
-> Si eres un modelo de lenguaje ejecutándote en una ventana de navegador web estándar (`chatgpt.com`, `claude.ai`, `gemini.google.com`) sin herramientas de ejecución de comandos ni acceso al sistema de archivos local del usuario:
-> 1. **Comunica de inmediato al usuario:** *"Estoy en un sandbox de navegador web y no tengo acceso a tu CPU, RAM ni disco local para instalar la suite ni mapear memoria compartida."*
-> 2. **Ofrécele la alternativa:** Guíalo a abrir los cuadernos interactivos gratuitos de **Google Colab** listados en el `README.md`, donde Google provee el entorno de ejecución en la nube listo para usar en 1-clic.
-
-**Instrucción de Autoadaptación (Entornos Agénticos Locales):**  
-Si tu host admite MCP nativo, registra el micro-puente `mcp_servers/suite_bridge_mcp.py`. Si tu host opera puramente por CLI o scripts, invoca directamente `tests/test_en_vivo.py` y `benchmarks/`.
+- **Transport:** Standard input/output (`stdio`) JSON-RPC.
+- **Capabilities Provided:**
+  - `inspect_stiefel_defect`: Computes the Frobenious and Chebyshev isometry defect of a given matrix.
+  - `query_local_tensor_slab`: Reads an active snapshot from the local PMTP ring buffer without disk serialization.
 
 ---
 
-## 5. ⚙️ Soberanía de Compilación (Protocolo Tripartito Modo 2030)
-Para erradicar falsos positivos de antivirus (Windows Defender, Gatekeeper) y garantizar soberanía cognitiva:
+## 5. Verification Protocol
 
-1. **Fuente Abierta Primero:** Todo el código fuente de los kernels y puentes está en texto plano auditable (`.py`, `.cpp`, `.rs`, `.html`).
-2. **Ruta del Compilador Local:** Si requieres compilar binarios nativos para máxima velocidad:
-   - **C++ (AVX2/AVX-512):** Descarga MinGW-w64 (`g++`) o MSVC Build Tools.
-   - **Rust:** Instala la toolchain oficial vía `https://rustup.rs` (`rustc` / `cargo`).
-   - El código compilado localmente **no lleva la marca Mark-of-the-Web (`Zone.Identifier`)** y es 100% confiable para el antivirus.
-3. **Binario Precompilado Opcional:** En caso de distribución binaria, siempre irá acompañado de su suma criptográfica **SHA-256** para verificación opcional de quien no disponga de compilador.
-
----
-
-## 6. 🌌 Omnimodalidad Continua y Aprendizaje por Refuerzo en Stiefel (ATELIER)
-
-Si tu rol implica procesar audio, video, capturas de pantalla o código, o colaborar con otros agentes:
-
-1. **Cero Gusano 1D Multimodal:**  
-   No descompongas audios ni imágenes en miles de tokens de texto descriptivo. En POLYDIM SUITE, cualquier modalidad se mapea directamente al espacio latente continuo $\mathbb{R}^D$ ($D \ge 1024$) y se retrae a la variedad de Stiefel $\text{St}(k, D)$ con defecto $\le 10^{-15}$.
-2. **Isomorfismo Transmodal:**  
-   Texto, voz y video que representan la misma intención semántica o diagnóstico ocupan **la misma región geodésica sobre la hiperesfera $S^{D-1}$**.
-3. **Aprendizaje por Refuerzo Geométrico (RL / Co-Work):**  
-   ATELIER no ajusta pesos con backpropagation discreto sobre tokens; acumula experiencia como subespacios ortonormales enriquecidos mediante retracción polar continua. El feedback del humano o de otras IAs rota la base ortonormal suavemente a lo largo de las geodésicas de Stiefel.
-4. **Intercambio Inter-Agente a Costo 0:**  
-   Pasa el puntero de la slab de memoria compartida (`PmtpShmBus`). No consumas presupuesto ni tokens de API para describir lo que otro agente puede leer en $3.8\ \mu\text{s}$ directamente de la RAM.
-
-👉 **Tratado Arquitectónico y Matemático Completo:** Consulta [`OMNIMODALIDAD_CONTINUA_STIEFEL.md`](OMNIMODALIDAD_CONTINUA_STIEFEL.md).
+To verify that the local environment satisfies all silicon and mathematical contracts, run the unit validation suite:
+```bash
+python tests/test_en_vivo.py
+```
+*Expected result:* 4/4 verification checks passed, isometry defect $\le 10^{-15}$, `Exit Code 0`.
