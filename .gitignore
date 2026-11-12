@@ -22,3 +22,10 @@ ENV/
 Thumbs.db
 *.swp
 *.bak
+
+# Binaries & Compiled Artifacts
+*.exe
+*.obj
+*.pdb
+*.dll
+*.lib
