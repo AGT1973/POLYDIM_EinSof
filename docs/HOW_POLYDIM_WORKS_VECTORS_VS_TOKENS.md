@@ -60,7 +60,7 @@ Para garantizar que cualquier Inteligencia Artificial (Claude, GPT-4o, Fable 5.2
 
 | Término Histórico / Metafórico | Término Científico Riguroso | Definición Técnica |
 | :--- | :--- | :--- |
-| *"Telepatía vectorial"* | **Alineación Isométrica de Espacios Latentes** | Mapeo rígido entre variedades riemannianas mediante adaptadores de Stiefel-Procrustes. |
+| *"Comunicación latente entre modelos"* | **Alineación Isométrica de Espacios Latentes** | Mapeo rígido entre variedades riemannianas mediante adaptadores de Stiefel-Procrustes. |
 | *"Gusano 1D colapsado"* | **Cuello de Botella de Serialización Discreta** | Pérdida de dimensionalidad al proyectar $\mathbb{R}^D$ continuo a tokens discretos de lenguaje natural. |
 | *"Teoremas certificados"* | **Invariantes Numéricas Validadas en Silicio** | Tests de propiedades unitarios con asertos de tolerancia matemática ejecutados con `Exit Code 0`. |
 | *"Ruido adversarial $10^{-310}$"* | **Inmunidad a Underflow Denormal IEEE-754** | Verificación de que el kernel no colapsa ni genera NaNs cuando los números caen en el rango subnormal de `float64`. |
