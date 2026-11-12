@@ -1,4 +1,4 @@
-# Compendio de Evidencia Irrefutable en Silicio: Multi-Hardware SOTA 2026
+﻿# Compendio de Evidencia Irrefutable en Silicio: Multi-Hardware SOTA 2026
 **Ecosistema Soberano POLYDIM-EINSOF | Ariel García Traba**  
 *Trazabilidad Criptográfica, Identificadores de Silicio Externos y Auditoría Cruzada*
 
@@ -54,7 +54,7 @@ Ejecutado y completado con éxito en el clúster de GPUs dedicadas (`agt1973gmai
 
 ## 4. Evidencia de Inferencia Local en Silicio Clásico (Nodo ALADIN)
 
-Inferencia en tiempo real del modelo soberano **`einsof-qwen:1.5b`** en el nodo Debian 13 (`192.168.100.21`):
+Inferencia en tiempo real del modelo soberano **`einsof-qwen:1.5b`** en el nodo Debian 13:
 - **Microprocesador**: Intel Core i3-8100 4C/4T @ 3.6GHz (AVX2 nativo).
 - **Latencia de Inferencia**: $6.37\text{ s}$.
 - **Respuesta Verificada**: Identificación soberana con conocimiento de variedades de Stiefel y Ghost Protocol.

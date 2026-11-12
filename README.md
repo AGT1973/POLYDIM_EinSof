@@ -14,10 +14,23 @@
 ---
 
 > [!IMPORTANT]
-> ### 🛡️ INSTALACIÓN INMEDIATA: 100% PYTHON ESTÁNDAR (CERO COMPILACIÓN)
-> - **Sin compiladores C++/Rust requeridos:** La suite principal corre en cualquier entorno con Python 3.10+ y `NumPy` utilizando exclusivamente la biblioteca estándar (`multiprocessing.shared_memory`).
-> - **Multiplataforma Certificada:** CI/CD automatizado con **9/9 tests exitosos** en **Ubuntu, macOS y Windows** (Python 3.10, 3.11 y 3.12).
-> - **Para Entornos Corporativos:** Si evalúas desde redes empresariales, corre los cuadernos en Google Colab con GPU T4 gratuita sin tocar tu disco.
+> ### ✅ PMTP es opcional: si no se usa, no se pierde nada
+> PMTP **no reemplaza** la comunicación por texto entre modelos: le agrega un canal lateral opcional.
+>
+> | Situación | Qué pasa | Costo |
+> | :--- | :--- | :---: |
+> | El modelo receptor **no** soporta PMTP | Recibe exactamente el mismo texto que hoy. Nada cambia. | \$0 |
+> | El bus de memoria compartida falla (sin `/dev/shm`, permisos, slab vencido, NaN) | El canal degrada solo a texto y registra el motivo. No lanza excepciones. | \$0 |
+> | Ambos modelos soportan PMTP | Además del texto, el receptor obtiene el vector latente copiado bit a bit desde RAM compartida, sin serializarlo. | \$0 |
+>
+> Esta garantía no es una promesa: está implementada en [`pmtp/pmtp_channel.py`](pmtp/pmtp_channel.py) y verificada por [`tests/test_channel_fallback.py`](tests/test_channel_fallback.py) (receptor sin PMTP, bus ausente, bus roto, latente con NaN, slab liberado).
+>
+> **Dónde aparece la ganancia:** cuando los dos extremos usan el latente en lugar de generar y releer texto intermedio, se evitan esos tokens y su latencia de generación. Lo que los benchmarks de este repo miden hoy es el **costo del transporte** (microsegundos, copia exacta). Lo que **todavía no** está medido es si la calidad de la tarea se mantiene cuando el latente sustituye al texto; ese es el experimento de 5 brazos pendiente (ver [Estado de la evidencia](#-estado-de-la-evidencia)).
+
+> [!NOTE]
+> **Instalación:** Python 3.10+ y `NumPy`. Sin compiladores C++/Rust, sin drivers, sin `root`. Usa sólo `multiprocessing.shared_memory` de la biblioteca estándar.
+> **Probado en:** GitHub Actions (Ubuntu, macOS, Windows × Python 3.10/3.11/3.12) y en un nodo físico **Debian 13** (Intel i3-8100, Python 3.13).
+> **Entornos corporativos:** podés evaluarlo en Google Colab sin tocar tu disco.
 
 ---
 
@@ -66,40 +79,36 @@ flowchart LR
         direction TB
         P1["Modelo A"] -->|"Vector v ∈ S^{D-1}"| SHM[("Memoria Compartida RAM/VRAM
 PmtpShmBus")]
-        SHM -->|"Descriptor 64B (< 20 µs / 0 Tokens)"| P2["Modelo B"]
+        SHM -->|"Descriptor 64B (~14 µs por slab de 64 KB / 0 tokens)"| P2["Modelo B"]
     end
 ```
 
 ---
 
-## 🚀 2. Ejemplo Mínimo Funcional: Transferencia Dual en < 20 Líneas
-
-Demostración reproducible de cómo el **Modelo A** exporta un estado latente y el **Modelo B** lo ingesta y proyecta sobre la variedad de Stiefel sin generar un solo token:
+## 🚀 2. Ejemplo Mínimo Funcional: texto siempre, latente opcional
 
 ```python
 import numpy as np
-from pmtp import PmtpShmBus, PmtpStiefelAdapter
+from pmtp import PmtpShmBus, PmtpChannel
 
-dim, rank = 2048, 64
-bus = PmtpShmBus(prefix="quickstart", max_slabs=8, max_dim=dim)
-adapter = PmtpStiefelAdapter(dim_source=dim, dim_latent=rank)
+bus = PmtpShmBus(prefix="demo", max_slabs=8, max_dim=2048)
+ch = PmtpChannel(bus)
 
-# 1. Modelo A: Escribe vector latente v ∈ S^{D-1} en RAM compartida (< 20 µs)
-latent_A = np.random.randn(dim)
-latent_A /= np.linalg.norm(latent_A)
-descriptor = bus.publish_tensor(latent_A)
+# Modelo A: manda su texto de siempre y, opcionalmente, su estado oculto
+latent_A = np.random.randn(2048)
+msg = ch.send("Plan: refactorizar el parser.", latent_A)
 
-# 2. Modelo B: Lee vector continuo directamente (Zero-Copy, sin tokens)
-received_tensor = bus.read_tensor(descriptor, verify_stiefel=True)
+# Modelo B SIN soporte PMTP: recibe el mismo texto que hoy, nada más
+text, latent = ch.receive(msg, supports_pmtp=False)   # latent is None
 
-# 3. Proyección isométrica sobre la variedad de Stiefel St(D, rank)
-u, rho = adapter.project_to_spherical(received_tensor)
+# Modelo B CON soporte PMTP: recibe el texto + el vector copiado bit a bit
+text, latent = ch.receive(msg, supports_pmtp=True)
+assert np.allclose(latent, latent_A)
 
-print(f"Transferencia completada: {len(received_tensor)} floats.")
-print(f"Defecto de Ortogonalidad: ||W^T W - I|| = {adapter.orthogonality_defect():.2e}")
-# Defecto en silicio: ~6.6e-16 | Latencia: < 40 µs | Costo: $0.00
-bus.release_slab(descriptor)
+bus.cleanup()
 ```
+
+Demo completa con tiempos medidos: `python examples/quickstart_dual_model_transfer.py`.
 
 ---
 

@@ -7,6 +7,7 @@ from .pmtp_shm_bus import PmtpShmBus
 from .pmtp_stiefel import PmtpStiefelAdapter
 from .pmtp_procrustes import PmtpOrthogonalProcrustes
 from .pmtp_decoder import PmtpHypothesisEncoder, PmtpHypothesisDecoder, PmtpCausalDAGReasoner
+from .pmtp_channel import PmtpChannel
 
 # Alias ergonómicos para desarrolladores
 StiefelAdapter = PmtpStiefelAdapter
@@ -18,6 +19,7 @@ __all__ = [
     "PmtpCompactHeader",
     "HEADER_COMPACT_SIZE",
     "PmtpShmBus",
+    "PmtpChannel",
     "PmtpStiefelAdapter",
     "StiefelAdapter",
     "PmtpOrthogonalProcrustes",
