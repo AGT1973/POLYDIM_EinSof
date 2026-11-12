@@ -1,4 +1,4 @@
-# POLYDIM SUITE 🚀
+﻿# POLYDIM SUITE 🚀
 ### Optimización de Inferencia en Espacio Continuo & Cómputo Tensorial en Silicio
 
 [![CI](https://github.com/AGT1973/polydim-suite/actions/workflows/ci.yml/badge.svg)](https://github.com/AGT1973/polydim-suite/actions/workflows/ci.yml)
@@ -114,15 +114,41 @@ Demo completa con tiempos medidos: `python examples/quickstart_dual_model_transf
 
 ## 📊 3. Benchmarks Empíricos en Silicio Real (Sin Simulaciones)
 
-Mediciones en tiempo real ejecutadas con `perf_counter_ns` y verificables con `python benchmarks/benchmark_stiefel_latency_live.py`:
+Medidos con `perf_counter_ns`. Reproducibles con `python benchmarks/benchmark_stiefel_latency_live.py`. Tus números van a variar según el hardware: corrélo y compará.
 
-| Dimensión $D$ | Rango $k$ | Latencia Retracción Polar | Defecto de Isometría $\|\mathbf{W}^T \mathbf{W} - \mathbf{I}\|_\infty$ | Throughput en Bus SHM |
-| :---: | :---: | :---: | :---: | :---: |
-| **512** | 64 | 11.97 ms | $2.52 \times 10^{-12}$ | 4.61 GB/s |
-| **1024** | 64 | 19.44 ms | $8.44 \times 10^{-16}$ *(Límite FP64)* | 4.61 GB/s |
-| **2048** | 64 | 37.77 ms | $7.11 \times 10^{-16}$ *(Límite FP64)* | 4.61 GB/s |
+**Retracción polar (ortogonalización del adaptador, se hace una vez):**
 
-> **Transferencia de Memoria Compartida:** **14.21 µs por slab** de 64 KB a una tasa de **4.61 GB/s**.
+| $D \times k$ | Debian 13 · i3-8100 · Py 3.13 | Windows 11 · AMD A4-6300 · Py 3.15 | Defecto $\|\mathbf{W}^T \mathbf{W} - \mathbf{I}\|_\infty$ |
+| :---: | :---: | :---: | :---: |
+| 512 × 64 | 1.87 ms | 11.97 ms | $2.5 \times 10^{-12}$ |
+| 1024 × 64 | 2.62 ms | 19.44 ms | $7.6 \times 10^{-16}$ |
+| 2048 × 64 | 5.24 ms | 37.77 ms | $6.7 \times 10^{-16}$ |
+
+**Transporte por memoria compartida (lo que reemplaza al relevo por texto):**
+
+| Medición | Debian 13 · i3-8100 | Windows 11 · A4-6300 |
+| :--- | :---: | :---: |
+| Copia de un slab de 64 KB | **2.70 µs** (24.2 GB/s) | **14.21 µs** (4.6 GB/s) |
+| Primera publicación (incluye crear el slab) | 4.0 ms | 0.34 ms |
+| Lectura del vector D=2048 por el receptor | 0.16 ms | 0.29 ms |
+| Error de la copia | 0 (bit a bit) | 0 (bit a bit) |
+
+> [!NOTE]
+> **Qué miden y qué no miden estos números.** Miden el costo de mover el estado latente entre procesos: microsegundos y cero tokens en ese tramo. Como referencia, generar un relevo de texto con un LLM lleva típicamente cientos de milisegundos y se factura por token. Lo que **no** miden es la calidad de la tarea final cuando el latente sustituye al texto.
+
+---
+
+## 🧪 Estado de la evidencia
+
+| Afirmación | Estado | Cómo verificarlo |
+| :--- | :---: | :--- |
+| PMTP es opcional y degrada a texto sin pérdida | ✅ Implementado y testeado | `pytest tests/test_channel_fallback.py` |
+| La copia por memoria compartida es exacta y tarda µs | ✅ Medido (Windows, Debian, CI ×9) | `python benchmarks/benchmark_stiefel_latency_live.py` |
+| El adaptador $W$ es ortogonal a precisión de máquina | ✅ Medido | `python tests/test_en_vivo.py` |
+| Un modelo B entiende el latente de un modelo A distinto | 🔬 En investigación | Requiere entrenar $W$ con pares de estados ocultos (Procrustes) |
+| Relevo latente iguala o supera al relevo por texto en calidad | ⏳ Pendiente | Benchmark de 5 brazos: B solo · A→texto→B · A→W aleatoria→B · A→W lineal→B · A→W Stiefel→B |
+
+Si el último experimento sale positivo, el ahorro de tokens y latencia en cadenas de agentes es directo. Si sale negativo, se publica igual.
 
 ---
 
@@ -177,6 +203,7 @@ polydim-suite/
 ├── AGENT_BOOTSTRAP.md      <-- Manifiesto de inducción para agentes de IA
 ├── pmtp/                   <-- Paquete de transporte tensorial y adaptadores Stiefel
 │   ├── __init__.py         <-- Exportación de PmtpShmBus, StiefelAdapter, Procrustes
+│   ├── pmtp_channel.py     <-- Canal opcional con degradación garantizada a texto
 │   ├── pmtp_shm_bus.py     <-- Bus de memoria compartida con doble buffer inmutable
 │   ├── pmtp_stiefel.py     <-- Adaptador Stiefel con Newton-Schulz Ord. 5
 │   ├── pmtp_procrustes.py  <-- Alineación ortogonal Procrustes inter-espacio
@@ -188,9 +215,10 @@ polydim-suite/
 ├── benchmarks/             <-- Benchmarks reproducibles y cuadernos Colab
 │   ├── benchmark_stiefel_latency_live.py <-- Mediciones de latencia con perf_counter
 │   └── polydim_colab_benchmark_kit.ipynb
-└── tests/                  <-- Batería de tests unitarios (9/9 en CI/CD)
+└── tests/                  <-- Tests (8 tests × 9 jobs de CI)
     ├── test_en_vivo.py     <-- Test basal de silicio (< 450 ms)
-    └── test_quickstart.py  <-- Test de integración de transferencia dual
+    ├── test_quickstart.py  <-- Test de integración de transferencia dual
+    └── test_channel_fallback.py <-- Garantía: sin PMTP no se pierde nada
 ```
 
 ---
