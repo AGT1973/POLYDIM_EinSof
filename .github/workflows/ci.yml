@@ -36,6 +36,26 @@ jobs:
           python -m pip install --upgrade pip
           pip install numpy pytest
 
+      - name: Compile Native ATELIER Kernels (Linux / macOS)
+        if: runner.os != 'Windows'
+        run: |
+          cd tools/atelier_kernel
+          echo "Compiling C++20 Stiefel kernel with g++/clang++..."
+          if [ "${{ runner.os }}" = "Linux" ]; then
+            g++ -std=c++20 -O3 atelier_stiefel.cpp -o atelier_stiefel_cpp -lrt
+          else
+            clang++ -std=c++20 -O3 atelier_stiefel.cpp -o atelier_stiefel_cpp
+          fi
+          chmod +x atelier_stiefel_cpp
+          ./atelier_stiefel_cpp 1024 16
+          
+          if command -v rustc >/dev/null 2>&1; then
+            echo "Compiling Rust Stiefel kernel with rustc..."
+            rustc -O atelier_stiefel.rs -o atelier_stiefel_rs
+            chmod +x atelier_stiefel_rs
+            ./atelier_stiefel_rs 1024 16
+          fi
+
       - name: Execute Silicon & Stiefel Test (test_en_vivo.py)
         run: |
           python tests/test_en_vivo.py

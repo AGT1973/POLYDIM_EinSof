@@ -12,11 +12,23 @@
 #include <cmath>
 #include <cstring>
 #include <iomanip>
+
+#if defined(_WIN32)
 #include <windows.h>
+#else
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#endif
 
 // Definiciones de Protocolo y Alineacion de Memoria (64-byte Cache-Line)
 constexpr uint32_t PMTP_MAGIC_ATELIER = 0x504D5450; // "PMTP"
+#if defined(_WIN32)
 constexpr const char* SHM_NAME = "Local\\PMTP_ATELIER_SLAB";
+#else
+constexpr const char* SHM_NAME = "/pmtp_atelier_slab";
+#endif
 
 #pragma pack(push, 8)
 struct AtelierSlabHeader {
@@ -194,8 +206,11 @@ int main(int argc, char* argv[]) {
     auto t1 = std::chrono::high_resolution_clock::now();
     double latency_us = std::chrono::duration<double, std::micro>(t1 - t0).count();
 
-    // Mapeo Zero-Copy en Windows Shared Memory
+    // Mapeo Zero-Copy en Memoria Compartida (Windows SHM o POSIX shm_open)
     size_t slab_bytes = sizeof(AtelierSlabHeader) + D * k * sizeof(double);
+    bool shm_ok = false;
+
+#if defined(_WIN32)
     HANDLE hMapFile = CreateFileMappingA(
         INVALID_HANDLE_VALUE,
         NULL,
@@ -205,7 +220,6 @@ int main(int argc, char* argv[]) {
         SHM_NAME
     );
 
-    bool shm_ok = false;
     if (hMapFile != NULL) {
         void* pBuf = MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, slab_bytes);
         if (pBuf != NULL) {
@@ -228,6 +242,34 @@ int main(int argc, char* argv[]) {
         }
         CloseHandle(hMapFile);
     }
+#else
+    int fd = shm_open(SHM_NAME, O_CREAT | O_RDWR, 0666);
+    if (fd != -1) {
+        if (ftruncate(fd, slab_bytes) != -1) {
+            void* pBuf = mmap(NULL, slab_bytes, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+            if (pBuf != MAP_FAILED) {
+                AtelierSlabHeader header;
+                header.magic = PMTP_MAGIC_ATELIER;
+                header.version = 1;
+                header.D = D;
+                header.k = k;
+                header.isometry_error = defect;
+                header.latency_us = latency_us;
+                header.timestamp_ns = static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    t1.time_since_epoch()).count());
+                header.readers_count = 1;
+                header.reserved = 0;
+
+                std::memcpy(pBuf, &header, sizeof(AtelierSlabHeader));
+                std::memcpy(static_cast<char*>(pBuf) + sizeof(AtelierSlabHeader), Z.data(), D * k * sizeof(double));
+                munmap(pBuf, slab_bytes);
+                shm_ok = true;
+            }
+        }
+        close(fd);
+        shm_unlink(SHM_NAME);
+    }
+#endif
 
     // Clasificacion segun Precision Ladder dinamica
     const char* tier = "TIER_MACHINE_EPS_16";
@@ -238,7 +280,7 @@ int main(int argc, char* argv[]) {
     std::cout << "[+] 2. Defecto Isometria ||W^T W-I||: " << std::scientific << std::setprecision(2) << defect 
               << " (" << tier << ")\n";
     std::cout << "[+] 3. Latencia de Computo          : " << std::fixed << std::setprecision(1) << latency_us << " us\n";
-    std::cout << "[+] 4. Mapeo Memoria Compartida Win : " << (shm_ok ? "OK (Zero-Copy SHM)" : "EMULADO") << "\n";
+    std::cout << "[+] 4. Mapeo Memoria Compartida SHM : " << (shm_ok ? "OK (Zero-Copy SHM)" : "EMULADO") << "\n";
     std::cout << "----------------------------------------------------------------\n";
     std::cout << "(ExitCode=0, Latency=" << std::fixed << std::setprecision(1) << latency_us << "us, NormErr=" 
               << std::scientific << std::setprecision(2) << defect 
