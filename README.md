@@ -29,15 +29,28 @@ Este método tradicional introduce tres cuellos de botella severos:
 ### La Solución POLYDIM: Intercambio Tensorial Directo en Silicio (PMTP)
 POLYDIM permite que dos modelos que coexisten en el mismo silicio (GPU / Host RAM) intercambien sus activaciones directamente como **vectores continuos de alta dimensión sobre la hiperesfera $S^{D-1}$ y la variedad de Stiefel $\text{St}(k, D)$**:
 
-```
-Comunicación Convencional Multi-Agente:
-[Modelo A] ---> Estados Continuos ---> [Serializar a Texto] ---> [HTTP/JSON] ---> [Re-tokenizar] ---> [Modelo B]
-Latencia: 500 ms - 2 s | Gasto de Tokens: 100% | Información: Truncada
+```mermaid
+flowchart LR
+    subgraph Tradicional["Carril Convencional 1D (Tokens Discretos)"]
+        direction TB
+        M1["Modelo A"] -->|"Estados h ∈ ℝ^D"| Tok["Tokenizador"]
+        Tok -->|"Strings UTF-8 (JSON/HTTP)"| Net["Red / API SaaS"]
+        Net -->|"Tokens"| Detok["De-tokenizador"]
+        Detok -->|"Pérdida DPI / Latencia 1.5s"| M2["Modelo B"]
+    end
 
-Arquitectura POLYDIM / PMTP (Zero-Copy):
-[Modelo A] ---> Vector Latente v ∈ S^{D-1} ---> [Memoria Compartida RAM/VRAM] ---> [Modelo B]
-Latencia: 20 µs | Gasto de Tokens: 0% | Información: 100% Preservada (Isometría)
+    subgraph Polydim["Carril Continuo POLYDIM / PMTP (Zero-Copy)"]
+        direction TB
+        P1["Modelo A"] -->|"Vector v ∈ S^{D-1}"| SHM[("Memoria Compartida RAM/VRAM
+PmtpShmBus")]
+        SHM -->|"Descriptor 64B (< 80 µs / 0 Tokens)"| P2["Modelo B"]
+    end
 ```
+
+<div align="center">
+  <img src="assets/figures/pmtp_zerocopy_architecture.png" alt="Arquitectura de Memoria Compartida PMTP" width="90%">
+  <p><em>Figura 1: Arquitectura física de transporte en memoria compartida (Host RAM / VRAM).</em></p>
+</div>
 
 > **Aclaración Arquitectónica Nube vs. Local:**  
 > - **Modelos Locales de Peso Abierto (Qwen, Ollama, C++/Rust):** Operan a través del bus de copia cero en memoria compartida física (`PmtpShmBus`).  
@@ -58,6 +71,18 @@ En lugar de recalcular la costosa descomposición en valores singulares (SVD) de
 $$\mathbf{X}_{k+1} = \frac{1}{2} \mathbf{X}_k \left( 3\mathbf{I} - \mathbf{X}_k^T \mathbf{X}_k \right)$$
 
 Esto garantiza que el defecto de isometría $\|\mathbf{W}^T \mathbf{W} - \mathbf{I}\|_\infty$ converja en pocas multiplicaciones matriciales al límite de precisión atómica de la máquina ($\approx 1.7 \times 10^{-16}$ en IEEE 754 `float64`), permitiendo normalización en tiempo real sin congelar la CPU ni la GPU.
+
+```mermaid
+flowchart TD
+    W_k["Matriz Descalibrada W_k ∈ ℝ^{D x k}"] --> NS["Iteración Newton-Schulz Orden 5\nX_{k+1} = 1/2 X_k (3I - X_k^T X_k)"]
+    NS --> Accum["Acumulador Neumaier (Anti-Cancelación FP64)"]
+    Accum --> W_conv["Isometría Estricta W* ∈ St(k, D)\n||W^T W - I|| ≤ 1.7e-16"]
+```
+
+<div align="center">
+  <img src="assets/figures/stiefel_isometry_drift.png" alt="Evolución de la Deriva de Stiefel" width="85%">
+  <p><em>Figura 2: Convergencia asintótica y cota de deriva de isometría sobre la variedad de Stiefel.</em></p>
+</div>
 
 ---
 
