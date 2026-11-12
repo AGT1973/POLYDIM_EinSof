@@ -16,16 +16,28 @@ from multiprocessing import shared_memory
 from typing import Tuple, Dict, Any, Optional
 import numpy as np
 
-from pmtp_types import (
-    PMTP_MAGIC_NUMBER,
-    PMTP_VERSION_V1,
-    HEADER_COMPACT_SIZE,
-    HEADER_COMPACT_FORMAT,
-    HEADER_COMPACT_STRUCT,
-    PmtpDType,
-    PmtpState,
-    PmtpCompactHeader
-)
+try:
+    from .pmtp_types import (
+        PMTP_MAGIC_NUMBER,
+        PMTP_VERSION_V1,
+        HEADER_COMPACT_SIZE,
+        HEADER_COMPACT_FORMAT,
+        HEADER_COMPACT_STRUCT,
+        PmtpDType,
+        PmtpState,
+        PmtpCompactHeader
+    )
+except ImportError:
+    from pmtp_types import (
+        PMTP_MAGIC_NUMBER,
+        PMTP_VERSION_V1,
+        HEADER_COMPACT_SIZE,
+        HEADER_COMPACT_FORMAT,
+        HEADER_COMPACT_STRUCT,
+        PmtpDType,
+        PmtpState,
+        PmtpCompactHeader
+    )
 
 # PMTP v3.1 Publication Object Bus (POB) Integration
 try:

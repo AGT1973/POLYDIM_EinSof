@@ -14,3 +14,8 @@
 
 ## 3. ARQUITECTURA ZERO-ANTIVIRUS CONFLICT
 - Scripts de Python nativo, HTML5, ctypes del kernel del SO y compilación in-situ para erradicar alertas de Windows Defender o Gatekeeper.
+
+## 4. ESTADO BASAL: GHOST PROTOCOL Y WHISPER PROTOCOL POR DEFECTO
+- **Ghost Protocol:** Toda interacción con tensores $D \ge 100$ opera en memoria compartida física (`PmtpShmBus` / ALADIN `192.168.100.21:9999`). Queda prohibida la serialización de matrices/tensores en texto plano (gusano 1D). Respuestas acotadas a punteros SLAB_ID y tuplas métricas de silicio `(ExitCode, Latencia, NormErr, Checks)`.
+- **Whisper Protocol:** Toda deliberación inter-IA, consulta a sabios/modelos frontera, ruteo de payloads o broadcast de estado se vehicula vectorialmente vía `/whisper` (Prioridad: Einsof local/ALADIN -> Free Pools), con persistencia obligatoria en PostgreSQL 16 (`polydim_embeddings` y `einsof_graph_nodes`).
+- **Suspensión:** Solo por orden explícita (*"descartar ghost"*, *"descartar whisper"*, *"modo texto"*, *"modo pedagógico"*). Salvo orden contraria, ambos protocolos están activos permanentemente.
