@@ -713,6 +713,70 @@
 [PMTP-SENSORS] Inicia la captura con el micrófono o ejecuta un pulso físico determinista.
           </pre>
         </div>
+
+        <!-- Espectro Afectivo y Entonación de la Voz Humana en ATELIER -->
+        <div class="card" style="margin-top: 1.25rem; background: rgba(5, 7, 12, 0.85); border: 1px solid rgba(139, 92, 246, 0.3);">
+          <div class="card-header">
+            <span class="card-title" style="color: var(--accent-violet);">🎭 Espectro Afectivo & Modulador de Humor ATELIER (Prosodia Acústica + Semántica)</span>
+            <span class="status-badge violet-glow" id="affect-badge">CALMA / FOCO ZEN</span>
+          </div>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Decodificación biomecánica de la voz humana: extracción en silicio de F0 (Pitch), microtemblor (Jitter), ataque RMS y energía para situar el estado anímico en el espacio continuo PAD (Valencia, Arousal, Dominancia) sin intermediarios ni tokenización.
+          </p>
+
+          <div class="grid-2" style="margin-bottom: 1rem;">
+            <!-- Canvas Radar Afectivo 2D -->
+            <div class="canvas-container" style="height: 220px; position: relative;">
+              <div class="terminal-header" style="position: absolute; top: 8px; left: 12px; right: 12px; z-index: 2; background: rgba(2,4,8,0.7); border: none;">
+                <span>Espacio Continuo de Russell / PAD (Valencia vs Arousal)</span>
+                <span id="affect-coords" style="color: var(--accent-cyan); font-family: var(--font-mono);">V: +0.20 | A: 0.05 | D: +0.30</span>
+              </div>
+              <canvas id="canvas-radar" width="480" height="220" style="width: 100%; height: 100%; display: block;"></canvas>
+            </div>
+
+            <!-- Panel de Telemetría Biomecánica y Política de Diálogo -->
+            <div style="display: flex; flex-direction: column; justify-content: space-between; gap: 0.5rem;">
+              <div class="grid-3" style="margin-bottom: 0.25rem;">
+                <div class="card" style="background: rgba(10, 14, 23, 0.8); padding: 0.6rem;">
+                  <span style="font-size: 0.72rem; color: var(--text-muted); display: block;">PITCH FUNDAMENTAL F0</span>
+                  <span id="metric-f0" style="font-size: 1.15rem; font-weight: 700; color: var(--accent-cyan); font-family: var(--font-mono);">124.5 Hz</span>
+                  <span id="metric-f0-delta" style="font-size: 0.68rem; color: var(--text-muted);">ΔF0: ±4.2 Hz (Estable)</span>
+                </div>
+                <div class="card" style="background: rgba(10, 14, 23, 0.8); padding: 0.6rem;">
+                  <span style="font-size: 0.72rem; color: var(--text-muted); display: block;">TENSIÓN VOCAL (JITTER)</span>
+                  <span id="metric-jitter" style="font-size: 1.15rem; font-weight: 700; color: var(--accent-emerald); font-family: var(--font-mono);">0.82 %</span>
+                  <span id="metric-jitter-status" style="font-size: 0.68rem; color: var(--accent-emerald);">Laringe Relajada</span>
+                </div>
+                <div class="card" style="background: rgba(10, 14, 23, 0.8); padding: 0.6rem;">
+                  <span style="font-size: 0.72rem; color: var(--text-muted); display: block;">ENERGÍA DINÁMICA RMS</span>
+                  <span id="metric-rms" style="font-size: 1.15rem; font-weight: 700; color: var(--accent-amber); font-family: var(--font-mono);">-24.8 dB</span>
+                  <span id="metric-rms-burst" style="font-size: 0.68rem; color: var(--text-muted);">Ataque: Normal</span>
+                </div>
+              </div>
+
+              <!-- Política de Diálogo Activa -->
+              <div class="card" style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(0, 229, 255, 0.2); padding: 0.75rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                  <span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan);">DIRECTIVA DE DIÁLOGO ATELIER (GANDALF):</span>
+                  <span id="dialogue-mode-tag" class="status-badge" style="background: rgba(0, 229, 255, 0.15); color: var(--accent-cyan); font-size: 0.68rem;">MODO DIALÉCTICO EQUILIBRADO</span>
+                </div>
+                <p id="dialogue-directive-text" style="font-size: 0.78rem; color: #cbd5e1; margin: 0; line-height: 1.45;">
+                  Cadencia moderada, explicaciones técnicas densas con verificación recíproca.
+                </p>
+              </div>
+
+              <!-- Simulador Manual de Estados Afectivos para Pruebas -->
+              <div style="display: flex; gap: 0.35rem; align-items: center;">
+                <span style="font-size: 0.7rem; color: var(--text-muted);">FORZAR PRUEBA:</span>
+                <button class="btn btn-secondary" style="font-size: 0.68rem; padding: 0.2rem 0.5rem; color: #f43f5e;" onclick="simulateMood('anger')">😡 Enojo</button>
+                <button class="btn btn-secondary" style="font-size: 0.68rem; padding: 0.2rem 0.5rem; color: #f59e0b;" onclick="simulateMood('anxiety')">😰 Ansiedad</button>
+                <button class="btn btn-secondary" style="font-size: 0.68rem; padding: 0.2rem 0.5rem; color: #94a3b8;" onclick="simulateMood('fatigue')">🥱 Fatiga</button>
+                <button class="btn btn-secondary" style="font-size: 0.68rem; padding: 0.2rem 0.5rem; color: #10b981;" onclick="simulateMood('flow')">🚀 Flow</button>
+                <button class="btn btn-secondary" style="font-size: 0.68rem; padding: 0.2rem 0.5rem; color: #00e5ff;" onclick="simulateMood('calm')">🧘 Calma</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1406,6 +1470,224 @@ Lee https://github.com/AGT1973/polydim-suite/blob/main/INSTALL_FOR_AI.md, evalú
         barX += barWidth + 1;
         if (barX > canvasFft.width) break;
       }
+
+      // Draw Affective Radar
+      drawAffectRadar(timeData, bufferLen);
+    }
+
+    // ==========================================
+    // ATELIER AFFECTIVE SPECTRUM & HUMOR ENGINE
+    // ==========================================
+    const canvasRadar = document.getElementById('canvas-radar');
+    const ctxRadar = canvasRadar ? canvasRadar.getContext('2d') : null;
+
+    let affectState = {
+      valence: 0.25,
+      arousal: 0.05,
+      dominance: 0.30,
+      f0: 124.5,
+      f0Prev: 124.5,
+      jitter: 0.82,
+      rmsDb: -24.8,
+      mood: "calm"
+    };
+
+    function simulateMood(mood) {
+      if (mood === 'anger') {
+        affectState = { valence: -0.78, arousal: 0.88, dominance: 0.72, f0: 248.0, f0Prev: 210.0, jitter: 3.45, rmsDb: -7.5, mood: "anger" };
+      } else if (mood === 'anxiety') {
+        affectState = { valence: -0.68, arousal: 0.76, dominance: -0.72, f0: 215.0, f0Prev: 180.0, jitter: 2.90, rmsDb: -13.8, mood: "anxiety" };
+      } else if (mood === 'fatigue') {
+        affectState = { valence: -0.42, arousal: -0.72, dominance: -0.55, f0: 92.0, f0Prev: 95.0, jitter: 1.15, rmsDb: -32.5, mood: "fatigue" };
+      } else if (mood === 'flow') {
+        affectState = { valence: 0.82, arousal: 0.68, dominance: 0.78, f0: 165.0, f0Prev: 158.0, jitter: 0.62, rmsDb: -15.4, mood: "flow" };
+      } else if (mood === 'calm') {
+        affectState = { valence: 0.25, arousal: 0.05, dominance: 0.30, f0: 124.5, f0Prev: 124.0, jitter: 0.82, rmsDb: -24.8, mood: "calm" };
+      }
+      updateAffectiveUI();
+    }
+
+    function updateAffectiveUI() {
+      const badge = document.getElementById('affect-badge');
+      const coords = document.getElementById('affect-coords');
+      const mf0 = document.getElementById('metric-f0');
+      const mf0d = document.getElementById('metric-f0-delta');
+      const mjitter = document.getElementById('metric-jitter');
+      const mjitterStat = document.getElementById('metric-jitter-status');
+      const mrms = document.getElementById('metric-rms');
+      const mburst = document.getElementById('metric-rms-burst');
+      const dTag = document.getElementById('dialogue-mode-tag');
+      const dText = document.getElementById('dialogue-directive-text');
+
+      if (!badge) return;
+
+      coords.innerText = `V: ${(affectState.valence > 0 ? "+" : "") + affectState.valence.toFixed(2)} | A: ${(affectState.arousal > 0 ? "+" : "") + affectState.arousal.toFixed(2)} | D: ${(affectState.dominance > 0 ? "+" : "") + affectState.dominance.toFixed(2)}`;
+      mf0.innerText = `${affectState.f0.toFixed(1)} Hz`;
+      const df0 = Math.abs(affectState.f0 - affectState.f0Prev);
+      mf0d.innerText = `ΔF0: ±${df0.toFixed(1)} Hz (${df0 > 25 ? 'Muy Inestable' : 'Estable'})`;
+      mjitter.innerText = `${affectState.jitter.toFixed(2)} %`;
+      mrms.innerText = `${affectState.rmsDb.toFixed(1)} dB`;
+
+      if (affectState.mood === "anger") {
+        badge.innerText = "IRA / ENOJO DETECTADO";
+        badge.className = "status-badge rose-glow";
+        mjitter.style.color = "#f43f5e";
+        mjitterStat.innerText = "Laringe Tensa (Hiper-adrenalina)";
+        mjitterStat.style.color = "#f43f5e";
+        mburst.innerText = "Ataque Violento (Pico Alto)";
+        dTag.innerText = "MODO BULLDOG QUIRÚRGICO (CERO PALABRERÍO)";
+        dTag.style.background = "rgba(244, 63, 94, 0.2)";
+        dTag.style.color = "#f43f5e";
+        dText.innerHTML = "<strong>Directiva Crítica:</strong> Prohibidas disculpas condescendientes. Respuestas de < 3 líneas, solución de código directa con Exit Code 0 y mínima latencia.";
+      } else if (affectState.mood === "anxiety") {
+        badge.innerText = "ANSIEDAD / DESESPERACIÓN";
+        badge.className = "status-badge amber-glow";
+        mjitter.style.color = "#f59e0b";
+        mjitterStat.innerText = "Tensión Alta / Temblor";
+        mjitterStat.style.color = "#f59e0b";
+        mburst.innerText = "Cadencia Fragmentada";
+        dTag.innerText = "DESCOMPOSICIÓN ATÓMICA DE BAJA CARGA";
+        dTag.style.background = "rgba(245, 158, 11, 0.2)";
+        dTag.style.color = "#f59e0b";
+        dText.innerHTML = "<strong>Directiva:</strong> Reducir la sobrecarga cognitiva. Dividir el problema en micro-pasos unarios verificables de confirmación inmediata.";
+      } else if (affectState.mood === "fatigue") {
+        badge.innerText = "FATIGA / BLOQUEO COGNITIVO";
+        badge.className = "status-badge";
+        badge.style.background = "rgba(148, 163, 184, 0.2)";
+        badge.style.color = "#94a3b8";
+        mjitter.style.color = "#94a3b8";
+        mjitterStat.innerText = "Voz Hipotónica / Decaída";
+        mjitterStat.style.color = "#94a3b8";
+        mburst.innerText = "Pausas Largas / Suspiro";
+        dTag.innerText = "AUTONOMÍA EN SILENCIO (BACKGROUND)";
+        dTag.style.background = "rgba(148, 163, 184, 0.2)";
+        dTag.style.color = "#94a3b8";
+        dText.innerHTML = "<strong>Directiva:</strong> Asumir tareas pesadas en segundo plano. Persistir checkpoints en PostgreSQL sin interrogar al humano.";
+      } else if (affectState.mood === "flow") {
+        badge.innerText = "FLOW / CO-CREACIÓN DE ÉLITE";
+        badge.className = "status-badge emerald-glow";
+        mjitter.style.color = "#10b981";
+        mjitterStat.innerText = "Laringe Resonante Óptima";
+        mjitterStat.style.color = "#10b981";
+        mburst.innerText = "Ritmo Asertivo Fluido";
+        dTag.innerText = "MODO CO-CREACIÓN ACELERADO";
+        dTag.style.background = "rgba(16, 185, 129, 0.2)";
+        dTag.style.color = "#10b981";
+        dText.innerHTML = "<strong>Directiva:</strong> Máxima densidad técnica. Proponer extensiones de frontera y optimizaciones de silicio sin restricciones.";
+      } else {
+        badge.innerText = "CALMA / FOCO ZEN";
+        badge.className = "status-badge violet-glow";
+        mjitter.style.color = "#00e5ff";
+        mjitterStat.innerText = "Laringe Equilibrada";
+        mjitterStat.style.color = "#00e5ff";
+        mburst.innerText = "Respiración Normal";
+        dTag.innerText = "MODO DIALÉCTICO EQUILIBRADO";
+        dTag.style.background = "rgba(0, 229, 255, 0.15)";
+        dTag.style.color = "#00e5ff";
+        dText.innerHTML = "Cadencia estándar, explicaciones densas y rigurosas con verificación simétrica.";
+      }
+    }
+
+    function drawAffectRadar(timeData, bufferLen) {
+      if (!ctxRadar) return;
+
+      const w = canvasRadar.width;
+      const h = canvasRadar.height;
+      const cx = w / 2;
+      const cy = h / 2;
+      const maxR = Math.min(cx, cy) - 20;
+
+      // Real acoustic calculation if mic is live
+      if (isMicActive && analyserNode) {
+        let sumSq = 0;
+        let zeroCross = 0;
+        for (let i = 0; i < bufferLen; i++) {
+          const norm = (timeData[i] - 128) / 128;
+          sumSq += norm * norm;
+          if (i > 0 && ((timeData[i] >= 128 && timeData[i-1] < 128) || (timeData[i] < 128 && timeData[i-1] >= 128))) {
+            zeroCross++;
+          }
+        }
+        const rms = Math.sqrt(sumSq / bufferLen);
+        const rmsDb = 20 * Math.log10(Math.max(rms, 1e-4));
+        const estF0 = (zeroCross * (audioCtx ? audioCtx.sampleRate : 48000)) / (2 * bufferLen);
+
+        affectState.f0Prev = affectState.f0;
+        affectState.f0 = affectState.f0 * 0.8 + Math.min(Math.max(estF0, 60), 450) * 0.2;
+        affectState.rmsDb = affectState.rmsDb * 0.85 + rmsDb * 0.15;
+        const rawJitter = Math.abs(affectState.f0 - affectState.f0Prev) / Math.max(affectState.f0, 50) * 100;
+        affectState.jitter = affectState.jitter * 0.85 + Math.min(rawJitter, 8.0) * 0.15;
+
+        // Map acoustics to Valence / Arousal
+        const targetA = Math.min(Math.max((affectState.rmsDb + 30) / 20 + (affectState.f0 - 140) / 160, -1.0), 1.0);
+        let targetV = 0.25;
+        if (targetA > 0.4 && affectState.jitter > 2.2) targetV = -0.75;
+        else if (targetA > 0.3 && affectState.jitter < 1.2) targetV = 0.80;
+        else if (targetA < -0.4) targetV = -0.40;
+
+        affectState.arousal = affectState.arousal * 0.9 + targetA * 0.1;
+        affectState.valence = affectState.valence * 0.9 + targetV * 0.1;
+
+        if (affectState.arousal > 0.5 && affectState.valence < -0.3) affectState.mood = "anger";
+        else if (affectState.arousal > 0.4 && affectState.valence < 0.0) affectState.mood = "anxiety";
+        else if (affectState.arousal < -0.3) affectState.mood = "fatigue";
+        else if (affectState.arousal > 0.3 && affectState.valence > 0.3) affectState.mood = "flow";
+        else affectState.mood = "calm";
+
+        updateAffectiveUI();
+      }
+
+      // Background
+      ctxRadar.fillStyle = "#020408";
+      ctxRadar.fillRect(0, 0, w, h);
+
+      // Radial concentric circles
+      ctxRadar.strokeStyle = "rgba(255, 255, 255, 0.08)";
+      ctxRadar.lineWidth = 1;
+      [0.33, 0.66, 1.0].forEach(rRatio => {
+        ctxRadar.beginPath();
+        ctxRadar.arc(cx, cy, maxR * rRatio, 0, Math.PI * 2);
+        ctxRadar.stroke();
+      });
+
+      // Axes (Valence = X, Arousal = Y)
+      ctxRadar.strokeStyle = "rgba(0, 229, 255, 0.25)";
+      ctxRadar.beginPath();
+      ctxRadar.moveTo(cx - maxR, cy); ctxRadar.lineTo(cx + maxR, cy);
+      ctxRadar.moveTo(cx, cy - maxR); ctxRadar.lineTo(cx, cy + maxR);
+      ctxRadar.stroke();
+
+      // Quadrant Labels
+      ctxRadar.font = "9px Inter, sans-serif";
+      ctxRadar.fillStyle = "rgba(244, 63, 94, 0.6)";
+      ctxRadar.fillText("😡 IRA / ENOJO (-V, +A)", cx - maxR + 10, cy - maxR + 20);
+      ctxRadar.fillStyle = "rgba(16, 185, 129, 0.6)";
+      ctxRadar.fillText("🚀 FLOW / JÚBILO (+V, +A)", cx + 25, cy - maxR + 20);
+      ctxRadar.fillStyle = "rgba(148, 163, 184, 0.6)";
+      ctxRadar.fillText("🥱 FATIGA / DESGASTE (-V, -A)", cx - maxR + 10, cy + maxR - 12);
+      ctxRadar.fillStyle = "rgba(0, 229, 255, 0.6)";
+      ctxRadar.fillText("🧘 CALMA / ZEN (+V, -A)", cx + 25, cy + maxR - 12);
+
+      // Current Point Vector (Px, Py)
+      const px = cx + affectState.valence * maxR;
+      const py = cy - affectState.arousal * maxR; // inverted Y
+
+      // Vector ray
+      ctxRadar.strokeStyle = "rgba(139, 92, 246, 0.6)";
+      ctxRadar.lineWidth = 2;
+      ctxRadar.beginPath();
+      ctxRadar.moveTo(cx, cy);
+      ctxRadar.lineTo(px, py);
+      ctxRadar.stroke();
+
+      // Current Point Glowing Dot
+      ctxRadar.shadowBlur = 12;
+      ctxRadar.shadowColor = affectState.mood === "anger" ? "#f43f5e" : (affectState.mood === "flow" ? "#10b981" : "#00e5ff");
+      ctxRadar.fillStyle = ctxRadar.shadowColor;
+      ctxRadar.beginPath();
+      ctxRadar.arc(px, py, 6, 0, Math.PI * 2);
+      ctxRadar.fill();
+      ctxRadar.shadowBlur = 0; // reset
     }
     drawSensors();
 
