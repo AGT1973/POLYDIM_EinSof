@@ -56,5 +56,8 @@ def run_test_en_vivo() -> int:
     print("=" * 60)
     return 0
 
+def test_silicon_and_stiefel():
+    assert run_test_en_vivo() == 0
+
 if __name__ == "__main__":
     sys.exit(run_test_en_vivo())
