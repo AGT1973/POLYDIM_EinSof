@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "polydim-suite"
+version = "1.0.0"
+description = "POLYDIM SUITE: High-Dimensional Manifold Transport & Inter-Process Latent Alignment"
+readme = "README.md"
+authors = [
+  { name = "Ariel H. Garcia Traba", email = "polydim.einsof@gmail.com" }
+]
+license = { text = "MIT" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Mathematics"
+]
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=1.22.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+]
+full = [
+    "torch>=2.0.0",
+    "transformers>=4.30.0",
+    "scipy>=1.9.0"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pmtp*"]
