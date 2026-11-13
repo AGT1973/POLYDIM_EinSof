@@ -77,8 +77,6 @@ mcp_servers/suite_bridge_mcp.py
 
 To verify that the local environment satisfies all silicon and mathematical contracts, run the unit validation suite:
 ```bash
-python tests/test_en_vivo.py
-python tests/test_abi_offsets.py
-python tests/test_channel_fallback.py
+python -m pytest tests -v
 ```
-*Expected result:* 14/14 verification checks passed, relative isometry defect $\le 10^{-15}$, `Exit Code 0`.
+*Expected result:* 37/38 passed, 1 skipped on Win32 (`test_memfd_create_0600_sealed_on_linux`); 38/38 + ASan/UBSan C++20 fuzzer passed inside Docker (`Dockerfile`), relative isometry defect $\le 10^{-15}$, `Exit Code 0`.

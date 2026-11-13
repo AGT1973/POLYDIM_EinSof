@@ -429,7 +429,7 @@ inline double retract_stiefel_qdwh(
         }
         Q.swap(Q_next);
         defect = compute_stiefel_defect(Q.data(), D, k);
-        if (defect <= 1e-13 && (std::sqrt(diff_sq) <= 1e-13 || L > 1.0 - 1e-13)) {
+        if (defect <= 1e-15 && (std::sqrt(diff_sq) <= 1e-14 || L > 1.0 - 1e-13)) {
             qdwh_converged = true;
             break;
         }

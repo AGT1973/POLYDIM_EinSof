@@ -1,33 +1,25 @@
-# ============================================================================
-# POLYDIM-SUITE Reproducible Verification Container
-# Note: Docker mounts a private 64 MiB /dev/shm per container by default.
-# Use `--shm-size=256m` only if allocating large slabs inside this container.
-# `--ipc=host` is NOT needed for same-container tests and should remain unset
-# to preserve IPC namespace isolation.
-# ============================================================================
-FROM python:3.12.7-slim-bookworm
+# Reproducible 1-Command Auditor Environment for POLYDIM SUITE
+# Usage:
+#   docker build -t polydim-audit . && docker run --rm --ipc=private polydim-audit
+FROM python:3.12-slim-bookworm
 
-ENV PYTHONDONTWRITEBYTECODE=1 \
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1
+    PMTP_SHM_KEY="POLYDIM_DOCKER_AUDIT_KEY_V1"
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends g++ && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    g++ \
+    rustc \
+    cargo \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN useradd --create-home --uid 10001 pmtpuser
-WORKDIR /app
+RUN pip install --no-cache-dir numpy pytest
 
-COPY pyproject.toml README.md AGENT_BOOTSTRAP.md ./
-COPY pmtp/ ./pmtp/
-COPY tools/ ./tools/
-COPY tests/ ./tests/
+WORKDIR /workspace
+COPY . /workspace
 
-RUN pip install --no-cache-dir \
-    numpy==2.1.3 \
-    pytest==8.3.4 && \
-    pip install --no-cache-dir --no-deps -e . && \
-    chown -R pmtpuser:pmtpuser /app
+RUN sed -i 's/\r$//' scripts/run_full_audit.sh && chmod +x scripts/run_full_audit.sh
 
-USER pmtpuser
-CMD ["pytest", "-v", "tests/"]
+CMD ["bash", "scripts/run_full_audit.sh"]

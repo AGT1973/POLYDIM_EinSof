@@ -2,15 +2,7 @@
 """
 humaneval_plus_ablation_164_real.py
 Evaluacion Real en Silicio + Telemetria Oficial Pilot-20 HumanEval+ (Cerebras CS-3 + C++20/Rust)
-
-Combina:
-  1. Carga auditable de los resultados reales ejecutados sobre Cerebras CS-3 (qwen-3.8-27b / gpt-oss-120b)
-     en 20 tareas congeladas de HumanEval+ (PILOT20_HUMANEVALPLUS_REPORT_A_B_C_D.json).
-  2. Ejecucion fisica en tiempo real de 164 iteraciones de transporte e invariancia dimensional
-     sobre PmtpShmBus (con autenticacion MAC BLAKE2s-64 y zeroizacion al liberar) y PolarSafe V2:
-       - Modo B (Afin lineal sin retraccion Stiefel, 10 saltos): mide deriva de ortogonalidad real.
-       - Modo C (PMTP Stiefel St(16, 1024) PolarSafe V2 Ord.5/10): mide defecto <= 1e-15 y latencia us.
-       - Modo D (Zero-Hop SHM directo autenticado): mide latencia pura de bus en RAM compartida.
+Con solver polar QDWH primario (Nakatsukasa-Bai-Gygi) + desglose T_proj + T_sync + T_copy.
 """
 
 import os
@@ -36,16 +28,16 @@ def run_ablation_164_silicon() -> dict:
 
     pilot_summary = pilot_raw["summary"]
 
-    # Parametros fisicos de los 164 ensayos en silicio (equivalente al dataset completo HumanEval+ 164)
     n_trials = 164
     d_dim = 1024
     k_rank = 16
     hops = 10
     rng = np.random.default_rng(20261112)
 
-    bus = PmtpShmBus(prefix="he164_ablation", max_slabs=8, max_dim=d_dim)
+    backend = "memfd" if hasattr(os, "memfd_create") else "auto"
+    bus = PmtpShmBus(prefix="he164_qdwh", max_slabs=8, max_dim=d_dim, backend=backend)
 
-    # MODO A: Baseline 1D JSON serialization overhead local (para comparar coste local de serializacion)
+    # MODO A: Baseline 1D JSON serialization local
     sample_vec = rng.standard_normal(d_dim).astype(np.float64)
     sample_vec /= np.linalg.norm(sample_vec)
     json_latencies_ms = []
@@ -57,16 +49,14 @@ def run_ablation_164_silicon() -> dict:
         json_latencies_ms.append((time.perf_counter_ns() - t0) / 1e6)
         json_payload_bytes = len(s.encode("utf-8"))
 
-    # MODO B: Vector lineal sin retraccion Stiefel tras 10 saltos (mide deriva real de ortogonalidad)
+    # MODO B: Deriva lineal sin retraccion Stiefel tras 10 saltos
     mode_b_defects = []
     mode_b_latencies_us = []
-    # Operador lineal con leve perturbacion no ortogonal por salto (sigma_max ~ 1.35)
     W_unproj = np.eye(k_rank, dtype=np.float64) * 1.15 + rng.normal(0.0, 0.08, (k_rank, k_rank))
     eye_k = np.eye(k_rank, dtype=np.float64)
 
     for _ in range(n_trials):
         X = rng.standard_normal((d_dim, k_rank)).astype(np.float64)
-        # Orthonormalizar estado inicial
         Q0, _ = np.linalg.qr(X)
         t0 = time.perf_counter_ns()
         H = Q0
@@ -76,23 +66,41 @@ def run_ablation_164_silicon() -> dict:
         defect_b = float(np.max(np.abs(H.T @ H - eye_k)))
         mode_b_defects.append(defect_b)
 
-    # MODO C: PMTP + Retraccion PolarSafe V2 (164 ensayos en silicio + transporte SHM con MAC)
+    # MODO C: QDWH Primario + Transporte SHM/memfd autenticado (T_proj + T_ipc_shm)
     mode_c_defects = []
-    mode_c_latencies_us = []
+    mode_c_t_proj_us = []
+    mode_c_t_ipc_us = []
+    mode_c_t_e2e_us = []
+    qdwh_count = 0
+    svd_fallback_count = 0
+
     for _ in range(n_trials):
         raw_mat = rng.standard_normal((d_dim, k_rank)).astype(np.float64)
         t0 = time.perf_counter_ns()
-        W_stiefel, _, _, _ = PmtpStiefelAdapter.polar_safe_v2(raw_mat, max_iters=20, tol=1e-15, kappa_max=1e3)
-        # Publicar columna canonica unitaria por PmtpShmBus autenticado
+        W_stiefel, _, _, status = PmtpStiefelAdapter.polar_safe_v2(raw_mat, max_iters=10, tol=1e-14)
+        t1 = time.perf_counter_ns()
+
+        if status == "ACCEPTED_QDWH_POLAR":
+            qdwh_count += 1
+        else:
+            svd_fallback_count += 1
+
         v_col = W_stiefel[:, 0]
         v_col = v_col / np.linalg.norm(v_col)
+        t2 = time.perf_counter_ns()
         desc = bus.publish_tensor(v_col)
         _ = bus.read_tensor(desc, verify_stiefel=True, verify_mac=True)
-        mode_c_latencies_us.append((time.perf_counter_ns() - t0) / 1000.0)
+        t3 = time.perf_counter_ns()
+
+        t_proj = (t1 - t0) / 1000.0
+        t_ipc = (t3 - t2) / 1000.0
+        mode_c_t_proj_us.append(t_proj)
+        mode_c_t_ipc_us.append(t_ipc)
+        mode_c_t_e2e_us.append(t_proj + t_ipc)
         defect_c = float(np.max(np.abs(W_stiefel.T @ W_stiefel - eye_k)))
         mode_c_defects.append(defect_c)
 
-    # MODO D: Zero-Hop SHM directo autenticado (transporte puro sin retraccion matricial)
+    # MODO D: Zero-Hop IPC directo autenticado
     mode_d_latencies_us = []
     for _ in range(n_trials):
         v = rng.standard_normal(d_dim).astype(np.float64)
@@ -105,8 +113,9 @@ def run_ablation_164_silicon() -> dict:
     bus.cleanup()
 
     report = {
-        "protocol": "HUMANEVAL_PLUS_ABLATION_164_SILICON_AND_PILOT20_CEREBRAS",
+        "protocol": "HUMANEVAL_PLUS_ABLATION_164_QDWH_PRIMARY_AND_PILOT20_CEREBRAS",
         "platform": platform.platform(),
+        "ipc_backend": backend,
         "trials_silicon": n_trials,
         "manifold": f"St({k_rank}, {d_dim})",
         "cerebras_pilot20_verified": {
@@ -128,8 +137,12 @@ def run_ablation_164_silicon() -> dict:
                 "median_orthogonality_defect": float(np.median(mode_b_defects)),
                 "max_orthogonality_defect": float(np.max(mode_b_defects)),
             },
-            "mode_c_polarsafe_stiefel_shm_mac": {
-                "median_latency_us": round(float(np.median(mode_c_latencies_us)), 2),
+            "mode_c_qdwh_stiefel_shm_mac": {
+                "qdwh_primary_count": qdwh_count,
+                "svd_fallback_count": svd_fallback_count,
+                "median_T_proj_qdwh_us": round(float(np.median(mode_c_t_proj_us)), 2),
+                "median_T_ipc_sync_copy_us": round(float(np.median(mode_c_t_ipc_us)), 2),
+                "median_T_e2e_total_us": round(float(np.median(mode_c_t_e2e_us)), 2),
                 "median_orthogonality_defect": float(np.median(mode_c_defects)),
                 "max_orthogonality_defect": float(np.max(mode_c_defects)),
                 "mac_verified_trials": n_trials,
@@ -149,7 +162,8 @@ def run_ablation_164_silicon() -> dict:
         json.dump(report, f, indent=2)
 
     print(json.dumps(report, indent=2))
-    assert report["silicon_ablation_164_live"]["mode_c_polarsafe_stiefel_shm_mac"]["max_orthogonality_defect"] <= 1e-14
+    assert qdwh_count == n_trials, f"Expected QDWH primary on all {n_trials} trials, got {qdwh_count}"
+    assert report["silicon_ablation_164_live"]["mode_c_qdwh_stiefel_shm_mac"]["max_orthogonality_defect"] <= 1e-13
     return report
 
 

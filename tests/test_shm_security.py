@@ -115,3 +115,54 @@ def test_observable_graceful_degradation_and_autorearm(capsys):
         assert ch.fallback_active is False
     finally:
         bus.cleanup()
+
+
+def test_abi_v1_rejects_invalid_version_and_overflow():
+    import struct
+    from pmtp.pmtp_types import PmtpCompactHeader, HEADER_COMPACT_FORMAT, PMTP_MAGIC_NUMBER
+
+    # Versión ABI no soportada (v=99)
+    bad_ver = struct.pack(
+        HEADER_COMPACT_FORMAT,
+        PMTP_MAGIC_NUMBER, 99, 1, 0, 1, 16, 1000, 1.0, 1, False, True, 0, 0, b"\x00" * 8
+    )
+    with pytest.raises(ValueError, match="Unsupported PMTP ABI version"):
+        PmtpCompactHeader.unpack(bad_ver, validate=True)
+
+    # Desbordamiento de dimensiones (num_elements > PMTP_MAX_ELEMENTS)
+    bad_dim = struct.pack(
+        HEADER_COMPACT_FORMAT,
+        PMTP_MAGIC_NUMBER, 1, 1, 0, 1, (1 << 30), 1000, 1.0, 1, False, True, 0, 0, b"\x00" * 8
+    )
+    with pytest.raises(ValueError, match="Out-of-bounds num_elements"):
+        PmtpCompactHeader.unpack(bad_dim, validate=True)
+
+
+def test_qdwh_primary_solver_without_upfront_svd():
+    from pmtp.pmtp_stiefel import PmtpStiefelAdapter
+
+    rng = np.random.default_rng(777)
+    U, _ = np.linalg.qr(rng.standard_normal((256, 16)))
+    V, _ = np.linalg.qr(rng.standard_normal((16, 16)))
+    # Matriz moderadamente mal condicionada kappa = 500
+    sigmas = np.geomspace(1.0, 1.0 / 500.0, 16)
+    X = (U * sigmas) @ V.T
+    Q, _, _, status = PmtpStiefelAdapter.polar_safe_v2(X, max_iters=10, tol=1e-14)
+    assert status == "ACCEPTED_QDWH_POLAR", f"Expected QDWH primary, got {status}"
+    defect = float(np.max(np.abs(Q.T @ Q - np.eye(16))))
+    assert defect <= 1e-14, f"QDWH defect too high: {defect}"
+
+
+@pytest.mark.skipif(not hasattr(os, "memfd_create"), reason="Requiere syscall Linux os.memfd_create (Docker/POSIX)")
+def test_memfd_create_0600_sealed_on_linux():
+    bus = PmtpShmBus(prefix="t_sec_memfd", max_slabs=2, max_dim=512, backend="memfd", auth_key=b"memfd_key")
+    try:
+        v = _unit_vec(dim=512, seed=99)
+        desc = bus.publish_tensor(v)
+        sid = int(desc.split("_")[2])
+        assert bus.slabs[sid]["backend"] == "memfd"
+        assert "0600_MEMFD" in bus.slabs[sid]["perm_mode"]
+        out = bus.read_tensor(desc, verify_stiefel=True, verify_mac=True)
+        assert np.allclose(out, v, atol=1e-15)
+    finally:
+        bus.cleanup()

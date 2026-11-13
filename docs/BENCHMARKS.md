@@ -51,25 +51,24 @@ $$S = \frac{1}{1 - 0.80} = 5.0\times \quad \text{up to} \quad S = \frac{1}{1 - 0
 | **HumanEval Base Pass@1 (20 tareas)** | 65.0% (13/20) | 70.0% (14/20) | **80.0% (16/20)** | **90.0% (18/20)** |
 | **HumanEval+ Adversarial Pass@1** | 60.0% (12/20) | 70.0% (14/20) | **75.0% (15/20)** | **85.0% (17/20)** |
 | **Tokens Totales Facturados (20 tareas)** | 65,903 tokens | 16,868 tokens | 17,382 tokens | **14,910 tokens** |
-| **Defecto Ortogonal 10 Saltos (164 ensayos)**| N/A (1D string) | $8.27 \times 10^{3}$ *(Colapso)* | **$6.66 \times 10^{-16}$** (Máx $8.88 \times 10^{-16}$) | N/A (Raw SHM) |
-| **Latencia Local SHM+MAC (164 ensayos)** | 1.7765 ms (JSON roundtrip) | 934.4 μs | 1.94 ms (PolarSafe V2 + MAC) | **236.7 μs** (p95: 268.5 μs) |
-| **Exit Code** | 0 | 0 | **0 (164/164 MAC OK)** | **0 (164/164 MAC OK)** |
+| **Defecto Ortogonal 10 Saltos (164 ensayos)**| N/A (1D string) | $8.27 \times 10^{3}$ *(Colapso)* | **$8.88 \times 10^{-16}$** (Máx $1.33 \times 10^{-15}$, `164/164` QDWH) | N/A (Raw SHM) |
+| **Latencia Desglosada (`T_proj` / `T_ipc` / `T_e2e`)** | 2.4255 ms (JSON roundtrip) | 930.55 μs | $T_{\text{proj}}=8.89$ ms + $T_{\text{ipc}}=354.4$ μs = $9.26$ ms | **256.2 μs** (p95: 289.9 μs) |
+| **Exit Code** | 0 | 0 | **0 (164/164 QDWH + MAC OK)** | **0 (164/164 MAC OK)** |
 
 ---
 
-### 6. Matriz Dimensional Real en Silicio: JSON 1D vs. `PmtpShmBus` Autenticado
+### 6. Matriz Dimensional End-to-End en Silicio: JSON 1D vs. PMTP ($T_{\text{proj}} + T_{\text{sync}} + T_{\text{copy}}$)
 **Script Reproducible:** [`benchmarks/benchmark_matriz_con_vs_sin_pmtp.py`](../benchmarks/benchmark_matriz_con_vs_sin_pmtp.py)  
 **JSON Crudo:** [`benchmarks/benchmark_matriz_con_vs_sin_pmtp.json`](../benchmarks/benchmark_matriz_con_vs_sin_pmtp.json)
 
-| Dimensión Latente | Baseline JSON 1D (Roundtrip Local) | `PmtpShmBus` (0600 + BLAKE2s-64 MAC) | Speedup Local Python | Defecto Stiefel Medido ($\|W^T W - I\|_\infty$) |
-| :--- | :---: | :---: | :---: | :---: |
-| **$D = 2048$ (Qwen 3 1.5B Dim)** | 3.688 ms (45,736 B) | **426.45 μs** (0 tokens) | **8.6×** | **$8.88 \times 10^{-16}$** |
-| **$D = 4096$ (Qwen 3 8B Dim)** | 7.421 ms (92,031 B) | **790.55 μs** (0 tokens) | **9.4×** | **$6.66 \times 10^{-16}$** |
-| **$D = 5120$ (DeepSeek V4 Dim)** | 9.334 ms (115,226 B) | **975.10 μs** (0 tokens) | **9.6×** | **$8.88 \times 10^{-16}$** |
-| **$D = 8192$ (LLaMA 4 70B Dim)** | 14.969 ms (185,103 B) | **1540.80 μs** (0 tokens) | **9.7×** | **$4.44 \times 10^{-16}$** |
+| Dimensión Latente | Baseline JSON 1D (Local) | $T_{\text{proj}}$ (QDWH Frío) | $T_{\text{sync}}$ (Seqlock+MAC) | $T_{\text{copy}}$ (SHM) | $T_{\text{ipc}}$ ($T_{\text{sync}}+T_{\text{copy}}$) | $T_{\text{e2e}}$ (Total Frío) | Speedup IPC / E2E | Defecto Stiefel |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **$D = 2048$ (`St(16,2048)`)** | 3.62 ms (45,736 B) | 16.95 ms | 163.1 μs | 81.7 μs | **244.8 μs** | 17.20 ms | **14.8× IPC** / 0.21× E2E | **$6.66 \times 10^{-16}$** |
+| **$D = 4096$ (`St(16,4096)`)** | 7.36 ms (92,031 B) | 39.18 ms | 284.1 μs | 107.4 μs | **391.5 μs** | 39.58 ms | **18.8× IPC** / 0.19× E2E | **$6.66 \times 10^{-16}$** |
+| **$D = 5120$ (`St(16,5120)`)** | 9.36 ms (115,226 B) | 48.00 ms | 351.2 μs | 141.9 μs | **493.1 μs** | 48.54 ms | **19.0× IPC** / 0.19× E2E | **$6.66 \times 10^{-16}$** |
+| **$D = 8192$ (`St(16,8192)`)** | 14.83 ms (185,103 B) | 122.79 ms | 583.2 μs | 208.8 μs | **792.0 μs** | 123.58 ms | **18.7× IPC** / 0.12× E2E | **$4.44 \times 10^{-16}$** |
 
-> Reproducción inmediata:
+> Auditoría en 1 comando vía Docker (incluye ASan/UBSan + `memfd_create` + `0600` + `pytest` + benchmarks):
 > ```bash
-> python benchmarks/humaneval_plus_ablation_164_real.py
-> python benchmarks/benchmark_matriz_con_vs_sin_pmtp.py
+> docker build -t polydim-audit . && docker run --rm --ipc=private polydim-audit
 > ```
