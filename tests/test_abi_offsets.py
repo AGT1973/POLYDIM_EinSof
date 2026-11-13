@@ -23,9 +23,8 @@ class AtelierSlabHeader(ctypes.Structure):
         ("latency_us",     ctypes.c_double),   # offset 24
         ("timestamp_ns",   ctypes.c_uint64),   # offset 32
         ("heartbeat_ns",   ctypes.c_uint64),   # offset 40
-        ("sequence",       ctypes.c_uint64),   # offset 48
-        ("readers_count",  ctypes.c_uint32),   # offset 56
-        ("reserved",       ctypes.c_uint32),   # offset 60
+        ("sequence",       ctypes.c_uint64),   # offset 48 (mutable seqlock)
+        ("mac64",          ctypes.c_uint64),   # offset 56 (SipHash-2-4 64-bit MAC)
     ]
 
 
@@ -40,8 +39,7 @@ CANONICAL_ABI = {
     "timestamp_ns":   (32, 8),
     "heartbeat_ns":   (40, 8),
     "sequence":       (48, 8),
-    "readers_count":  (56, 4),
-    "reserved":       (60, 4),
+    "mac64":          (56, 8),
 }
 
 
@@ -67,8 +65,8 @@ def test_abi_field_offsets():
 
 def test_abi_roundtrip_pack_unpack():
     """Serializar y deserializar un header con struct.pack debe ser bit-exacto."""
-    # Formato canonico: 4 x uint32, 2 x double, 3 x uint64, 2 x uint32 = 64 bytes
-    fmt = "<IIIIddQQQII"
+    # Formato canonico: 4 x uint32, 2 x double, 4 x uint64 = 64 bytes
+    fmt = "<IIIIddQQQQ"
     assert struct.calcsize(fmt) == 64, f"struct.calcsize = {struct.calcsize(fmt)}, esperado 64"
 
     test_vals = (
@@ -80,9 +78,8 @@ def test_abi_roundtrip_pack_unpack():
         42.5,         # latency_us
         1234567890,   # timestamp_ns
         1234567890,   # heartbeat_ns
-        2,            # sequence (even = safe)
-        1,            # readers_count
-        0,            # reserved
+        2,            # sequence (even = safe, excluded from MAC)
+        0xCAFEBABEDEADBEEF,  # mac64
     )
     packed = struct.pack(fmt, *test_vals)
     assert len(packed) == 64
@@ -96,17 +93,19 @@ def test_abi_magic_position():
     h.magic = 0x504D5450
     raw = bytes(h)
     # En little-endian x86: 0x504D5450 -> bytes [0x50, 0x54, 0x4D, 0x50] = b'PTMP'
-    import struct
     magic_le = struct.pack("<I", 0x504D5450)
     assert raw[:4] == magic_le, f"Magic bytes = {raw[:4]!r}, esperado {magic_le!r}"
 
 
 def test_cross_language_cpp_to_python_abi_exchange(tmp_path):
-    """Intercambio binario real C++20 -> Python ctypes de cabecera ABI 64B + matriz St(8, 128)."""
+    """Intercambio binario y criptografico real C++20 -> Python (ABI 64B + SipHash-2-4 MAC64)."""
+    import hmac
     import os
+    import secrets
     import sys
     import subprocess
     import numpy as np
+    from pmtp.pmtp_types import derive_pmtp_key16, siphash24_u64
 
     kernel_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "tools", "atelier_kernel")
     ext = ".exe" if sys.platform == "win32" else ""
@@ -114,8 +113,17 @@ def test_cross_language_cpp_to_python_abi_exchange(tmp_path):
     if not os.path.exists(exe_path):
         pytest.skip(f"Binario C++ no encontrado para intercambio ABI: {exe_path}")
 
+    shared_secret = secrets.token_hex(32)
+    env = os.environ.copy()
+    env["PMTP_SHM_KEY"] = shared_secret
+
     blob_path = tmp_path / "cpp_to_py_slab.bin"
-    res = subprocess.run([exe_path, "128", "8", "--dump-slab-file", str(blob_path)], capture_output=True, text=True)
+    res = subprocess.run(
+        [exe_path, "128", "8", "--dump-slab-file", str(blob_path)],
+        capture_output=True,
+        text=True,
+        env=env,
+    )
     assert res.returncode == 0, f"Kernel C++ fallo: {res.stderr}"
 
     raw = blob_path.read_bytes()
@@ -127,7 +135,21 @@ def test_cross_language_cpp_to_python_abi_exchange(tmp_path):
     assert hdr.k == 8
     assert hdr.sequence == 2
     assert hdr.isometry_error <= 1e-14
-    assert hdr.reserved != 0
+    assert hdr.mac64 != 0
+
+    # Verificacion criptografica cruzada C++20 <-> Python: SipHash-2-4 64-bit sobre [0..48) + payload
+    k16 = derive_pmtp_key16(shared_secret.encode("utf-8"))
+    expected_mac64 = siphash24_u64(k16, raw[:48] + raw[64:])
+    assert hmac.compare_digest(
+        struct.pack("<Q", hdr.mac64),
+        struct.pack("<Q", expected_mac64),
+    ), f"Cross-language SipHash-2-4 MAC64 mismatch: cpp={hex(hdr.mac64)} py={hex(expected_mac64)}"
+
+    # Prueba negativa: manipular 1 bit del payload invalida el MAC64 cruzado
+    tampered_payload = bytearray(raw[64:])
+    tampered_payload[0] ^= 0x01
+    tampered_mac64 = siphash24_u64(k16, raw[:48] + bytes(tampered_payload))
+    assert not hmac.compare_digest(struct.pack("<Q", hdr.mac64), struct.pack("<Q", tampered_mac64))
 
     mat = np.frombuffer(raw[64:], dtype=np.float64).reshape((128, 8))
     defect_py = float(np.max(np.abs(mat.T @ mat - np.eye(8))))

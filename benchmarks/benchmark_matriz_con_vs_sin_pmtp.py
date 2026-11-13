@@ -110,7 +110,7 @@ def run_live_matrix_benchmark() -> dict:
             bus._verify_mac(slab, hdr_r, hdr_r.active_slot, payload_len)
             t_s1 = time.perf_counter_ns()
 
-            # D) T_copy (read view zero-copy copy-out verification)
+            # D) T_copy (read view copy-out / explicit copy vs DLPack zero-copy)
             t_c2 = time.perf_counter_ns()
             read_view = np.ndarray(shape=(d,), dtype=np.float64, buffer=slab.buf, offset=HEADER_COMPACT_SIZE + hdr_r.active_slot * payload_len).copy()
             t_c3 = time.perf_counter_ns()
@@ -158,11 +158,12 @@ def run_live_matrix_benchmark() -> dict:
                 "slab_bytes": slab_bytes,
                 "T_proj_qdwh_us": med_proj_us,
                 "T_sync_seqlock_mac_us": med_sync_us,
-                "T_copy_shm_us": med_copy_us,
+                "T_copy_explicit_shm_us": med_copy_us,
                 "T_ipc_steady_us": med_ipc_us,
                 "T_total_e2e_us": med_e2e_us,
                 "speedup_ipc_steady": speedup_ipc,
                 "speedup_e2e_with_proj": speedup_e2e,
+                "copy_mode_note": "T_copy_explicit_shm_us mide copia explicita de validacion; DLPack zero-copy consume 0.0 us en modo lease.",
                 "tokens_transmitted": 0,
                 "stiefel_defect": last_defect,
                 "polarsafe_status": last_status,

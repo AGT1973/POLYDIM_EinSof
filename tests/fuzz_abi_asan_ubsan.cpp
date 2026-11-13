@@ -38,8 +38,7 @@ static bool test_valid_abi_and_tamper_mac() {
     hdr.timestamp_ns = 1000ULL;
     hdr.heartbeat_ns = 1000ULL;
     hdr.sequence = 2;
-    hdr.readers_count = 0;
-    hdr.reserved = compute_slab_mac32(hdr, Z.data(), elems);
+    hdr.mac64 = compute_slab_mac64(hdr, Z.data(), elems);
 
     std::memcpy(slab.data(), &hdr, sizeof(hdr));
     std::memcpy(slab.data() + sizeof(hdr), Z.data(), elems * sizeof(double));
@@ -47,6 +46,32 @@ static bool test_valid_abi_and_tamper_mac() {
         std::cerr << "Valid slab header failed validation\n";
         return false;
     }
+
+    // Mutating mutable seqlock sequence (even 2 -> 4) must keep MAC valid
+    hdr.sequence = 4;
+    std::memcpy(slab.data(), &hdr, sizeof(hdr));
+    if (!validate_slab_header(slab.data(), slab_bytes, true)) {
+        std::cerr << "Mutable seqlock sequence transition broke MAC\n";
+        return false;
+    }
+
+    // Odd seqlock sequence must fail-closed
+    hdr.sequence = 5;
+    std::memcpy(slab.data(), &hdr, sizeof(hdr));
+    if (validate_slab_header(slab.data(), slab_bytes, true)) {
+        std::cerr << "Odd seqlock sequence accepted\n";
+        return false;
+    }
+    hdr.sequence = 2;
+    std::memcpy(slab.data(), &hdr, sizeof(hdr));
+
+    // Mutating immutable header byte [0..48) -> MAC must fail
+    slab[40] ^= 0x01;
+    if (validate_slab_header(slab.data(), slab_bytes, true)) {
+        std::cerr << "Header metadata bit flip bypassed MAC\n";
+        return false;
+    }
+    slab[40] ^= 0x01;
 
     // Mutate 1 bit in payload -> MAC must fail
     slab[sizeof(hdr) + 3] ^= 0x01;

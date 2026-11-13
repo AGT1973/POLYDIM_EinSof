@@ -5,6 +5,10 @@ echo "=================================================================="
 echo "POLYDIM SUITE :: 1-COMMAND REPRODUCIBLE AUDIT (ASAN/UBSAN + E2E)"
 echo "=================================================================="
 
+# Generar clave de autenticación HMAC/MAC efímera por ejecución (CSPRNG 32B hex)
+export PMTP_SHM_KEY="$(head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n')"
+echo "[+] Generada clave efimera PMTP_SHM_KEY para sesion de auditoria segura."
+
 echo "[1/5] Compilando y ejecutando fuzzing C++20 con ASan + UBSan..."
 g++ -std=c++20 -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer \
     tests/fuzz_abi_asan_ubsan.cpp -I tools/atelier_kernel -o /tmp/fuzz_abi_asan_ubsan
@@ -17,6 +21,10 @@ g++ -std=c++20 -O2 -Wall -Wextra tools/atelier_kernel/atelier_stiefel.cpp \
 
 echo "[3/5] Ejecutando suite completa pytest (ABI v1, memfd_create, 0600, MAC, QDWH, Rust/C++)..."
 python -m pytest tests -v
+
+echo "[3.5/5] Compilando y ejecutando suite Rust de alta concurrencia y recuperacion zombie..."
+rustc -O tests/test_pmtp_hardened_all_items.rs -o /tmp/test_pmtp_hardened_rust
+/tmp/test_pmtp_hardened_rust
 
 echo "[4/5] Ejecutando ablacion HumanEval+ / silicio St(16, 1024) con QDWH primario..."
 python benchmarks/humaneval_plus_ablation_164_real.py

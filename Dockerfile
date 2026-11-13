@@ -5,8 +5,7 @@ FROM python:3.12.7-slim-bookworm
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PMTP_SHM_KEY="POLYDIM_DOCKER_AUDIT_KEY_V1"
+    PYTHONUNBUFFERED=1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     g++ \

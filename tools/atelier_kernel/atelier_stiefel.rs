@@ -25,9 +25,8 @@ pub struct AtelierSlabHeader {
     pub latency_us:     f64, // offset 24: Latencia de retraccion polar (us)
     pub timestamp_ns:   u64, // offset 32: Timestamp de ejecucion
     pub heartbeat_ns:   u64, // offset 40: TTL watchdog (zombie slab detection)
-    pub sequence:       u64, // offset 48: Seqlock counter (even=safe, odd=writing)
-    pub readers_count:  u32, // offset 56: Observadores concurrentes
-    pub reserved:       u32, // offset 60: Padding explicito
+    pub sequence:       u64, // offset 48: Seqlock/readers mutable word (excluido del MAC)
+    pub mac64:          u64, // offset 56: SipHash-2-4 MAC64 tag sobre [0..48) + payload
 }
 
 // Contrato de ABI en tiempo de compilacion (Regla 19 + Red Team SOTA)

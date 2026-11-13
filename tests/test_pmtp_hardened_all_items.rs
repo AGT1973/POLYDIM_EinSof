@@ -95,10 +95,29 @@ fn test_item_1_zombie_recovery() -> bool {
         }));
     }
 
-    // SIMULACIÓN DE ATAQUE: Escritor escribe y crashea abruptamente en estado impar (seq=1)
-    println!("  [Ataque Red Team] Escritor abortado abruptamente (seq=1, heartbeat expirado)...");
+    // FASE A: Escritor vivo concurrente actualizando legítimamente el tensor
+    println!("  [Fase Concurrencia] Escritor vivo operando concurrentemente con 8 lectores...");
+    let slot_writer = Arc::clone(&slot);
+    let writer_handle = thread::spawn(move || {
+        for cycle in 1..=50 {
+            let seq = (cycle * 2) - 1;
+            slot_writer.sequence.store(seq, Ordering::Release);
+            slot_writer.last_heartbeat_ms.store(100 + cycle, Ordering::Release);
+            let bits = 1.0_f64.to_bits();
+            for word in slot_writer.data_words.iter() {
+                word.store(bits, Ordering::Relaxed);
+            }
+            slot_writer.sequence.store(seq + 1, Ordering::Release);
+            thread::sleep(Duration::from_micros(300));
+        }
+    });
+    writer_handle.join().unwrap();
+
+    // FASE B: SIMULACIÓN DE ATAQUE: Escritor crashea abruptamente en estado impar (seq=101, heartbeat expirado)
+    println!("  [Ataque Red Team] Escritor abortado abruptamente (seq impar, heartbeat expirado)...");
     slot.last_heartbeat_ms.store(0, Ordering::Release);
-    slot.sequence.store(1, Ordering::Release);
+    let current_seq = slot.sequence.load(Ordering::Relaxed);
+    slot.sequence.store(current_seq | 1, Ordering::Release);
 
     // Esperar a que los lectores detecten el timeout (50ms) y recuperen el slab
     thread::sleep(Duration::from_millis(120));

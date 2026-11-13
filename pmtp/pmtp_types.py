@@ -5,6 +5,7 @@
 # Base Teórica: Teoremas T-MP12, T-MP15, T-MP17, T-MP20, Enmienda E24-1, C11-1
 # ============================================================================
 
+import hashlib
 import struct
 from enum import IntEnum
 from typing import NamedTuple, Dict, Any, Optional
@@ -160,3 +161,60 @@ def validate_compact_header(hdr: PmtpCompactHeader, buffer_nbytes: Optional[int]
         required = HEADER_COMPACT_SIZE + 2 * hdr.num_elements * _DTYPE_ITEMSIZE[hdr.dtype_id]
         if required > buffer_nbytes:
             raise ValueError(f"ABI payload overflow: required {required}B > mapped {buffer_nbytes}B")
+
+
+def derive_pmtp_key16(key_raw: bytes) -> bytes:
+    """Derivación canónica de clave SipHash-2-4 (16B = SHA-256[:16]), idéntica en C++20 y Python."""
+    return hashlib.sha256(key_raw).digest()[:16]
+
+
+def siphash24_u64(key16: bytes, data: bytes) -> int:
+    """Implementación bit-exacta SipHash-2-4 (64-bit) compatible con atelier_abi.hpp."""
+    if len(key16) != 16:
+        raise ValueError(f"SipHash-2-4 requiere clave de 16 bytes, recibido {len(key16)}")
+
+    mask = 0xFFFFFFFFFFFFFFFF
+
+    def rotl(x: int, b: int) -> int:
+        return ((x << b) | (x >> (64 - b))) & mask
+
+    k0, k1 = struct.unpack("<QQ", key16)
+    v0 = 0x736F6D6570736575 ^ k0
+    v1 = 0x646F72616E646F6D ^ k1
+    v2 = 0x6C7967656E657261 ^ k0
+    v3 = 0x7465646279746573 ^ k1
+
+    def sipround() -> None:
+        nonlocal v0, v1, v2, v3
+        v0 = (v0 + v1) & mask
+        v1 = rotl(v1, 13) ^ v0
+        v0 = rotl(v0, 32)
+        v2 = (v2 + v3) & mask
+        v3 = rotl(v3, 16) ^ v2
+        v0 = (v0 + v3) & mask
+        v3 = rotl(v3, 21) ^ v0
+        v2 = (v2 + v1) & mask
+        v1 = rotl(v1, 17) ^ v2
+        v2 = rotl(v2, 32)
+
+    n = len(data)
+    full = n & ~7
+    for off in range(0, full, 8):
+        (m,) = struct.unpack_from("<Q", data, off)
+        v3 ^= m
+        sipround()
+        sipround()
+        v0 ^= m
+
+    b = (n & 0xFF) << 56
+    rem = n & 7
+    for idx in range(rem):
+        b |= data[full + idx] << (8 * idx)
+    v3 ^= b
+    sipround()
+    sipround()
+    v0 ^= b
+    v2 ^= 0xFF
+    for _ in range(4):
+        sipround()
+    return ((v0 ^ v1) ^ (v2 ^ v3)) & mask

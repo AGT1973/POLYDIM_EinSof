@@ -6,6 +6,7 @@
 # ============================================================================
 
 import math
+import warnings
 from typing import Tuple, Optional, Any, Union
 import numpy as np
 
@@ -119,7 +120,8 @@ class PmtpStiefelAdapter:
                     inv_norm = math.sqrt(z_norm)
                     v = z / z_norm
                 sigma_min_est = 1.0 / max(inv_norm, 1.0)
-                L0_est = max(1e-15, min(0.999, 0.85 * sigma_min_est))
+                # Cota estrictamente conservadora para QDWH: nunca sobreestimar L0
+                L0_est = max(1e-15, min(0.999, 0.5 * sigma_min_est))
                 kappa_est = 1.0 / L0_est
         except np.linalg.LinAlgError:
             L0_est = 1e-12
@@ -160,8 +162,13 @@ class PmtpStiefelAdapter:
                     break
                 if (diff <= qdwh_tol or L > 1.0 - 1e-14) and defect <= max(tol, 1e-13):
                     if kappa_est <= float(kappa_fatal):
-                        status_ok = "ACCEPTED_QDWH_POLAR" if kappa_est <= float(kappa_max) * 1e6 else "ACCEPTED_QDWH_POLAR"
-                        return Q, kappa_est, L0_est, status_ok
+                        if kappa_est > float(kappa_max):
+                            warnings.warn(
+                                f"QDWH converged with elevated kappa_est={kappa_est:.3e} > kappa_max={kappa_max:.3e}",
+                                RuntimeWarning,
+                                stacklevel=2,
+                            )
+                        return Q, kappa_est, L0_est, "ACCEPTED_QDWH_POLAR"
                     break
 
             if np.all(np.isfinite(Q)):
@@ -171,12 +178,11 @@ class PmtpStiefelAdapter:
         except np.linalg.LinAlgError:
             pass
 
-        # 4. Fallback SVD polar de seguridad (únicamente tras intentar QDWH o cuando supera kappa_fatal/rank-deficient)
-        s = np.linalg.svd(X_scaled, compute_uv=False)
+        # 4. Fallback SVD polar de seguridad (única descomposición SVD tras intentar QDWH o cuando supera kappa_fatal)
+        U, s, Vt = np.linalg.svd(X_scaled, full_matrices=False)
         sigma_max, sigma_min = float(s[0]), float(s[-1])
         kappa_exact = (sigma_max / sigma_min) if sigma_min > 0.0 else float("inf")
         r_rel_exact = (sigma_min / sigma_max) if sigma_max > 0.0 else 0.0
-        U, _, Vt = np.linalg.svd(X_scaled, full_matrices=False)
         Q = np.dot(U, Vt).astype(np.float64)
         if sigma_min <= 0.0 or not math.isfinite(kappa_exact) or kappa_exact >= 1e14:
             return Q, kappa_exact, r_rel_exact, "REJECTED_RANK_DEFICIENT_SVD"

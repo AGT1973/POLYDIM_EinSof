@@ -112,8 +112,16 @@ class _MemfdShmAdapter:
             self.fd = -1
 
     def unlink(self) -> None:
-        # memfd es anónimo y se destruye automáticamente al cerrar último descriptor (sin residuo en /dev/shm)
+        # memfd es anónimo y se destruye automáticamente al cerrar último descriptor (sin residuo en /dev/shm).
+        # En sistemas POSIX multi-proceso, la transferencia entre procesos se realiza sin namespace global vía
+        # descriptores anónimos transmitidos por socket de dominio UNIX usando SCM_RIGHTS (sendmsg/recvmsg).
         pass
+
+    def export_fd(self) -> int:
+        """Retorna el file descriptor anónimo listo para transmisión SCM_RIGHTS (sendmsg/recvmsg)."""
+        if getattr(self, "fd", -1) < 0:
+            raise ValueError("memfd ya cerrado o descriptor inválido")
+        return self.fd
 
 
 class PmtpLeasedArray(np.ndarray):
@@ -173,31 +181,35 @@ class PmtpShmBus:
 
     @staticmethod
     def _enforce_0600_permissions(shm_name: str) -> str:
-        """Aplica permisos 0600 explícitos en POSIX /dev/shm (anula umask permisiva)."""
+        """Aplica permisos 0600 explícitos en POSIX /dev/shm (anula umask permisiva). Fail-closed."""
         if os.name == "posix":
             clean_name = shm_name.lstrip("/")
             shm_path = os.path.join("/dev/shm", clean_name)
             if os.path.exists(shm_path):
-                os.chmod(shm_path, 0o600)
-                mode = os.stat(shm_path).st_mode & 0o777
-                if mode != 0o600:
-                    raise PermissionError(f"Fallo al imponer permisos 0600 en {shm_path}: modo actual {oct(mode)}")
+                try:
+                    os.chmod(shm_path, 0o600)
+                    mode = os.stat(shm_path).st_mode & 0o777
+                    if mode != 0o600:
+                        raise PermissionError(f"Fail-closed: fallo al imponer permisos 0600 en {shm_path}: modo actual {oct(mode)}")
+                except OSError as exc:
+                    raise PermissionError(f"Fail-closed: error al aplicar chmod 0600 sobre {shm_path}") from exc
                 return "0600"
+            raise FileNotFoundError(f"Fail-closed: segmento SHM POSIX no encontrado en {shm_path}")
         return "0600_PRIVATE_SESSION"
 
     @staticmethod
     def _zeroize_shm(shm: shared_memory.SharedMemory) -> None:
-        """Sobrescribe determinísticamente todo el segmento SHM con 0x00 antes de close/unlink."""
-        try:
-            buf = shm.buf
-            if buf is not None:
+        """Sobrescribe determinísticamente todo el segmento SHM con 0x00 antes de close/unlink. Fail-closed."""
+        buf = getattr(shm, "buf", None)
+        if buf is not None:
+            try:
                 n = len(buf)
                 chunk = b"\x00" * min(65536, n)
                 for off in range(0, n, len(chunk)):
                     end = min(off + len(chunk), n)
                     buf[off:end] = chunk[:end - off]
-        except Exception:
-            pass
+            except Exception as exc:
+                raise RuntimeError("Fail-closed: fallo crítico durante zeroización determinista de SHM") from exc
 
     def _pack_header_with_mac(
         self,
@@ -258,6 +270,8 @@ class PmtpShmBus:
         """
         if num_elements <= 0:
             raise ValueError(f"num_elements debe ser estrictamente positivo: {num_elements}")
+        if self.max_dim > 0 and num_elements > self.max_dim:
+            raise ValueError(f"Fail-closed: num_elements ({num_elements}) excede el límite máximo configurado max_dim ({self.max_dim})")
 
         np_dt = np.dtype(dtype)
         dtype_map = {

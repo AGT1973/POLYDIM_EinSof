@@ -7,6 +7,7 @@
 // ============================================================================
 
 #include "atelier_abi.hpp"
+#include <cstdio>
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -18,11 +19,25 @@
 #include <unistd.h>
 #endif
 
+static std::array<char, 96> make_unique_shm_name(bool win32_local) {
+    uint64_t nonce = 0;
+    if (!fill_csprng_bytes(reinterpret_cast<uint8_t*>(&nonce), sizeof(nonce))) {
+        std::abort();
+    }
+    std::array<char, 96> out{};
 #if defined(_WIN32)
-constexpr const char* SHM_NAME = "Local\\PMTP_ATELIER_SLAB";
+    (void)win32_local;
+    std::snprintf(out.data(), out.size(), "Local\\PMTP_ATELIER_%lu_%016llx",
+                  static_cast<unsigned long>(GetCurrentProcessId()),
+                  static_cast<unsigned long long>(nonce));
 #else
-constexpr const char* SHM_NAME = "/pmtp_atelier_slab";
+    (void)win32_local;
+    std::snprintf(out.data(), out.size(), "/pmtp_atelier_%ld_%016llx",
+                  static_cast<long>(getpid()),
+                  static_cast<unsigned long long>(nonce));
 #endif
+    return out;
+}
 
 int main(int argc, char* argv[]) {
     uint32_t D = 1024;
@@ -76,10 +91,10 @@ int main(int argc, char* argv[]) {
     header.timestamp_ns = static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(
         t1.time_since_epoch()).count());
     header.heartbeat_ns = header.timestamp_ns;
-    header.sequence = 2; // Seqlock: par = seguro para lectura
-    header.readers_count = 1;
-    header.reserved = compute_slab_mac32(header, Z.data(), static_cast<size_t>(D) * k);
+    header.sequence = 2; // Seqlock: par = seguro para lectura (word mutable excluido del MAC)
+    header.mac64 = compute_slab_mac64(header, Z.data(), static_cast<size_t>(D) * k);
 
+    std::array<char, 96> shm_name = make_unique_shm_name(true);
 #if defined(_WIN32)
     HANDLE hMapFile = CreateFileMappingA(
         INVALID_HANDLE_VALUE,
@@ -87,8 +102,14 @@ int main(int argc, char* argv[]) {
         PAGE_READWRITE,
         0,
         static_cast<DWORD>(slab_bytes),
-        SHM_NAME
+        shm_name.data()
     );
+    if (hMapFile != NULL) {
+        if (GetLastError() == ERROR_ALREADY_EXISTS) {
+            CloseHandle(hMapFile);
+            hMapFile = NULL;
+        }
+    }
     if (hMapFile != NULL) {
         void* pBuf = MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, slab_bytes);
         if (pBuf != NULL) {
@@ -99,7 +120,7 @@ int main(int argc, char* argv[]) {
             explicit_zeroize(pBuf, slab_bytes);
             UnmapViewOfFile(pBuf);
             shm_ok = abi_verified;
-            ipc_mode = "WIN32_LOCAL_SHM_0600_EQUIV";
+            ipc_mode = "WIN32_LOCAL_SHM_UNIQUE_SESSION";
         }
         CloseHandle(hMapFile);
     }
@@ -116,19 +137,23 @@ int main(int argc, char* argv[]) {
     }
 #endif
     if (fd == -1) {
-        shm_unlink(SHM_NAME);
-        fd = shm_open(SHM_NAME, O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR);
+        fd = shm_open(shm_name.data(), O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR);
         ipc_mode = "POSIX_SHM_0600_O_EXCL";
     }
     if (fd != -1) {
         struct stat st{};
-        fchmod(fd, S_IRUSR | S_IWUSR);
-        if (fstat(fd, &st) == 0 && (st.st_mode & 0777) == (S_IRUSR | S_IWUSR) && ftruncate(fd, static_cast<off_t>(slab_bytes)) != -1) {
+        bool sec_ok = (fchmod(fd, S_IRUSR | S_IWUSR) == 0) &&
+                      (fstat(fd, &st) == 0) &&
+                      ((st.st_mode & 0777) == (S_IRUSR | S_IWUSR)) &&
+                      (ftruncate(fd, static_cast<off_t>(slab_bytes)) == 0);
 #if defined(__linux__)
-            if (is_memfd) {
-                fcntl(fd, F_ADD_SEALS, F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_SEAL);
+        if (sec_ok && is_memfd) {
+            if (fcntl(fd, F_ADD_SEALS, F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_SEAL) == -1) {
+                sec_ok = false;
             }
+        }
 #endif
+        if (sec_ok) {
             void* pBuf = mmap(NULL, slab_bytes, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
             if (pBuf != MAP_FAILED) {
                 std::memcpy(pBuf, &header, sizeof(AtelierSlabHeader));
@@ -142,7 +167,7 @@ int main(int argc, char* argv[]) {
         }
         close(fd);
         if (!is_memfd) {
-            shm_unlink(SHM_NAME);
+            shm_unlink(shm_name.data());
         }
     }
 #endif

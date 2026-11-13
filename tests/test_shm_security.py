@@ -153,6 +153,15 @@ def test_qdwh_primary_solver_without_upfront_svd():
     assert defect <= 1e-14, f"QDWH defect too high: {defect}"
 
 
+def test_max_dim_fail_closed_cap():
+    bus = PmtpShmBus(prefix="t_sec_cap", max_slabs=2, max_dim=512)
+    try:
+        with pytest.raises(ValueError, match="excede el límite máximo configurado max_dim"):
+            bus.allocate_tensor_slab(slab_id=1, num_elements=1024)
+    finally:
+        bus.cleanup()
+
+
 @pytest.mark.skipif(not hasattr(os, "memfd_create"), reason="Requiere syscall Linux os.memfd_create (Docker/POSIX)")
 def test_memfd_create_0600_sealed_on_linux():
     bus = PmtpShmBus(prefix="t_sec_memfd", max_slabs=2, max_dim=512, backend="memfd", auth_key=b"memfd_key")
