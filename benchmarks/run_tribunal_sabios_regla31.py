@@ -16,9 +16,9 @@ from concurrent.futures import ThreadPoolExecutor
 
 sys.stdout.reconfigure(line_buffering=True)
 
-PERPLEXITY_KEY = "os.getenv("PERPLEXITY_API_KEY", "")"
-DEEPSEEK_KEY = "os.getenv("DEEPSEEK_API_KEY", "")"
-OPENROUTER_KEY = "os.getenv("OPENROUTER_API_KEY", "")"
+PERPLEXITY_KEY = "os.environ.get("PERPLEXITY_API_KEY", "")s4cRvCWr9SMBW3v8f4cRRspUvZbl2Z6YTMjS0Yqcm35O1fw"
+DEEPSEEK_KEY = "os.environ.get("DEEPSEEK_API_KEY", "")"
+OPENROUTER_KEY = "os.environ.get("OPENROUTER_API_KEY", "")"
 
 PROMPT_TRIBUNAL = """[AUDITORIA ADVERSARIAL SOTA: ARQUITECTURA EINSOF, REGLA 31 Y MATEMATICA DE PUERTA ADENTRO]
 

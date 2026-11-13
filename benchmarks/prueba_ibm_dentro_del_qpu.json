@@ -1,0 +1,38 @@
+{
+  "exit_code": 0,
+  "qpu_hardware": "ibm_kingston",
+  "qpu_total_qubits": 156,
+  "job_id_1_unica_salida": "dbkijphffo6c73bbji7g",
+  "job_id_comparativa": "dbkijpt6p51s73cmnnng",
+  "arquitectura_einsof_dentro_del_qpu": {
+    "qubits_turing_internos_no_medidos": 9,
+    "qubits_que_cruzan_la_puerta": 3,
+    "cantidad_de_salidas_en_job_1shot": 1,
+    "unica_salida_recibida_de_la_puerta_qpu": "111",
+    "calculos_en_procesador_externo": "CERO (0 operaciones externas; moda calculada por compuertas CCX adentro del QPU)",
+    "respuesta_objetivo_correcta": "111"
+  },
+  "verificacion_estadistica_1024_disparos": {
+    "fidelidad_estandar_sin_turing_interno": 0.76074,
+    "fidelidad_einsof_con_moda_dentro_del_qpu": 0.75391,
+    "conteos_einsof_intra_qpu": {
+      "011": 92,
+      "111": 772,
+      "101": 65,
+      "110": 72,
+      "010": 9,
+      "001": 7,
+      "100": 7
+    },
+    "conteos_estandar_crudo": {
+      "111": 779,
+      "011": 86,
+      "110": 60,
+      "101": 78,
+      "000": 1,
+      "010": 8,
+      "001": 6,
+      "100": 6
+    }
+  }
+}
