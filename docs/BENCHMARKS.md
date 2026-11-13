@@ -41,55 +41,35 @@ $$S = \frac{1}{1 - 0.80} = 5.0\times \quad \text{up to} \quad S = \frac{1}{1 - 0
 
 ---
 
-### 5. HumanEval+ Full Benchmark: Text Baseline vs PMTP Zero-Hop (Ablation B vs C vs D)
-**Experiment**: [`humaneval_plus_ablation_164_real.py`](benchmarks/humaneval_plus_ablation_164_real.py) (164 coding tasks evaluated under 4 operational modes on host silicon).
-**Raw Silicon Data**: [`benchmarks/humaneval_plus_ablation_164_real.json`](benchmarks/humaneval_plus_ablation_164_real.json)
+### 5. HumanEval+ Pilot-20 (Cerebras CS-3 Real) & Ablation de Silicio 164 Ensayos
+**Piloto Real Cerebras CS-3 (20 tareas congeladas):** [`benchmarks/run_pilot20_humanevalplus_abcd.py`](../benchmarks/run_pilot20_humanevalplus_abcd.py)  
+**JSON Crudo Pilot-20:** [`benchmarks/PILOT20_HUMANEVALPLUS_REPORT_A_B_C_D.json`](../benchmarks/PILOT20_HUMANEVALPLUS_REPORT_A_B_C_D.json)  
+**Ablación 164 Ensayos en Vivo (Stiefel + SHM 0600/MAC):** [`benchmarks/humaneval_plus_ablation_164_real.py`](../benchmarks/humaneval_plus_ablation_164_real.py) | [`benchmarks/humaneval_plus_ablation_164_real.json`](../benchmarks/humaneval_plus_ablation_164_real.json)
 
-| Benchmark Metric | Modo A: Baseline Textual (REST / JSON 1D) | Modo B: Vector Continuo Lineal (Sin Stiefel) | Modo C: PMTP Stiefel $\text{St}(64, 1024)$ Ord. 10 | Modo D: Zero-Hop Directo (Raw View) |
+| Métrica Medida (Real) | Brazo A: Relevo Texto 1D | Brazo B: Vector Afín (Sin Stiefel) | Brazo C: POLYDIM Stiefel + PMTP | Brazo D: Zero-Hop Directo |
 | :--- | :---: | :---: | :---: | :---: |
-| **Pass@1 Accuracy** | 76.8% | 64.2% *(Colapso dimensional)* | **82.4%** *(+18.2% vs Modo B)* | **85.0%** *(+8.2% vs Modo A)* |
-| **Tokens per Hop** | ~1,024 tokens | **0 Tokens** | **0 Tokens (100% Eliminación)** | **0 Tokens (100% Eliminación)** |
-| **Latency per Hop** | 2.34 ms | 2.01 ms | 50.01 ms (AVX2 Newton-Schulz Ord.10) | **0.136 ms (136 μs)** |
-| **Orthogonality Defect**| N/A (1D string) | $1.20 \times 10^{3}$ *(Deriva métrica divergente)* | **$6.66 \times 10^{-16}$ (`TIER_STIEFEL_FLOOR_15`)** | N/A (Raw embedding norm) |
-| **Token Reduction** | Baseline (0%) | 100% | **100% Eliminación** | **100% Eliminación** |
-| **Exit Code** | 0 | 0 | **0 (Regla 19 Certificado)** | **0** |
-
-**Conclusión Decisiva del Estudio de Ablación (C vs B vs D):**  
-1. **Deriva Métrica en Modo B:** Un vector continuo lineal sin retracción ortogonal acumula un error métrico de $\|X^T X - I\|_\infty \approx 1.20 \times 10^3$, provocando una degradación de **18.2 puntos porcentuales** en precisión respecto a Stiefel.
-2. **Preservación Isométrica en Modo C:** La retracción polar Newton-Schulz de Orden 10 en la variedad $\text{St}(64, 1024)$ garantiza un defecto de ortogonalidad de $6.66 \times 10^{-16}$, dentro del límite estricto de máquina IEEE 754 (`TIER_STIEFEL_FLOOR_15`), alcanzando **82.4% Pass@1**.
-3. **Máximo Rendimiento Zero-Hop en Modo D:** La transferencia directa sin proyección alcanza el **85.0% Pass@1** del piloto certificado con una latencia de apenas $136\ \mu\text{s}$ y 0 tokens transmitidos.
-
-All benchmarks can be executed with zero local setup via public Jupyter notebooks (1-click free Google Colab):
-- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AGT1973/polydim-suite/blob/main/benchmarks/polydim_colab_benchmark_kit.ipynb) **[`polydim_colab_benchmark_kit.ipynb`](benchmarks/polydim_colab_benchmark_kit.ipynb)** *(Kit Completo de Benchmarks y Evaluación en Silicio)*
-- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AGT1973/polydim-suite/blob/main/benchmarks/polydim_colab_suite_20_benchmarks.ipynb) **[`polydim_colab_suite_20_benchmarks.ipynb`](benchmarks/polydim_colab_suite_20_benchmarks.ipynb)** *(Suite de 20 Benchmarks y Validación Asintótica)*
-- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AGT1973/polydim-suite/blob/main/benchmarks/polydim_colab_turing_t4_benchmark.ipynb) **[`polydim_colab_turing_t4_benchmark.ipynb`](benchmarks/polydim_colab_turing_t4_benchmark.ipynb)** *(Test de Aceleración y Defecto en GPU NVIDIA T4)*
-- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AGT1973/polydim-suite/blob/main/benchmarks/polydim_two_models_transfer_colab.ipynb) **[`polydim_two_models_transfer_colab.ipynb`](benchmarks/polydim_two_models_transfer_colab.ipynb)** *(Transferencia Tensorial Directa Entre Dos Modelos)*
-
+| **HumanEval Base Pass@1 (20 tareas)** | 65.0% (13/20) | 70.0% (14/20) | **80.0% (16/20)** | **90.0% (18/20)** |
+| **HumanEval+ Adversarial Pass@1** | 60.0% (12/20) | 70.0% (14/20) | **75.0% (15/20)** | **85.0% (17/20)** |
+| **Tokens Totales Facturados (20 tareas)** | 65,903 tokens | 16,868 tokens | 17,382 tokens | **14,910 tokens** |
+| **Defecto Ortogonal 10 Saltos (164 ensayos)**| N/A (1D string) | $8.27 \times 10^{3}$ *(Colapso)* | **$6.66 \times 10^{-16}$** (Máx $8.88 \times 10^{-16}$) | N/A (Raw SHM) |
+| **Latencia Local SHM+MAC (164 ensayos)** | 1.7765 ms (JSON roundtrip) | 934.4 μs | 1.94 ms (PolarSafe V2 + MAC) | **236.7 μs** (p95: 268.5 μs) |
+| **Exit Code** | 0 | 0 | **0 (164/164 MAC OK)** | **0 (164/164 MAC OK)** |
 
 ---
 
-### 6. Multi-Model Side-by-Side Benchmark: Con PMTP vs Sin PMTP
-**Empirical Comparison Across 4 SOTA Architectures** (Evaluated on ALADIN Node Intel i3-8100 + Kaggle Dual Tesla T4 / Google TPU v3-8).
+### 6. Matriz Dimensional Real en Silicio: JSON 1D vs. `PmtpShmBus` Autenticado
+**Script Reproducible:** [`benchmarks/benchmark_matriz_con_vs_sin_pmtp.py`](../benchmarks/benchmark_matriz_con_vs_sin_pmtp.py)  
+**JSON Crudo:** [`benchmarks/benchmark_matriz_con_vs_sin_pmtp.json`](../benchmarks/benchmark_matriz_con_vs_sin_pmtp.json)
 
-| Modelo Evaluado | Modo Operativo | Consumo de Tokens | Latencia por Salto | Memoria / VRAM | Retención Semántica (10 Hops) | Defecto Stiefel ($\|X^T X - I\|_\infty$) |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Qwen 3 1.5B** *(Didáctico)* | **Sin PMTP (Texto 1D)** | ~380 tok/salto | 1,920.0 ms | 1,150 MB (Dinámico) | 69.8% *(DPI decay)* | N/A (Texto 1D) |
-| *(Manifold $\text{St}(1024, 2048)$)* | **Con PMTP (Zero-Hop)** | **0 Tokens (100% ahorro)** | **0.0032 ms (3.2 μs)** | **16 KB (Arena R15)** | **100.0%** | **$1.936 \times 10^{-16}$** |
-| **Qwen 3 8B** *(Mid-Range)* | **Sin PMTP (Texto 1D)** | ~512 tok/salto | 4,850.0 ms | 4,200 MB (Dinámico) | 64.5% *(DPI decay)* | N/A (Texto 1D) |
-| *(Manifold $\text{St}(2048, 4096)$)* | **Con PMTP (Zero-Hop)** | **0 Tokens (100% ahorro)** | **0.0038 ms (3.8 μs)** | **32 KB (Arena R15)** | **100.0%** | **$1.708 \times 10^{-16}$** |
-| **DeepSeek V4.1 Flash** *(MoE)* | **Sin PMTP (Texto 1D)** | ~640 tok/salto | 6,120.0 ms | 5,800 MB (Dinámico) | 61.2% *(DPI decay)* | N/A (Texto 1D) |
-| *(Manifold $\text{St}(2048, 5120)$)* | **Con PMTP (Zero-Hop)** | **0 Tokens (100% ahorro)** | **0.0041 ms (4.1 μs)** | **40 KB (Arena R15)** | **100.0%** | **$1.732 \times 10^{-16}$** |
-| **LLaMA 4 70B** *(Frontier)* | **Sin PMTP (Texto 1D)** | ~890 tok/salto | 14,200.0 ms | 14,800 MB (Dinámico) | 52.4% *(DPI decay)* | N/A (Texto 1D) |
-| *(Manifold $\text{St}(2048, 8192)$)* | **Con PMTP (Zero-Hop)** | **0 Tokens (100% ahorro)** | **0.0058 ms (5.8 μs)** | **64 KB (Arena R15)** | **100.0%** | **$1.716 \times 10^{-16}$** |
+| Dimensión Latente | Baseline JSON 1D (Roundtrip Local) | `PmtpShmBus` (0600 + BLAKE2s-64 MAC) | Speedup Local Python | Defecto Stiefel Medido ($\|W^T W - I\|_\infty$) |
+| :--- | :---: | :---: | :---: | :---: |
+| **$D = 2048$ (Qwen 3 1.5B Dim)** | 3.688 ms (45,736 B) | **426.45 μs** (0 tokens) | **8.6×** | **$8.88 \times 10^{-16}$** |
+| **$D = 4096$ (Qwen 3 8B Dim)** | 7.421 ms (92,031 B) | **790.55 μs** (0 tokens) | **9.4×** | **$6.66 \times 10^{-16}$** |
+| **$D = 5120$ (DeepSeek V4 Dim)** | 9.334 ms (115,226 B) | **975.10 μs** (0 tokens) | **9.6×** | **$8.88 \times 10^{-16}$** |
+| **$D = 8192$ (LLaMA 4 70B Dim)** | 14.969 ms (185,103 B) | **1540.80 μs** (0 tokens) | **9.7×** | **$4.44 \times 10^{-16}$** |
 
-#### Hallazgos Empíricos en Silicio:
-1. **Tokens:** Eliminación del 100% del consumo de tokens en los 4 modelos durante el pase de estado intermedio. Cero costo en la billetera del usuario.
-2. **Latencia:** Aceleración promedio de **> 600,000×** al evitar la serialización/deserialización a texto y la inferencia autoregresiva intermedia.
-3. **Memoria:** Sustitución de gigabytes de buffers y KV-Cache por una slab de memoria compartida de tamaño constante (16 KB - 64 KB).
-4. **Preservación de Información (DPI):** En cadenas de 10 saltos, los modelos sin PMTP pierden entre un 30% y un 48% de fidelidad debido al cuello de botella de tokenización (Data Processing Inequality). Con PMTP Stiefel, la retención es del **100.0%** con defecto ortogonal a nivel épsilon de máquina ($\le 1.94 	imes 10^{-16}$).
-
-Reproducción con 1 comando:
-`bash
-python benchmarks/benchmark_matriz_con_vs_sin_pmtp.py
-`
-Archivo crudo de datos: [benchmarks/benchmark_matriz_con_vs_sin_pmtp.json](benchmarks/benchmark_matriz_con_vs_sin_pmtp.json)
+> Reproducción inmediata:
+> ```bash
+> python benchmarks/humaneval_plus_ablation_164_real.py
+> python benchmarks/benchmark_matriz_con_vs_sin_pmtp.py
+> ```

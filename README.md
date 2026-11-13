@@ -10,42 +10,48 @@
 **Licencia:** Open-Source (MIT)  
 **Preservación Académica:** Zenodo DOI [10.5281/zenodo.24122867](https://doi.org/10.5281/zenodo.24122867)  
 **Model Hub Oficial:** [Hugging Face Polydim-Einsof](https://huggingface.co/polidim-einsof)  
-**Repositorio Canónico Matriz:** [https://github.com/AGT1973/POLYDIM_EinSof](https://github.com/AGT1973/POLYDIM_EinSof)  
+**Repositorio Canónico Matriz (y núcleo EinsofOS):** [https://github.com/AGT1973/POLYDIM_EinSof](https://github.com/AGT1973/POLYDIM_EinSof)  
 **Suite Pedagógica y de Aplicación:** [https://github.com/AGT1973/polydim-suite](https://github.com/AGT1973/polydim-suite)
+
+> [!NOTE]
+> **¿Qué es EinsofOS?** **EinsofOS** ([especificación y núcleo en POLYDIM_EinSof](https://github.com/AGT1973/POLYDIM_EinSof)) es una arquitectura de sistema operativo e ISA geométrica orientada a tensores (bloques binarios de 64 bytes alineados a línea de caché, descriptores `FatPtr` de 16 bytes en registros y tabla de despacho L1 de 384 bytes) diseñada para ejecutar agentes continuos sobre variedades de Stiefel $\text{St}(k, D)$ y $S^{D-1}$ eliminando la serialización textual 1D. Este repositorio (**POLYDIM-SUITE**) provee el bus IPC en memoria compartida en espacio de usuario (`PmtpShmBus`), la integración Python/NumPy/C++20/Rust y la suite de benchmarks verificables en silicio.
 
 ---
 
 > [!IMPORTANT]
 > ### 🏛️ Arquitectura del Ecosistema y Repositorio Matriz
-> Este repositorio (**POLYDIM_EinSof**) es el **NÚCLEO PRINCIPAL Y MATRIZ CANÓNICA** de la iniciativa POLYDIM-EINSOF.
-> * **Núcleo Matemático y Tensorial (este repositorio):** Aloja el motor fundamental de transporte tensorial de latencia sub-milisegundo (**PMTP - Polydim Memory Tensor Protocol**), la geometría diferencial en Variedad de Stiefel $\text{St}(k, D)$, algoritmos de retracción polar Newton-Schulz Ord. 10, acumuladores compensados de Neumaier y los kernels de silicio nativos C++20 / Rust con defecto $\le 10^{-15}$. Es el repositorio canónico distribuido y referenciado globalmente en Zenodo, preprints y publicaciones académicas.
-> * **Suite Pedagógica y de Aplicación ([polydim-suite](https://github.com/AGT1973/polydim-suite)):** Repositorio complementario orientado a la adopción y docencia: aloja **ATELIER** (Omnimodalidad Continua & RL en Stiefel), integraciones con **EinsofOS**, simuladores WebGL/HTML5, interfaces de visualización, y guías paso a paso para alumnos e investigadores.
+> Este repositorio (**POLYDIM_EinSof** / **POLYDIM-SUITE**) implementa el motor operativo de la iniciativa POLYDIM-EINSOF:
+> * **Núcleo Matemático y Tensorial (`pmtp/`, `tools/atelier_kernel/`):** Aloja el protocolo de transporte tensorial en memoria compartida (**PMTP - Polydim Memory Tensor Protocol**), la geometría diferencial en Variedad de Stiefel $\text{St}(k, D)$, algoritmos de retracción polar PolarSafe V2 (Newton-Schulz Ord. 5/10 + fallback SVD), acumuladores compensados de Neumaier y kernels nativos C++20 / Rust con defecto $\le 10^{-15}$.
+> * **Suite Pedagógica y de Aplicación ([polydim-suite](https://github.com/AGT1973/polydim-suite)):** Aloja **ATELIER** (Omnimodalidad Continua & RL en Stiefel), compatibilidad ABI con **EinsofOS**, simuladores interactivos HTML5 y guías reproducibles paso a paso.
 
 > [!NOTE]
-> ### 🛡️ Especificación de Seguridad, Concurrencia e Invariantes Numéricos (Release 11/2026)
+> ### 🛡️ Especificación de Seguridad, Concurrencia e Invariantes Numéricos (Hardened Release 11/2026)
 >
 > | Dimensión | Implementación Verificada en Código | Evidencia / Test |
 > | :--- | :--- | :--- |
-> | **Privilegios y SO** | 100% *user-space* (`shm_open`/`mmap` en POSIX, `CreateFileMapping` en Win32), equivalente en postura de privilegios a `torch.multiprocessing` / Ray. Sin drivers de kernel ni `root`. | `pmtp/pmtp_channel.py` |
-> | **Sincronización IPC** | ABI alineada a 64 bytes con `static_assert`, protocolo **`seqlock` atómico** anti-*torn-read*, *heartbeat TTL* y desvinculación explícita al cerrar. | `tests/test_abi_offsets.py`, `tools/atelier_kernel/atelier_stiefel.{cpp,rs}` |
-> | **Fallback Observable** | Si SHM está deshabilitado (ej. Docker sin `--ipc=host`), degrada sin crashear el proceso host (`0` excepciones no capturadas) hacia texto UTF-8 con estado de canal explícito (*observable graceful degradation*, no *fail-silent*). | `tests/test_channel_fallback.py` (6 tests OK) |
-> | **Estabilidad PolarSafe V2** | Pre-escalado espectral $Y_0 = X / \sigma_{\max}$ ($\|I - Y_0^T Y_0\|_2 < 1$), manejo explícito de casos borde y conmutación automática a SVD polar exacto si $\kappa(X) > 10^3$. | `pmtp/pmtp_stiefel.py` |
-> | **Precisión y Convergencia** | Retracción polar Newton-Schulz de Orden 10 (Higham 1986; Kenney & Laub 1991) calibrada según el condicionamiento $\kappa(X) \le 10^3$ hasta alcanzar piso FP64 ($\le 1.33 \times 10^{-15}$). | `tests/test_en_vivo.py` (`4.44e-16`, Exit Code 0) |
-> | **Inmutabilidad de Prefijo** | Clonación defensiva anti-aliasing en la inyección del token $L-1$: las activaciones previas $[0 \dots L-2]$ conservan $\Delta = 0.00 \times 10^0$. | `tests/test_en_vivo.py` |
-> | **Alcance de IBM Quantum** | Los 31 jobs en QPUs Heron/Eagle validan exclusivamente la **equivalencia de isometría geométrica** (espacio de Hilbert vs. variedad de Stiefel clásica); el transporte SHM es 100% clásico. | [IBM Quantum Jobs](https://quantum.ibm.com/jobs) |
+> | **Aislamiento `/dev/shm` y Permisos `0600`** | 100% *user-space*. En POSIX (`shm_open`/`os.chmod`) impone explícitamente modo **`0600`** (`S_IRUSR\|S_IWUSR`, anulando `umask` permisiva); en Win32 usa namespace privado de sesión (`Local\`). | `pmtp/pmtp_shm_bus.py`, `tools/atelier_kernel/atelier_stiefel.cpp`, `tests/test_shm_security.py` |
+> | **MAC / Auth & Zeroización** | Tag **MAC BLAKE2s-64 con clave** (`hmac.compare_digest` en tiempo constante) en bytes `56..64` de cabecera contra inyección/snooping co-inquilino, más **zeroización determinista (`0x00` / `SecureZeroMemory`)** de toda la memoria antes de `close`/`unlink`. | `pmtp/pmtp_shm_bus.py`, `tests/test_shm_security.py`, `tests/test_pmtp_hardened_all_items.rs` |
+> | **Sincronización IPC** | ABI alineada a 64 bytes verificada por `static_assert` y offsets cruzados, protocolo **`seqlock` atómico** con barreras `Acquire/Release` y *heartbeat TTL* contra slabs zombies. | `tests/test_abi_offsets.py`, `tests/test_pmtp_hardened_all_items.rs` (Item 1) |
+> | **Fallback Observable** | Si SHM falla o hay tampering MAC, degrada sin crashear (`0` excepciones no capturadas) a texto UTF-8 emitiendo log JSON **`WARN`**, activando `PMTP_FLAG_FALLBACK_ACTIVE` y con **auto-rearme** al recuperarse el canal. | `pmtp/pmtp_channel.py`, `tests/test_channel_fallback.py` (6/6), `tests/test_shm_security.py` |
+> | **Estabilidad PolarSafe V2** | Pre-escalado espectral $Y_0 = X / (\sigma_{\max} \cdot 1.000000000001)$ ($\|I - Y_0^T Y_0\|_2 < 1$), iteración Newton-Schulz Ord. 5/10 y conmutación determinista a SVD polar exacto si $\kappa(X) > 10^3$. | `pmtp/pmtp_stiefel.py`, `tests/test_pmtp_hardened_all_items.rs` (Item 2) |
+> | **Precisión y Tolerancia Relativa** | Cota relativa $\frac{\|W^T W - I_k\|_F}{\sqrt{k}} \le \epsilon_{\text{mach}} \approx 1.7 \times 10^{-16}$ en IEEE-754 FP64. | `tests/test_en_vivo.py` (`4.44e-16`, Exit Code 0) |
+> | **Alcance de IBM Quantum** | Los 31 jobs en QPU física Heron r2 (IBM Kingston 156Q) validan exclusivamente isometría geométrica en espacio de Hilbert ($\mathcal{H} \to S^{D-1}$); el transporte SHM es 100% clásico y desacoplado. | [IBM Quantum Jobs](https://quantum.ibm.com/jobs) |
 
 > [!IMPORTANT]
-> ### 📊 Benchmark Comparativo Reproducible: Modelo Estándar vs. Modelo Einsof / POLYDIM
-> Resultados ejecutados en hardware físico local y GPU T4 (`benchmarks/humaneval_plus_ablation_164_real.py` y `benchmarks/benchmark_matriz_con_vs_sin_pmtp.py`):
+> ### 📊 Benchmarks Reproducibles y Reportes Crudos JSON (Sin Mock)
+> Toda métrica está respaldada por su script ejecutable y archivo JSON crudo dentro de [`benchmarks/`](benchmarks/):
 >
-> | Dimensión / Métrica | Modelo Estándar (Baseline Texto 1D / REST) | Modelo Einsof / POLYDIM (PMTP + Stiefel) | Script Reproducible |
-> | :--- | :---: | :---: | :--- |
-> | **HumanEval+ (164 tareas, Pass@1)** | 76.8% | **82.4%** (Stiefel Ord. 10) / **85.0%** (Zero-Hop) | `benchmarks/humaneval_plus_ablation_164_real.py` |
-> | **Tokens de comunicación entre agentes** | 380 – 890 tokens/salto | **0 tokens/salto** (100% eliminación) | `benchmarks/benchmark_matriz_con_vs_sin_pmtp.py` |
-> | **Retención semántica (10 saltos)** | 52.4% – 69.8% *(degradación DPI)* | **100.0%** ($\|X^T X - I\|_\infty \le 1.94 \times 10^{-16}$) | `benchmarks/benchmark_matriz_con_vs_sin_pmtp.py` |
-> | **Latencia de transporte por salto** | 1,920 – 14,200 ms | **0.0032 – 0.0058 ms** (RAM compartida, $15.1\,\mu\text{s}$ / 64 KB) | `benchmarks/benchmark_matriz_con_vs_sin_pmtp.py` |
-> | **Huella de memoria de transporte** | 1,150 – 14,800 MB (KV-Cache dinámica) | **16 – 64 KB** (slab fijo alineado a 64B) | `tests/test_abi_offsets.py` |
-> | **Defecto de Isometría ($\text{St}(64, 1024)$)** | $1.20 \times 10^3$ *(lineal sin Stiefel)* | **$\le 6.66 \times 10^{-16}$** (Orden 4/5 $\kappa \le 2$; Orden 10 $\kappa \le 10^3$; SVD $\kappa > 10^3$) | `tests/test_en_vivo.py` |
+> 1. **Piloto Real Cerebras CS-3 + C++20/Rust (`HumanEval+` 20 tareas congeladas):** [`benchmarks/run_pilot20_humanevalplus_abcd.py`](benchmarks/run_pilot20_humanevalplus_abcd.py) | JSON crudo: [`benchmarks/PILOT20_HUMANEVALPLUS_REPORT_A_B_C_D.json`](benchmarks/PILOT20_HUMANEVALPLUS_REPORT_A_B_C_D.json)
+>    - **Brazo A (Relevo Texto 1D multi-hop):** `65.0%` Base (`13/20`), `60.0%` Plus (`12/20`), `65,903` tokens totales (`3,295.2`/tarea).
+>    - **Brazo B (Vectorial Afín sin Stiefel):** `70.0%` Base (`14/20`), `70.0%` Plus (`14/20`), `16,868` tokens totales (`843.4`/tarea).
+>    - **Brazo C (POLYDIM Stiefel + PMTP):** `80.0%` Base (`16/20`), `75.0%` Plus (`15/20`), `17,382` tokens totales (`869.1`/tarea).
+>    - **Brazo D (Zero-Hop Directo):** `90.0%` Base (`18/20`), `85.0%` Plus (`17/20`), `14,910` tokens totales (`745.5`/tarea).
+> 2. **Ablación de Silicio en Vivo (164 ensayos `St(16, 1024)` + `PmtpShmBus` 0600/MAC):** [`benchmarks/humaneval_plus_ablation_164_real.py`](benchmarks/humaneval_plus_ablation_164_real.py) | JSON crudo: [`benchmarks/humaneval_plus_ablation_164_real.json`](benchmarks/humaneval_plus_ablation_164_real.json)
+>    - **Modo B (Lineal 10 saltos sin Stiefel):** Defecto de ortogonalidad diverge a **`8.27 × 10³`** (`8265.95`).
+>    - **Modo C (PolarSafe V2 + SHM MAC):** Defecto mediano **`6.66 × 10⁻¹⁶`** (máx **`8.88 × 10⁻¹⁶`**), `164/164` verificados con BLAKE2s-64 MAC y zeroizados al cerrar.
+>    - **Modo D (Zero-Hop SHM+MAC puro):** Mediana **`236.7 μs`** (`p95: 268.5 μs`), `0` tokens de comunicación.
+> 3. **Matriz Dimensional Real JSON 1D vs. `PmtpShmBus` Autenticado (`D ∈ [2048, 8192]`):** [`benchmarks/benchmark_matriz_con_vs_sin_pmtp.py`](benchmarks/benchmark_matriz_con_vs_sin_pmtp.py) | JSON crudo: [`benchmarks/benchmark_matriz_con_vs_sin_pmtp.json`](benchmarks/benchmark_matriz_con_vs_sin_pmtp.json)
+>    - **Python local roundtrip (`D=2048` → `8192`):** JSON 1D `3.69 – 14.97 ms` (`45.7 – 185.1 KB`) vs. `PmtpShmBus` con MAC `426.5 – 1540.8 μs` (**`8.6× – 9.7×`** aceleración local verificada en Python con `0` tokens y defecto Stiefel `4.44e-16 – 8.88e-16`).
 >
 > **Artefactos Públicos Verificables:**
 > - **Zenodo (CERN / OpenAIRE):** [10.5281/zenodo.24013070](https://doi.org/10.5281/zenodo.24013070) | [10.5281/zenodo.24122867](https://doi.org/10.5281/zenodo.24122867)

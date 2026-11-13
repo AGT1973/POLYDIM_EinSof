@@ -1,0 +1,82 @@
+{
+  "protocol": "HUMANEVAL_PLUS_ABLATION_164_SILICON_AND_PILOT20_CEREBRAS",
+  "platform": "Windows-11-10.0.22621-SP0",
+  "trials_silicon": 164,
+  "manifold": "St(16, 1024)",
+  "cerebras_pilot20_verified": {
+    "source_json": "benchmarks/PILOT20_HUMANEVALPLUS_REPORT_A_B_C_D.json",
+    "models": [
+      "qwen-3.8-27b",
+      "gpt-oss-120b"
+    ],
+    "hardware": "Cerebras CS-3 (api.cerebras.ai) + C++20/Rust 2021 Local Silicon",
+    "A_1D_multihop": {
+      "base_pass_count": 13,
+      "base_pass_rate_pct": 65.0,
+      "plus_pass_count": 12,
+      "plus_pass_rate_pct": 60.0,
+      "total_tokens": 65903,
+      "avg_tokens_per_task": 3295.2,
+      "avg_wall_ms": 22757.7,
+      "avg_wse_ms": 1064.8,
+      "ms_per_correct_plus": 37929.5
+    },
+    "B_affine_vector": {
+      "base_pass_count": 14,
+      "base_pass_rate_pct": 70.0,
+      "plus_pass_count": 14,
+      "plus_pass_rate_pct": 70.0,
+      "total_tokens": 16868,
+      "avg_tokens_per_task": 843.4,
+      "avg_wall_ms": 8153.3,
+      "avg_wse_ms": 390.9,
+      "ms_per_correct_plus": 11647.6
+    },
+    "C_polydim_stiefel": {
+      "base_pass_count": 16,
+      "base_pass_rate_pct": 80.0,
+      "plus_pass_count": 15,
+      "plus_pass_rate_pct": 75.0,
+      "total_tokens": 17382,
+      "avg_tokens_per_task": 869.1,
+      "avg_wall_ms": 50541.4,
+      "avg_wse_ms": 383.5,
+      "ms_per_correct_plus": 67388.5
+    },
+    "D_zero_hop_direct": {
+      "base_pass_count": 18,
+      "base_pass_rate_pct": 90.0,
+      "plus_pass_count": 17,
+      "plus_pass_rate_pct": 85.0,
+      "total_tokens": 14910,
+      "avg_tokens_per_task": 745.5,
+      "avg_wall_ms": 7332.3,
+      "avg_wse_ms": 319.1,
+      "ms_per_correct_plus": 8626.2
+    }
+  },
+  "silicon_ablation_164_live": {
+    "mode_a_json_1d_local": {
+      "payload_bytes": 22732,
+      "median_roundtrip_ms": 1.7765
+    },
+    "mode_b_linear_10_hops": {
+      "median_latency_us": 934.4,
+      "median_orthogonality_defect": 8265.950358203141,
+      "max_orthogonality_defect": 8265.950358203147
+    },
+    "mode_c_polarsafe_stiefel_shm_mac": {
+      "median_latency_us": 1942.35,
+      "median_orthogonality_defect": 6.661338147750939e-16,
+      "max_orthogonality_defect": 8.881784197001252e-16,
+      "mac_verified_trials": 164,
+      "zeroized_on_cleanup": true
+    },
+    "mode_d_zero_hop_shm_mac": {
+      "median_latency_us": 236.7,
+      "p95_latency_us": 268.54,
+      "mac_verified_trials": 164
+    }
+  },
+  "exit_code": 0
+}

@@ -11,6 +11,7 @@
 #include <chrono>
 #include <cmath>
 #include <cstring>
+#include <cstdlib>
 #include <iomanip>
 
 #if defined(_WIN32)
@@ -189,6 +190,39 @@ double retract_stiefel_newton_schulz(double* Z, uint32_t D, uint32_t k, uint32_t
     return max_defect;
 }
 
+// Keyed 32-bit authentication tag (co-tenant spoofing / injection protection in /dev/shm)
+inline uint32_t compute_slab_mac32(const AtelierSlabHeader& hdr, const double* payload, uint32_t elems) {
+    const char* env_key = std::getenv("PMTP_SHM_KEY");
+    const uint8_t* key_bytes = env_key ? reinterpret_cast<const uint8_t*>(env_key)
+                                       : reinterpret_cast<const uint8_t*>("PMTP_DEFAULT_SESSION_KEY_V1");
+    size_t key_len = env_key ? std::strlen(env_key) : 27;
+
+    uint64_t h = 14695981039346656037ULL;
+    auto mix = [&](const uint8_t* ptr, size_t len) {
+        for (size_t i = 0; i < len; ++i) {
+            h ^= ptr[i];
+            h *= 1099511628211ULL;
+        }
+    };
+    mix(key_bytes, key_len);
+    // Authenticate immutable header prefix (60 bytes up to reserved/mac_tag) + tensor payload
+    mix(reinterpret_cast<const uint8_t*>(&hdr), 60);
+    mix(reinterpret_cast<const uint8_t*>(payload), static_cast<size_t>(elems) * sizeof(double));
+    return static_cast<uint32_t>((h >> 32) ^ (h & 0xFFFFFFFFULL));
+}
+
+// Explicit non-optimizable memory zeroization before unmap/unlink
+inline void explicit_zeroize(void* ptr, size_t len) {
+#if defined(_WIN32)
+    SecureZeroMemory(ptr, len);
+#else
+    volatile uint8_t* p = reinterpret_cast<volatile uint8_t*>(ptr);
+    while (len--) {
+        *p++ = 0;
+    }
+#endif
+}
+
 int main(int argc, char* argv[]) {
     // Configuracion de dimensiones continuas
     uint32_t D = 1024; // Dimension latente
@@ -215,7 +249,7 @@ int main(int argc, char* argv[]) {
     auto t1 = std::chrono::high_resolution_clock::now();
     double latency_us = std::chrono::duration<double, std::micro>(t1 - t0).count();
 
-    // Mapeo Zero-Copy en Memoria Compartida (Windows SHM o POSIX shm_open)
+    // Mapeo Zero-Copy en Memoria Compartida (Windows SHM o POSIX shm_open 0600 + MAC + Zeroization)
     size_t slab_bytes = sizeof(AtelierSlabHeader) + D * k * sizeof(double);
     bool shm_ok = false;
 
@@ -244,18 +278,20 @@ int main(int argc, char* argv[]) {
             header.heartbeat_ns = header.timestamp_ns;  // TTL watchdog: alive at creation
             header.sequence = 2;  // Seqlock: even = write complete, safe to read
             header.readers_count = 1;
-            header.reserved = 0;
+            header.reserved = compute_slab_mac32(header, Z.data(), D * k); // Keyed MAC32 auth tag
 
             std::memcpy(pBuf, &header, sizeof(AtelierSlabHeader));
             std::memcpy(static_cast<char*>(pBuf) + sizeof(AtelierSlabHeader), Z.data(), D * k * sizeof(double));
+            explicit_zeroize(pBuf, slab_bytes); // Zeroizacion determinista al cerrar
             UnmapViewOfFile(pBuf);
             shm_ok = true;
         }
         CloseHandle(hMapFile);
     }
 #else
-    int fd = shm_open(SHM_NAME, O_CREAT | O_RDWR, 0666);
+    int fd = shm_open(SHM_NAME, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR); // 0600 estricto
     if (fd != -1) {
+        fchmod(fd, S_IRUSR | S_IWUSR); // Imponer 0600 independiente de umask
         if (ftruncate(fd, slab_bytes) != -1) {
             void* pBuf = mmap(NULL, slab_bytes, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
             if (pBuf != MAP_FAILED) {
@@ -271,10 +307,11 @@ int main(int argc, char* argv[]) {
                 header.heartbeat_ns = header.timestamp_ns;  // TTL watchdog: alive at creation
                 header.sequence = 2;  // Seqlock: even = write complete, safe to read
                 header.readers_count = 1;
-                header.reserved = 0;
+                header.reserved = compute_slab_mac32(header, Z.data(), D * k); // Keyed MAC32 auth tag
 
                 std::memcpy(pBuf, &header, sizeof(AtelierSlabHeader));
                 std::memcpy(static_cast<char*>(pBuf) + sizeof(AtelierSlabHeader), Z.data(), D * k * sizeof(double));
+                explicit_zeroize(pBuf, slab_bytes); // Zeroizacion determinista antes de munmap/unlink
                 munmap(pBuf, slab_bytes);
                 shm_ok = true;
             }

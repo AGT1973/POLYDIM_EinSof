@@ -1,0 +1,87 @@
+{
+  "protocol": "LIVE_SILICON_MATRIX_JSON_VS_PMTP_SHM_MAC",
+  "platform": "Windows-11-10.0.22621-SP0",
+  "models": [
+    {
+      "name": "Qwen 3 1.5B Dim",
+      "manifold": "St(16, 2048)",
+      "d_in": 2048,
+      "k": 16,
+      "sin_pmtp_json_1d": {
+        "serialized_bytes": 45736,
+        "median_roundtrip_ms": 3.6882,
+        "tokens_equivalent_est": 11434
+      },
+      "con_pmtp_shm_mac": {
+        "slab_bytes": 32832,
+        "median_roundtrip_us": 426.45,
+        "tokens_transmitted": 0,
+        "speedup_vs_json_1d": 8.6,
+        "stiefel_defect": 8.881784197001252e-16,
+        "polarsafe_status": "ACCEPTED_NEWTON_SCHULZ_ORD5",
+        "kappa": 1.1585
+      }
+    },
+    {
+      "name": "Qwen 3 8B Dim",
+      "manifold": "St(16, 4096)",
+      "d_in": 4096,
+      "k": 16,
+      "sin_pmtp_json_1d": {
+        "serialized_bytes": 92031,
+        "median_roundtrip_ms": 7.4214,
+        "tokens_equivalent_est": 23008
+      },
+      "con_pmtp_shm_mac": {
+        "slab_bytes": 65600,
+        "median_roundtrip_us": 790.55,
+        "tokens_transmitted": 0,
+        "speedup_vs_json_1d": 9.4,
+        "stiefel_defect": 6.661338147750939e-16,
+        "polarsafe_status": "ACCEPTED_NEWTON_SCHULZ_ORD5",
+        "kappa": 1.1248
+      }
+    },
+    {
+      "name": "DeepSeek V4 Dim",
+      "manifold": "St(16, 5120)",
+      "d_in": 5120,
+      "k": 16,
+      "sin_pmtp_json_1d": {
+        "serialized_bytes": 115226,
+        "median_roundtrip_ms": 9.3339,
+        "tokens_equivalent_est": 28806
+      },
+      "con_pmtp_shm_mac": {
+        "slab_bytes": 81984,
+        "median_roundtrip_us": 975.1,
+        "tokens_transmitted": 0,
+        "speedup_vs_json_1d": 9.6,
+        "stiefel_defect": 8.881784197001252e-16,
+        "polarsafe_status": "ACCEPTED_NEWTON_SCHULZ_ORD5",
+        "kappa": 1.1158
+      }
+    },
+    {
+      "name": "LLaMA 4 70B Dim",
+      "manifold": "St(16, 8192)",
+      "d_in": 8192,
+      "k": 16,
+      "sin_pmtp_json_1d": {
+        "serialized_bytes": 185103,
+        "median_roundtrip_ms": 14.9691,
+        "tokens_equivalent_est": 46276
+      },
+      "con_pmtp_shm_mac": {
+        "slab_bytes": 131136,
+        "median_roundtrip_us": 1540.8,
+        "tokens_transmitted": 0,
+        "speedup_vs_json_1d": 9.7,
+        "stiefel_defect": 4.440892098500626e-16,
+        "polarsafe_status": "ACCEPTED_NEWTON_SCHULZ_ORD5",
+        "kappa": 1.0867
+      }
+    }
+  ],
+  "exit_code": 0
+}

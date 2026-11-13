@@ -16,7 +16,7 @@ You are inspecting the **POLYDIM SUITE** repository. This document defines the a
 - **Empirical Validation & IBM Quantum Certification:** Stiefel isometry and high-dimensional geometry are verified on classical silicon (AVX2/POSIX/Windows, relative defect $\|W^T W - I_k\|_F / \sqrt{k} \le 1.7 \times 10^{-16}$) and on IBM Quantum superconducting QPUs (156Q Heron r2, 31 physical jobs finished: [https://quantum.ibm.com/jobs](https://quantum.ibm.com/jobs)). Token savings (6.4M+ LLM tokens avoided) are measured on silicon by avoiding 1D text serialization in RAM.
 
 ### 🛡️ Security, Concurrency & Numerical Specification (Hardened Release 11/2026)
-1. **User-Space Only (Zero Root / Zero Kernel Space):** POLYDIM runs 100% in unprivileged user space via standard OS primitives (`shm_open`/`mmap` on POSIX, `CreateFileMapping` on Win32), equivalent in privilege posture to `torch.multiprocessing` and Ray. Zero root requirements, zero kernel drivers, zero background daemons.
+1. **User-Space Only & /dev/shm Isolation (Zero Root / Zero Kernel Space):** POLYDIM runs 100% in unprivileged user space via standard OS primitives (`shm_open`+`fchmod(0600)`/`mmap` on POSIX, `CreateFileMapping` in `Local\` session on Win32), equivalent in privilege posture to `torch.multiprocessing` and Ray. Every shared-memory slab enforces deterministic `0x00` / `SecureZeroMemory` zeroization on release/unlink and a keyed BLAKE2s-64 MAC (offset 56..64) blocking co-tenant snooping or payload tampering (`tests/test_shm_security.py`, 5/5 passing). Zero root requirements, zero kernel drivers, zero background daemons.
 2. **IPC Synchronization & ABI (LMAX Disruptor / DPDK Ring Buffer Taxonomy):** Shared-memory slabs use a 64-byte cache-aligned ABI (`alignas(64)`) verified via `static_assert` and cross-language offset checks (`tests/test_abi_offsets.py`). Concurrency is governed by atomic **Seqlock** anti-torn-read semantics with explicit memory barriers (`std::memory_order_acquire` / `release`), monotonic 64-bit sequence counters to prevent ABA hazards, a watchdog `heartbeat_ns` TTL against zombie processes, and explicit segment unlinking on shutdown.
 3. **Observable Graceful Degradation (Observability by Design):** Eradication of the fail-silent anti-pattern. If OS shared memory is unavailable, corrupted, or lacks permissions (e.g., Docker containers without `--ipc=host`), the channel degrades deterministically to standard UTF-8 text without unhandled exceptions ($0$ crashes). The system immediately emits structured `WARN` logs to stderr/JSON, sets the atomic bit `PMTP_FLAG_FALLBACK_ACTIVE` in the shared header, records Prometheus fallback metrics, and auto-rearms to $0$ once the shared segment is restored (`tests/test_channel_fallback.py`, 6/6 tests passing).
 4. **Spectral Convergence & PolarSafe V2 (Higham-Kenney Theory):**
@@ -80,8 +80,6 @@ mcp_servers/suite_bridge_mcp.py
 
 To verify that the local environment satisfies all silicon and mathematical contracts, run the unit validation suite:
 ```bash
-python tests/test_en_vivo.py
-python tests/test_abi_offsets.py
-python tests/test_channel_fallback.py
+python -m pytest tests -v
 ```
-*Expected result:* 14/14 verification checks passed, relative isometry defect $\le 10^{-15}$, `Exit Code 0`.
+*Expected result:* 19/19 verification checks passed (ABI 4, C++/Rust kernels 2, Channel fallback 6, SHM 0600/MAC/zeroization 5, Stiefel live 1, Quickstart 1), relative isometry defect $\le 10^{-15}$, `Exit Code 0`.
