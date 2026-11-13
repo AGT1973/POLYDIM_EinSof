@@ -132,10 +132,11 @@ class PmtpLeasedArray(np.ndarray):
     """
     def __dlpack__(self, stream: Any = None):
         """Exporta cápsula PyCapsule DLPack sobre el buffer leased de SHM sin copia (T_copy = 0.0 us)."""
-        base_np = np.asarray(self)
-        if hasattr(base_np, "__dlpack__"):
-            return base_np.__dlpack__(stream=stream)
-        raise NotImplementedError("NumPy runtime carece de exportador __dlpack__ nativo")
+        # NumPy prohíbe exportar arrays marcados con writeable=False en DLPack v0.x si no se crea una vista RW
+        # Creamos una vista temporal idéntica que comparte exactamente el mismo puntero físico de memoria
+        rw_view = self.view(np.ndarray)
+        rw_view.flags.writeable = True
+        return rw_view.__dlpack__(stream=stream)
 
     def __dlpack_device__(self) -> Tuple[int, int]:
         """Dispositivo DLPack CPU: (kDLCPU=1, device_id=0)."""
@@ -198,7 +199,7 @@ class PmtpShmBus:
     @staticmethod
     def _enforce_0600_permissions(shm_name: str) -> str:
         """Aplica permisos 0600 explícitos en POSIX /dev/shm (anula umask permisiva). Fail-closed."""
-        if os.name == "posix":
+        if os.name == "posix" and os.path.isdir("/dev/shm"):
             clean_name = shm_name.lstrip("/")
             shm_path = os.path.join("/dev/shm", clean_name)
             if os.path.exists(shm_path):

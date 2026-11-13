@@ -162,6 +162,29 @@ def test_max_dim_fail_closed_cap():
         bus.cleanup()
 
 
+def test_dlpack_zero_copy_capsule_and_device():
+    bus = PmtpShmBus(prefix="t_sec_dlpack", max_slabs=2, max_dim=512)
+    try:
+        v = _unit_vec(dim=256)
+        desc = bus.publish_tensor(v)
+        sid = int(desc.split("_")[2])
+        leased = bus.get_zero_copy_dlpack_tensor(sid, verify_mac=True)
+        # 1. Verificar métodos DLPack canónicos
+        assert hasattr(leased, "__dlpack__")
+        assert hasattr(leased, "__dlpack_device__")
+        dev = leased.__dlpack_device__()
+        assert dev == (1, 0)
+        capsule = leased.__dlpack__()
+        assert capsule is not None
+        # 2. Ingesta Zero-Copy vía NumPy DLPack consumidor sin copia de payload
+        consumed = np.from_dlpack(leased)
+        assert np.allclose(consumed, v, atol=1e-15)
+        # Ambos apuntan exactamente a la misma memoria física compartida
+        assert consumed.__array_interface__["data"][0] == leased.__array_interface__["data"][0]
+    finally:
+        bus.cleanup()
+
+
 @pytest.mark.skipif(not hasattr(os, "memfd_create"), reason="Requiere syscall Linux os.memfd_create (Docker/POSIX)")
 def test_memfd_create_0600_sealed_on_linux():
     bus = PmtpShmBus(prefix="t_sec_memfd", max_slabs=2, max_dim=512, backend="memfd", auth_key=b"memfd_key")

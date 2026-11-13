@@ -19,8 +19,12 @@ POLYDIM SUITE is designed under strict minimal-privilege and zero-attack-surface
    - The suite operates 100% within user-space permissions.
    - It **does not install** kernel drivers, system daemons, Windows services, or require `sudo` / Administrator privileges.
 
-2. **Isolated Shared Memory IPC (`PmtpShmBus`):**
-   - Inter-process communication uses operating system native shared memory APIs (`shm_open` on POSIX / `CreateFileMapping` on Win32).
+2. **Isolated Shared Memory IPC (`PmtpShmBus` & Atelier ABI v1):**
+   - Inter-process communication uses operating system native shared memory APIs (`memfd_create` + `F_SEAL_*` / POSIX `shm_open` 0600 on Linux / `CreateFileMapping` on Win32).
+   - Memory segments are authenticated via **SipHash-2-4 MAC-64** (computed over immutable metadata `[0..48)` + payload) with constant-time equality checks.
+   - Cryptographic keys are derived from SHA-256 (`PMTP_SHM_KEY`) or generated via cryptographically secure OS PRNG (`fill_csprng_bytes`).
+   - Slabs implement deterministic zeroization (`explicit_zeroize` overwriting with `0x00`) before `close` and `unlink`.
+   - Native Zero-Copy ingestion via DLPack (`__dlpack__`, `__dlpack_device__`) ensures zero redundant memory copies.
    - Memory segments are strictly constrained to pre-allocated buffers with atomic seqlock generation counters.
    - Memory slabs are bounded, non-executable, and restricted to local process access.
    - Memory is explicitly unlinked and cleaned up via `bus.cleanup()` or context managers.
