@@ -43,7 +43,7 @@
 >    - En **PMTP (POLYDIM)**, la transferencia latente continua sobre la Variedad de Stiefel $\text{St}(k, D)$ consume **0 tokens de transporte inter-agente**.
 >    - **Ahorro Neto Medido:** **6.4+ Millones de tokens de inferencia evitados** en campañas masivas al no serializar tensores en texto plano; **100% de eliminación de tokens de transporte inter-modelo** y entre **57% y 93% de reducción neta de decodificación autorregresiva** en cadenas de razonamiento multi-hop.
 >    - **Latencia de Silicio:** **$15.1\,\mu\text{s}$** por slab de 64 KB (Throughput real de **$4.34\text{ GB/s}$** en RAM compartida física).
->    - **Defecto de Isometría:** $\|\mathbf{W}^T \mathbf{W} - \mathbf{I}_k\|_\infty = \mathbf{6.66 \times 10^{-16}}$ (cota de épsilon de máquina `float64` vía retracción polar Newton-Schulz Orden 4/5).
+>    - **Defecto de Isometría:** $\|\mathbf{W}^T \mathbf{W} - \mathbf{I}_k\|_\infty = \mathbf{6.66 \times 10^{-16}}$ (cota de épsilon de máquina `float64` vía retracción polar Newton-Schulz calibrada según condicionamiento espectral $\kappa(X)$ (Orden 4/5 para $\kappa \le 2$; Orden 10 / 10+ iteraciones con pre-escalado de Higham para $\kappa \le 10^3$; y SVD polar exacto para $\kappa > 10^3$)).
 >
 > 2. **Doble Certificación Cruzada en Procesadores Cuánticos de IBM (QPU Heron & Eagle):**
 >    - Bajo la **Regla 19 (Constitucional)**, toda propiedad de preservación métrica e isometría en espacio de Hilbert se valida en hardware físico cuántico superconductor.
