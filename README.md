@@ -44,14 +44,14 @@
 > | **Tokens de comunicación entre agentes** | 380 – 890 tokens/salto | **0 tokens/salto** (100% eliminación) | `benchmarks/benchmark_matriz_con_vs_sin_pmtp.py` |
 > | **Retención semántica (10 saltos)** | 52.4% – 69.8% *(degradación DPI)* | **100.0%** ($\|X^T X - I\|_\infty \le 1.94 \times 10^{-16}$) | `benchmarks/benchmark_matriz_con_vs_sin_pmtp.py` |
 > | **Latencia de transporte por salto** | 1,920 – 14,200 ms | **0.0032 – 0.0058 ms** (RAM compartida, $15.1\,\mu\text{s}$ / 64 KB) | `benchmarks/benchmark_matriz_con_vs_sin_pmtp.py` |
-> | **Huella de memoria de transporte** | 1,150 – 14,800 MB (KV-Cache dinámica) | **16 – 64 KB** (slab fijo `seqlock` 64B) | `tests/test_abi_offsets.py` |
+> | **Huella de memoria de transporte** | 1,150 – 14,800 MB (KV-Cache dinámica) | **16 – 64 KB** (slab fijo alineado a 64B) | `tests/test_abi_offsets.py` |
 > | **Defecto de Isometría ($\text{St}(64, 1024)$)** | $1.20 \times 10^3$ *(lineal sin Stiefel)* | **$\le 6.66 \times 10^{-16}$** (Orden 4/5 $\kappa \le 2$; Orden 10 $\kappa \le 10^3$; SVD $\kappa > 10^3$) | `tests/test_en_vivo.py` |
 >
 > **Artefactos Públicos Verificables:**
 > - **Zenodo (CERN / OpenAIRE):** [10.5281/zenodo.24013070](https://doi.org/10.5281/zenodo.24013070) | [10.5281/zenodo.24122867](https://doi.org/10.5281/zenodo.24122867)
 > - **HAL Science (CNRS):** [`hal-05847496v1`](https://hal.science/hal-05847496v1) | **Software Heritage (INRIA):** [`swh:1:snp:bdea78b37132a4bd6b67049805cbb6d4472ec2cd`](https://archive.softwareheritage.org/swh:1:snp:bdea78b37132a4bd6b67049805cbb6d4472ec2cd;origin=https://github.com/AGT1973/POLYDIM_EinSof)
 > - **Kaggle GPU T4 (5 brazos, Exit Code 0):** [Kaggle Notebook](https://www.kaggle.com/code/agt1973gmailcom/pmtp-inspector-silicon-cert) | **Google Colab:** [`polydim_colab_benchmark_kit.ipynb`](benchmarks/polydim_colab_benchmark_kit.ipynb)
-> - **Hugging Face Hub:** [`huggingface.co/polidim-einsof`](https://huggingface.co/polidim-einsof) (`adapter_weights.safetensors`, 67.1 MB)
+> - **Hugging Face Hub:** [`huggingface.co/Polydim-Einsof`](https://huggingface.co/Polydim-Einsof) (`adapter_weights.safetensors`, 67.1 MB)
 > - **IBM Quantum (31 jobs DONE — validación geométrica Hilbert vs. Stiefel):** [Dashboard](https://quantum.ibm.com/jobs) ([Job #31](https://quantum.ibm.com/jobs/dbqhav7v5hds73dg2t80), [Job #30](https://quantum.ibm.com/jobs/dbqg2pfv5hds73dg19og), [Job #29](https://quantum.ibm.com/jobs/dbqfii1abdes73fo700g), [Job #28](https://quantum.ibm.com/jobs/dbqa9o7v5hds73dfmmug), [Job #27](https://quantum.ibm.com/jobs/dbqa9nujjaos73agu05g))
 > - **GitHub Actions CI/CD:** 9/9 jobs en Ubuntu, macOS ARM64 y Windows compilando `tools/atelier_kernel/atelier_stiefel.cpp`.
 
