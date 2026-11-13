@@ -25,7 +25,7 @@ import numpy as np
 
 sys.stdout.reconfigure(line_buffering=True)
 
-ALIBABA_KEY = "os.getenv("ALIBABA_BAILIAN_KEY", "")"
+ALIBABA_KEY = "sk-ws-H.DIIEMYY.Cu2k.MEYCIQDMymHibLJM4QSrt2NldWLw-NEeTXL3HkP7SqEJx1E4-wIhALTPFAZs1i_F7bs4kJTJy9qadHCQ7MnFtj3hnncr7--w"
 ALIBABA_URL = "https://ws-t85fm4y7sz8vxo9t.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1/chat/completions"
 
 # -----------------------------------------------------------------------------

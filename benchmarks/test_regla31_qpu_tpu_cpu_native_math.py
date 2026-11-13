@@ -26,7 +26,7 @@ from qiskit.quantum_info import SparsePauliOp
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit_ibm_runtime import QiskitRuntimeService, EstimatorV2
 
-TOKEN = "os.getenv("IBM_QUANTUM_TOKEN", "")"
+TOKEN = "x60cHPkursDpOkwQvSO_vxhdGr371QrQQFEP3BW0KrTM"
 
 def run_cpu_and_tpu_native_math():
     rng = np.random.default_rng(20261102)

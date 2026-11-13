@@ -17,7 +17,7 @@ from qiskit_ibm_runtime import QiskitRuntimeService, EstimatorV2
 
 sys.stdout.reconfigure(line_buffering=True)
 
-TOKEN = "os.getenv("IBM_QUANTUM_TOKEN", "")"
+TOKEN = "x60cHPkursDpOkwQvSO_vxhdGr371QrQQFEP3BW0KrTM"
 
 def main():
     print("[1/3] Conectando a IBM Quantum Platform en ibm_kingston (156 qubits)...")
