@@ -125,8 +125,24 @@ class _MemfdShmAdapter:
 
 
 class PmtpLeasedArray(np.ndarray):
-    """Subclase de ndarray con __dict__ y soporte de ciclo de vida para DLPack."""
-    pass
+    """
+    Subclase de ndarray con garantía de ciclo de vida de Lease Atómico y soporte nativo DLPack Zero-Copy.
+    Exporta explícitamente `__dlpack__` y `__dlpack_device__` anclados a la memoria física compartida
+    sin realizar copias intermedias.
+    """
+    def __dlpack__(self, stream: Any = None):
+        """Exporta cápsula PyCapsule DLPack sobre el buffer leased de SHM sin copia (T_copy = 0.0 us)."""
+        base_np = np.asarray(self)
+        if hasattr(base_np, "__dlpack__"):
+            return base_np.__dlpack__(stream=stream)
+        raise NotImplementedError("NumPy runtime carece de exportador __dlpack__ nativo")
+
+    def __dlpack_device__(self) -> Tuple[int, int]:
+        """Dispositivo DLPack CPU: (kDLCPU=1, device_id=0)."""
+        base_np = np.asarray(self)
+        if hasattr(base_np, "__dlpack_device__"):
+            return base_np.__dlpack_device__()
+        return (1, 0)
 
 
 class PmtpShmBus:

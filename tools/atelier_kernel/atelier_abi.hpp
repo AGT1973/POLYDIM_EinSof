@@ -338,6 +338,23 @@ inline void get_process_key16(uint8_t out_k16[16]) {
     std::memcpy(out_k16, s_ephem_k16.data(), 16);
 }
 
+// Utilidades de conversion endian canonica (Garantia Cross-Platform Little-Endian ABI v1)
+inline uint32_t pmtp_le32(uint32_t x) {
+#if defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+    return __builtin_bswap32(x);
+#else
+    return x;
+#endif
+}
+
+inline uint64_t pmtp_le64(uint64_t x) {
+#if defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+    return __builtin_bswap64(x);
+#else
+    return x;
+#endif
+}
+
 // PRF criptografica keyed SipHash-2-4 (64-bit) sobre cabecera inmutable [0..48) + payload
 inline uint64_t compute_slab_mac64(const AtelierSlabHeader& hdr, const double* payload, size_t elems) {
     uint8_t k16[16] = {};
@@ -364,10 +381,12 @@ inline bool validate_slab_header(
     AtelierSlabHeader hdr;
     std::memcpy(&hdr, raw_slab, sizeof(AtelierSlabHeader));
 
-    if (hdr.magic != PMTP_MAGIC_ATELIER) return false;
-    if (hdr.version < PMTP_ABI_MIN_VERSION || hdr.version > PMTP_ABI_MAX_VERSION) return false;
-    if (hdr.D == 0 || hdr.D > PMTP_MAX_DIM_D) return false;
-    if (hdr.k == 0 || hdr.k > hdr.D || hdr.k > PMTP_MAX_RANK_K) return false;
+    if (hdr.magic != pmtp_le32(PMTP_MAGIC_ATELIER)) return false;
+    if (pmtp_le32(hdr.version) < PMTP_ABI_MIN_VERSION || pmtp_le32(hdr.version) > PMTP_ABI_MAX_VERSION) return false;
+    uint32_t D = pmtp_le32(hdr.D);
+    uint32_t k = pmtp_le32(hdr.k);
+    if (D == 0 || D > PMTP_MAX_DIM_D) return false;
+    if (k == 0 || k > D || k > PMTP_MAX_RANK_K) return false;
     if ((hdr.sequence & 1ULL) != 0ULL) return false; // Seqlock write in progress
     if (!std::isfinite(hdr.isometry_error) || hdr.isometry_error < 0.0) return false;
     if (!std::isfinite(hdr.latency_us) || hdr.latency_us < 0.0) return false;

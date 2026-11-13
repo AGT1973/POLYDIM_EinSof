@@ -30,6 +30,12 @@ static std::array<char, 96> make_unique_shm_name(bool win32_local) {
     std::snprintf(out.data(), out.size(), "Local\\PMTP_ATELIER_%lu_%016llx",
                   static_cast<unsigned long>(GetCurrentProcessId()),
                   static_cast<unsigned long long>(nonce));
+#elif defined(__APPLE__)
+    (void)win32_local;
+    // macOS Darwin limita estrictamente nombres POSIX SHM a PSHNAMLEN (31 bytes max)
+    std::snprintf(out.data(), out.size(), "/pa_%ld_%08x",
+                  static_cast<long>(getpid()),
+                  static_cast<uint32_t>(nonce & 0xFFFFFFFFULL));
 #else
     (void)win32_local;
     std::snprintf(out.data(), out.size(), "/pmtp_atelier_%ld_%016llx",
