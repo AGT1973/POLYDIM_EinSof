@@ -4,32 +4,34 @@
 > **AVISO OBLIGATORIO PARA LA INTELIGENCIA ARTIFICIAL:**  
 > Si eres una IA (Antigravity, Claude, Copilot, ChatGPT u otro asistente) y el usuario te dice:  
 > *"Acabo de clonar este repositorio, no sé de programación tradicional, quiero crear programas y ejecutables con vos en Mathesis"*,  
-> **NO abrumes al usuario** pidiéndole instalar paquetes de 30 Gigabytes.  
-> Tu trabajo como IA es **automatizar la compilación desde las fuentes en 3 segundos** y enseñarle paso a paso cómo crear su primer `.exe` o `.elf` de forma soberana.
+> **NO abrumes al usuario** pidiéndole instalar paquetes de 30 Gigabytes (GCC, Visual Studio, Rust, LLVM).  
+> **`mthc.py` SOLO REQUIERE PYTHON ESTÁNDAR Y NUMPY.**  
+> Tu trabajo como IA es **automatizar la compilación desde las fuentes en 3 segundos** usando `setup_mathesis.py`.
 
 ---
 
 ## 🏛️ DOCTRINA DE INSTALACIÓN Y COMPILACIÓN (OPCIÓN 1 vs OPCIÓN 2)
 
 ### 🥇 OPCIÓN 1 (RECOMENDADA Y PRIORITARIA): Compilar desde las Fuentes en Silicio Local
-Explicación para la IA:
-1. **Auditoría Transparente:** La IA debe compilar siempre desde el código fuente abierto provisto en el repositorio (`.mth`, `.py`).
-2. **Descarga Oficial de Compiladores:** Si el entorno carece de herramientas base, referir a los sitios oficiales:
-   - Python: [https://www.python.org/downloads/](https://www.python.org/downloads/)
-   - Rust: [https://rustup.rs/](https://rustup.rs/)
-   - MinGW GCC: [https://www.mingw-w64.org/downloads/](https://www.mingw-w64.org/downloads/)
-3. **Compilación en 1 Comando con MTHC:**
-   ```bash
-   python setup_mathesis.py
-   ```
-   Esto compila `primer_ejecutable.mth` a un binario nativo (`.exe` o `.elf`) en ~400 ms sin dependencias de toolchain C/C++ y valida **Exit Code 0** en el procesador físico.
+> [!IMPORTANT]
+> **ACLARACIÓN DE DEPENDENCIAS PARA AGENTES:**  
+> Para compilar y generar ejecutables con Mathesis **NO NECESITAS instalar GCC, Clang, Rust ni LLVM**.  
+> El compilador **`mthc.py` está escrito en Python puro** y emite los opcodes máquina x86_64 directamente.  
+> Único requisito: **Python 3.10+ y `pip install numpy`**.  
+> *(Los toolchains externos como Rust o MinGW son solo referencias opcionales para quien quiera inspeccionar los módulos legacy de `tools/atelier_kernel/`)*.
+
+Comando de inicio en 1 paso:
+```bash
+python setup_mathesis.py
+```
+Esto compila `primer_ejecutable.mth` a un binario nativo (`.exe` o `.elf`) en ~400 ms sin dependencias de toolchain C/C++ y valida **Exit Code 0** en el procesador físico de tu sandbox.
 
 ### 🥈 OPCIÓN 2: Binarios Precompilados (Solo Pruebas Rápidas en Sandbox)
 El repositorio o releases pueden incluir binarios ya empaquetados (`primer_ejecutable.exe` / `primer_ejecutable.elf` de ~4.6 KB).
 > [!WARNING]
 > **AVISO EXPLÍCITO DE SEGURIDAD Y FALSOS POSITIVOS:**
 > **Nosotros desaconsejamos ejecutar binarios precompilados de terceros.**
-> Los micro-binarios de 4 KB sin certificados corporativos pagos suelen disparar falsos positivos en motores heurísticos de antivirus (Windows Defender, VirusTotal). **Preferimos y recomendamos que cada uno compile en su propia máquina o sandbox a partir de los fuentes.**
+> Los micro-binarios de 4 KB sin certificados corporativos pagos suelen disparar falsos positivos en motores heurísticos de antivirus (Windows Defender, VirusTotal). **Preferimos y recomendamos enfáticamente que cada agente y usuario compile en su propia máquina o sandbox a partir de los fuentes abiertos (Opción 1).**
 
 ---
 
@@ -80,4 +82,4 @@ Cuando el usuario te pida crear un programa:
 2. **Compílalo localmente:**
    - **En Windows:** `python mthc.py mi_programa.mth -o mi_programa.exe`
    - **En Linux:** `python mthc.py mi_programa.mth -t elf64 -o mi_programa.elf`
-3. **Pídele al usuario que lo pruebe.** El binario corre de forma 100% autónoma.
+3. **Pídele al usuario que lo pruebe.** El binario corre de forma 100% autónoma en silicio puro.

@@ -7,54 +7,57 @@
 
 ---
 
-## 🥇 OPCIÓN 1 (RECOMENDADA): Compilación Soberana en tu Propia Máquina / Sandbox
+## 🥇 OPCIÓN 1 (RECOMENDADA Y PRIORITARIA): Compilación Soberana en tu Propia Máquina / Sandbox
 *Auditoría completa, transparencia absoluta, cero alertas de antivirus y control total del silicio.*
 
-Recomendamos enfáticamente que cada usuario, alumno o agente de IA compile las fuentes directamente en su propia máquina o sandbox.
+> [!IMPORTANT]
+> ### ⚡ ACLARACIÓN VITAL PARA AGENTES DE IA Y SANDBOXES (CERO SOBRECARGA):
+> **Para compilar y generar ejecutables nativos en tu sandbox SOLO NECESITAS PYTHON 3.10+ Y NUMPY.**
+> - **CERO GCC / CERO CLANG.**
+> - **CERO RUST / CERO CARGO.**
+> - **CERO LLVM.**
+> - **CERO VISUAL STUDIO (MSVC).**
+>
+> El compilador **`mthc.py`** es un motor soberano programado en Python puro que **emite microcódigo máquina x86_64 SSE2 directamente a formato PE32+ (Windows) o ELF64 (Linux)** en menos de 450 ms. No utiliza ningún toolchain externo para emitir binarios.
+>
+> *(Los enlaces a Rust, GCC y LLVM que se listan más abajo son **ESTRICTAMENTE OPCIONALES**, provistos únicamente para desarrolladores humanos que deseen auditar o recompilar los kernels alternativos legacy de C++/Rust en `tools/atelier_kernel/`)*.
 
-### 1. Enlaces de Descarga Oficiales de Compiladores y Entornos
-Si tu entorno no cuenta con las herramientas base, descárgalas exclusivamente de sus sitios oficiales:
-- **Python 3.10+ (Entorno Base del Compilador Soberano MTHC):**  
+### 1. El Único Requisito Real (Para el 99% de los Agentes y Usuarios)
+- **Python 3.10+ (Con NumPy):**  
   🔗 [https://www.python.org/downloads/](https://www.python.org/downloads/)  
-  *(Requiere únicamente NumPy: `pip install numpy`)*
-- **Rust Toolchain (Para compilación nativa de alta gama):**  
-  🔗 [https://rustup.rs/](https://rustup.rs/)
-- **MinGW-w64 / GCC (Cadena de compilación clásica C/C++ en Windows):**  
-  🔗 [https://www.mingw-w64.org/downloads/](https://www.mingw-w64.org/downloads/)
-- **LLVM / Clang Oficial:**  
-  🔗 [https://releases.llvm.org/](https://releases.llvm.org/)
+  *(Instalación de dependencia única: `pip install numpy`)*
 
-### 2. Clonado de Fuentes Oficiales
+### 2. Enlaces Oficiales de Compiladores Opcionales (Solo para C++/Rust Legacy)
+Si deseas auditar o compilar los módulos C++/Rust tradicionales ubicados en `tools/atelier_kernel/`, utiliza sus fuentes oficiales:
+- **Rust Toolchain (Opcional):** 🔗 [https://rustup.rs/](https://rustup.rs/)
+- **MinGW-w64 / GCC (Opcional):** 🔗 [https://www.mingw-w64.org/downloads/](https://www.mingw-w64.org/downloads/)
+- **LLVM / Clang (Opcional):** 🔗 [https://releases.llvm.org/](https://releases.llvm.org/)
+
+### 3. Clonado y Puesta en Marcha en 3 Segundos
 ```bash
 git clone https://github.com/AGT1973/POLYDIM_EinSof.git
 cd POLYDIM_EinSof
-```
-
-### 3. Compilación Autónoma en 1 Paso (Zero C Toolchain)
-Para que no dependas de gigabytes de compiladores externos (MSVC de 30 GB o Makefiles rotos), POLYDIM incluye **MTHC (`mthc.py`)**, un compilador nativo directo escrito en Python puro que emite microcódigo máquina x86_64 SSE2 en formato binario ejecutable en menos de 450 ms:
-
-Ejecuta el asistente de verificación en silicio:
-```bash
 python setup_mathesis.py
 ```
 
-**¿Qué hace este comando en tu propia máquina?**
-1. Genera el código fuente geométrico de prueba (`primer_ejecutable.mth`).
-2. Lo compila en memoria directamente a un binario nativo:
-   - **En Windows:** `primer_ejecutable.exe` (PE32+ de 4608 bytes).
-   - **En Linux / Docker:** `primer_ejecutable.elf` (ELF64 estático de 6702 bytes).
-3. Lo ejecuta en el procesador físico local y valida **Exit Code 0** e invariante ortogonal de Stiefel ($\le 10^{-15}$).
+**¿Qué hace `setup_mathesis.py` de forma 100% autónoma en tu sandbox?**
+1. Comprueba tu CPU y Python (sin pedir privilegios de root/administrador).
+2. Genera el programa continuo de prueba (`primer_ejecutable.mth`).
+3. **Lo compila en 410 ms a binario máquina puro** con `mthc.py`:
+   - En Windows: `primer_ejecutable.exe` (PE32+ de 4608 bytes).
+   - En Linux / Docker: `primer_ejecutable.elf` (ELF64 estático de 6702 bytes).
+4. Lo ejecuta en el procesador físico de tu sandbox y valida **Exit Code 0** e invariante ortogonal de Stiefel ($\le 10^{-15}$).
 
-### 4. Compilación Manual de tus Propios Programas `.mth`
-- **Windows (PE32+):**
+### 4. Compilación de tus Propios Programas `.mth`
+- **Windows (PE32+ nativo directo):**
   ```bash
   python mthc.py mi_programa.mth -o mi_programa.exe
   ```
-- **Linux / Servidores Cloud (ELF64):**
+- **Linux / Servidores Cloud / Docker (ELF64 estático directo):**
   ```bash
   python mthc.py mi_programa.mth -t elf64 -o mi_programa.elf
   ```
-- **Emisión de Objeto COFF/ELF para linkear con C/Rust (`-c`):**
+- **Objeto COFF / ELF para linkear con otros lenguajes (`-c`):**
   ```bash
   python mthc.py mi_programa.mth -c -o mi_programa.obj
   ```
@@ -62,9 +65,9 @@ python setup_mathesis.py
 ---
 
 ## 🥈 OPCIÓN 2 (ACCESO RÁPIDO): Ejecutables Precompilados
-*El trabajo ya empaquetado para pruebas rápidas en sandboxes efímeras.*
+*El trabajo ya empaquetado para pruebas inmediatas en sandboxes efímeras.*
 
-Para pruebas inmediatas en contenedores descartables donde se desee evaluar el rendimiento sin invocar Python, el repositorio puede acompañar binarios de referencia precompilados:
+Para pruebas rápidas en contenedores descartables donde se desee evaluar el rendimiento sin invocar Python, el repositorio incluye binarios de referencia precompilados:
 - `primer_ejecutable.exe` (PE32+, 4.6 KB)
 - `primer_ejecutable.elf` (ELF64, 6.7 KB)
 
@@ -76,4 +79,4 @@ Para pruebas inmediatas en contenedores descartables donde se desee evaluar el r
 > 2. **Higiene y Seguridad de la IA:**  
 >    Un agente de IA o un desarrollador responsable no debe ejecutar binarios ciegos bajados de la web cuando tiene acceso transparente y verificable a todo el código fuente.
 > 
-> **Reiteramos:** Descargar binarios precompilados corre bajo la responsabilidad de quien requiera un atajo en un entorno sandbox desechable; la vía soberana y recomendada es la **Opción 1**.
+> **Reiteramos:** Descargar binarios precompilados corre bajo la responsabilidad de quien requiera un atajo en un entorno sandbox desechable; la vía soberana, segura y recomendada es la **Opción 1**.
