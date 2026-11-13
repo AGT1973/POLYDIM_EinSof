@@ -9,6 +9,33 @@
 use std::env;
 use std::time::Instant;
 
+// ============================================================================
+// ABI CANONICA: 64 bytes exactos, alineada a linea de cache.
+// Compartida bit-a-bit entre C++20, Rust y Python (ctypes/struct).
+// Cualquier desalineacion rompe la compilacion gracias a const assert.
+// ============================================================================
+#[repr(C, align(64))]
+#[allow(dead_code)]
+pub struct AtelierSlabHeader {
+    pub magic:          u32, // offset  0: PMTP magic (0x504D5450)
+    pub version:        u32, // offset  4: Version del protocolo
+    pub d:              u32, // offset  8: Dimension latente
+    pub k:              u32, // offset 12: Rango ortogonal
+    pub isometry_error: f64, // offset 16: ||W^T W - I_k||_max
+    pub latency_us:     f64, // offset 24: Latencia de retraccion polar (us)
+    pub timestamp_ns:   u64, // offset 32: Timestamp de ejecucion
+    pub heartbeat_ns:   u64, // offset 40: TTL watchdog (zombie slab detection)
+    pub sequence:       u64, // offset 48: Seqlock counter (even=safe, odd=writing)
+    pub readers_count:  u32, // offset 56: Observadores concurrentes
+    pub reserved:       u32, // offset 60: Padding explicito
+}
+
+// Contrato de ABI en tiempo de compilacion (Regla 19 + Red Team SOTA)
+const _: () = assert!(std::mem::size_of::<AtelierSlabHeader>() == 64,
+    "ABI ROTA: sizeof(AtelierSlabHeader) != 64 bytes");
+const _: () = assert!(std::mem::align_of::<AtelierSlabHeader>() == 64,
+    "ABI ROTA: alignof(AtelierSlabHeader) != 64 (cache line)");
+
 /// Acumulador de Neumaier para compensacion exacta de errores de redondeo IEEE-754
 #[inline]
 fn neumaier_accumulate(val: f64, sum: &mut f64, comp: &mut f64) {

@@ -30,19 +30,28 @@ constexpr const char* SHM_NAME = "Local\\PMTP_ATELIER_SLAB";
 constexpr const char* SHM_NAME = "/pmtp_atelier_slab";
 #endif
 
-#pragma pack(push, 8)
-struct AtelierSlabHeader {
-    uint32_t magic;          // PMTP magic
-    uint32_t version;        // Version 1.0
-    uint32_t D;              // Dimension latente (ej. 1024, 2048, 4096)
-    uint32_t k;              // Rango ortogonal (ej. 16, 64)
-    double   isometry_error; // ||W^T W - I_k||_max
-    double   latency_us;     // Latencia de retraccion polar en microsegundos
-    uint64_t timestamp_ns;   // Timestamp de ejecucion
-    uint32_t readers_count;  // Conteo de observadores concurrentes
-    uint32_t reserved;       // Padding alineado a 64 bytes
+// ============================================================================
+// ABI CANONICA: 64 bytes exactos, alineada a linea de cache.
+// Compartida bit-a-bit entre C++20, Rust y Python (ctypes/struct).
+// Cualquier desalineacion rompe la compilacion gracias a static_assert.
+// ============================================================================
+struct alignas(64) AtelierSlabHeader {
+    uint32_t magic;          // offset  0: PMTP magic (0x504D5450)
+    uint32_t version;        // offset  4: Version del protocolo
+    uint32_t D;              // offset  8: Dimension latente
+    uint32_t k;              // offset 12: Rango ortogonal
+    double   isometry_error; // offset 16: ||W^T W - I_k||_max
+    double   latency_us;     // offset 24: Latencia de retraccion polar (us)
+    uint64_t timestamp_ns;   // offset 32: Timestamp de ejecucion
+    uint64_t heartbeat_ns;   // offset 40: TTL watchdog (zombie slab detection)
+    uint64_t sequence;       // offset 48: Seqlock counter (even=safe, odd=writing)
+    uint32_t readers_count;  // offset 56: Observadores concurrentes
+    uint32_t reserved;       // offset 60: Padding explicito
 };
-#pragma pack(pop)
+
+// Contrato de ABI en tiempo de compilacion (Regla 19 + Red Team SOTA)
+static_assert(sizeof(AtelierSlabHeader) == 64, "ABI ROTA: sizeof(AtelierSlabHeader) != 64 bytes");
+static_assert(alignof(AtelierSlabHeader) == 64, "ABI ROTA: alignof(AtelierSlabHeader) != 64 (cache line)");
 
 // Acumulador de Neumaier de alta precision para sumatorias de punto flotante
 inline void neumaier_accumulate(double val, double& sum, double& comp) {
@@ -232,6 +241,8 @@ int main(int argc, char* argv[]) {
             header.latency_us = latency_us;
             header.timestamp_ns = static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(
                 t1.time_since_epoch()).count());
+            header.heartbeat_ns = header.timestamp_ns;  // TTL watchdog: alive at creation
+            header.sequence = 2;  // Seqlock: even = write complete, safe to read
             header.readers_count = 1;
             header.reserved = 0;
 
@@ -257,6 +268,8 @@ int main(int argc, char* argv[]) {
                 header.latency_us = latency_us;
                 header.timestamp_ns = static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(
                     t1.time_since_epoch()).count());
+                header.heartbeat_ns = header.timestamp_ns;  // TTL watchdog: alive at creation
+                header.sequence = 2;  // Seqlock: even = write complete, safe to read
                 header.readers_count = 1;
                 header.reserved = 0;
 
