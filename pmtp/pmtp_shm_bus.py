@@ -6,6 +6,8 @@
 # ============================================================================
 
 import os
+import mmap
+import secrets
 import time
 import math
 import hmac
@@ -18,32 +20,93 @@ from typing import Tuple, Dict, Any, Optional
 import numpy as np
 
 try:
+    import fcntl
+except ImportError:
+    fcntl = None
+
+try:
     from .pmtp_types import (
         PMTP_MAGIC_NUMBER,
         PMTP_VERSION_V1,
+        PMTP_FLAG_MEMFD_BACKED,
+        PMTP_FLAG_SEALED,
         HEADER_COMPACT_SIZE,
         HEADER_COMPACT_FORMAT,
         HEADER_COMPACT_STRUCT,
         PmtpDType,
         PmtpState,
-        PmtpCompactHeader
+        PmtpCompactHeader,
+        validate_compact_header,
     )
 except ImportError:
     from pmtp_types import (
         PMTP_MAGIC_NUMBER,
         PMTP_VERSION_V1,
+        PMTP_FLAG_MEMFD_BACKED,
+        PMTP_FLAG_SEALED,
         HEADER_COMPACT_SIZE,
         HEADER_COMPACT_FORMAT,
         HEADER_COMPACT_STRUCT,
         PmtpDType,
         PmtpState,
-        PmtpCompactHeader
+        PmtpCompactHeader,
+        validate_compact_header,
     )
 
 try:
     from pmtp_pob_bus import PmtpPobProducer, PmtpPobConsumer, PmtpPobView, PmtpPolicy, PmtpStatus
 except ImportError:
     pass
+
+
+class _MemfdShmAdapter:
+    """Adaptador compatible con SharedMemory (.buf/.close/.unlink) respaldado por os.memfd_create."""
+    def __init__(self, name: str, size: int, seal_resize: bool = True):
+        if not hasattr(os, "memfd_create"):
+            raise NotImplementedError("os.memfd_create no disponible en esta plataforma")
+        mfd_flags = getattr(os, "MFD_CLOEXEC", 0) | getattr(os, "MFD_ALLOW_SEALING", 0)
+        self.name = name
+        self.fd = os.memfd_create(name, mfd_flags)
+        try:
+            os.fchmod(self.fd, 0o600)
+            os.ftruncate(self.fd, size)
+            self._mmap = mmap.mmap(self.fd, size, access=mmap.ACCESS_WRITE)
+            self.buf = memoryview(self._mmap)
+            self.sealed = False
+            if seal_resize and fcntl is not None and hasattr(fcntl, "F_ADD_SEALS"):
+                seals = getattr(fcntl, "F_SEAL_SHRINK", 0x0002) | getattr(fcntl, "F_SEAL_GROW", 0x0004)
+                try:
+                    fcntl.fcntl(self.fd, fcntl.F_ADD_SEALS, seals)
+                    self.sealed = True
+                except OSError:
+                    self.sealed = False
+        except Exception:
+            os.close(self.fd)
+            raise
+
+    def close(self) -> None:
+        try:
+            if getattr(self, "buf", None) is not None:
+                self.buf.release()
+                self.buf = None
+        except Exception:
+            pass
+        try:
+            if getattr(self, "_mmap", None) is not None:
+                self._mmap.close()
+                self._mmap = None
+        except Exception:
+            pass
+        if getattr(self, "fd", -1) >= 0:
+            try:
+                os.close(self.fd)
+            except Exception:
+                pass
+            self.fd = -1
+
+    def unlink(self) -> None:
+        # memfd es anónimo y se destruye automáticamente al cerrar último descriptor (sin residuo en /dev/shm)
+        pass
 
 
 class PmtpLeasedArray(np.ndarray):
@@ -75,11 +138,14 @@ class PmtpShmBus:
         max_dim: int = 8192,
         lease_timeout_ms: int = 30000,
         auth_key: Optional[bytes] = None,
+        backend: str = "auto",
     ):
         self.prefix = prefix
         self.max_slabs = max_slabs
         self.max_dim = max_dim
         self.lease_timeout_ms = lease_timeout_ms
+        self.backend = backend
+        self._instance_nonce: str = secrets.token_hex(4)
         self.slabs: Dict[int, Dict[str, Any]] = {}
         self._next_slab_seq: int = 1
         self._local_lock = threading.Lock()
@@ -193,26 +259,26 @@ class PmtpShmBus:
         itemsize = np_dt.itemsize
         payload_bytes = num_elements * itemsize
         total_nbytes = HEADER_COMPACT_SIZE + (2 * payload_bytes)
-        name = f"{self.prefix}_{slab_id:04x}"
+        name = f"{self.prefix}_{self._instance_nonce}_{slab_id:04x}"
 
-        # Liberar y zeroizar instancia huérfana si existe
-        try:
-            old = shared_memory.SharedMemory(name=name, create=False)
-            self._zeroize_shm(old)
-            old.close()
-            old.unlink()
-        except FileNotFoundError:
-            pass
+        # Fail-closed contra name-squatting o aislamiento memfd_create en Linux
+        use_memfd = (self.backend == "memfd") and hasattr(os, "memfd_create")
+        flags = 0
+        if use_memfd:
+            shm = _MemfdShmAdapter(name=name, size=total_nbytes, seal_resize=True)
+            perm_mode = "0600_MEMFD_SEALED" if shm.sealed else "0600_MEMFD"
+            flags |= PMTP_FLAG_MEMFD_BACKED
+            if shm.sealed:
+                flags |= PMTP_FLAG_SEALED
+        else:
+            try:
+                shm = shared_memory.SharedMemory(name=name, create=True, size=total_nbytes)
+            except FileExistsError as exc:
+                raise PermissionError(
+                    f"Fail-closed: colisión de nombre SHM detectada en '{name}' (posible name-squatting)"
+                ) from exc
+            perm_mode = self._enforce_0600_permissions(name)
 
-        try:
-            shm = shared_memory.SharedMemory(name=name, create=True, size=total_nbytes)
-        except FileExistsError:
-            shm = shared_memory.SharedMemory(name=name, create=False)
-            if shm.size < total_nbytes:
-                shm.close()
-                raise BufferError(f"Slab SHM existente '{name}' tiene tamaño {shm.size}B menor al requerido ({total_nbytes}B)")
-
-        perm_mode = self._enforce_0600_permissions(name)
         self._zeroize_shm(shm)
 
         self.slabs[slab_id] = {
@@ -223,6 +289,7 @@ class PmtpShmBus:
             "payload_bytes": payload_bytes,
             "name": name,
             "perm_mode": perm_mode,
+            "backend": "memfd" if use_memfd else "shm",
         }
 
         dtype_id = PmtpDType.FP64.value if dtype == np.float64 else PmtpDType.FP32.value
@@ -239,7 +306,7 @@ class PmtpShmBus:
             generation=1,
             retired_slot0=False,
             retired_slot1=True,
-            reserved_flags=0,
+            reserved_flags=flags,
             state_and_readers=0,
             payload_bytes=zero_payload,
         )
@@ -247,9 +314,13 @@ class PmtpShmBus:
         return shm
 
     def read_header(self, slab_id: int) -> PmtpCompactHeader:
-        """Lee y desempaqueta la cabecera atómica de 64 bytes."""
-        shm = self.slabs[slab_id]["shm"]
-        return PmtpCompactHeader.unpack(bytes(shm.buf[:HEADER_COMPACT_SIZE]))
+        """Lee, valida versión ABI y desempaqueta la cabecera atómica de 64 bytes."""
+        info = self.slabs[slab_id]
+        shm = info["shm"]
+        buf_bytes = bytes(shm.buf[:HEADER_COMPACT_SIZE])
+        hdr = PmtpCompactHeader.unpack(buf_bytes, validate=True)
+        validate_compact_header(hdr, HEADER_COMPACT_SIZE + 2 * info["payload_bytes"])
+        return hdr
 
     def publish_snapshot_atomic(
         self,

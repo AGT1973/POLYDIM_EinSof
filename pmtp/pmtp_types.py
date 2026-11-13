@@ -7,12 +7,28 @@
 
 import struct
 from enum import IntEnum
-from typing import NamedTuple, Dict, Any
+from typing import NamedTuple, Dict, Any, Optional
 
 PMTP_MAGIC_NUMBER = 0x504D5450  # ASCII "PMTP"
 PMTP_VERSION_V1 = 0x0001
+PMTP_ABI_MIN_VERSION = 1
+PMTP_ABI_MAX_VERSION = 1
+PMTP_MAX_ELEMENTS = 1 << 28
 HEADER_COMPACT_SIZE = 64
 WIRE_DESCRIPTOR_120B_SIZE = 120
+
+PMTP_FLAG_MEMFD_BACKED = 1 << 2
+PMTP_FLAG_SEALED = 1 << 3
+PMTP_FLAG_QDWH_SOLVER = 1 << 4
+
+_DTYPE_ITEMSIZE = {
+    0: 4,  # FP32
+    1: 8,  # FP64
+    2: 2,  # BF16
+    3: 2,  # FP16
+    4: 4,  # INT32
+    5: 8,  # INT64
+}
 
 class PmtpDType(IntEnum):
     FP32 = 0
@@ -78,9 +94,14 @@ class PmtpCompactHeader(NamedTuple):
     reserved: bytes
 
     @classmethod
-    def unpack(cls, buffer: bytes) -> "PmtpCompactHeader":
+    def unpack(cls, buffer: bytes, validate: bool = True) -> "PmtpCompactHeader":
+        if len(buffer) < HEADER_COMPACT_SIZE:
+            raise ValueError(f"ABI header truncated: {len(buffer)} < {HEADER_COMPACT_SIZE}")
         raw = HEADER_COMPACT_STRUCT.unpack(buffer[:HEADER_COMPACT_SIZE])
-        return cls(*raw)
+        hdr = cls(*raw)
+        if validate:
+            validate_compact_header(hdr, len(buffer) if len(buffer) > HEADER_COMPACT_SIZE else None)
+        return hdr
 
     def pack(self) -> bytes:
         return HEADER_COMPACT_STRUCT.pack(
@@ -116,3 +137,26 @@ class PmtpCompactHeader(NamedTuple):
             "active_readers": self.state_and_readers & PMTP_READERS_MASK,
             "destroying": bool(self.state_and_readers & PMTP_DESTROYING_BIT),
         }
+
+
+def validate_compact_header(hdr: PmtpCompactHeader, buffer_nbytes: Optional[int] = None) -> None:
+    """Validación estricta de versión ABI, magia, rango de dimensiones y límites de buffer."""
+    import math
+    if hdr.magic != PMTP_MAGIC_NUMBER:
+        raise ValueError(f"Invalid PMTP magic: {hex(hdr.magic)} != {hex(PMTP_MAGIC_NUMBER)}")
+    if not (PMTP_ABI_MIN_VERSION <= hdr.version <= PMTP_ABI_MAX_VERSION):
+        raise ValueError(
+            f"Unsupported PMTP ABI version {hdr.version} (expected {PMTP_ABI_MIN_VERSION}..{PMTP_ABI_MAX_VERSION})"
+        )
+    if hdr.dtype_id not in _DTYPE_ITEMSIZE:
+        raise ValueError(f"Invalid PMTP dtype_id: {hdr.dtype_id}")
+    if hdr.active_slot not in (0, 1):
+        raise ValueError(f"Invalid double-buffer active_slot: {hdr.active_slot}")
+    if hdr.num_elements <= 0 or hdr.num_elements > PMTP_MAX_ELEMENTS:
+        raise ValueError(f"Out-of-bounds num_elements: {hdr.num_elements}")
+    if not math.isfinite(hdr.scale):
+        raise FloatingPointError(f"Non-finite scale in ABI header: {hdr.scale}")
+    if buffer_nbytes is not None:
+        required = HEADER_COMPACT_SIZE + 2 * hdr.num_elements * _DTYPE_ITEMSIZE[hdr.dtype_id]
+        if required > buffer_nbytes:
+            raise ValueError(f"ABI payload overflow: required {required}B > mapped {buffer_nbytes}B")

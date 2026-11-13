@@ -8,6 +8,12 @@ from .pmtp_stiefel import PmtpStiefelAdapter
 from .pmtp_procrustes import PmtpOrthogonalProcrustes
 from .pmtp_decoder import PmtpHypothesisEncoder, PmtpHypothesisDecoder, PmtpCausalDAGReasoner
 from .pmtp_channel import PmtpChannel
+from .pmtp_security import (
+    SAFE_WEIGHT_EXTENSIONS,
+    assert_safe_checkpoint_path,
+    build_safe_hf_load_kwargs,
+    load_numpy_safe,
+)
 
 # Alias ergonómicos para desarrolladores
 StiefelAdapter = PmtpStiefelAdapter
@@ -27,5 +33,9 @@ __all__ = [
     "PmtpProcrustesAligner",
     "PmtpHypothesisEncoder",
     "PmtpHypothesisDecoder",
-    "PmtpCausalDAGReasoner"
+    "PmtpCausalDAGReasoner",
+    "SAFE_WEIGHT_EXTENSIONS",
+    "assert_safe_checkpoint_path",
+    "build_safe_hf_load_kwargs",
+    "load_numpy_safe",
 ]

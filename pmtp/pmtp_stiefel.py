@@ -19,7 +19,7 @@ except ImportError:
 class PmtpStiefelAdapter:
     """
     Adaptador Isométrico Universal sobre la Variedad de Stiefel St(D, r) con:
-    1. Contrato PolarSafe V2 (T-MP18): Invariante a escala con Newton-Schulz Orden 4 y SVD fallback.
+    1. Contrato PolarSafe V2 (T-MP18): QDWH (Nakatsukasa-Bai-Gygi), Newton-Schulz Ord. 5 y SVD fallback.
     2. Proyección Esférica Dirección-Amplitud (u, rho) (T-MP16).
     3. ABI Neuronal Sequence-to-Core (T-MP21): Extracción e inyección en token canónico L-1.
     4. Contrato de Inmutabilidad Anti-Aliasing (MP-59).
@@ -57,54 +57,141 @@ class PmtpStiefelAdapter:
     ) -> Tuple[np.ndarray, float, float, str]:
         """
         Contrato PolarSafe V2 (T-MP18, MP-49):
-        Invariante a escala global. Evalúa el condicionamiento relativo:
-        kappa_2(X) = sigma_max / sigma_min, r_rel = sigma_min / sigma_max.
+        Invariante a escala global con detección explícita NaN/Inf/rank-deficient,
+        Newton-Schulz Orden 5 para matrices bien condicionadas (kappa <= min(kappa_max, 10))
+        y QDWH (QR-based Dynamically Weighted Halley, Nakatsukasa-Bai-Gygi 2010) hasta kappa_fatal.
         """
-        D, r = X.shape
+        X_arr = np.asarray(X, dtype=np.float64)
+        if X_arr.ndim != 2 or X_arr.shape[0] == 0 or X_arr.shape[1] == 0:
+            raise ValueError(f"Expected non-empty 2D matrix, got shape {X_arr.shape}")
+
+        D, r = X_arr.shape
+
+        # 0. Guardia estricta anti-NaN / anti-Inf antes de cualquier descomposición
+        if not np.all(np.isfinite(X_arr)):
+            return np.zeros((D, r), dtype=np.float64), float("inf"), 0.0, "REJECTED_NON_FINITE"
+
+        if D < r:
+            return np.zeros((D, r), dtype=np.float64), float("inf"), 0.0, "REJECTED_RANK_DEFICIENT"
+
         eye_r = np.eye(r, dtype=np.float64)
 
-        # 1. Auditoría espectral relativa
-        s = np.linalg.svd(X, compute_uv=False)
-        sigma_max = float(s[0])
-        sigma_min = float(s[-1])
+        # 0b. Pre-escalado seguro por max_abs contra underflow/overflow IEEE-754 (e.g. 1e-200)
+        max_abs = float(np.max(np.abs(X_arr)))
+        if max_abs <= 0.0 or not math.isfinite(max_abs):
+            return np.zeros((D, r), dtype=np.float64), float("inf"), 0.0, "REJECTED_SINGULAR"
+        X_scaled = (X_arr / max_abs).astype(np.float64)
 
-        if sigma_max <= 0.0 or not math.isfinite(sigma_max):
-            return np.zeros((D, r)), float("inf"), 0.0, "REJECTED_SINGULAR"
+        # 1. Cota espectral superior sin SVD: ||X_scaled||_2 <= min(||X_scaled||_F, sqrt(||X_scaled||_1 * ||X_scaled||_inf))
+        fro_norm = float(np.linalg.norm(X_scaled, ord="fro"))
+        if fro_norm <= 0.0 or not math.isfinite(fro_norm):
+            return np.zeros((D, r), dtype=np.float64), float("inf"), 0.0, "REJECTED_SINGULAR"
 
-        kappa_2 = (sigma_max / sigma_min) if sigma_min > 0.0 else float("inf")
-        r_rel = (sigma_min / sigma_max) if sigma_max > 0.0 else 0.0
+        one_norm = float(np.linalg.norm(X_scaled, ord=1))
+        inf_norm = float(np.linalg.norm(X_scaled, ord=np.inf))
+        spec_upper = math.sqrt(one_norm * inf_norm) if (one_norm > 0.0 and inf_norm > 0.0 and math.isfinite(one_norm * inf_norm)) else fro_norm
+        alpha_upper = min(fro_norm, spec_upper) * 1.000000000001
+        if alpha_upper <= 0.0 or not math.isfinite(alpha_upper):
+            return np.zeros((D, r), dtype=np.float64), float("inf"), 0.0, "REJECTED_SINGULAR"
 
-        # Rechazo explícito de matrices degeneradas
-        if kappa_2 > kappa_fatal or r_rel < (1.0 / kappa_fatal):
-            U, _, Vt = np.linalg.svd(X, full_matrices=False)
-            Q = np.dot(U, Vt).astype(np.float64)
-            return Q, kappa_2, r_rel, "REJECTED_ILL_CONDITIONED"
+        Y = (X_scaled / alpha_upper).astype(np.float64)
 
-        # 2. Pre-escalado espectral exacto: Y0 = X / sigma_max con guarda de cota unitaria estricta
-        Y = (X / (sigma_max * 1.000000000001)).astype(np.float64)
+        # 2. Estimación de cota inferior L0 vía factor triangular QR (sin SVD D x r) + 3 pasos potencia inversa en R (r x r)
+        L0_est = 1e-6
+        kappa_est = 1.0 / L0_est
+        try:
+            _, R_tri = np.linalg.qr(Y, mode="reduced")
+            diag_abs = np.abs(np.diag(R_tri))
+            max_diag = float(np.max(diag_abs)) if diag_abs.size else 0.0
+            min_diag = float(np.min(diag_abs)) if diag_abs.size else 0.0
+            if max_diag <= 0.0 or min_diag <= 1e-14 * max_diag:
+                raise np.linalg.LinAlgError("R_tri near-singular")
 
-        # 3. Iteración acelerada Newton-Schulz Orden 5 con evaluación de Horner si kappa_2 <= kappa_max
-        # Expansión binomial exacta de (I - A)^(-1/2) en torno a A = 0:
-        # P(A) = I + (1/2)*A + (3/8)*A^2 + (5/16)*A^3 + (35/128)*A^4
-        if kappa_2 <= kappa_max:
-            for _ in range(max_iters):
-                YtY = np.dot(Y.T, Y)
-                A = eye_r - YtY
-                max_defect = np.max(np.abs(A))
-                if max_defect < tol:
-                    return Y, kappa_2, r_rel, "ACCEPTED_NEWTON_SCHULZ_ORD5"
-                if not np.isfinite(max_defect) or max_defect > 2.0:
-                    break  # Falla de convergencia: conmutar inmediatamente a SVD fallback
-                A2 = np.dot(A, A)
-                A3 = np.dot(A2, A)
-                A4 = np.dot(A2, A2)  # O(r^3) optimizado mediante elevación al cuadrado
-                poly = eye_r + 0.5 * A + 0.375 * A2 + 0.3125 * A3 + (35.0 / 128.0) * A4
-                Y = np.dot(Y, poly)
+            # Estimar sigma_min(Y) ~ 1 / ||R_tri^{-1}||_2 con 3 iteraciones potencia inversa sobre r x r
+            v = np.ones(r, dtype=np.float64) / math.sqrt(float(r))
+            inv_norm = 1.0
+            Rt = R_tri.T
+            for _ in range(3):
+                w = np.linalg.solve(Rt, v)
+                z = np.linalg.solve(R_tri, w)
+                z_norm = float(np.linalg.norm(z))
+                if not math.isfinite(z_norm) or z_norm <= 0.0:
+                    raise np.linalg.LinAlgError("Inverse power non-finite")
+                inv_norm = math.sqrt(z_norm)
+                v = z / z_norm
+            sigma_min_est = 1.0 / max(inv_norm, 1.0)
+            L0_est = max(1e-15, min(0.999, 0.85 * sigma_min_est))
+            kappa_est = 1.0 / L0_est
+        except np.linalg.LinAlgError:
+            L0_est = 0.0
+            kappa_est = float("inf")
 
-        # 4. Fallback SVD polar para condicionamiento moderado
-        U, _, Vt = np.linalg.svd(X, full_matrices=False)
+        # Si el condicionamiento estimado excede el contrato fatal o es singular, auditar y rechazar/fallback por SVD
+        if L0_est <= 0.0 or kappa_est > float(kappa_fatal):
+            s = np.linalg.svd(X_scaled, compute_uv=False)
+            sigma_max, sigma_min = float(s[0]), float(s[-1])
+            kappa_exact = (sigma_max / sigma_min) if sigma_min > 0.0 else float("inf")
+            r_rel_exact = (sigma_min / sigma_max) if sigma_max > 0.0 else 0.0
+            U, _, Vt = np.linalg.svd(X_scaled, full_matrices=False)
+            Q_svd = np.dot(U, Vt).astype(np.float64)
+            if sigma_min <= 0.0 or not math.isfinite(kappa_exact) or kappa_exact >= 1e14:
+                return Q_svd, kappa_exact, r_rel_exact, "REJECTED_RANK_DEFICIENT_SVD"
+            if kappa_exact > float(kappa_fatal) or r_rel_exact < (1.0 / float(kappa_fatal)):
+                return Q_svd, kappa_exact, r_rel_exact, "REJECTED_ILL_CONDITIONED"
+            L0_est = max(0.85 * r_rel_exact, 1e-15)
+            kappa_est = kappa_exact
+
+        # 3. SOLVER POLAR PRINCIPAL: QDWH (QR-based Dynamically Weighted Halley, Nakatsukasa-Bai-Gygi 2010)
+        # Convergencia cúbica en <= 6 iteraciones antes de requerir SVD fallback.
+        Q = Y.copy()
+        L = max(L0_est, 1e-15)
+        qdwh_tol = min(float(tol), 5.0 * float(np.finfo(np.float64).eps))
+        qdwh_iters = max(min(max_iters, 10), 6)
+
+        try:
+            for _ in range(qdwh_iters):
+                L2 = L * L
+                dd = (4.0 * (1.0 - L2) / (L2 * L2)) ** (1.0 / 3.0)
+                sqd = math.sqrt(1.0 + dd)
+                a = sqd + 0.5 * math.sqrt(8.0 - 4.0 * dd + (8.0 * (2.0 - L2)) / (L2 * L2 * sqd))
+                b = ((a - 1.0) ** 2) / 4.0
+                c = a + b - 1.0
+                L = min(1.0 - 1e-15, L * (a + b * L2) / (1.0 + c * L2))
+
+                if c > 100.0:
+                    B = np.vstack([math.sqrt(c) * Q, eye_r])
+                    Q1, _ = np.linalg.qr(B, mode="reduced")
+                    Q_next = (b / c) * Q + ((a - b / c) / math.sqrt(c)) * np.dot(Q1[:D, :], Q1[D:, :].T)
+                else:
+                    Z = eye_r + c * np.dot(Q.T, Q)
+                    R = np.linalg.cholesky(Z).T
+                    Y_solve = np.linalg.solve(R.T, Q.T)
+                    W_solve = np.linalg.solve(R, Y_solve).T
+                    Q_next = (b / c) * Q + (a - b / c) * W_solve
+
+                diff = float(np.linalg.norm(Q_next - Q, ord="fro"))
+                Q = Q_next
+                defect = float(np.max(np.abs(np.dot(Q.T, Q) - eye_r)))
+                if not np.isfinite(defect):
+                    break
+                if (diff <= qdwh_tol or L > 1.0 - 1e-14) and defect <= max(tol, 1e-13):
+                    return Q, kappa_est, L0_est, "ACCEPTED_QDWH_POLAR"
+
+            if np.all(np.isfinite(Q)):
+                defect = float(np.max(np.abs(np.dot(Q.T, Q) - eye_r)))
+                if defect <= max(tol, 1e-13):
+                    return Q, kappa_est, L0_est, "ACCEPTED_QDWH_POLAR"
+        except np.linalg.LinAlgError:
+            pass
+
+        # 4. Fallback SVD polar de seguridad (únicamente si QDWH detecta anomalía numérica o no converge)
+        s = np.linalg.svd(X_scaled, compute_uv=False)
+        sigma_max, sigma_min = float(s[0]), float(s[-1])
+        kappa_exact = (sigma_max / sigma_min) if sigma_min > 0.0 else float("inf")
+        r_rel_exact = (sigma_min / sigma_max) if sigma_max > 0.0 else 0.0
+        U, _, Vt = np.linalg.svd(X_scaled, full_matrices=False)
         Q = np.dot(U, Vt).astype(np.float64)
-        return Q, kappa_2, r_rel, "ACCEPTED_SVD_POLAR_FALLBACK"
+        return Q, kappa_exact, r_rel_exact, "ACCEPTED_SVD_POLAR_FALLBACK"
 
     def project_to_spherical(self, h: np.ndarray) -> Tuple[np.ndarray, float]:
         """
