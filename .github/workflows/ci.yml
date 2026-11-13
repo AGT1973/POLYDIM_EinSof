@@ -63,3 +63,15 @@ jobs:
       - name: Run Pytest Suite
         run: |
           pytest tests/ -v
+
+  docker-audit:
+    name: Reproducible Docker Audit (ASan/UBSan + memfd_create + Pytest + Benchmarks)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Build and Run Reproducible Container Audit
+        run: |
+          docker build -t polydim-audit .
+          docker run --rm --ipc=private polydim-audit

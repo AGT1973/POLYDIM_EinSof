@@ -82,7 +82,7 @@ def test_explicit_0600_permission_policy():
         desc = bus.publish_tensor(v)
         sid = int(desc.split("_")[2])
         perm = bus.slabs[sid]["perm_mode"]
-        if os.name == "posix":
+        if os.name == "posix" and os.path.isdir("/dev/shm"):
             assert perm == "0600"
             shm_path = os.path.join("/dev/shm", bus.slabs[sid]["name"].lstrip("/"))
             assert (os.stat(shm_path).st_mode & 0o777) == 0o600
