@@ -48,7 +48,7 @@ static_assert(alignof(AtelierSlabHeader) == 64, "ABI ROTA: alignof(AtelierSlabHe
 
 enum class PolarSolverUsed {
     QDWH_PRIMARY = 0,
-    JACOBI_SVD_FALLBACK = 1,
+    MGS_QR_FALLBACK = 1,
     REJECTED_INVALID = 2
 };
 
@@ -74,10 +74,62 @@ inline void neumaier_accumulate(double val, double& sum, double& comp) {
     sum = t;
 }
 
+inline uint64_t siphash24_u64(const uint8_t key[16], const uint8_t* data, size_t len) {
+    auto rotl64 = [](uint64_t x, int b) -> uint64_t { return (x << b) | (x >> (64 - b)); };
+    auto read_le64 = [](const uint8_t* p) -> uint64_t {
+        uint64_t v = 0;
+        for (int i = 0; i < 8; ++i) v |= static_cast<uint64_t>(p[i]) << (8 * i);
+        return v;
+    };
+    uint64_t k0 = read_le64(key);
+    uint64_t k1 = read_le64(key + 8);
+    uint64_t v0 = 0x736f6d6570736575ULL ^ k0;
+    uint64_t v1 = 0x646f72616e646f6dULL ^ k1;
+    uint64_t v2 = 0x6c7967656e657261ULL ^ k0;
+    uint64_t v3 = 0x7465646279746573ULL ^ k1;
+    auto sipround = [&]() {
+        v0 += v1; v1 = rotl64(v1, 13); v1 ^= v0; v0 = rotl64(v0, 32);
+        v2 += v3; v3 = rotl64(v3, 16); v3 ^= v2;
+        v0 += v3; v3 = rotl64(v3, 21); v3 ^= v0;
+        v2 += v1; v1 = rotl64(v1, 17); v1 ^= v2; v2 = rotl64(v2, 32);
+    };
+    const uint8_t* end = data + (len & ~static_cast<size_t>(7));
+    for (; data < end; data += 8) {
+        uint64_t m = read_le64(data);
+        v3 ^= m;
+        for (int i = 0; i < 2; ++i) sipround();
+        v0 ^= m;
+    }
+    uint64_t b = static_cast<uint64_t>(len) << 56;
+    switch (len & 7) {
+        case 7: b |= static_cast<uint64_t>(data[6]) << 48; [[fallthrough]];
+        case 6: b |= static_cast<uint64_t>(data[5]) << 40; [[fallthrough]];
+        case 5: b |= static_cast<uint64_t>(data[4]) << 32; [[fallthrough]];
+        case 4: b |= static_cast<uint64_t>(data[3]) << 24; [[fallthrough]];
+        case 3: b |= static_cast<uint64_t>(data[2]) << 16; [[fallthrough]];
+        case 2: b |= static_cast<uint64_t>(data[1]) << 8;  [[fallthrough]];
+        case 1: b |= static_cast<uint64_t>(data[0]); break;
+        case 0: break;
+    }
+    v3 ^= b;
+    for (int i = 0; i < 2; ++i) sipround();
+    v0 ^= b;
+    v2 ^= 0xff;
+    for (int i = 0; i < 4; ++i) sipround();
+    return (v0 ^ v1) ^ (v2 ^ v3);
+}
+
+inline bool constant_time_eq32(uint32_t a, uint32_t b) {
+    volatile uint32_t va = a;
+    volatile uint32_t vb = b;
+    return (va ^ vb) == 0U;
+}
+
+// PRF criptografica keyed SipHash-2-4 sobre cabecera inmutable + payload
 inline uint32_t compute_slab_mac32(const AtelierSlabHeader& hdr, const double* payload, size_t elems) {
     char key_buf[256] = {};
-    const uint8_t* key_bytes = reinterpret_cast<const uint8_t*>("PMTP_DEFAULT_SESSION_KEY_V1");
-    size_t key_len = 27;
+    const uint8_t* key_bytes = reinterpret_cast<const uint8_t*>("PMTP_EPHEMERAL_FALLBACK_KEY_V1");
+    size_t key_len = 30;
 #if defined(_WIN32)
     size_t env_len = 0;
     if (getenv_s(&env_len, key_buf, sizeof(key_buf), "PMTP_SHM_KEY") == 0 && env_len > 1) {
@@ -92,20 +144,17 @@ inline uint32_t compute_slab_mac32(const AtelierSlabHeader& hdr, const double* p
     }
     (void)key_buf;
 #endif
-
-    uint64_t h = 14695981039346656037ULL;
-    auto mix = [&](const uint8_t* ptr, size_t len) {
-        for (size_t i = 0; i < len; ++i) {
-            h ^= ptr[i];
-            h *= 1099511628211ULL;
-        }
-    };
-    mix(key_bytes, key_len);
-    mix(reinterpret_cast<const uint8_t*>(&hdr), 60);
-    if (payload && elems > 0) {
-        mix(reinterpret_cast<const uint8_t*>(payload), elems * sizeof(double));
+    uint8_t k16[16] = {};
+    for (size_t i = 0; i < key_len; ++i) {
+        k16[i & 15] ^= static_cast<uint8_t>(key_bytes[i] + (i * 131ULL));
     }
-    return static_cast<uint32_t>((h >> 32) ^ (h & 0xFFFFFFFFULL));
+    std::vector<uint8_t> msg(60 + (payload ? elems * sizeof(double) : 0));
+    std::memcpy(msg.data(), &hdr, 60);
+    if (payload && elems > 0) {
+        std::memcpy(msg.data() + 60, payload, elems * sizeof(double));
+    }
+    uint64_t tag64 = siphash24_u64(k16, msg.data(), msg.size());
+    return static_cast<uint32_t>(tag64 ^ (tag64 >> 32));
 }
 
 // Validacion estricta anti-fuzzing de cabecera ABI versionada y limites de memoria
@@ -139,7 +188,7 @@ inline bool validate_slab_header(
             static_cast<const uint8_t*>(raw_slab) + sizeof(AtelierSlabHeader)
         );
         uint32_t expected = compute_slab_mac32(hdr, payload, static_cast<size_t>(elems));
-        if (expected != hdr.reserved) return false;
+        if (!constant_time_eq32(expected, hdr.reserved)) return false;
     }
     return true;
 }
@@ -258,8 +307,8 @@ inline bool mgs_qr(std::vector<double>& Q_mat, std::vector<double>& R_mat, uint3
     return true;
 }
 
-// Fallback One-Sided Hestenes-Jacobi + QR para polar factor en casos extremos sin LAPACK externo
-inline double retract_polar_jacobi_fallback(double* Z, uint32_t D, uint32_t k) {
+// Fallback Modified Gram-Schmidt QR (MGS-2) para ortogonalizacion sin LAPACK externo
+inline double retract_qr_fallback(double* Z, uint32_t D, uint32_t k) {
     std::vector<double> Q(Z, Z + static_cast<size_t>(D) * k);
     std::vector<double> R;
     if (!mgs_qr(Q, R, D, k)) {
@@ -444,7 +493,7 @@ inline double retract_stiefel_qdwh(
     }
 
     // Fallback determinista ante no convergencia de QDWH
-    double fb_defect = retract_polar_jacobi_fallback(Z, D, k);
-    if (solver_used) *solver_used = PolarSolverUsed::JACOBI_SVD_FALLBACK;
+    double fb_defect = retract_qr_fallback(Z, D, k);
+    if (solver_used) *solver_used = PolarSolverUsed::MGS_QR_FALLBACK;
     return fb_defect;
 }

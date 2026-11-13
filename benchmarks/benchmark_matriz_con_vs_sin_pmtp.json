@@ -9,22 +9,22 @@
       "k": 16,
       "sin_pmtp_json_1d": {
         "serialized_bytes": 45736,
-        "median_roundtrip_ms": 3.6192,
+        "median_roundtrip_ms": 3.6043,
         "tokens_equivalent_est": 11434
       },
       "con_pmtp_e2e": {
         "slab_bytes": 32832,
-        "T_proj_qdwh_us": 16954.85,
-        "T_sync_seqlock_mac_us": 163.1,
-        "T_copy_shm_us": 81.7,
-        "T_ipc_steady_us": 244.8,
-        "T_total_e2e_us": 17199.05,
-        "speedup_ipc_steady": 14.8,
-        "speedup_e2e_with_proj": 0.21,
+        "T_proj_qdwh_us": 17445.3,
+        "T_sync_seqlock_mac_us": 163.05,
+        "T_copy_shm_us": 83.25,
+        "T_ipc_steady_us": 246.3,
+        "T_total_e2e_us": 17719.8,
+        "speedup_ipc_steady": 14.6,
+        "speedup_e2e_with_proj": 0.2,
         "tokens_transmitted": 0,
-        "stiefel_defect": 6.661338147750939e-16,
+        "stiefel_defect": 8.881784197001252e-16,
         "polarsafe_status": "ACCEPTED_QDWH_POLAR",
-        "kappa": 4.8593
+        "kappa": 4.7673
       }
     },
     {
@@ -34,22 +34,22 @@
       "k": 16,
       "sin_pmtp_json_1d": {
         "serialized_bytes": 92031,
-        "median_roundtrip_ms": 7.3646,
+        "median_roundtrip_ms": 8.7898,
         "tokens_equivalent_est": 23008
       },
       "con_pmtp_e2e": {
         "slab_bytes": 65600,
-        "T_proj_qdwh_us": 39180.35,
-        "T_sync_seqlock_mac_us": 284.1,
-        "T_copy_shm_us": 107.35,
-        "T_ipc_steady_us": 391.45,
-        "T_total_e2e_us": 39583.45,
-        "speedup_ipc_steady": 18.8,
-        "speedup_e2e_with_proj": 0.19,
+        "T_proj_qdwh_us": 47207.8,
+        "T_sync_seqlock_mac_us": 301.4,
+        "T_copy_shm_us": 133.2,
+        "T_ipc_steady_us": 434.6,
+        "T_total_e2e_us": 47659.2,
+        "speedup_ipc_steady": 20.2,
+        "speedup_e2e_with_proj": 0.18,
         "tokens_transmitted": 0,
         "stiefel_defect": 6.661338147750939e-16,
         "polarsafe_status": "ACCEPTED_QDWH_POLAR",
-        "kappa": 4.7447
+        "kappa": 4.6487
       }
     },
     {
@@ -59,22 +59,22 @@
       "k": 16,
       "sin_pmtp_json_1d": {
         "serialized_bytes": 115226,
-        "median_roundtrip_ms": 9.3559,
+        "median_roundtrip_ms": 9.2541,
         "tokens_equivalent_est": 28806
       },
       "con_pmtp_e2e": {
         "slab_bytes": 81984,
-        "T_proj_qdwh_us": 48001.75,
-        "T_sync_seqlock_mac_us": 351.15,
-        "T_copy_shm_us": 141.9,
-        "T_ipc_steady_us": 493.05,
-        "T_total_e2e_us": 48535.35,
-        "speedup_ipc_steady": 19.0,
-        "speedup_e2e_with_proj": 0.19,
+        "T_proj_qdwh_us": 46592.2,
+        "T_sync_seqlock_mac_us": 349.95,
+        "T_copy_shm_us": 143.8,
+        "T_ipc_steady_us": 493.75,
+        "T_total_e2e_us": 47132.0,
+        "speedup_ipc_steady": 18.7,
+        "speedup_e2e_with_proj": 0.2,
         "tokens_transmitted": 0,
-        "stiefel_defect": 6.661338147750939e-16,
+        "stiefel_defect": 8.881784197001252e-16,
         "polarsafe_status": "ACCEPTED_QDWH_POLAR",
-        "kappa": 4.7358
+        "kappa": 4.8204
       }
     },
     {
@@ -84,22 +84,22 @@
       "k": 16,
       "sin_pmtp_json_1d": {
         "serialized_bytes": 185103,
-        "median_roundtrip_ms": 14.8292,
+        "median_roundtrip_ms": 15.0551,
         "tokens_equivalent_est": 46276
       },
       "con_pmtp_e2e": {
         "slab_bytes": 131136,
-        "T_proj_qdwh_us": 122785.05,
-        "T_sync_seqlock_mac_us": 583.2,
-        "T_copy_shm_us": 208.75,
-        "T_ipc_steady_us": 791.95,
-        "T_total_e2e_us": 123580.0,
-        "speedup_ipc_steady": 18.7,
+        "T_proj_qdwh_us": 123746.45,
+        "T_sync_seqlock_mac_us": 586.4,
+        "T_copy_shm_us": 214.85,
+        "T_ipc_steady_us": 801.25,
+        "T_total_e2e_us": 124560.6,
+        "speedup_ipc_steady": 18.8,
         "speedup_e2e_with_proj": 0.12,
         "tokens_transmitted": 0,
-        "stiefel_defect": 4.440892098500626e-16,
+        "stiefel_defect": 6.661338147750939e-16,
         "polarsafe_status": "ACCEPTED_QDWH_POLAR",
-        "kappa": 4.7418
+        "kappa": 4.6914
       }
     }
   ],

@@ -99,3 +99,37 @@ def test_abi_magic_position():
     import struct
     magic_le = struct.pack("<I", 0x504D5450)
     assert raw[:4] == magic_le, f"Magic bytes = {raw[:4]!r}, esperado {magic_le!r}"
+
+
+def test_cross_language_cpp_to_python_abi_exchange(tmp_path):
+    """Intercambio binario real C++20 -> Python ctypes de cabecera ABI 64B + matriz St(8, 128)."""
+    import os
+    import sys
+    import subprocess
+    import numpy as np
+
+    kernel_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "tools", "atelier_kernel")
+    ext = ".exe" if sys.platform == "win32" else ""
+    exe_path = os.path.join(kernel_dir, f"atelier_stiefel_cpp{ext}")
+    if not os.path.exists(exe_path):
+        pytest.skip(f"Binario C++ no encontrado para intercambio ABI: {exe_path}")
+
+    blob_path = tmp_path / "cpp_to_py_slab.bin"
+    res = subprocess.run([exe_path, "128", "8", "--dump-slab-file", str(blob_path)], capture_output=True, text=True)
+    assert res.returncode == 0, f"Kernel C++ fallo: {res.stderr}"
+
+    raw = blob_path.read_bytes()
+    assert len(raw) == 64 + 128 * 8 * 8
+    hdr = AtelierSlabHeader.from_buffer_copy(raw[:64])
+    assert hdr.magic == 0x504D5450
+    assert hdr.version == 1
+    assert hdr.D == 128
+    assert hdr.k == 8
+    assert hdr.sequence == 2
+    assert hdr.isometry_error <= 1e-14
+    assert hdr.reserved != 0
+
+    mat = np.frombuffer(raw[64:], dtype=np.float64).reshape((128, 8))
+    defect_py = float(np.max(np.abs(mat.T @ mat - np.eye(8))))
+    assert defect_py <= 1e-14
+    assert abs(defect_py - hdr.isometry_error) <= 1e-14

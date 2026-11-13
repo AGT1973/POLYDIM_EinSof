@@ -16,15 +16,16 @@ const LEASE_TIMEOUT_MS: u128 = 50;
 struct HardenedSlot {
     sequence: AtomicU64,
     last_heartbeat_ms: AtomicU64,
-    data: [f64; TENSOR_DIM],
+    data_words: [AtomicU64; TENSOR_DIM],
 }
 
 impl HardenedSlot {
     fn new() -> Self {
+        let init_bits = 1.0_f64.to_bits();
         Self {
             sequence: AtomicU64::new(0),
             last_heartbeat_ms: AtomicU64::new(1),
-            data: [1.0; TENSOR_DIM],
+            data_words: std::array::from_fn(|_| AtomicU64::new(init_bits)),
         }
     }
 }
@@ -76,8 +77,11 @@ fn test_item_1_zombie_recovery() -> bool {
                     thread::sleep(Duration::from_micros(200));
                 }
 
-                // Copiar payload
-                local.copy_from_slice(&slot_clone.data);
+                // Lectura atomica por palabra u64 (cero UB / cero data race bajo LLVM/Rust memory model)
+                for (i, w) in local.iter_mut().enumerate() {
+                    *w = f64::from_bits(slot_clone.data_words[i].load(Ordering::Relaxed));
+                }
+                std::sync::atomic::fence(Ordering::Acquire);
 
                 let seq_after = slot_clone.sequence.load(Ordering::Acquire);
                 if seq_before == seq_after || recovered {

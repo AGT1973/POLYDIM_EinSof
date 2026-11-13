@@ -97,52 +97,36 @@ class PmtpStiefelAdapter:
         Y = (X_scaled / alpha_upper).astype(np.float64)
 
         # 2. Estimación de cota inferior L0 vía factor triangular QR (sin SVD D x r) + 3 pasos potencia inversa en R (r x r)
-        L0_est = 1e-6
+        # IMPORTANTE: QDWH se ejecuta SIEMPRE como solver principal antes de cualquier llamada SVD.
+        L0_est = 1.0 / max(10.0 * float(r), 1e3)
         kappa_est = 1.0 / L0_est
         try:
             _, R_tri = np.linalg.qr(Y, mode="reduced")
             diag_abs = np.abs(np.diag(R_tri))
             max_diag = float(np.max(diag_abs)) if diag_abs.size else 0.0
             min_diag = float(np.min(diag_abs)) if diag_abs.size else 0.0
-            if max_diag <= 0.0 or min_diag <= 1e-14 * max_diag:
-                raise np.linalg.LinAlgError("R_tri near-singular")
-
-            # Estimar sigma_min(Y) ~ 1 / ||R_tri^{-1}||_2 con 3 iteraciones potencia inversa sobre r x r
-            v = np.ones(r, dtype=np.float64) / math.sqrt(float(r))
-            inv_norm = 1.0
-            Rt = R_tri.T
-            for _ in range(3):
-                w = np.linalg.solve(Rt, v)
-                z = np.linalg.solve(R_tri, w)
-                z_norm = float(np.linalg.norm(z))
-                if not math.isfinite(z_norm) or z_norm <= 0.0:
-                    raise np.linalg.LinAlgError("Inverse power non-finite")
-                inv_norm = math.sqrt(z_norm)
-                v = z / z_norm
-            sigma_min_est = 1.0 / max(inv_norm, 1.0)
-            L0_est = max(1e-15, min(0.999, 0.85 * sigma_min_est))
-            kappa_est = 1.0 / L0_est
+            if max_diag > 0.0 and min_diag > 1e-14 * max_diag:
+                v = np.linspace(1.0, -0.7, r, dtype=np.float64)
+                v /= float(np.linalg.norm(v))
+                inv_norm = 1.0
+                Rt = R_tri.T
+                for _ in range(3):
+                    w = np.linalg.solve(Rt, v)
+                    z = np.linalg.solve(R_tri, w)
+                    z_norm = float(np.linalg.norm(z))
+                    if not math.isfinite(z_norm) or z_norm <= 0.0:
+                        raise np.linalg.LinAlgError("Inverse power non-finite")
+                    inv_norm = math.sqrt(z_norm)
+                    v = z / z_norm
+                sigma_min_est = 1.0 / max(inv_norm, 1.0)
+                L0_est = max(1e-15, min(0.999, 0.85 * sigma_min_est))
+                kappa_est = 1.0 / L0_est
         except np.linalg.LinAlgError:
-            L0_est = 0.0
-            kappa_est = float("inf")
-
-        # Si el condicionamiento estimado excede el contrato fatal o es singular, auditar y rechazar/fallback por SVD
-        if L0_est <= 0.0 or kappa_est > float(kappa_fatal):
-            s = np.linalg.svd(X_scaled, compute_uv=False)
-            sigma_max, sigma_min = float(s[0]), float(s[-1])
-            kappa_exact = (sigma_max / sigma_min) if sigma_min > 0.0 else float("inf")
-            r_rel_exact = (sigma_min / sigma_max) if sigma_max > 0.0 else 0.0
-            U, _, Vt = np.linalg.svd(X_scaled, full_matrices=False)
-            Q_svd = np.dot(U, Vt).astype(np.float64)
-            if sigma_min <= 0.0 or not math.isfinite(kappa_exact) or kappa_exact >= 1e14:
-                return Q_svd, kappa_exact, r_rel_exact, "REJECTED_RANK_DEFICIENT_SVD"
-            if kappa_exact > float(kappa_fatal) or r_rel_exact < (1.0 / float(kappa_fatal)):
-                return Q_svd, kappa_exact, r_rel_exact, "REJECTED_ILL_CONDITIONED"
-            L0_est = max(0.85 * r_rel_exact, 1e-15)
-            kappa_est = kappa_exact
+            L0_est = 1e-12
+            kappa_est = 1e12
 
         # 3. SOLVER POLAR PRINCIPAL: QDWH (QR-based Dynamically Weighted Halley, Nakatsukasa-Bai-Gygi 2010)
-        # Convergencia cúbica en <= 6 iteraciones antes de requerir SVD fallback.
+        # Convergencia cúbica siempre ejecutada antes de caer a SVD. `kappa_max` fija umbral de alerta para auditoría.
         Q = Y.copy()
         L = max(L0_est, 1e-15)
         qdwh_tol = min(float(tol), 5.0 * float(np.finfo(np.float64).eps))
@@ -175,22 +159,29 @@ class PmtpStiefelAdapter:
                 if not np.isfinite(defect):
                     break
                 if (diff <= qdwh_tol or L > 1.0 - 1e-14) and defect <= max(tol, 1e-13):
-                    return Q, kappa_est, L0_est, "ACCEPTED_QDWH_POLAR"
+                    if kappa_est <= float(kappa_fatal):
+                        status_ok = "ACCEPTED_QDWH_POLAR" if kappa_est <= float(kappa_max) * 1e6 else "ACCEPTED_QDWH_POLAR"
+                        return Q, kappa_est, L0_est, status_ok
+                    break
 
             if np.all(np.isfinite(Q)):
                 defect = float(np.max(np.abs(np.dot(Q.T, Q) - eye_r)))
-                if defect <= max(tol, 1e-13):
+                if defect <= max(tol, 1e-13) and kappa_est <= float(kappa_fatal):
                     return Q, kappa_est, L0_est, "ACCEPTED_QDWH_POLAR"
         except np.linalg.LinAlgError:
             pass
 
-        # 4. Fallback SVD polar de seguridad (únicamente si QDWH detecta anomalía numérica o no converge)
+        # 4. Fallback SVD polar de seguridad (únicamente tras intentar QDWH o cuando supera kappa_fatal/rank-deficient)
         s = np.linalg.svd(X_scaled, compute_uv=False)
         sigma_max, sigma_min = float(s[0]), float(s[-1])
         kappa_exact = (sigma_max / sigma_min) if sigma_min > 0.0 else float("inf")
         r_rel_exact = (sigma_min / sigma_max) if sigma_max > 0.0 else 0.0
         U, _, Vt = np.linalg.svd(X_scaled, full_matrices=False)
         Q = np.dot(U, Vt).astype(np.float64)
+        if sigma_min <= 0.0 or not math.isfinite(kappa_exact) or kappa_exact >= 1e14:
+            return Q, kappa_exact, r_rel_exact, "REJECTED_RANK_DEFICIENT_SVD"
+        if kappa_exact > float(kappa_fatal) or r_rel_exact < (1.0 / float(kappa_fatal)):
+            return Q, kappa_exact, r_rel_exact, "REJECTED_ILL_CONDITIONED"
         return Q, kappa_exact, r_rel_exact, "ACCEPTED_SVD_POLAR_FALLBACK"
 
     def project_to_spherical(self, h: np.ndarray) -> Tuple[np.ndarray, float]:

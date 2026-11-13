@@ -69,17 +69,24 @@ class _MemfdShmAdapter:
         self.fd = os.memfd_create(name, mfd_flags)
         try:
             os.fchmod(self.fd, 0o600)
+            actual_mode = os.stat(self.fd).st_mode & 0o777
+            if actual_mode != 0o600:
+                raise PermissionError(f"Fail-closed: memfd mode esperado 0600, recibido {oct(actual_mode)}")
             os.ftruncate(self.fd, size)
             self._mmap = mmap.mmap(self.fd, size, access=mmap.ACCESS_WRITE)
             self.buf = memoryview(self._mmap)
             self.sealed = False
             if seal_resize and fcntl is not None and hasattr(fcntl, "F_ADD_SEALS"):
-                seals = getattr(fcntl, "F_SEAL_SHRINK", 0x0002) | getattr(fcntl, "F_SEAL_GROW", 0x0004)
+                seals = (
+                    getattr(fcntl, "F_SEAL_SHRINK", 0x0002)
+                    | getattr(fcntl, "F_SEAL_GROW", 0x0004)
+                    | getattr(fcntl, "F_SEAL_SEAL", 0x0001)
+                )
                 try:
                     fcntl.fcntl(self.fd, fcntl.F_ADD_SEALS, seals)
                     self.sealed = True
-                except OSError:
-                    self.sealed = False
+                except OSError as exc:
+                    raise PermissionError("Fail-closed: no se pudieron aplicar sellos F_SEAL_* en memfd") from exc
         except Exception:
             os.close(self.fd)
             raise
@@ -253,8 +260,16 @@ class PmtpShmBus:
             raise ValueError(f"num_elements debe ser estrictamente positivo: {num_elements}")
 
         np_dt = np.dtype(dtype)
-        if np_dt.kind not in ('f', 'i', 'u'):
-            raise TypeError(f"DType no numérico o no serializable rechazado: {dtype}")
+        dtype_map = {
+            np.dtype(np.float32): PmtpDType.FP32.value,
+            np.dtype(np.float64): PmtpDType.FP64.value,
+            np.dtype(np.float16): PmtpDType.FP16.value,
+            np.dtype(np.int32): PmtpDType.INT32.value,
+            np.dtype(np.int64): PmtpDType.INT64.value,
+        }
+        if np_dt not in dtype_map:
+            raise TypeError(f"DType no soportado por ABI v1 (use float32/float64/float16/int32/int64): {dtype}")
+        dtype_id = dtype_map[np_dt]
 
         itemsize = np_dt.itemsize
         payload_bytes = num_elements * itemsize
@@ -292,7 +307,6 @@ class PmtpShmBus:
             "backend": "memfd" if use_memfd else "shm",
         }
 
-        dtype_id = PmtpDType.FP64.value if dtype == np.float64 else PmtpDType.FP32.value
         timestamp_ns = time.time_ns()
         zero_payload = b"\x00" * payload_bytes
 

@@ -9,6 +9,7 @@
 #include "atelier_abi.hpp"
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 
 #if !defined(_WIN32)
 #include <sys/mman.h>
@@ -27,9 +28,15 @@ int main(int argc, char* argv[]) {
     uint32_t D = 1024;
     uint32_t k = 16;
     bool use_memfd = true;
+    const char* dump_slab_path = nullptr;
     if (argc >= 2) D = static_cast<uint32_t>(std::atoi(argv[1]));
     if (argc >= 3) k = static_cast<uint32_t>(std::atoi(argv[2]));
-    if (argc >= 4 && std::strcmp(argv[3], "--shm-named") == 0) use_memfd = false;
+    for (int ai = 3; ai < argc; ++ai) {
+        if (std::strcmp(argv[ai], "--shm-named") == 0) use_memfd = false;
+        else if (std::strcmp(argv[ai], "--dump-slab-file") == 0 && (ai + 1) < argc) {
+            dump_slab_path = argv[++ai];
+        }
+    }
 
     if (D == 0 || D > PMTP_MAX_DIM_D || k == 0 || k > D || k > PMTP_MAX_RANK_K) {
         std::cerr << "FAIL: Dimensiones fuera de contrato ABI: D=" << D << ", k=" << k << "\n";
@@ -109,15 +116,17 @@ int main(int argc, char* argv[]) {
     }
 #endif
     if (fd == -1) {
-        fd = shm_open(SHM_NAME, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-        ipc_mode = "POSIX_SHM_0600";
+        shm_unlink(SHM_NAME);
+        fd = shm_open(SHM_NAME, O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR);
+        ipc_mode = "POSIX_SHM_0600_O_EXCL";
     }
     if (fd != -1) {
+        struct stat st{};
         fchmod(fd, S_IRUSR | S_IWUSR);
-        if (ftruncate(fd, static_cast<off_t>(slab_bytes)) != -1) {
+        if (fstat(fd, &st) == 0 && (st.st_mode & 0777) == (S_IRUSR | S_IWUSR) && ftruncate(fd, static_cast<off_t>(slab_bytes)) != -1) {
 #if defined(__linux__)
             if (is_memfd) {
-                fcntl(fd, F_ADD_SEALS, F_SEAL_SHRINK | F_SEAL_GROW);
+                fcntl(fd, F_ADD_SEALS, F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_SEAL);
             }
 #endif
             void* pBuf = mmap(NULL, slab_bytes, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
@@ -143,7 +152,16 @@ int main(int argc, char* argv[]) {
     else if (defect <= 1.0e-15) tier = "TIER_STIEFEL_FLOOR_15";
 
     const char* solver_str = (solver_used == PolarSolverUsed::QDWH_PRIMARY)
-        ? "QDWH_PRIMARY" : "JACOBI_SVD_FALLBACK";
+        ? "QDWH_PRIMARY" : "MGS_QR_FALLBACK";
+
+    if (dump_slab_path) {
+        std::ofstream ofs(dump_slab_path, std::ios::binary | std::ios::trunc);
+        if (ofs) {
+            ofs.write(reinterpret_cast<const char*>(&header), sizeof(AtelierSlabHeader));
+            ofs.write(reinterpret_cast<const char*>(Z.data()),
+                      static_cast<std::streamsize>(static_cast<size_t>(D) * k * sizeof(double)));
+        }
+    }
 
     std::cout << "[+] 1. Retraccion Polar St(k, D)    : OK (" << qdwh_iters << " iters " << solver_str << ")\n";
     std::cout << "[+] 2. Defecto Isometria ||W^T W-I||: " << std::scientific << std::setprecision(2) << defect
