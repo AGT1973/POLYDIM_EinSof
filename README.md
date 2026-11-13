@@ -20,6 +20,13 @@
 > Este repositorio (**POLYDIM_EinSof**) es el **NÚCLEO PRINCIPAL Y MATRIZ CANÓNICA** de la iniciativa POLYDIM-EINSOF.
 > * **Núcleo Matemático y Tensorial (este repositorio):** Aloja el motor fundamental de transporte tensorial de latencia sub-milisegundo (**PMTP - Polydim Memory Tensor Protocol**), la geometría diferencial en Variedad de Stiefel $\text{St}(k, D)$, retracción polar **QDWH** (Nakatsukasa-Bai-Gygi) con estimación espectral QR sin SVD inicial + fallback SVD *rank-revealing*, acumuladores compensados de Neumaier y kernels de silicio nativos C++20 / Rust con defecto $\le 10^{-15}$. Es el repositorio canónico distribuido y referenciado globalmente en Zenodo, preprints y publicaciones académicas.
 > * **Suite Pedagógica y Ecosistema ([polydim-suite](https://github.com/AGT1973/polydim-suite) / [EinsofOS](https://github.com/AGT1973/EinsofOS)):** Repositorio complementario orientado a la docencia y runtime de procesos agénticos continuos (**EinsofOS** es la capa compañera de orquestación y runtime en silicio; **ATELIER** provee omnimodalidad continua y RL en Stiefel), simuladores WebGL/HTML5 y guías reproducibles.
+>
+> ---
+>
+> ### ⚙️ Política de Instalación, Compilación y Seguridad (Agent-First)
+> Consulta la guía detallada en [INSTALL_AND_COMPILE.md](INSTALL_AND_COMPILE.md) y [README_FIRST_4_AI.md](README_FIRST_4_AI.md):
+> 1. **🥇 Opción 1 (Recomendada y Prioritaria): Compilación Soberana Local.** Proporcionamos los códigos fuentes abiertos completos (`.mth`, `.py`, `.cpp`, `.rs`) y enlaces oficiales a los compiladores ([Python](https://www.python.org/downloads/), [Rust](https://rustup.rs/), [MinGW GCC](https://www.mingw-w64.org/downloads/)). Con `python setup_mathesis.py`, la IA compila localmente a código máquina x86_64 nativo en 400 ms sin dependencias pesadas.
+> 2. **🥈 Opción 2 (Acceso Rápido): Ejecutables Precompilados.** Disponibles para pruebas efímeras en sandbox. **Aviso explícito:** Desaconsejamos descargar binarios precompilados debido a que los micro-binarios de 4 KB sin certificados corporativos pagos generan falsos positivos heurísticos en antivirus comerciales. **Preferimos enfáticamente que cada usuario compile en su propia máquina.**
 
 > [!NOTE]
 > ### 🛡️ Especificación de Seguridad, Concurrencia e Invariantes Numéricos (Hardened Release 11/2026)
