@@ -142,10 +142,16 @@ int main(int argc, char* argv[]) {
     }
     if (fd != -1) {
         struct stat st{};
+#if defined(__APPLE__)
+        // macOS Darwin POSIX shm: modo 0600 fijado atomicamente por shm_open(O_CREAT | S_IRUSR | S_IWUSR).
+        // Darwin kernel no soporta fchmod(2) sobre descriptores shm_open (devuelve EINVAL).
+        bool sec_ok = (ftruncate(fd, static_cast<off_t>(slab_bytes)) == 0);
+#else
         bool sec_ok = (fchmod(fd, S_IRUSR | S_IWUSR) == 0) &&
                       (fstat(fd, &st) == 0) &&
                       ((st.st_mode & 0777) == (S_IRUSR | S_IWUSR)) &&
                       (ftruncate(fd, static_cast<off_t>(slab_bytes)) == 0);
+#endif
 #if defined(__linux__)
         if (sec_ok && is_memfd) {
             if (fcntl(fd, F_ADD_SEALS, F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_SEAL) == -1) {

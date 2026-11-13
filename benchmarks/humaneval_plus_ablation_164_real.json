@@ -59,27 +59,27 @@
   "silicon_ablation_164_live": {
     "mode_a_json_1d_local": {
       "payload_bytes": 22732,
-      "median_roundtrip_ms": 2.4639
+      "median_roundtrip_ms": 1.7726
     },
     "mode_b_linear_10_hops": {
-      "median_latency_us": 937.85,
+      "median_latency_us": 936.15,
       "median_orthogonality_defect": 8265.950358203141,
       "max_orthogonality_defect": 8265.950358203147
     },
     "mode_c_qdwh_stiefel_shm_mac": {
       "qdwh_primary_count": 164,
       "svd_fallback_count": 0,
-      "median_T_proj_qdwh_us": 8911.45,
-      "median_T_ipc_sync_copy_us": 354.4,
-      "median_T_e2e_total_us": 9284.75,
+      "median_T_proj_qdwh_us": 9246.05,
+      "median_T_ipc_sync_copy_us": 353.9,
+      "median_T_e2e_total_us": 9596.85,
       "median_orthogonality_defect": 8.881784197001252e-16,
       "max_orthogonality_defect": 1.3322676295501878e-15,
       "mac_verified_trials": 164,
       "zeroized_on_cleanup": true
     },
     "mode_d_zero_hop_shm_mac": {
-      "median_latency_us": 256.3,
-      "p95_latency_us": 291.69,
+      "median_latency_us": 378.5,
+      "p95_latency_us": 443.84,
       "mac_verified_trials": 164
     }
   },
