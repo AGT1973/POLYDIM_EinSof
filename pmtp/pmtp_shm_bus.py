@@ -15,9 +15,12 @@ import struct
 import hashlib
 import threading
 import weakref
+import logging
 from multiprocessing import shared_memory
 from typing import Tuple, Dict, Any, Optional
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 try:
     import fcntl
@@ -57,6 +60,11 @@ try:
     from pmtp_pob_bus import PmtpPobProducer, PmtpPobConsumer, PmtpPobView, PmtpPolicy, PmtpStatus
 except ImportError:
     pass
+
+try:
+    from .pmtp_metrics import PmtpMetricsCollector
+except ImportError:
+    from pmtp_metrics import PmtpMetricsCollector
 
 
 class _MemfdShmAdapter:
@@ -171,11 +179,13 @@ class PmtpShmBus:
         lease_timeout_ms: int = 30000,
         auth_key: Optional[bytes] = None,
         backend: str = "auto",
+        lease_ttl_seconds: float = 30.0,
     ):
         self.prefix = prefix
         self.max_slabs = max_slabs
         self.max_dim = max_dim
         self.lease_timeout_ms = lease_timeout_ms
+        self.lease_ttl_seconds = float(lease_ttl_seconds)
         self.backend = backend
         self._instance_nonce: str = secrets.token_hex(4)
         self.slabs: Dict[int, Dict[str, Any]] = {}
@@ -188,6 +198,84 @@ class PmtpShmBus:
             env_secret = os.environ.get("PMTP_SHM_KEY")
             key_raw = env_secret.encode("utf-8") if env_secret else os.urandom(32)
         self._auth_key: bytes = hashlib.blake2s(key_raw, digest_size=32).digest()
+
+        # Subsistema de métricas
+        self._metrics = PmtpMetricsCollector(self)
+
+        # Watchdog TTL daemon thread
+        self._watchdog_stop = threading.Event()
+        self._watchdog_thread = threading.Thread(
+            target=self._watchdog_loop,
+            name="pmtp-watchdog-ttl",
+            daemon=True,
+        )
+        self._watchdog_thread.start()
+
+    # ------------------------------------------------------------------
+    # Watchdog TTL
+    # ------------------------------------------------------------------
+
+    def _watchdog_loop(self) -> None:
+        """Thread daemon: ejecuta _watchdog_gc() periódicamente cada ttl/4 segundos."""
+        interval = max(0.5, self.lease_ttl_seconds / 4.0)
+        while not self._watchdog_stop.wait(interval):
+            self._watchdog_gc()
+
+    def _watchdog_gc(self) -> None:
+        """
+        Escanea todos los slabs activos. Los que superaron TTL se marcan como expirados
+        y se libera el recurso SHM. Thread-safe (usa _local_lock).
+        """
+        now_mono = time.monotonic()
+        now_ns = time.time_ns()
+        to_expire = []
+
+        with self._local_lock:
+            for sid, info in list(self.slabs.items()):
+                if info.get("released", False):
+                    continue
+                acquired = info.get("acquired_at", None)
+                if acquired is not None:
+                    age = now_mono - acquired
+                else:
+                    pub_ns = info.get("published_at_ns", now_ns)
+                    age = (now_ns - pub_ns) / 1e9
+
+                if age > self.lease_ttl_seconds:
+                    to_expire.append((sid, info, age))
+
+        for sid, info, age in to_expire:
+            size = info.get("payload_bytes", 0) * 2
+            logger.warning(
+                "PMTP Watchdog GC: slab_id=%s edad=%.2fs tamaño=%d bytes — expirado por TTL (%.1fs)",
+                hex(sid), age, size, self.lease_ttl_seconds,
+            )
+            with self._local_lock:
+                info = self.slabs.get(sid)
+                if info is None or info.get("released", False):
+                    continue
+                info["released"] = True
+                shm = info["shm"]
+                try:
+                    payload_start = HEADER_COMPACT_SIZE
+                    payload_end = payload_start + 2 * info.get("payload_bytes", 0)
+                    shm.buf[payload_start:payload_end] = b"\x00" * (payload_end - payload_start)
+                except Exception:
+                    pass
+
+    def stop_watchdog(self) -> None:
+        """Detiene el thread watchdog. Llamar antes de destruir el bus si se desea shutdown limpio."""
+        self._watchdog_stop.set()
+        self._watchdog_thread.join(timeout=2.0)
+
+    @property
+    def metrics(self) -> "PmtpMetricsCollector":
+        """Instancia del colector de métricas SHM en tiempo real."""
+        return self._metrics
+
+    # ------------------------------------------------------------------
+    # MAC helpers
+    # ------------------------------------------------------------------
 
     def _compute_mac64(self, header_48b: bytes, payload_bytes: bytes) -> bytes:
         """Calcula etiqueta MAC BLAKE2s-64 autenticada sobre metadatos inmutables + payload."""
@@ -268,7 +356,9 @@ class PmtpShmBus:
         slot_offset = HEADER_COMPACT_SIZE + (slot * payload_bytes_len)
         payload = bytes(shm.buf[slot_offset:slot_offset + payload_bytes_len])
         expected_mac = self._compute_mac64(meta_48, payload)
-        if not hmac.compare_digest(expected_mac, hdr.reserved):
+        ok = hmac.compare_digest(expected_mac, hdr.reserved)
+        self._metrics._record_mac_event(ok)
+        if not ok:
             raise PermissionError(
                 f"PMTP MAC authentication failure on slab {hex(hdr.slab_id)} slot {slot}: "
                 "posible inyección o corrupción de proceso co-inquilino."
@@ -336,6 +426,7 @@ class PmtpShmBus:
             "name": name,
             "perm_mode": perm_mode,
             "backend": "memfd" if use_memfd else "shm",
+            "acquired_at": time.monotonic(),
         }
 
         timestamp_ns = time.time_ns()
@@ -423,6 +514,7 @@ class PmtpShmBus:
                     payload_bytes=payload_raw,
                 )
                 shm.buf[:HEADER_COMPACT_SIZE] = new_header_bytes
+                self._metrics._record_write(info["payload_bytes"])
                 return True
             time.sleep(retry_delay_s)
 

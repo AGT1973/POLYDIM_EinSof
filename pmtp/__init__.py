@@ -14,6 +14,7 @@ from .pmtp_security import (
     build_safe_hf_load_kwargs,
     load_numpy_safe,
 )
+from .pmtp_aladin import AladinTelepathyClient
 
 # Alias ergonómicos para desarrolladores
 StiefelAdapter = PmtpStiefelAdapter
@@ -38,4 +39,5 @@ __all__ = [
     "assert_safe_checkpoint_path",
     "build_safe_hf_load_kwargs",
     "load_numpy_safe",
+    "AladinTelepathyClient",
 ]
