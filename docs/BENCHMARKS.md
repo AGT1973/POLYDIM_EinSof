@@ -89,7 +89,7 @@ All benchmarks can be executed with zero local setup via public Jupyter notebook
 4. **Preservación de Información (DPI):** En cadenas de 10 saltos, los modelos sin PMTP pierden entre un 30% y un 48% de fidelidad debido al cuello de botella de tokenización (Data Processing Inequality). Con PMTP Stiefel, la retención es del **100.0%** con defecto ortogonal a nivel épsilon de máquina ($\le 1.94 	imes 10^{-16}$).
 
 Reproducción con 1 comando:
-`ash
+`bash
 python benchmarks/benchmark_matriz_con_vs_sin_pmtp.py
 `
-Archivo crudo de datos: [enchmarks/benchmark_matriz_con_vs_sin_pmtp.json](benchmarks/benchmark_matriz_con_vs_sin_pmtp.json)
+Archivo crudo de datos: [benchmarks/benchmark_matriz_con_vs_sin_pmtp.json](benchmarks/benchmark_matriz_con_vs_sin_pmtp.json)
