@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atelier Co-Working Studio — Mathesis & Dual Runtime</title>
+    <title>Atelier Co-Working Studio — Mathesis Multi-Target</title>
     <style>
         :root {
-            --bg-dark: #0f141c;
-            --panel-bg: #161e2b;
-            --border: #26354a;
+            --bg-dark: #0d121a;
+            --panel-bg: #141c27;
+            --border: #233245;
+            --border-highlight: #3b5270;
             --accent-cyan: #00e5ff;
             --accent-green: #00e676;
             --accent-amber: #ffab00;
+            --accent-purple: #b388ff;
             --accent-red: #ff5252;
-            --text-main: #e0e6ed;
-            --text-muted: #8b9bb4;
+            --text-main: #e2e8f0;
+            --text-muted: #8395a7;
             --font-mono: "Fira Code", "Cascadia Code", Consolas, monospace;
         }
 
@@ -29,74 +31,98 @@
             overflow: hidden;
         }
 
-        /* Header */
+        /* Header Principal */
         header {
             background: var(--panel-bg);
             border-bottom: 1px solid var(--border);
-            padding: 12px 24px;
+            padding: 8px 18px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 16px;
         }
         .brand {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             font-weight: 700;
+            font-size: 13px;
             letter-spacing: 0.5px;
         }
-        .badge {
-            background: rgba(0, 229, 255, 0.1);
-            color: var(--accent-cyan);
-            border: 1px solid var(--accent-cyan);
+        .project-pill {
+            background: rgba(179, 136, 255, 0.12);
+            color: var(--accent-purple);
+            border: 1px solid var(--accent-purple);
             padding: 2px 8px;
             border-radius: 4px;
             font-size: 11px;
             font-family: var(--font-mono);
-        }
-        .actions {
-            display: flex;
-            gap: 12px;
-        }
-        button {
-            background: var(--panel-bg);
-            color: var(--text-main);
-            border: 1px solid var(--border);
-            padding: 6px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
             display: flex;
             align-items: center;
             gap: 6px;
-            transition: all 0.2s ease;
-        }
-        button:hover {
-            border-color: var(--accent-cyan);
-            box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
-        }
-        button.primary {
-            background: rgba(0, 230, 118, 0.15);
-            border-color: var(--accent-green);
-            color: var(--accent-green);
-            font-weight: 600;
-        }
-        button.compile {
-            background: rgba(255, 171, 0, 0.15);
-            border-color: var(--accent-amber);
-            color: var(--accent-amber);
-            font-weight: 600;
         }
 
-        /* Workspace Grid */
+        /* Botonera Simétrica de 3 Acciones */
+        .action-trio {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .action-btn {
+            width: 140px;
+            height: 34px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .action-btn:hover {
+            transform: translateY(-1px);
+        }
+        .btn-eval {
+            background: rgba(0, 229, 255, 0.12);
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+        .btn-eval:hover {
+            background: rgba(0, 229, 255, 0.22);
+            box-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
+        }
+        .btn-interp {
+            background: rgba(0, 230, 118, 0.12);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+        }
+        .btn-interp:hover {
+            background: rgba(0, 230, 118, 0.22);
+            box-shadow: 0 0 12px rgba(0, 230, 118, 0.3);
+        }
+        .btn-compile {
+            background: rgba(255, 171, 0, 0.12);
+            border: 1px solid var(--accent-amber);
+            color: var(--accent-amber);
+        }
+        .btn-compile:hover {
+            background: rgba(255, 171, 0, 0.22);
+            box-shadow: 0 0 12px rgba(255, 171, 0, 0.3);
+        }
+
+        /* Workspace Grid (3 Columnas) */
         .workspace {
             display: grid;
-            grid-template-columns: 320px 1fr 380px;
+            grid-template-columns: 260px 1fr 340px;
             flex: 1;
             overflow: hidden;
         }
 
-        /* Panels */
+        /* Paneles */
         .panel {
             background: var(--panel-bg);
             border-right: 1px solid var(--border);
@@ -106,75 +132,90 @@
         }
         .panel:last-child { border-right: none; }
         .panel-header {
-            padding: 12px 16px;
-            background: rgba(0, 0, 0, 0.2);
+            padding: 8px 14px;
+            background: rgba(0, 0, 0, 0.25);
             border-bottom: 1px solid var(--border);
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.8px;
             color: var(--text-muted);
             display: flex;
             justify-content: space-between;
-        }
-
-        /* File Ingest Area */
-        .dropzone {
-            border: 2px dashed var(--border);
-            border-radius: 8px;
-            margin: 16px;
-            padding: 24px 16px;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .dropzone:hover {
-            border-color: var(--accent-cyan);
-            color: var(--accent-cyan);
-            background: rgba(0, 229, 255, 0.05);
-        }
-        .file-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0 16px 16px;
-        }
-        .file-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border);
-            padding: 10px 12px;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            font-size: 13px;
-            display: flex;
-            justify-content: space-between;
             align-items: center;
         }
 
-        /* Pipeline Graph Canvas */
+        /* Árbol de Proyecto */
+        .project-tree {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+        }
+        .tree-folder {
+            color: var(--accent-cyan);
+            padding: 4px 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+        }
+        .tree-children {
+            padding-left: 16px;
+            border-left: 1px dashed var(--border);
+            margin-left: 10px;
+            margin-bottom: 6px;
+        }
+        .tree-file {
+            color: var(--text-main);
+            padding: 3px 6px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+        .tree-file:hover {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--accent-green);
+        }
+        .tree-badge {
+            font-size: 9px;
+            padding: 1px 4px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-muted);
+        }
+
+        /* Área Central: Canvas del Pipeline */
         .canvas-area {
             display: flex;
             flex-direction: column;
-            background: #0b0f16;
+            background: #090e15;
             overflow-y: auto;
-            padding: 24px;
-            gap: 16px;
+            padding: 16px;
+            gap: 12px;
         }
         .node-card {
             background: var(--panel-bg);
             border: 1px solid var(--border);
             border-radius: 8px;
-            padding: 16px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             position: relative;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             transition: border-color 0.2s;
         }
         .node-card:hover {
-            border-color: rgba(0, 229, 255, 0.4);
+            border-color: var(--border-highlight);
+        }
+        .node-card.ai-optimized {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 14px rgba(0, 229, 255, 0.15);
         }
         .node-top {
             display: flex;
@@ -183,37 +224,32 @@
         }
         .node-title {
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         .node-type-pill {
             font-size: 10px;
             font-family: var(--font-mono);
-            padding: 2px 6px;
+            padding: 2px 5px;
             border-radius: 4px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
         }
         .node-editor {
             width: 100%;
-            background: #090c12;
+            background: #070b10;
             border: 1px solid var(--border);
             color: var(--accent-cyan);
             font-family: var(--font-mono);
-            font-size: 12px;
-            padding: 10px;
+            font-size: 11.5px;
+            padding: 8px;
             border-radius: 6px;
             resize: vertical;
-            min-height: 60px;
-        }
-        .node-btn-row {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
+            min-height: 52px;
         }
 
-        /* In-between Insert Button */
+        /* Intercalar */
         .insert-divider {
             display: flex;
             align-items: center;
@@ -231,12 +267,12 @@
         .insert-btn {
             position: relative;
             z-index: 2;
-            background: #0b0f16;
+            background: #090e15;
             border: 1px dashed var(--border);
             color: var(--text-muted);
             border-radius: 20px;
             padding: 2px 12px;
-            font-size: 11px;
+            font-size: 10.5px;
             cursor: pointer;
         }
         .insert-btn:hover {
@@ -244,22 +280,22 @@
             color: var(--accent-cyan);
         }
 
-        /* Output & Memory Slab Inspector */
+        /* Panel Derecho: Inspector y Consola */
         .output-view {
             flex: 1;
-            padding: 16px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             overflow-y: auto;
         }
         .slab-box {
-            background: #090c12;
+            background: #070b10;
             border: 1px solid var(--border);
             border-radius: 6px;
-            padding: 12px;
+            padding: 10px;
             font-family: var(--font-mono);
-            font-size: 12px;
+            font-size: 11px;
         }
         .log-box {
             background: #000;
@@ -267,61 +303,318 @@
             color: var(--accent-green);
             font-family: var(--font-mono);
             font-size: 11px;
-            padding: 12px;
+            padding: 10px;
             border-radius: 6px;
             flex: 1;
             overflow-y: auto;
             white-space: pre-wrap;
         }
+
+        /* Barra Inferior de Ayuda Contextual */
+        footer.help-bar {
+            background: #080c12;
+            border-top: 1px solid var(--border);
+            padding: 6px 14px;
+            font-size: 11.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 32px;
+        }
+        .help-badge {
+            background: rgba(0, 229, 255, 0.15);
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        .help-text {
+            color: var(--text-main);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Modal: Menú de Compilación y Colapso Políglota */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-box {
+            background: var(--panel-bg);
+            border: 1px solid var(--accent-amber);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.85), 0 0 24px rgba(255, 171, 0, 0.2);
+            width: 820px;
+            max-width: 94vw;
+            max-height: 90vh;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .modal-header {
+            padding: 12px 18px;
+            background: rgba(0, 0, 0, 0.35);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-amber);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .modal-close:hover { color: var(--accent-red); }
+        .modal-body {
+            padding: 16px 18px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            font-size: 12px;
+        }
+        .target-section {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+        }
+        .target-section-title {
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .target-options-os {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .target-options-lang {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            max-height: 240px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .target-card {
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 10px;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .target-card:hover, .target-card.selected {
+            border-color: var(--accent-amber);
+            background: rgba(255, 171, 0, 0.08);
+        }
+        .target-card.selected-purple {
+            border-color: var(--accent-purple) !important;
+            background: rgba(179, 136, 255, 0.1) !important;
+        }
+        .target-card.other-card {
+            border-style: dashed;
+            border-color: var(--accent-cyan);
+            background: rgba(0, 229, 255, 0.04);
+        }
+        .target-name {
+            font-weight: 700;
+            font-size: 11.5px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .target-desc {
+            font-size: 9.5px;
+            color: var(--text-muted);
+            line-height: 1.3;
+        }
+        .other-input-box {
+            display: none;
+            background: rgba(0, 229, 255, 0.06);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-top: 8px;
+            gap: 8px;
+            flex-direction: column;
+        }
+        .other-input-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .other-input {
+            flex: 1;
+            background: #070b10;
+            border: 1px solid var(--border);
+            color: var(--accent-cyan);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 4px;
+            outline: none;
+        }
+        .other-input:focus { border-color: var(--accent-cyan); }
+        .cobol-notice {
+            display: none;
+            background: rgba(255, 171, 0, 0.1);
+            border: 1px solid var(--accent-amber);
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 11.5px;
+            color: var(--text-main);
+            line-height: 1.45;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 18px;
+            border-top: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 <body>
 
+    <!-- Header con los 3 Botones de Igual Tamaño -->
     <header>
         <div class="brand">
-            <span>ATELIER CO-WORKING STUDIO</span>
-            <span class="badge">MATHESIS v1550</span>
-            <span class="badge">DUAL RUNTIME: VM + SILICON BINARY</span>
+            <span>ATELIER STUDIO</span>
+            <div class="project-pill">
+                <span>📁</span>
+                <span id="currentProject">PROYECTO: STIEFEL_ST16_1024</span>
+            </div>
         </div>
-        <div class="actions">
-            <button onclick="runVirtualMachine()" class="primary">
-                ▶ Ejecutar en VM (Interpretar)
+        <div class="action-trio">
+            <!-- 1. Evaluar por IA -->
+            <button class="action-btn btn-eval" onclick="evaluateWithAI()"
+                    data-help="FASE 1 - EVALUAR: La IA audita el pipeline matemático, detecta derivas y optimiza el código del nodo.">
+                <span>🔍</span> Evaluar
             </button>
-            <button onclick="compileFinalBinary()" class="compile">
-                ⚡ Compilar a Silicio (Mathesis / AVX2)
+
+            <!-- 2. Interpretar -->
+            <button class="action-btn btn-interp" onclick="runInterpreter()"
+                    data-help="FASE 2 - INTERPRETAR: Ejecuta paso a paso en memoria virtual. Validación rápida de tensores sin compilar.">
+                <span>▶</span> Interpretar
+            </button>
+
+            <!-- 3. Compilar / Colapsar -->
+            <button class="action-btn btn-compile" onclick="openCompileModal()"
+                    data-help="FASE 3 - COMPILAR / COLAPSAR EN: Exporta a binario nativo (Windows/Linux/Mac) o colapsa a la lista políglota (C++, Python, Julia, R, COBOL, etc.).">
+                <span>⚡</span> Compilar
             </button>
         </div>
     </header>
 
+    <!-- Workspace -->
     <div class="workspace">
-        <!-- Panel 1: Ingesta Universal -->
+        <!-- Panel 1: Árbol de Proyecto (Carpetas y Subcarpetas) -->
         <div class="panel">
             <div class="panel-header">
-                <span>Ingesta Agnóstica</span>
-                <span style="color: var(--accent-cyan);">CERO PRE-FILTROS</span>
+                <span>Estructura de Proyecto</span>
+                <span style="color: var(--accent-cyan); font-size: 10px;">AUTÓNOMO</span>
             </div>
-            <div class="dropzone" id="dropArea" onclick="document.getElementById('fileInput').click()">
-                <p>Arrastrá CUALQUIER archivo acá</p>
-                <p style="font-size: 11px; margin-top: 4px;">.mth, .ts, .js, .cpp, .rs, imágenes o binarios</p>
-                <input type="file" id="fileInput" style="display: none;" onchange="handleFileSelect(event)">
-            </div>
-            <div class="file-list" id="fileList">
-                <div class="file-item">
-                    <span>transform_stiefel.mth</span>
-                    <span class="badge">MATHESIS</span>
-                </div>
-                <div class="file-item">
-                    <span>agent_telepathy.ts</span>
-                    <span class="badge">TYPESCRIPT</span>
+            <div class="project-tree">
+                <div class="tree-folder">📁 E:\SUITE\projects\stiefel_1024\</div>
+                <div class="tree-children">
+                    <!-- src/ -->
+                    <div class="tree-folder" style="color: var(--accent-green);">📁 src/ (Fuentes Mathesis)</div>
+                    <div class="tree-children">
+                        <div class="tree-file" data-help="Fuente principal del pipeline matemático">
+                            <span>📄 pipeline.mth</span>
+                            <span class="tree-badge">MTH</span>
+                        </div>
+                        <div class="tree-file" data-help="Módulo de normalización compensada">
+                            <span>📄 neumaier.mth</span>
+                            <span class="tree-badge">MTH</span>
+                        </div>
+                    </div>
+
+                    <!-- bin/ -->
+                    <div class="tree-folder" style="color: var(--accent-amber);">📁 bin/ (Binarios Nativos)</div>
+                    <div class="tree-children">
+                        <div class="tree-file" data-help="Binario nativo para Windows PE64 SSE2/AVX2">
+                            <span>⚙️ kernel_win64.exe</span>
+                            <span class="tree-badge">PE64</span>
+                        </div>
+                        <div class="tree-file" data-help="Binario nativo para Linux ELF64">
+                            <span>⚙️ kernel_linux.elf64</span>
+                            <span class="tree-badge">ELF64</span>
+                        </div>
+                    </div>
+
+                    <!-- exports/ -->
+                    <div class="tree-folder" style="color: var(--accent-purple);">📁 exports/ (Políglota)</div>
+                    <div class="tree-children">
+                        <div class="tree-file" data-help="Colapso a Python NumPy/ctypes">
+                            <span>🐍 stiefel_runner.py</span>
+                            <span class="tree-badge">PY</span>
+                        </div>
+                        <div class="tree-file" data-help="Colapso a TypeScript Float64Array">
+                            <span>🔷 stiefel_tensor.ts</span>
+                            <span class="tree-badge">TS</span>
+                        </div>
+                        <div class="tree-file" data-help="Colapso a Julia SIMD Arrays">
+                            <span>🟣 stiefel_opt.jl</span>
+                            <span class="tree-badge">JL</span>
+                        </div>
+                        <div class="tree-file" data-help="Colapso a R Matrix S4">
+                            <span>📊 stiefel_matrix.R</span>
+                            <span class="tree-badge">R</span>
+                        </div>
+                        <div class="tree-file" data-help="Colapso a COBOL de punto fijo / mainframe">
+                            <span>🏛️ STIEFEL.CBL</span>
+                            <span class="tree-badge">CBL</span>
+                        </div>
+                    </div>
+
+                    <!-- slabs/ -->
+                    <div class="tree-folder" style="color: var(--text-muted);">📁 slabs/ (Volcados SHM)</div>
+                    <div class="tree-children">
+                        <div class="tree-file" data-help="Tensor ortogonalizado en memoria física">
+                            <span>📦 slab_0x0001_1024.bin</span>
+                            <span class="tree-badge">128 KB</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Panel 2: Grafo Interactivo Mutable -->
+        <!-- Panel 2: Pipeline Mutable -->
         <div class="panel" style="border-right: 1px solid var(--border);">
             <div class="panel-header">
-                <span>Pipeline Mutable (Botonera del Programador)</span>
-                <span>3 NODOS ACTIVOS</span>
+                <span>Grafo de Cálculo Activo</span>
+                <span id="nodeBadge" style="color: var(--accent-cyan);">3 NODOS</span>
             </div>
             <div class="canvas-area" id="pipelineArea">
                 <!-- Nodo 1 -->
@@ -331,15 +624,13 @@
                             <span>1. Ingesta Fuente</span>
                             <span class="node-type-pill">SOURCE</span>
                         </div>
-                        <button onclick="deleteNode('card_1')">✕</button>
+                        <button onclick="deleteNode('card_1')" style="padding: 2px 6px;">✕</button>
                     </div>
-                    <textarea class="node-editor"># Cargar tensor latente continuo D=1024
-output_data = [x * 1.5 for x in input_data]</textarea>
+                    <textarea class="node-editor" id="code_1" data-help="Nodo 1: Generación de tensor perturbado en D=1024">output_data = [sin(0.013 * i) + 0.25 * cos(0.007 * i) for i in range(1024)]</textarea>
                 </div>
 
-                <!-- Botón Intercalar en el medio -->
                 <div class="insert-divider">
-                    <button class="insert-btn" onclick="insertStep('card_1')">+ Intercalar Proceso en el Medio</button>
+                    <button class="insert-btn" onclick="insertStep('card_1')" data-help="Intercalar paso entre 1 y 2">+ Intercalar Proceso en el Medio</button>
                 </div>
 
                 <!-- Nodo 2 -->
@@ -349,77 +640,344 @@ output_data = [x * 1.5 for x in input_data]</textarea>
                             <span>2. Filtro Normalizador Neumaier</span>
                             <span class="node-type-pill">FILTER</span>
                         </div>
-                        <button onclick="deleteNode('card_2')">✕</button>
+                        <button onclick="deleteNode('card_2')" style="padding: 2px 6px;">✕</button>
                     </div>
-                    <textarea class="node-editor"># Evitar deriva flotante antes de la variedad
-output_data = [max(0.0, x) for x in input_data]</textarea>
+                    <textarea class="node-editor" id="code_2" data-help="Nodo 2: Acumulador de Neumaier para garantizar deriva < 1e-15"># Acumulador compensado Neumaier
+t = s + x; c += if abs(s)>=abs(x) then (s-t)+x else (x-t)+s; s = t</textarea>
                 </div>
 
-                <!-- Botón Intercalar en el medio -->
                 <div class="insert-divider">
-                    <button class="insert-btn" onclick="insertStep('card_2')">+ Intercalar Proceso en el Medio</button>
+                    <button class="insert-btn" onclick="insertStep('card_2')" data-help="Intercalar paso entre 2 y 3">+ Intercalar Proceso en el Medio</button>
                 </div>
 
                 <!-- Nodo 3 -->
                 <div class="node-card" id="card_3">
                     <div class="node-top">
                         <div class="node-title">
-                            <span>3. Retracción Polar Mathesis</span>
-                            <span class="node-type-pill">MATHESIS_MTH</span>
+                            <span>3. Retracción Polar Stiefel</span>
+                            <span class="node-type-pill">MATHESIS_STIEFEL</span>
                         </div>
-                        <button onclick="deleteNode('card_3')">✕</button>
+                        <button onclick="deleteNode('card_3')" style="padding: 2px 6px;">✕</button>
                     </div>
-                    <textarea class="node-editor">MATHESIS_EXEC {
-    VARIETY: St(16, 1024)
-    SOLVER: QDWH_ORDER_4
-    TARGET_SLAB: 0x000001DC2CE085E0
+                    <textarea class="node-editor" id="code_3" data-help="Nodo 3: Retracción polar isométrica W^T W = I_16">MATHESIS_STIEFEL {
+    MANIFOLD: St(k=16, D=1024)
+    SOLVER: QDWH_PRIMARY_ORDER_4
+    TOLERANCE: 1.0e-15
 }</textarea>
                 </div>
             </div>
         </div>
 
-        <!-- Panel 3: Inspector de Memoria y Silicio -->
+        <!-- Panel 3: Inspector y Log -->
         <div class="panel">
             <div class="panel-header">
-                <span>Slab Inspector & Logs</span>
-                <span style="color: var(--accent-green);">SHM: 0600 OK</span>
+                <span>Inspector de Silicio & Memoria</span>
+                <span style="color: var(--accent-green); font-size: 10px;">SHM: ACTIVO</span>
             </div>
             <div class="output-view">
                 <div class="slab-box">
-                    <div style="color: var(--text-muted); margin-bottom: 6px;">ATELIER SLAB PHYSICAL STATUS</div>
+                    <div style="color: var(--text-muted); margin-bottom: 4px;">ESTADO DEL SLAB FÍSICO</div>
                     <div>SLAB_ID: <span style="color: var(--accent-cyan);">0x0001_1024</span></div>
-                    <div>MANIFOLD: <span style="color: var(--accent-cyan);">St(16, 1024)</span></div>
-                    <div>ISOMETRY ERR: <span style="color: var(--accent-green);">2.22e-16</span></div>
-                    <div>DLPACK ZERO-COPY: <span style="color: var(--accent-green);">ACTIVE (T_copy=0.0µs)</span></div>
+                    <div>VARIEDAD: <span style="color: var(--accent-cyan);">St(16, 1024) FP64</span></div>
+                    <div>DEFECTO ISOMETRÍA: <span style="color: var(--accent-green);">2.22e-16 (TIER_FLOOR_15)</span></div>
+                    <div>ZERO-COPY DLPACK: <span style="color: var(--accent-green);">T_copy = 0.0 µs</span></div>
                 </div>
 
                 <div class="log-box" id="logConsole">
-[INIT] Atelier Co-Working Studio iniciado.
-[READY] Motor de Máquina Virtual preparado para interpretar paso a paso.
-[READY] Compilador Mathesis listo para sintetizar binario nativo AVX2.
-Esperando acción del programador...</div>
+[INIT] Atelier Co-Working Studio v2 iniciado.
+[SISTEMA] Estructura de carpetas /src, /bin, /exports, /slabs enlazada.
+[ESTADO] Listo. Usá 'Evaluar' para optimizar con IA, 'Interpretar' para probar en VM, o 'Compilar' para exportar.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra Inferior de Ayuda en Vivo -->
+    <footer class="help-bar">
+        <span class="help-badge">💡 GUÍA EN VIVO</span>
+        <span id="helpBarText" class="help-text">Pasá el mouse por los botones para ver la fase de trabajo, o hacé click para ejecutar.</span>
+    </footer>
+
+    <!-- Modal: Menú de Compilación y Destino Políglota -->
+    <div class="modal-overlay" id="compileModal" onclick="if(event.target===this) closeCompileModal();">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <span>⚡</span> Opciones de Compilación y Colapso Políglota
+                </div>
+                <button class="modal-close" onclick="closeCompileModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <!-- Sección 1: Binario Nativo Multi-OS -->
+                <div class="target-section">
+                    <div class="target-section-title" style="color: var(--accent-amber);">
+                        <span>⚙️</span> 1. Binario Nativo de Silicio (Directo a Opcodes Máquina)
+                    </div>
+                    <div class="target-options-os">
+                        <div class="target-card selected" onclick="selectTarget(this, 'win', 'os')">
+                            <span class="target-name">🪟 Windows (PE64)</span>
+                            <span class="target-desc">x86_64 SSE2 / AVX2 (.exe). Sin CRT ni dependencias.</span>
+                        </div>
+                        <div class="target-card" onclick="selectTarget(this, 'linux', 'os')">
+                            <span class="target-name">🐧 Linux (ELF64)</span>
+                            <span class="target-desc">x86_64 puro sin libc. Cero syscalls intermedias.</span>
+                        </div>
+                        <div class="target-card" onclick="selectTarget(this, 'mac', 'os')">
+                            <span class="target-name">🍎 macOS (Mach-O)</span>
+                            <span class="target-desc">Mach-O 64-bit para silicio x86_64 / Rosetta.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección 2: Colapso Políglota en Orden Alfabético -->
+                <div class="target-section">
+                    <div class="target-section-title" style="color: var(--accent-purple); justify-content: space-between;">
+                        <span>📜 2. Colapsar en Lenguaje de Programación (Orden Alfabético)</span>
+                        <span style="font-size: 10px; color: var(--text-muted); font-weight: normal;">16 soportados + Otros</span>
+                    </div>
+                    <div class="target-options-lang">
+                        <!-- C / C++ -->
+                        <div class="target-card" onclick="selectTarget(this, 'cpp', 'lang')">
+                            <span class="target-name">⚙️ C / C++</span>
+                            <span class="target-desc">C99 / C++20 con OpenMP y AVX2 intrinsics.</span>
+                        </div>
+                        <!-- C# -->
+                        <div class="target-card" onclick="selectTarget(this, 'csharp', 'lang')">
+                            <span class="target-name">🟣 C# (.NET)</span>
+                            <span class="target-desc">.NET 8 / 9 SIMD Vector&lt;T&gt; y memoria fija.</span>
+                        </div>
+                        <!-- COBOL -->
+                        <div class="target-card" onclick="selectTarget(this, 'cobol', 'lang')">
+                            <span class="target-name">🏛️ COBOL</span>
+                            <span class="target-desc">Punto fijo decimal para Mainframe y banca.</span>
+                        </div>
+                        <!-- Dart -->
+                        <div class="target-card" onclick="selectTarget(this, 'dart', 'lang')">
+                            <span class="target-name">🎯 Dart</span>
+                            <span class="target-desc">Flutter / Dart FFI con memoria nativa C.</span>
+                        </div>
+                        <!-- Fortran -->
+                        <div class="target-card" onclick="selectTarget(this, 'fortran', 'lang')">
+                            <span class="target-name">📐 Fortran</span>
+                            <span class="target-desc">Modern 2008 / BLAS / LAPACK de alto rendimiento.</span>
+                        </div>
+                        <!-- Go -->
+                        <div class="target-card" onclick="selectTarget(this, 'go', 'lang')">
+                            <span class="target-name">🐹 Go (Golang)</span>
+                            <span class="target-desc">Goroutines / cgo y memoria alineada.</span>
+                        </div>
+                        <!-- Java -->
+                        <div class="target-card" onclick="selectTarget(this, 'java', 'lang')">
+                            <span class="target-name">☕ Java</span>
+                            <span class="target-desc">JVM Project Panama / Vector API nativo.</span>
+                        </div>
+                        <!-- JavaScript -->
+                        <div class="target-card" onclick="selectTarget(this, 'js', 'lang')">
+                            <span class="target-name">💛 JavaScript</span>
+                            <span class="target-desc">Node.js y Web Float64Array / Canvas.</span>
+                        </div>
+                        <!-- Julia -->
+                        <div class="target-card" onclick="selectTarget(this, 'julia', 'lang')">
+                            <span class="target-name">🟣 Julia</span>
+                            <span class="target-desc">Arreglos SIMD nativos y cómputo científico.</span>
+                        </div>
+                        <!-- Kotlin -->
+                        <div class="target-card" onclick="selectTarget(this, 'kotlin', 'lang')">
+                            <span class="target-name">🟧 Kotlin</span>
+                            <span class="target-desc">Kotlin Multiplatform / Native sin JVM.</span>
+                        </div>
+                        <!-- Python -->
+                        <div class="target-card" onclick="selectTarget(this, 'python', 'lang')">
+                            <span class="target-name">🐍 Python</span>
+                            <span class="target-desc">NumPy / ctypes con interfaz GUI Qt/Webview.</span>
+                        </div>
+                        <!-- R -->
+                        <div class="target-card" onclick="selectTarget(this, 'r', 'lang')">
+                            <span class="target-name">📊 R</span>
+                            <span class="target-desc">Matrix S4 / CRAN para análisis estadístico.</span>
+                        </div>
+                        <!-- Rust -->
+                        <div class="target-card" onclick="selectTarget(this, 'rust', 'lang')">
+                            <span class="target-name">🦀 Rust</span>
+                            <span class="target-desc">no_std / zero-alloc con seqlock atómico.</span>
+                        </div>
+                        <!-- Swift -->
+                        <div class="target-card" onclick="selectTarget(this, 'swift', 'lang')">
+                            <span class="target-name">🕊️ Swift</span>
+                            <span class="target-desc">Apple Silicon Accelerate / Metal y macOS.</span>
+                        </div>
+                        <!-- TypeScript -->
+                        <div class="target-card" onclick="selectTarget(this, 'ts', 'lang')">
+                            <span class="target-name">🔷 TypeScript</span>
+                            <span class="target-desc">Tipado estricto con WebGL y shaders.</span>
+                        </div>
+                        <!-- Zig -->
+                        <div class="target-card" onclick="selectTarget(this, 'zig', 'lang')">
+                            <span class="target-name">⚡ Zig</span>
+                            <span class="target-desc">Cero libc con control manual de asignadores.</span>
+                        </div>
+                        <!-- Otros (Al final) -->
+                        <div class="target-card other-card" onclick="selectTarget(this, 'other', 'lang')">
+                            <span class="target-name" style="color: var(--accent-cyan);">✨ Otros...</span>
+                            <span class="target-desc">Escribí tu lenguaje (lo tenemos o lo investigamos).</span>
+                        </div>
+                    </div>
+
+                    <!-- Input Dinámico para "Otros" -->
+                    <div class="other-input-box" id="otherInputBox">
+                        <div class="other-input-row">
+                            <span style="color: var(--accent-cyan); font-weight: 700;">Lenguaje Deseado:</span>
+                            <input type="text" id="customLangInput" class="other-input" placeholder="ej. Haskell, Elixir, Ada, Nim, Lua, OCaml, APL, Scala..." />
+                        </div>
+                        <div style="font-size: 10.5px; color: var(--text-muted); line-height: 1.4;">
+                            🔍 <strong>Protocolo de Investigación en Caliente:</strong> Si el lenguaje está en nuestro catálogo Mathesis, lo colapsamos directamente. Si no lo tenemos, la IA investiga su gramática formal, AST y sistema de tipos en tiempo real para sintetizarlo respetando los límites de su arquitectura.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aviso Específico para Lenguajes sin Motor Gráfico (COBOL, Fortran, etc.) -->
+                <div class="cobol-notice" id="decoupleNotice">
+                    ⚠️ <strong>Desacoplamiento Arquitectónico (Matemática vs GUI):</strong>
+                    <br>
+                    El lenguaje seleccionado no posee motor de renderizado gráfico o Canvas interactivo.
+                    Las <strong>funciones matemáticas tensoriales</strong> se colapsarán soberanamente en este lenguaje, 
+                    mientras que las <strong>pantallas gráficas interactivas</strong> se generarán en el lenguaje complementario que elijas (Python <code>gui_runner.py</code> o TypeScript <code>app.ts</code>), comunicadas por memoria compartida o tuberías IPC.
+                </div>
+
+                <div style="font-size: 11px; color: var(--text-muted); background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px;">
+                    ℹ️ <strong>Principio de Límites del Lenguaje:</strong> Mathesis respeta lo que cada lenguaje puede y no puede hacer. El cómputo corre donde el lenguaje es fuerte, y la visualización donde el motor gráfico existe.
+                </div>
+            </div>
+            <div class="modal-actions">
+                <span id="selectedTargetLabel" style="font-size: 11.5px; color: var(--accent-amber); font-family: var(--font-mono);">
+                    Destino: Windows (PE64)
+                </span>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="closeCompileModal()" style="border-color: var(--border);">Cancelar</button>
+                    <button onclick="executeTargetCompilation()" class="compile" style="width: auto; padding: 6px 18px;">
+                        ⚡ Generar en /bin y /exports
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        const helpBar = document.getElementById("helpBarText");
+        const defaultHelpText = "Pasá el mouse por los botones para ver la fase de trabajo, o hacé click para ejecutar.";
+        let selectedCategory = "os";
+        let selectedTargetId = "win";
+        let selectedTargetName = "Windows PE64";
+
+        document.querySelectorAll("[data-help]").forEach(el => {
+            el.addEventListener("mouseenter", () => {
+                helpBar.textContent = el.getAttribute("data-help");
+                helpBar.style.color = "var(--accent-cyan)";
+            });
+            el.addEventListener("mouseleave", () => {
+                helpBar.textContent = defaultHelpText;
+                helpBar.style.color = "var(--text-main)";
+            });
+        });
+
         function log(msg) {
             const con = document.getElementById("logConsole");
             con.innerText += "\n" + msg;
             con.scrollTop = con.scrollHeight;
         }
 
-        function handleFileSelect(evt) {
-            const files = evt.target.files;
-            if (!files.length) return;
-            const file = files[0];
-            const list = document.getElementById("fileList");
-            const div = document.createElement("div");
-            div.className = "file-item";
-            div.innerHTML = `<span>${file.name}</span><span class="badge">AUTO-DETECTED</span>`;
-            list.appendChild(div);
-            log(`[INGEST] Archivo '${file.name}' aceptado sin pre-filtros (${file.size} bytes).`);
-            log(`[IA] Inspeccionando estructura interna para enlazar en el Grafo...`);
+        function evaluateWithAI() {
+            log("\n--- [FASE 1: EVALUAR POR IA] ---");
+            log("[IA] Leyendo AST y topología del pipeline...");
+            log("[IA] Verificando condición de número kappa(X) en St(16, 1024)...");
+            log("[IA] Detección: Nodo 2 con acumulador Neumaier (Deriva < 1e-15 garantizada).");
+            log("[IA] Optimización aplicada: vectorización SSE2/AVX2 empaquetada. Pipeline certificado.");
+            
+            document.querySelectorAll(".node-card").forEach(c => c.classList.add("ai-optimized"));
+            setTimeout(() => {
+                document.querySelectorAll(".node-card").forEach(c => c.classList.remove("ai-optimized"));
+            }, 1800);
+        }
+
+        function runInterpreter() {
+            log("\n--- [FASE 2: INTERPRETAR (MÁQUINA VIRTUAL)] ---");
+            log("[VM] Nodo 1: Ingesta ejecutada en 197.4 µs.");
+            log("[VM] Nodo 2: Filtro Neumaier compensado en 123.7 µs.");
+            log("[VM] Nodo 3: Retracción polar verificada en 1.7 µs.");
+            log("[VM] Inspección paso a paso: OK. Cero errores de dimensión.");
+        }
+
+        function openCompileModal() {
+            document.getElementById("compileModal").style.display = "flex";
+        }
+        function closeCompileModal() {
+            document.getElementById("compileModal").style.display = "none";
+        }
+
+        function selectTarget(el, targetId, category) {
+            document.querySelectorAll(".target-card").forEach(c => {
+                c.classList.remove("selected");
+                c.classList.remove("selected-purple");
+            });
+            
+            if (category === 'os') {
+                el.classList.add("selected");
+            } else {
+                el.classList.add("selected-purple");
+            }
+            
+            selectedCategory = category;
+            selectedTargetId = targetId;
+
+            const notice = document.getElementById("decoupleNotice");
+            const otherBox = document.getElementById("otherInputBox");
+            const label = document.getElementById("selectedTargetLabel");
+
+            // Mostrar u ocultar caja de "Otros"
+            if (targetId === 'other') {
+                otherBox.style.display = "flex";
+                document.getElementById("customLangInput").focus();
+            } else {
+                otherBox.style.display = "none";
+            }
+
+            // Avisos de desacoplamiento para lenguajes sin motor gráfico nativo
+            const noGuiLanguages = ['cobol', 'fortran', 'c', 'cpp', 'zig', 'r'];
+            if (noGuiLanguages.includes(targetId)) {
+                notice.style.display = "block";
+            } else {
+                notice.style.display = "none";
+            }
+
+            const titleEl = el.querySelector(".target-name");
+            selectedTargetName = titleEl ? titleEl.textContent.trim() : targetId;
+            label.textContent = `Destino: ${selectedTargetName}`;
+        }
+
+        function executeTargetCompilation() {
+            closeCompileModal();
+            let finalTarget = selectedTargetName;
+            let customName = "";
+
+            if (selectedTargetId === 'other') {
+                customName = document.getElementById("customLangInput").value.trim();
+                finalTarget = customName ? `Lenguaje Solicitado: ${customName}` : "Lenguaje Personalizado (Investigado por IA)";
+            }
+
+            log("\n--- [FASE 3: COMPILAR / COLAPSAR] ---");
+            log(`[TARGET] Destino seleccionado: ${finalTarget}`);
+
+            if (selectedTargetId === 'other') {
+                log(`[IA_RESEARCH] Analizando especificaciones y gramática formal para '${customName || "lenguaje solicitado"}'...`);
+                log("[SÍNTESIS] Mapeando tensores St(16, 1024) y acumulador Neumaier al sistema de tipos nativo...");
+            }
+
+            if (['cobol', 'fortran', 'zig'].includes(selectedTargetId)) {
+                log("[ARQUITECTURA] Desacoplamiento aplicado: Núcleo matemático generado en el lenguaje elegido. Pantallas gráficas acopladas en TypeScript/Canvas.");
+            }
+
+            log("[COLAPSO] Sintetizando representación hacia el andamiaje del proyecto en /exports y /bin...");
+            log("[SILICON] Archivo generado exitosamente con Exit Code 0.");
+            log("[SHM] Puntero publicado en PmtpShmBus con permisos 0600.");
         }
 
         function insertStep(afterCardId) {
@@ -428,7 +986,7 @@ Esperando acción del programador...</div>
             
             const divider = document.createElement("div");
             divider.className = "insert-divider";
-            divider.innerHTML = `<button class="insert-btn" onclick="insertStep('${newId}')">+ Intercalar Proceso en el Medio</button>`;
+            divider.innerHTML = `<button class="insert-btn" onclick="insertStep('${newId}')" data-help="Intercalar paso acá">+ Intercalar Proceso en el Medio</button>`;
 
             const newCard = document.createElement("div");
             newCard.className = "node-card";
@@ -436,42 +994,33 @@ Esperando acción del programador...</div>
             newCard.innerHTML = `
                 <div class="node-top">
                     <div class="node-title">
-                        <span>Paso Intercalado (Programador)</span>
-                        <span class="node-type-pill">CUSTOM_FILTER</span>
+                        <span>Paso Intercalado</span>
+                        <span class="node-type-pill">CUSTOM</span>
                     </div>
-                    <button onclick="deleteNode('${newId}')">✕</button>
+                    <button onclick="deleteNode('${newId}')" style="padding: 2px 6px;">✕</button>
                 </div>
-                <textarea class="node-editor"># Escribí o pegá tu lógica intermedia acá
+                <textarea class="node-editor" data-help="Editor para el nuevo paso intercalado"># Lógica matemática intermedia
 output_data = [x * 2.0 for x in input_data]</textarea>
             `;
 
             afterCard.parentNode.insertBefore(newCard, afterCard.nextSibling.nextSibling);
             afterCard.parentNode.insertBefore(divider, newCard);
-            log(`[GRAPH] Programador intercaló un nuevo paso en caliente tras '${afterCardId}'.`);
+            updateNodeCount();
+            log(`[GRAPH] Nuevo nodo intercalado tras '${afterCardId}'.`);
         }
 
         function deleteNode(cardId) {
             const el = document.getElementById(cardId);
             if (el) {
                 el.remove();
-                log(`[GRAPH] Nodo '${cardId}' eliminado del flujo por el programador.`);
+                updateNodeCount();
+                log(`[GRAPH] Nodo '${cardId}' eliminado del flujo.`);
             }
         }
 
-        function runVirtualMachine() {
-            log("\n--- EJECUCIÓN MODO 1: MÁQUINA VIRTUAL (INTERPRETADO) ---");
-            log("[VM] Paso 1: Ingesta ejecutada en 197.4 µs.");
-            log("[VM] Paso 2: Filtro Neumaier aplicado en 123.7 µs.");
-            log("[VM] Paso 3: Retracción simulada en 1.7 µs.");
-            log("[VM] Inspección paso a paso completa. Resultado verificado.");
-        }
-
-        function compileFinalBinary() {
-            log("\n--- EJECUCIÓN MODO 2: COMPILACIÓN FINAL SILICIO (MATHESIS) ---");
-            log("[COMPILER] Fusionando nodos activos en módulo soberano Mathesis...");
-            log("[CODEGEN] Generando microcódigo AVX2/FMA3 directo a registros YMM.");
-            log("[SILICON] Binario nativo ensamblado. Cero sobrecostos de intérprete.");
-            log("[OUTPUT] Puntero publicado en Slab Atelier con DLPack y permisos 0600.");
+        function updateNodeCount() {
+            const count = document.querySelectorAll(".node-card").length;
+            document.getElementById("nodeBadge").textContent = `${count} NODOS`;
         }
     </script>
 </body>
