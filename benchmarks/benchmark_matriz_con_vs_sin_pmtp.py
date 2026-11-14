@@ -58,9 +58,10 @@ def run_live_matrix_benchmark() -> dict:
             json_times_ms.append((time.perf_counter_ns() - t0) / 1e6)
             json_bytes = len(s.encode("utf-8"))
 
-        # Warmup SHM slab + QDWH
-        slab = bus.allocate_tensor_slab(slab_id=100 + k, num_elements=d, dtype=np.float64)
-        sid = 100 + k
+        # Warmup SHM slab + QDWH (slab_id dentro del rango [1, max_slabs])
+        slab_idx = (k % 8) + 1
+        slab = bus.allocate_tensor_slab(slab_id=slab_idx, num_elements=d, dtype=np.float64)
+        sid = slab_idx
         info = bus.slabs[sid]
         payload_len = info["payload_bytes"]
         W_warm, _, _, status_warm = PmtpStiefelAdapter.polar_safe_v2(raw_w, max_iters=10, tol=1e-14)
