@@ -255,13 +255,26 @@ class PmtpShmBus:
                 if info is None or info.get("released", False):
                     continue
                 info["released"] = True
-                shm = info["shm"]
-                try:
-                    payload_start = HEADER_COMPACT_SIZE
-                    payload_end = payload_start + 2 * info.get("payload_bytes", 0)
-                    shm.buf[payload_start:payload_end] = b"\x00" * (payload_end - payload_start)
-                except Exception:
-                    pass
+                shm = info.get("shm")
+                if shm is not None:
+                    try:
+                        hdr = self.read_header(sid)
+                        destroy_sr = hdr.state_and_readers | (1 << 63)
+                        shm.buf[self.STATE_AND_READERS_OFFSET:self.STATE_AND_READERS_OFFSET + 8] = struct.pack("<Q", destroy_sr)
+                    except Exception:
+                        pass
+                    try:
+                        self._zeroize_shm(shm)
+                    except Exception:
+                        pass
+                    try:
+                        shm.close()
+                    except Exception:
+                        pass
+                    try:
+                        shm.unlink()
+                    except Exception:
+                        pass
 
     def stop_watchdog(self) -> None:
         """Detiene el thread watchdog. Llamar antes de destruir el bus si se desea shutdown limpio."""
@@ -375,6 +388,12 @@ class PmtpShmBus:
         Asigna un slab en memoria compartida para doble buffer inmutable con permisos 0600 y MAC.
         Tamaño total = 64 bytes (cabecera) + 2 * (num_elements * sizeof(dtype)).
         """
+        if slab_id < 0 or (self.max_slabs > 0 and slab_id > self.max_slabs):
+            raise ValueError(f"Fail-closed: slab_id ({slab_id}) fuera de rango válido [0, {self.max_slabs}]")
+        if slab_id > 0xFFFF:
+            raise ValueError(f"Fail-closed: slab_id ({slab_id}) excede el límite de 16 bits (0xFFFF)")
+        if self.max_slabs > 0 and len(self.slabs) >= self.max_slabs and slab_id not in self.slabs:
+            raise ValueError(f"Fail-closed: se ha alcanzado el límite máximo de {self.max_slabs} slabs concurrentes")
         if num_elements <= 0:
             raise ValueError(f"num_elements debe ser estrictamente positivo: {num_elements}")
         if self.max_dim > 0 and num_elements > self.max_dim:
@@ -710,17 +729,31 @@ class PmtpShmBus:
         now_ns = time.time_ns()
         timeout_ns = int(self.lease_timeout_ms * 1_000_000)
         reaped = 0
-        for sid, info in list(self.slabs.items()):
-            if not info.get("released", False):
-                pub_ns = info.get("published_at_ns", now_ns)
-                if now_ns - pub_ns >= timeout_ns:
-                    info["released"] = True
-                    shm = info["shm"]
-                    try:
-                        payload_start = HEADER_COMPACT_SIZE
-                        payload_end = payload_start + 2 * info["payload_bytes"]
-                        shm.buf[payload_start:payload_end] = b"\x00" * (payload_end - payload_start)
-                    except Exception:
-                        pass
-                    reaped += 1
+        with self._local_lock:
+            for sid, info in list(self.slabs.items()):
+                if not info.get("released", False):
+                    pub_ns = info.get("published_at_ns", now_ns)
+                    if now_ns - pub_ns >= timeout_ns:
+                        info["released"] = True
+                        shm = info.get("shm")
+                        if shm is not None:
+                            try:
+                                hdr = self.read_header(sid)
+                                destroy_sr = hdr.state_and_readers | (1 << 63)
+                                shm.buf[self.STATE_AND_READERS_OFFSET:self.STATE_AND_READERS_OFFSET + 8] = struct.pack("<Q", destroy_sr)
+                            except Exception:
+                                pass
+                            try:
+                                self._zeroize_shm(shm)
+                            except Exception:
+                                pass
+                            try:
+                                shm.close()
+                            except Exception:
+                                pass
+                            try:
+                                shm.unlink()
+                            except Exception:
+                                pass
+                        reaped += 1
         return reaped

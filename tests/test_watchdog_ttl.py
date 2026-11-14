@@ -175,11 +175,11 @@ class TestMetrics:
             thr = bus.metrics.throughput_bps()
             assert thr >= 0.0, "Throughput debe ser >= 0.0"
 
-            # Verificar que MAC real funciona con publish+read
-            bus.allocate_tensor_slab(slab_id=20, num_elements=4, dtype=np.float64)
+            # Verificar que MAC real funciona con publish+read (slab_id=5 dentro de max_slabs=16)
+            bus.allocate_tensor_slab(slab_id=5, num_elements=4, dtype=np.float64)
             data = np.array([0.5, 0.5, 0.5, 0.5])
-            bus.publish_snapshot_atomic(20, data)
-            arr, gen = bus.read_snapshot_leased(20, verify_mac=True)
+            bus.publish_snapshot_atomic(5, data)
+            arr, gen = bus.read_snapshot_leased(5, verify_mac=True)
             # La verificación MAC debe haber registrado un éxito
             rate2 = bus.metrics.mac_verification_rate()
             assert rate2 > 0.0, "Tras verificación MAC exitosa real, rate debe ser > 0"
