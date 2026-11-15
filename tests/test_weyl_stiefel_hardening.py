@@ -1,14 +1,34 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 r"""
-TEST WEYL STIEFEL HARDENING (SABIOS AUDIT REMEDIATION - FINAL V2)
-Certifies:
-  1. Strict Weyl perturbation bound: For ||Q^T Q - I_K||_F <= eps < 1,
-     kappa_2(Q) <= sqrt((1+eps)/(1-eps)) <= 1 + eps + eps^2 (strict inequality for all 0 <= eps <= 0.5).
-  2. Decouples the theoretical upper bound from the empirical measured value.
-  3. Accounts for K-dependent FP64 measurement noise floors:
-     - For K=32: eps_floor = sqrt(32) * eps_mach ~= 1.256e-15
-     - For K=64: eps_floor = sqrt(64) * eps_mach ~= 1.776e-15
+TEST WEYL STIEFEL HARDENING (SABIOS AUDIT REMEDIATION - CIRCUITO 1)
+Ecosistema Soberano POLYDIM-EINSOF | Ariel García Traba
+
+================================================================================
+OBJECIÓN DEL TRIBUNAL DE SABIOS (OBJ-01) & RESOLUCIÓN MATEMÁTICA:
+================================================================================
+Miedo / Ataque de los Revisores (Sabios 1 y 3 - IEEE/ACM & NISQ):
+  "Reportar precisión Stiefel <= 1e-15 sin demostrar formalmente el número de
+   condición kappa_2(X) en aritmética FP64 genera sospecha de inestabilidad o
+   divergencia bajo perturbaciones numéricas."
+
+Demostración y Cota Analítica Cerrada (Teorema de Perturbación de Weyl):
+  Sea X en R^{D x K} la matriz sobre la variedad de Stiefel con defecto de
+  isometría ||X^T X - I_K||_F <= eps < 1.
+  Los autovalores de Gram satisfacen |lambda_i - 1| <= ||X^T X - I_K||_2 <= eps.
+  Extrayendo raíces cuadradas, los valores singulares están acotados por:
+    sqrt(1 - eps) <= sigma_i(X) <= sqrt(1 + eps)
+  Por ende, la cota superior analítica para el número de condición espectral es:
+    kappa_2(X) = sigma_max / sigma_min <= sqrt((1 + eps) / (1 - eps)) <= 1 + eps + eps^2
+  válida para todo 0 <= eps <= 0.5 sin aproximaciones lineales de primer orden.
+
+Piso de Ruido Instrumental FP64:
+  En aritmética binary64 (IEEE 754, eps_mach ~= 2.22e-16), el piso instrumental
+  acumulado es eps_floor ~= sqrt(K) * eps_mach:
+    - K = 32: eps_floor ~= 1.256e-15
+    - K = 64: eps_floor ~= 1.776e-15
+  La medición empírica en silicio satisface holgadamente kappa_2 <= cota_weyl.
+================================================================================
 """
 
 import sys

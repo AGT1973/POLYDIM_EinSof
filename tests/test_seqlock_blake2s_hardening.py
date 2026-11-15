@@ -1,12 +1,30 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 r"""
-TEST SEQLOCK BLAKE2S HARDENING (SABIOS AUDIT REMEDIATION)
-Certifies:
-  1. Monotonic 64-bit sequence counter (2^64 - 1 commits before overflow).
-  2. BLAKE2s-64 cryptographic digest protecting both header and payload.
-  3. Cosmic ray bit-flip resilience: Any single-bit alteration in memory is detected
-     immediately, forcing a safe discard and transparent re-read.
+TEST SEQLOCK BLAKE2S HARDENING (SABIOS AUDIT REMEDIATION - CIRCUITO 3)
+Ecosistema Soberano POLYDIM-EINSOF | Ariel García Traba
+
+================================================================================
+OBJECIÓN DEL TRIBUNAL DE SABIOS (CISO & CONCURRENCIA) & RESOLUCIÓN EN SILICIO:
+================================================================================
+Miedo / Ataque de los Revisores (Sabios 1, 2 y 5):
+  "El uso de memoria compartida lock-free puede sufrir el problema ABA en ARM64,
+   lecturas desgarradas (torn reads) si un lector lee mientras el escritor commitea,
+   o corrupción silenciosa de tensores por bit-flips cósmicos en RAM no-ECC."
+
+Demostración y Garantías Físicas:
+  1. Inmunidad ABA Teorema 3 Lean 4: El contador generacional uint64_t seq es
+     estrictamente monótono. Un desbordamiento exige exactamente 2^64 - 1
+     transacciones de commit (>58,494 años continuos a 10 millones de commits/s).
+  2. Protocolo Seqlock Libre de Cursores: El escritor incrementa seq a impar antes
+     de escribir y a par tras completar el commit con barrera release. Los lectores
+     leen directamente vía memoryview sin cursores de archivo del SO.
+  3. Doble Blindaje Criptográfico BLAKE2s-64:
+     La cabecera compacta almacena un digest BLAKE2s de 64 bits del tensor.
+     Cualquier alteración de un solo bit en RAM no-ECC por rayos cósmicos corrompe
+     el digest, provocando el rechazo determinista (CORRUPTED_DIGEST_BITFLIP)
+     y forzando una relectura transparente sin propagar datos degradados.
+================================================================================
 """
 
 import sys

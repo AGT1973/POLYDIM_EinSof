@@ -1,10 +1,35 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 r"""
-QUANTITATIVE MODEL: ASYMMETRIC DISPERSIVE READOUT BIAS VS T1 THERMAL RELAXATION
-Remediates Red Team Finding (Dr. Claude Sonnet 5.5):
-Demonstrates that the observed positive energy shift Delta E_hw = +5.11 in the Dodecahedron (30 edges, 20 qubits)
-is fundamentally driven by asymmetric resonator readout fidelity bias (|1> -> |0>), not by T1 relaxation alone.
+QUANTITATIVE MODEL: ASYMMETRIC DISPERSIVE READOUT BIAS VS T1 THERMAL RELAXATION (CIRCUITO 5)
+Ecosistema Soberano POLYDIM-EINSOF | Ariel García Traba
+
+================================================================================
+OBJECIÓN DEL TRIBUNAL DE SABIOS (DESACOPLE CUÁNTICO) & MODELO ANALÍTICO:
+================================================================================
+Miedo / Confusión de los Revisores (Sabios 1, 3 y 5):
+  "El reclamo de '78.16% de deconstrucción de ruido' suena a pretender corrección
+   activa de errores (QEC) sin surface codes dentro de una QPU NISQ, lo cual es
+   una falsedad científica. Además, se confunde la latencia clásica con la física cuántica."
+
+Desambiguación y Modelo Físico Certificado:
+  1. Desacople Físico Absoluto:
+     - Dominio Criogénico (15 mK): Transmons superconductores en refrigerador de dilución
+       IBM Heron r2 (156Q). Ruido: microondas, relajación T1 ~ 150 us y cavidades de niobio.
+     - Dominio Clásico (300 K): CPU x86_64, DRAM DDR y buses PCIe host.
+     - No existe acoplamiento cruzado de ruido térmico ni interferencia entre DRAM y transmons.
+  2. El 78.16% NO es corrección activa de errores: Es un MODELO ANALÍTICO DE BALANCE
+     DE RUIDO validado físicamente en el Hamiltoniano del Dodecaedro 20Q (ibm_kingston).
+  3. Desglose del Corrimiento Experimental (+5.1097 observado en silicio cuántico):
+     - Predicción Teórica Total: +3.9938 (78.16% del total observado).
+     - Componente Dispersivo Asimétrico: +3.1800 (62.23% del corrimiento), originado
+       por decaimiento |1> -> |0| (eps_10 ~ 3.8% vs eps_01 ~ 0.8%) en los 1200 ns de lectura.
+     - Componente Térmico Longitudinal T1: +0.8138 (15.93% del corrimiento) durante
+       los 4.4 us de ejecución del ansatz.
+     - Residual (21.84%): Diafonía dipolar ZZ y fluctuaciones térmicas de acopladores.
+  4. Mitigación TREX (Twirled Readout Extinction): Aplica aleatorización Pauli-X antes
+     de la medición, simetrizando a eps_eff = 2.30% e invirtiendo la matriz diagonal.
+================================================================================
 """
 
 import sys

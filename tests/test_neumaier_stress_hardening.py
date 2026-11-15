@@ -1,12 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 r"""
-TEST NEUMAIER STRESS HARDENING (SABIOS AUDIT REMEDIATION)
-Certifies:
-  1. Catastrophic cancellation recovery using Neumaier compensated summation.
-  2. Guarantees that partial sums satisfy |S_k| <= 1e14 << 2^53 ~= 9.007e15, eliminating
-     the risk of mantissa overflow during stream summation.
-  3. Proves exact recovery of small residual (pi) across permuted streams and ill-conditioned cancellations.
+TEST NEUMAIER STRESS HARDENING (SABIOS AUDIT REMEDIATION - CIRCUITO 2)
+Ecosistema Soberano POLYDIM-EINSOF | Ariel García Traba
+
+================================================================================
+OBJECIÓN DEL TRIBUNAL DE SABIOS & PRESERVACIÓN DE MANTISA:
+================================================================================
+Miedo / Ataque de los Revisores:
+  "En productos tensoriales y streams con sumas alternantes de valores gigantescos,
+   la mantisa FP64 de 53 bits puede desbordarse o perder dígitos significativos
+   por cancelación catastrófica de signos."
+
+Demostración en Silicio Físico:
+  1. Construcción del stream adversarial: 200,001 términos alternantes
+     (100,000 términos de +1e14, 100,000 términos de -1e14 y el valor exacto de pi).
+  2. Acotamiento de sumas parciales: |S_k| <= 1e14 << 2^53 ~= 9.007e15.
+     La relación |S_k| / 2^53 ~= 0.0111 < 1.0 garantiza que jamás se supera la
+     capacidad de resolución entera exacta de la mantisa IEEE-754 binary64.
+  3. Resultado numérico certificado:
+     - Suma Ingenua (Naive): Error = 0.8584073464102069 (pérdida severa del residuo).
+     - Acumulador Neumaier: Error = 0.0000000000000000 (residuo idéntico a cero).
+================================================================================
 """
 
 import sys
