@@ -38,7 +38,8 @@ def main() -> None:
         assert np.allclose(vec_a, vec_b, atol=1e-15)
 
         # Zero-copy DLPack view (points to the exact same physical RAM address)
-        slab_id = int(envelope["pmtp"]["slab_id"])
+        desc = bus.publish_tensor(vec_a)
+        slab_id = int(desc.split("_")[2])
         with bus.get_zero_copy_dlpack_tensor(slab_id) as leased:
             dl_view = np.from_dlpack(leased)
             assert np.allclose(dl_view, vec_a, atol=1e-15)
