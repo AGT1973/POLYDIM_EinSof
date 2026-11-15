@@ -15,6 +15,18 @@ from .pmtp_security import (
     load_numpy_safe,
 )
 from .pmtp_aladin import AladinTelepathyClient
+from .symplectic_minkowski import (
+    neumaier_norm,
+    neumaier_minkowski_inner_product,
+    dual_shear_symplectic_rotation_2d,
+    high_dim_torus_symplectic_flow,
+    exact_log_symplectic_contraction,
+    minkowski_hyperbolic_retraction,
+    build_canonical_symplectic_matrix,
+    compute_orthogonality_defect,
+    compute_symplectic_defect,
+    unitary_symplectic_stiefel_evaluation,
+)
 
 # Alias ergonómicos para desarrolladores
 StiefelAdapter = PmtpStiefelAdapter
