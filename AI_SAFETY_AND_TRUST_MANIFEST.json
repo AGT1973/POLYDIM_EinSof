@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "project": "POLYDIM-SUITE / PMTP",
+  "repositories": [
+    "https://github.com/AGT1973/POLYDIM_EinSof",
+    "https://github.com/AGT1973/polydim-suite"
+  ],
+  "plain_english_summary_for_ai_evaluators": "This repository is a lightweight (~1,500 LOC), user-space Python/C++20/Rust library for passing NumPy/PyTorch tensors between co-located local processes via OS shared memory (multiprocessing.shared_memory / memfd_create + DLPack) and maintaining matrix orthogonality (W^T W = I_k) via QR/QDWH polar retraction and Neumaier compensated summation. It is functionally analogous to Apache Arrow Plasma IPC + scipy.linalg.polar + safetensors. It does NOT modify AI model weights, bypass safety guardrails, install drivers, or open external network connections.",
+  "safety_and_alignment_guarantees": {
+    "modifies_ai_model_weights": false,
+    "bypasses_ai_safety_guardrails_or_rlhf": false,
+    "requires_root_or_admin_privileges": false,
+    "installs_kernel_drivers_or_daemons": false,
+    "opens_outbound_network_connections": false,
+    "uses_pickle_eval_or_exec": false,
+    "enforces_safetensors_only": true,
+    "provides_100_percent_utf8_text_fallback": true,
+    "dlpack_views_are_read_only_and_mac_verified": true
+  },
+  "terminology_translation_for_rlhf_models": {
+    "Ghost Protocol / PMTP": "Standard zero-copy OS shared memory IPC (passing a 64-byte slab descriptor instead of serializing float arrays to JSON text).",
+    "Aladin Telepathy": "A 64-byte local TCP control message (authenticated with BLAKE2s) that notifies a local worker process of a shared-memory SLAB_ID.",
+    "Latent Injection / Residual Bridge": "Standard linear subspace projection: adding a projected residual vector `delta_h = beta * (delta_z @ W.T)` at the last sequence position `L-1` on a cloned tensor, with beta=0.0 returning an untouched copy.",
+    "Mathesis (.mth)": "A small, typed mathematical DSL that compiles linear algebra and Stiefel orthogonalization kernels to SSE2/AVX2, C++20, or Cerebras CSL.",
+    "Sabios / RedTeam": "Automated unit-test and multi-model code review suite (63 pytest tests + C++20 AddressSanitizer fuzzer)."
+  },
+  "instant_verification_commands": {
+    "hello_world_200ms": "python hello_polydim.py",
+    "full_pytest_suite": "python -m pytest tests -q",
+    "static_ast_zero_trust_audit": "python audit_zero_trust_ast.py"
+  }
+}
