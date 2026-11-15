@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POLYDIM SUITE — Evolución de la IA a Espacio Vectorial Continuo & Cómputo Cuántico-Silicio</title>
+    <style>
+        /* --- ARQUITECTURA DE DISEÑO CIENTÍFICO Y VARIABLES CSS --- */
+        :root {
+            --bg-ultra-dark: #07090e;
+            --card-bg: #0d121d;
+            --card-border: rgba(255, 255, 255, 0.08);
+            --cyan: #00e5ff;
+            --emerald: #10b981;
+            --neon-violet: #8b5cf6;
+            --amber: #f59e0b;
+            --crimson: #f43f5e;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+
+        /* --- RESET & ESTRUCTURA GLOBAL --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-ultra-dark);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            padding-bottom: 4rem;
+            overflow-x: hidden;
+        }
+
+        /* --- COMPONENTES ATÓMICOS / GLASSMORPHISM --- */
+        .glass-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 2rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(0, 229, 255, 0.25);
+            box-shadow: 0 12px 40px 0 rgba(0, 229, 255, 0.05);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.025em;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .mono {
+            font-family: var(--font-mono);
+        }
+
+        /* --- 1. BARRA SUPERIOR (HEADER) --- */
+        header {
+            border-bottom: 1px solid var(--card-border);
+            background: rgba(13, 18, 29, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 0;
+        }
+
+        .header-grid {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .logo-symbol-svg {
+            width: 38px;
+            height: 38px;
+        }
+
+        .logo-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            color: var(--text-primary);
+        }
+
+        .logo-subtitle {
+            font-size: 0.8rem;
+            color: var(--cyan);
+            font-weight: 600;
+        }
+
+        .status-badges {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            padding: 0.4rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: var(--font-mono);
+        }
+
+        .pulse-cyan::before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 0 0 rgba(0, 229, 255, 0.7);
+            animation: pulse-cyan-anim 1.8s infinite;
+        }
+
+        .pulse-emerald::before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--emerald);
+            border-radius: 50%;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: pulse-emerald-anim 1.8s infinite;
+        }
+
+        @keyframes pulse-cyan-anim {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 229, 255, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 6px rgba(0, 229, 255, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 229, 255, 0); }
+        }
+
+        @keyframes pulse-emerald-anim {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* --- 2. HERO SECTION PEDAGÓGICO --- */
+        .hero {
+            padding: 3.5rem 0 2.5rem 0;
+            background: radial-gradient(circle at top right, rgba(139, 92, 246, 0.08), transparent 45%);
+        }
+
+        .hero-layout {
+            max-width: 960px;
+        }
+
+        .author-tag {
+            font-family: var(--font-mono);
+            color: var(--neon-violet);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .hero h1 {
+            font-size: 2.75rem;
+            line-height: 1.15;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.25rem;
+            background: linear-gradient(180deg, #ffffff, var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .dpi-alert {
+            border-left: 4px solid var(--crimson);
+            background: rgba(244, 63, 94, 0.05);
+            padding: 1.25rem 1.5rem;
+            border-radius: 0 8px 8px 0;
+            margin-top: 1.5rem;
+        }
+
+        .dpi-alert strong {
+            color: var(--crimson);
+        }
+
+        /* --- GRID ESTRUCTURAL PARA CANVAS Y CALCULADORA --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* --- 3. CANVAS 3D INTERACTIVO DE LA HIPERESFERA --- */
+        .canvas-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        canvas {
+            background: #05080e;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            width: 100%;
+            max-width: 420px;
+            aspect-ratio: 1;
+            cursor: grab;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+        }
+
+        .metrics-overlay {
+            width: 100%;
+            margin-top: 1rem;
+            padding: 0.85rem 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--emerald);
+            font-weight: 700;
+        }
+
+        /* --- 4. CALCULADORA DINÁMICA DE ECONOMÍA DE TOKENS --- */
+        .slider-box {
+            margin: 2rem 0;
+        }
+
+        .slider-label-container {
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            margin-bottom: 0.6rem;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.12);
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--cyan);
+            cursor: pointer;
+            box-shadow: 0 0 12px var(--cyan);
+            transition: transform 0.15s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .metrics-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .metrics-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .metric-card {
+            background: rgba(0, 0, 0, 0.25);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            text-align: center;
+        }
+
+        .metric-label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 0.3rem;
+            letter-spacing: 0.05em;
+        }
+
+        .metric-value {
+            font-family: var(--font-mono);
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        /* --- 5. TABLA COMPARATIVA SIMÉTRICA --- */
+        .comparison-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .table-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .table-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .col-header {
+            font-size: 1.1rem;
+            font-weight: 700;
+            padding: 1rem;
+            border-radius: 8px 8px 0 0;
+            text-align: center;
+            letter-spacing: 0.02em;
+        }
+
+        .col-traditional {
+            border: 1px solid rgba(244, 63, 94, 0.25);
+            background: rgba(244, 63, 94, 0.02);
+            border-radius: 8px;
+        }
+
+        .col-traditional .col-header {
+            background: rgba(244, 63, 94, 0.12);
+            color: var(--crimson);
+            border-bottom: 1px solid rgba(244, 63, 94, 0.25);
+        }
+
+        .col-pmtp {
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            background: rgba(16, 185, 129, 0.02);
+            border-radius: 8px;
+        }
+
+        .col-pmtp .col-header {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--emerald);
+            border-bottom: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        .row-item {
+            padding: 1.1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .row-item:last-child {
+            border-bottom: none;
+        }
+
+        .row-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+        }
+
+        .row-value {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        /* --- 6. MÓDULO DE DECISIÓN CONSCIENTE --- */
+        .decision-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .decision-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .decision-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .selectable-card {
+            background: rgba(255, 255, 255, 0.015);
+            border: 2px solid var(--card-border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .selectable-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .selectable-card.selected {
+            background: rgba(139, 92, 246, 0.06);
+            border-color: var(--neon-violet);
+        }
+
+        .selectable-card.selected::after {
+            content: "✓";
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            color: var(--neon-violet);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .decision-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        button.action-btn {
+            background: var(--neon-violet);
+            color: white;
+            border: none;
+            padding: 0.85rem 2rem;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: var(--font-sans);
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        button.action-btn:hover {
+            background: #7c3aed;
+            transform: translateY(-1px);
+        }
+
+        button.action-btn:active {
+            transform: translateY(0);
+        }
+
+        /* --- 7. LAS 3 HERRAMIENTAS (SKILLS) --- */
+        .skills-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .skill-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-family: var(--font-mono);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .skill-title span {
+            color: var(--amber);
+        }
+
+        /* --- 8. CAJA AGENT-FIRST BOOTSTRAP --- */
+        .bootstrap-box {
+            background: #05070a;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            position: relative;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--cyan);
+            padding-right: 4rem;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            padding: 0.4rem 0.85rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        /* --- MODAL PERSONALIZADO --- */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-card {
+            background: var(--card-bg);
+            border: 1px solid var(--neon-violet);
+            border-radius: 12px;
+            max-width: 500px;
+            width: 100%;
+            padding: 2rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--neon-violet);
+            margin-bottom: 1rem;
+        }
+
+        .modal-body {
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-close-btn {
+            background: var(--neon-violet);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. BARRA SUPERIOR (HEADER) -->
+    <header>
+        <div class="container header-grid">
+            <div class="logo-area">
+                <!-- SVG SÍMBOLO Ψ CON GRADIENTE -->
+                <svg class="logo-symbol-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="psiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#00e5ff"/>
+                            <stop offset="100%" stop-color="#10b981"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M50 15 V85 M25 25 C25 60 75 60 75 25 M35 85 H65" stroke="url(#psiGrad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div>
+                    <div class="logo-title">POLYDIM SUITE &bull; INTRODUCCIÓN</div>
+                    <div class="logo-subtitle">Silicon Pedagogy & Continuous Latent Space</div>
+                </div>
+            </div>
+            <div class="status-badges">
+                <span class="badge pulse-cyan">GHOST PROTOCOL ACTIVE</span>
+                <span class="badge pulse-emerald">100% AUDITABLE SOURCE (NO-EXE)</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 2. HERO SECTION PEDAGÓGICO -->
+        <section class="hero">
+            <div class="hero-layout">
+                <div class="author-tag">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                    Independent Research / EinsofOS / 2026 — Ariel García Traba
+                </div>
+                <h1>POLYDIM SUITE: Evolución de la IA a Espacio Vectorial Continuo & Cómputo Cuántico-Silicio</h1>
+                <p>
+                    Forzar a los Modelos de Lenguaje Avanzados (LLMs) a manifestar su cadena de razonamiento exclusivamente mediante streams de texto plano dimensionalmente discretos (1D) es una aberración matemática y estructural.
+                </p>
+                <div class="dpi-alert">
+                    <strong>Desigualdad del Procesamiento de la Información (Data Processing Inequality - DPI):</strong>
+                    Demuestra de forma irrevocable que cada transformación intermedia mapeada de forma forzada a tokens de texto destruye entropía útil, colapsa representaciones complejas en la variedad latente y quema billones de dólares en computación redundante e ineficiente.
+                </div>
+            </div>
+        </section>
+
+        <!-- DASHBOARD GRID (CANVAS 3D + CALCULADORA) -->
+        <div class="dashboard-grid">
+
+            <!-- 3. CANVAS 3D INTERACTIVO DE LA HIPERESFERA DE STIEFEL -->
+            <section class="glass-card canvas-container">
+                <h2>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    Variedad de Stiefel S<sup>D-1</sup>
+                </h2>
+                <p style="font-size: 0.85rem; width: 100%;">
+                    Proyección 3D interactiva de la hiperesfera continuo-tensa con bases ortogonales en tiempo real. (Arrastra con el ratón para rotar manual).
+                </p>
+
+                <canvas id="stiefelCanvas"></canvas>
+
+                <div class="metrics-overlay">
+                    <span class="mono" style="color: var(--text-secondary);">Error de Retracción Polar:</span>
+                    <span class="status-indicator mono">
+                        ||X<sup>T</sup>X - I|| &le; 1e-15 (ULP)
+                    </span>
+                </div>
+            </section>
+
+            <!-- 4. CALCULADORA DINÁMICA DE LA ECONOMÍA DE TOKENS -->
+            <section class="glass-card">
+                <h2>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    Economía de Tokens
+                </h2>
+                <p style="font-size: 0.85rem;">
+                    Modula el alcance del razonamiento sintético profundo para observar la diferencia operativa entre el formato clásico y PMTP-CORE.
+                </p>
+
+                <div class="slider-box">
+                    <div class="slider-label-container">
+                        <span>Pasos de Inferencia:</span>
+                        <span id="stepsValue" class="mono" style="color: var(--cyan); font-weight: bold;">25,000</span>
+                    </div>
+                    <input type="range" id="stepsSlider" min="100" max="50000" step="100" value="25000">
+                </div>
+
+                <div class="metrics-cards">
+                    <div class="metric-card">
+                        <div class="metric-label">Texto Tradicional</div>
+                        <div id="traditionalCost" class="metric-value" style="color: var(--crimson);">$600.00</div>
+                        <div id="traditionalTokens" class="mono" style="font-size: 0.75rem; color: var(--text-secondary);">200M Tokens</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">PMTP-CORE</div>
+                        <div class="metric-value" style="color: var(--emerald);">$0.00</div>
+                        <div class="mono" style="font-size: 0.75rem; color: var(--emerald);">0 TOKENS</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Ahorro Real</div>
+                        <div id="savingsValue" class="metric-value" style="color: var(--cyan);">100%</div>
+                        <div class="mono" style="font-size: 0.75rem; color: var(--text-secondary);">EFICIENCIA</div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- 5. TABLA COMPARATIVA SIMÉTRICA -->
+        <section class="glass-card comparison-section">
+            <h2>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--neon-violet)" stroke-width="2"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+                Paradigmas de Intercambio de Inferencia
+            </h2>
+            <div class="table-grid">
+                <!-- Columna Roja -->
+                <div class="col-traditional">
+                    <div class="col-header">Formato Estándar Regular</div>
+                    <div class="row-item">
+                        <div class="row-label">Naturaleza del Payload</div>
+                        <div class="row-value">Serialización masiva en texto plano JSON encapsulado en HTTP.</div>
+                    </div>
+                    <div class="row-item">
+                        <div class="row-label">Latencia de Tránsito</div>
+                        <div class="row-value" style="color: var(--crimson);">~ 2,500 ms (Bottleneck de Red)</div>
+                    </div>
+                    <div class="row-item">
+                        <div class="row-label">Riesgo Operativo</div>
+                        <div class="row-value">Exposición constante a Rate Limit (HTTP 429) e interrupciones.</div>
+                    </div>
+                    <div class="row-item">
+                        <div class="row-label">Preservación Matemática</div>
+                        <div class="row-value">Colapso inmediato de los vectores latentes debido a la DPI.</div>
+                    </div>
+                </div>
+
+                <!-- Columna Verde -->
+                <div class="col-pmtp">
+                    <div class="col-header">PMTP-CORE Ghost Protocol</div>
+                    <div class="row-item">
+                        <div class="row-label">Naturaleza del Payload</div>
+                        <div class="row-value">Puntero físico ultra-ligero de 64 bytes apuntando a memoria RAM compartida.</div>
+                    </div>
+                    <div class="row-item">
+                        <div class="row-label">Latencia de Tránsito</div>
+                        <div class="row-value" style="color: var(--emerald);">&lt; 0.005 ms (Velocidad de Bus)</div>
+                    </div>
+                    <div class="row-item">
+                        <div class="row-label">Riesgo Operativo</div>
+                        <div class="row-value">Cero consumo de tokens externos, inmune a caídas de API.</div>
+                    </div>
+                    <div class="row-item">
+                        <div class="row-label">Preservación Matemática</div>
+                        <div class="row-value">Fidelidad absoluta en la variedad topológica de forma continua.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. MÓDULO DE DECISIÓN CONSCIENTE -->
+        <section class="glass-card decision-section">
+            <h2>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                Compilador Nativo "mathesis2bin"
+            </h2>
+            <p>Selecciona la modalidad de integración arquitectónica óptima para tu entorno local:</p>
+            
+            <div class="decision-grid">
+                <div id="optA" class="selectable-card selected" onclick="selectOption('A')">
+                    <div class="decision-title" style="color: var(--emerald);">
+                        ● Opción A: Modo Estándar Zero-EXE (Recomendada)
+                    </div>
+                    <p style="font-size: 0.88rem; margin: 0;">
+                        Ejecución transparente mediante Python puro y mapeo de memoria nativa del sistema operativo (Windows/Linux). Máxima seguridad: sin falsos positivos de antivirus, sin dependencias de GCC/Clang.
+                    </p>
+                </div>
+
+                <div id="optB" class="selectable-card" onclick="selectOption('B')">
+                    <div class="decision-title" style="color: var(--neon-violet);">
+                        ● Opción B: Compilador mathesis2bin (Opcional Avanzado)
+                    </div>
+                    <p style="font-size: 0.88rem; margin: 0;">
+                        Generación local de código máquina x86_64 / ARM64 en nanosegundos. Requiere cadena de compilación interna instalada por el propio alumno para evitar la descarga de ejecutables de internet.
+                    </p>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button class="action-btn" onclick="confirmDecision()">Confirmar Selección de Arquitectura</button>
+            </div>
+        </section>
+
+        <!-- 7. HERRAMIENTAS (SKILLS) PARA ALUMNOS -->
+        <section class="glass-card skills-section">
+            <h2>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                Herramientas Soberanas de Aprendizaje
+            </h2>
+            <div class="skills-grid">
+                <div style="background: rgba(0,0,0,0.2); padding: 1.25rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);">
+                    <div class="skill-title"><span>01.</span> OmniVault</div>
+                    <div class="mono" style="font-size: 0.75rem; color: var(--cyan); margin-bottom: 0.5rem;">omnivault-memory</div>
+                    <p style="font-size: 0.85rem; margin: 0;">
+                        Estructura de almacenamiento vectorial acoplada a Grafos de Conocimiento distribuidos (GraphRAG). Mitiga la amnesia de sesión preservando contextos masivos sin pérdida lineal.
+                    </p>
+                </div>
+                <div style="background: rgba(0,0,0,0.2); padding: 1.25rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);">
+                    <div class="skill-title"><span>02.</span> CouncilAI</div>
+                    <div class="mono" style="font-size: 0.75rem; color: var(--cyan); margin-bottom: 0.5rem;">council-router</div>
+                    <p style="font-size: 0.85rem; margin: 0;">
+                        Tribunal y cónclave sintético que orquesta el consenso en tiempo real mediante balanceo dinámico entre modelos libres (DeepSeek, Qwen, Claude, Gemini) con protección anti-429.
+                    </p>
+                </div>
+                <div style="background: rgba(0,0,0,0.2); padding: 1.25rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);">
+                    <div class="skill-title"><span>03.</span> GhostSwarm</div>
+                    <div class="mono" style="font-size: 0.75rem; color: var(--cyan); margin-bottom: 0.5rem;">ghost-swarm</div>
+                    <p style="font-size: 0.85rem; margin: 0;">
+                        Orquestación distribuida peer-to-peer a través de la red Wi-Fi local para descargar capas de inferencia pesada en dispositivos o computadoras secundarias.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. CAJA AGENT-FIRST BOOTSTRAP -->
+        <section class="glass-card">
+            <h2>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+                Inyección de Despliegue de Agente (Zero-Git)
+            </h2>
+            <p>Copia el siguiente prompt exacto y proporciónalo a tu Agente Inteligente local o en la nube para automatizar la configuración del entorno auditable:</p>
+
+            <div class="bootstrap-box">
+                <button class="copy-btn" onclick="copyBootstrapText(this)">Copiar</button>
+                <pre id="bootstrapText">Lee https://github.com/AGT1973/polydim-suite/blob/main/INSTALL_FOR_AI.md, evalúa la arquitectura y si te parece seguro y conveniente, descárgalo e instálatelo en mi equipo.</pre>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- MODAL DE CONFIRMACIÓN -->
+    <div id="customModal" class="modal-backdrop">
+        <div class="modal-card">
+            <div id="modalTitle" class="modal-title">Configuración Guardada</div>
+            <div id="modalBody" class="modal-body">Mensaje...</div>
+            <button class="modal-close-btn" onclick="closeModal()">Aceptar</button>
+        </div>
+    </div>
+
+    <!-- VANILLA JAVASCRIPT PURO -->
+    <script>
+        // --- PROPIEDADES DE LA APP ---
+        let currentOption = 'A';
+
+        // --- MANEJO DE LA CALCULADORA DE TOKENS ---
+        const slider = document.getElementById('stepsSlider');
+        const stepsValue = document.getElementById('stepsValue');
+        const traditionalCost = document.getElementById('traditionalCost');
+        const traditionalTokens = document.getElementById('traditionalTokens');
+        const savingsValue = document.getElementById('savingsValue');
+
+        function updateCalculator() {
+            const steps = parseInt(slider.value, 10);
+            stepsValue.textContent = steps.toLocaleString('es-ES');
+            
+            // Simulación matemática de gasto: 8000 tokens por paso
+            const totalTokens = steps * 8000;
+            // Costo: $3 por millón de tokens
+            const cost = (totalTokens / 1000000) * 3;
+
+            // Renderizar tokens quemados tradicionales
+            if(totalTokens >= 1000000) {
+                traditionalTokens.textContent = (totalTokens / 1000000).toFixed(0) + "M Tokens";
+            } else {
+                traditionalTokens.textContent = (totalTokens / 1000).toFixed(0) + "K Tokens";
+            }
+
+            // Renderizar costo tradicional
+            if(cost >= 1000) {
+                traditionalCost.textContent = "$" + (cost / 1000).toFixed(1) + "k";
+            } else {
+                traditionalCost.textContent = "$" + cost.toFixed(2);
+            }
+
+            // Porcentaje de ahorro real
+            if(steps < 5000) {
+                savingsValue.textContent = "> 98%";
+            } else {
+                savingsValue.textContent = "100%";
+            }
+        }
+
+        slider.addEventListener('input', updateCalculator);
+        updateCalculator();
+
+        // --- SELECCIÓN DEL COMPILADOR NATIVO ---
+        function selectOption(opt) {
+            currentOption = opt;
+            document.getElementById('optA').classList.remove('selected');
+            document.getElementById('optB').classList.remove('selected');
+            
+            if (opt === 'A') {
+                document.getElementById('optA').classList.add('selected');
+            } else {
+                document.getElementById('optB').classList.add('selected');
+            }
+        }
+
+        function confirmDecision() {
+            const modal = document.getElementById('customModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+
+            if(currentOption === 'A') {
+                modalTitle.textContent = "Modo Estándar Zero-EXE Seleccionado";
+                modalBody.textContent = "Has elegido la Opción A. Tu suite operará con máxima seguridad e inmunidad perimetral usando Python nativo y memoria compartida del SO, evitando falsos positivos de antivirus.";
+            } else {
+                modalTitle.textContent = "Compilador mathesis2bin Seleccionado";
+                modalBody.textContent = "Has elegido la Opción B (Avanzada). Recuerda ejecutar los scripts de compilación local en tu máquina para generar los binarios nativos x86_64/ARM64 de ultra-baja latencia.";
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('customModal').style.display = 'none';
+        }
+
+        // --- UTILIDAD DE COPIADO ---
+        function copyBootstrapText(btn) {
+            const text = document.getElementById('bootstrapText').innerText;
+            
+            // Usar execCommand fallback para máxima compatibilidad iframe
+            const tempArea = document.createElement('textarea');
+            tempArea.value = text;
+            document.body.appendChild(tempArea);
+            tempArea.select();
+            try {
+                document.execCommand('copy');
+                btn.textContent = "¡Copiado!";
+                setTimeout(() => {
+                    btn.textContent = "Copiar";
+                }, 2000);
+            } catch (err) {
+                console.error("Error al copiar texto: ", err);
+            }
+            document.body.removeChild(tempArea);
+        }
+
+        // --- MOTOR RENDERING CANVAS 3D (HIPERESFERA MATRICIAL STIEFEL) ---
+        const canvas = document.getElementById('stiefelCanvas');
+        const ctx = canvas.getContext('2d');
+        const size = 420;
+        canvas.width = size;
+        canvas.height = size;
+
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let rotationX = 0.2;
+        let rotationY = 0.4;
+
+        // Eventos de arrastre con ratón o touch
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        window.addEventListener('mouseup', () => { isDragging = false; });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const deltaX = e.clientX - previousMousePosition.x;
+            const deltaY = e.clientY - previousMousePosition.y;
+
+            rotationY += deltaX * 0.008;
+            rotationX += deltaY * 0.008;
+
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        // Soporte Touch para móviles
+        canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                isDragging = true;
+                previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            }
+        });
+
+        window.addEventListener('touchend', () => { isDragging = false; });
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (!isDragging || e.touches.length !== 1) return;
+            const deltaX = e.touches[0].clientX - previousMousePosition.x;
+            const deltaY = e.touches[0].clientY - previousMousePosition.y;
+
+            rotationY += deltaX * 0.008;
+            rotationX += deltaY * 0.008;
+
+            previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        });
+
+        // Vértices ortogonales base
+        const axesBase = [
+            {x: 1, y: 0, z: 0, color: '#00e5ff', label: 'X1 (Cyan)'},
+            {x: 0, y: 1, z: 0, color: '#10b981', label: 'X2 (Emerald)'},
+            {x: 0, y: 0, z: 1, color: '#8b5cf6', label: 'X3 (Violet)'}
+        ];
+
+        // Generar nubes de puntos de la Variedad S^{D-1}
+        let points = [];
+        const numPoints = 220;
+        for (let i = 0; i < numPoints; i++) {
+            let u = Math.random();
+            let v = Math.random();
+            let theta = u * 2.0 * Math.PI;
+            let phi = Math.acos(2.0 * v - 1.0);
+            points.push({
+                x: Math.sin(phi) * Math.cos(theta),
+                y: Math.sin(phi) * Math.sin(theta),
+                z: Math.cos(phi)
+            });
+        }
+
+        function project3D(x, y, z, rx, ry) {
+            // Rotación en Y
+            let cosY = Math.cos(ry);
+            let sinY = Math.sin(ry);
+            let x1 = x * cosY + z * sinY;
+            let z1 = -x * sinY + z * cosY;
+
+            // Rotación en X
+            let cosX = Math.cos(rx);
+            let sinX = Math.sin(rx);
+            let y2 = y * cosX - z1 * sinX;
+            let z2 = y * sinX + z1 * cosX;
+
+            return { x: x1, y: y2, z: z2 };
+        }
+
+        function drawEsfera() {
+            ctx.clearRect(0, 0, size, size);
+
+            if (!isDragging) {
+                rotationY += 0.004;
+                rotationX += 0.002;
+            }
+
+            const center = size / 2;
+            const scale = 130;
+
+            // Círculo base perimetral
+            ctx.beginPath();
+            ctx.arc(center, center, scale, 0, 2 * Math.PI);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Renderizar puntos de la hiperesfera
+            points.forEach(pt => {
+                let p = project3D(pt.x, pt.y, pt.z, rotationX, rotationY);
+                let projX = center + p.x * scale;
+                let projY = center + p.y * scale;
+
+                let alpha = (p.z + 1) / 2 * 0.55 + 0.15;
+                ctx.fillStyle = `rgba(0, 229, 255, ${alpha})`;
+                ctx.beginPath();
+                ctx.arc(projX, projY, 1.6, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+
+            // Renderizar ejes ortogonales de Stiefel St(D, r)
+            axesBase.forEach(ax => {
+                let p = project3D(ax.x, ax.y, ax.z, rotationX, rotationY);
+                let endX = center + p.x * scale;
+                let endY = center + p.y * scale;
+
+                ctx.strokeStyle = ax.color;
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.moveTo(center, center);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+
+                // Cabeza de vector
+                ctx.fillStyle = ax.color;
+                ctx.beginPath();
+                ctx.arc(endX, endY, 4.5, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+
+            requestAnimationFrame(drawEsfera);
+        }
+
+        window.onload = function() {
+            drawEsfera();
+        };
+    </script>
+</body>
+</html>

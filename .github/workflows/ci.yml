@@ -1,0 +1,81 @@
+name: POLYDIM SUITE CI/CD - Silicon & Manifold Verification
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  silicon-verification:
+    name: Silicon & Stiefel Test (${{ matrix.os }} - Py ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy pytest
+
+      - name: Compile Native ATELIER Kernels (Linux / macOS)
+        if: runner.os != 'Windows'
+        run: |
+          cd tools/atelier_kernel
+          echo "Compiling C++20 Stiefel kernel with g++/clang++..."
+          if [ "${{ runner.os }}" = "Linux" ]; then
+            g++ -std=c++20 -O3 atelier_stiefel.cpp -o atelier_stiefel_cpp -lrt
+          else
+            clang++ -std=c++20 -O3 atelier_stiefel.cpp -o atelier_stiefel_cpp
+          fi
+          chmod +x atelier_stiefel_cpp
+          ./atelier_stiefel_cpp 1024 16
+          
+          if command -v rustc >/dev/null 2>&1; then
+            echo "Compiling Rust Stiefel kernel and hardened concurrency suite..."
+            rustc -O atelier_stiefel.rs -o atelier_stiefel_rs
+            chmod +x atelier_stiefel_rs
+            ./atelier_stiefel_rs 1024 16
+            cd ../..
+            rustc --crate-type cdylib -O pmtp/atelier_siphash.rs -o pmtp/libatelier_siphash.so || true
+            rustc -O tests/test_pmtp_hardened_all_items.rs -o test_pmtp_hardened_rust
+            ./test_pmtp_hardened_rust
+          fi
+
+      - name: Execute Silicon & Stiefel Test (test_en_vivo.py)
+        run: |
+          python tests/test_en_vivo.py
+
+      - name: Run Pytest Suite
+        run: |
+          pytest tests/ -v
+
+  docker-audit:
+    name: Reproducible Docker Audit (ASan/UBSan + memfd_create + Pytest + Benchmarks)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Build and Run Reproducible Container Audit
+        run: |
+          docker build -t polydim-audit .
+          docker run --rm --ipc=private polydim-audit

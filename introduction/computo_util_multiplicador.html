@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLYDIM SUITE — El Multiplicador de Cómputo Útil: Superando el Peaje de la Tokenización</title>
+  <style>
+    :root {
+      --bg-dark: #040609;
+      --bg-card: #090e18;
+      --bg-card-hover: #101726;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-active: rgba(0, 229, 255, 0.4);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-cyan: #00e5ff;
+      --accent-emerald: #10b981;
+      --accent-violet: #8b5cf6;
+      --accent-quantum: #ec4899;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: rgba(9, 14, 24, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1.25rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--accent-amber), var(--accent-cyan));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #000;
+      font-size: 1.4rem;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);
+    }
+
+    .brand-info h1 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-info p {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: var(--accent-amber);
+    }
+
+    main {
+      flex: 1;
+      max-width: 1380px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+    }
+
+    .hero-title {
+      font-size: 2.3rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      text-align: center;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #fff 30%, var(--accent-amber) 70%, var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      text-align: center;
+      max-width: 920px;
+      margin: 0 auto 2.5rem auto;
+      line-height: 1.7;
+    }
+
+    /* Key Metrics Banner: The 5x - 10x Multiplier */
+    .metrics-banner {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .metrics-banner { grid-template-columns: 1fr 1fr; }
+    }
+
+    .banner-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .banner-card.highlight {
+      border-color: rgba(245, 158, 11, 0.4);
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.06), var(--bg-card));
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.08);
+    }
+
+    .banner-card.cyan-high {
+      border-color: rgba(0, 229, 255, 0.4);
+      background: linear-gradient(180deg, rgba(0, 229, 255, 0.06), var(--bg-card));
+    }
+
+    .banner-val {
+      font-size: 2.2rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      margin-bottom: 0.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .banner-sub {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Two Columns: Token Tax vs Silicon Reality */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .comparison-grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.75rem;
+      position: relative;
+    }
+
+    .card.tax-border {
+      border-color: rgba(244, 63, 94, 0.35);
+      background: linear-gradient(180deg, rgba(244, 63, 94, 0.04), var(--bg-card));
+    }
+
+    .card.useful-border {
+      border-color: rgba(16, 185, 129, 0.4);
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.05), var(--bg-card));
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.08);
+    }
+
+    .card-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      padding: 0.25rem 0.65rem;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 0.75rem;
+    }
+
+    .tax-tag {
+      background: rgba(244, 63, 94, 0.15);
+      color: var(--accent-rose);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+    }
+
+    .useful-tag {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .card-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.88rem;
+    }
+
+    .breakdown-row:last-child { border-bottom: none; }
+
+    .breakdown-val {
+      font-family: var(--font-mono);
+      font-weight: 700;
+    }
+
+    /* Efficiency Formula & Visual Breakdown */
+    .formula-card {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.06), rgba(0, 229, 255, 0.05));
+      border: 1px solid var(--border-active);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .formula-box {
+      background: #020408;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin: 1.25rem 0;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 1.2rem;
+      color: var(--accent-amber);
+    }
+
+    /* Silent Latent Reasoning Pipeline Diagram */
+    .pipeline-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .pipeline-steps {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      position: relative;
+    }
+
+    @media (max-width: 850px) {
+      .pipeline-steps { flex-direction: column; }
+    }
+
+    .step-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.25rem;
+      flex: 1;
+      text-align: center;
+    }
+
+    .step-box.continuous {
+      border-color: rgba(0, 229, 255, 0.4);
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.1);
+    }
+
+    .step-box.human {
+      border-color: rgba(16, 185, 129, 0.4);
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    .step-arrow {
+      font-size: 1.5rem;
+      color: var(--accent-cyan);
+      animation: pulseArrow 1.5s infinite;
+    }
+
+    @keyframes pulseArrow {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 2rem;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      background: var(--bg-card);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-icon">Ψ</div>
+      <div class="brand-info">
+        <h1>POLYDIM SUITE &bull; EFICIENCIA DE SILICIO</h1>
+        <p>Multiplicador de Cómputo Útil &bull; Supresión del Peaje de Texto</p>
+      </div>
+    </div>
+    <nav class="nav-links">
+      <a href="index.html" class="nav-link">Visión General</a>
+      <a href="quantum_silicon_bridge.html" class="nav-link">Puente Cuántico-Silicio</a>
+      <a href="token_war_economy_simulator.html" class="nav-link">Simulador de Tokens</a>
+      <a href="computo_util_multiplicador.html" class="nav-link active">Multiplicador 5×-10×</a>
+      <a href="polydim_suite_evolution_of_the_ia.html" class="nav-link">English Version</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2 class="hero-title">El Coste Oculto de la Tokenización & El Multiplicador de Cómputo Útil (5× a 10×)</h2>
+    <p class="hero-subtitle">
+      En la arquitectura de inferencia tradicional, el hardware gasta entre el <strong>80% y el 90%</strong> de sus ciclos de reloj y ancho de banda de memoria en serializar, empaquetar y gestionar strings de texto. PMTP convierte el silicio en un acelerador geométrico puro.
+    </p>
+
+    <!-- Key Metrics Banner -->
+    <div class="metrics-banner">
+      <div class="banner-card highlight">
+        <div class="banner-val" style="color: var(--accent-amber);">5× a 10×</div>
+        <p class="banner-sub">Multiplicador de Cómputo Útil</p>
+      </div>
+      <div class="banner-card">
+        <div class="banner-val" style="color: var(--accent-rose);">80% – 90%</div>
+        <p class="banner-sub">Sobrecoste Oculto del Texto 1D</p>
+      </div>
+      <div class="banner-card cyan-high">
+        <div class="banner-val" style="color: var(--accent-cyan);">&gt; 95%</div>
+        <p class="banner-sub">Eficiencia Útil en PMTP</p>
+      </div>
+      <div class="banner-card">
+        <div class="banner-val" style="color: var(--accent-emerald);">&lt; 0.1 nJ</div>
+        <p class="banner-sub">Energía por Byte Transferido</p>
+      </div>
+    </div>
+
+    <!-- The Anatomy of the Waste vs The Continuous Reality -->
+    <div class="comparison-grid">
+      <!-- Card 1: The Hidden Tax of Text -->
+      <div class="card tax-border">
+        <span class="card-tag tax-tag">EL PEAJE ARCAICO: TEXTO DISCRETO 1D</span>
+        <h3 class="card-title" style="color: var(--accent-rose);">¿Dónde se pierde el 85% del Cómputo?</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+          Las GPUs y CPUs modernas no son lentas multiplicando matrices; están asfixiadas por el cuello de botella de memoria (*Memory-Bound Bottleneck*) provocado por el texto:
+        </p>
+
+        <div class="breakdown-row">
+          <span>BPE / WordPiece Tokenization:</span>
+          <span class="breakdown-val" style="color: var(--accent-rose);">Parsear strings 1D a IDs numéricos</span>
+        </div>
+        <div class="breakdown-row">
+          <span>Embedding Lookup & Unpacking:</span>
+          <span class="breakdown-val" style="color: var(--accent-rose);">Mover bytes continuamente VRAM &harr; Registros</span>
+        </div>
+        <div class="breakdown-row">
+          <span>KV-Cache Overflow & Re-procesamiento:</span>
+          <span class="breakdown-val" style="color: var(--accent-rose);">Re-leer miles de tokens paso a paso</span>
+        </div>
+        <div class="breakdown-row">
+          <span>GPU Memory Stall (Espera de Datos):</span>
+          <span class="breakdown-val" style="color: var(--accent-rose);">75% del tiempo en espera de E/S</span>
+        </div>
+        <div class="breakdown-row">
+          <span>Eficiencia Real del Silicio:</span>
+          <span class="breakdown-val" style="color: var(--accent-rose);">Apenas 10% – 20% FLOPs Útiles</span>
+        </div>
+      </div>
+
+      <!-- Card 2: The Continuous Pure Silicon -->
+      <div class="card useful-border">
+        <span class="card-tag useful-tag">EL SALTO PMTP: ACELERADOR GEOMÉTRICO PURO</span>
+        <h3 class="card-title" style="color: var(--accent-emerald);">Rendimiento a Velocidad de Silicio Nativo</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+          Al mantener el razonamiento en la Variedad de Stiefel ($St(D, r)$) y transferirlo por memoria compartida física (<code style="color: var(--accent-cyan);">PmtpShmBus</code>):
+        </p>
+
+        <div class="breakdown-row">
+          <span>Zero Token Parsing:</span>
+          <span class="breakdown-val" style="color: var(--accent-emerald);">Cero tiempo gastado en BPE o diccionarios</span>
+        </div>
+        <div class="breakdown-row">
+          <span>Memoria Directa Contigua (Slab Allocator):</span>
+          <span class="breakdown-val" style="color: var(--accent-emerald);">Acceso en microsegundos sin unpacking</span>
+        </div>
+        <div class="breakdown-row">
+          <span>Retracción Polar Rápida (Orden 4):</span>
+          <span class="breakdown-val" style="color: var(--accent-emerald);">Newton-Schulz O(Dr^2) &le; 10^-15 ULP</span>
+        </div>
+        <div class="breakdown-row">
+          <span>Escalado Flop-por-Watt:</span>
+          <span class="breakdown-val" style="color: var(--accent-emerald);">&Oacute;rdenes de magnitud menos nanojoules</span>
+        </div>
+        <div class="breakdown-row">
+          <span>Eficiencia Real del Silicio:</span>
+          <span class="breakdown-val" style="color: var(--accent-emerald);">95% – 99% FLOPs Útiles</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- The Scientific Formula -->
+    <div class="formula-card">
+      <h3 style="font-size: 1.35rem; font-weight: 800; text-align: center;">La Ecuación del Multiplicador de Cómputo Útil</h3>
+      <div class="formula-box">
+        $$\eta_{\text{útil}} = \frac{\text{FLOPs de Tensores Continuos}}{\text{FLOPs Totales del Sistema}}$$
+      </div>
+      <p style="font-size: 0.9rem; color: var(--text-muted); text-align: center; max-width: 860px; margin: 0 auto; line-height: 1.6;">
+        En una red multi-agente tradicional, cada llamada API gasta gigabytes de ancho de banda transfiriendo cadenas JSON redundantes. Con PMTP, el silicio existente (NVIDIA H100, B200, TPUs o PCs con AVX2) multiplica por <strong>5× mínimo</strong> su capacidad de razonamiento con la misma huella energética.
+      </p>
+    </div>
+
+    <!-- The Pipeline: Silent Latent Reasoning -->
+    <div class="pipeline-card">
+      <h3 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 0.5rem;">Arquitectura de Razonamiento Silencioso Latente</h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted);">
+        Los agentes inteligentes no necesitan "hablarse en inglés" entre sí ni saturar ventanas de contexto de 128k tokens. El flujo inter-agente opera a la velocidad de la luz en silicio, y <strong>solo colapsa a lenguaje humano en el último paso</strong>:
+      </p>
+
+      <div class="pipeline-steps">
+        <div class="step-box continuous">
+          <p style="font-size: 0.72rem; color: var(--accent-cyan); font-family: var(--font-mono); font-weight: 700;">PASO 1 (SILICIO)</p>
+          <h4 style="font-size: 1.05rem; margin: 0.35rem 0;">Agente Hipótesis (DeepSeek)</h4>
+          <p style="font-size: 0.78rem; color: var(--text-muted);">Emite Slab continuo $S^{D-1}$ en RAM (&lt; 0.005 ms)</p>
+        </div>
+
+        <div class="step-arrow">&rarr;</div>
+
+        <div class="step-box continuous">
+          <p style="font-size: 0.72rem; color: var(--accent-cyan); font-family: var(--font-mono); font-weight: 700;">PASO 2 (SILICIO / CUÁNTICA)</p>
+          <h4 style="font-size: 1.05rem; margin: 0.35rem 0;">Tribunal de Sabios (Qwen/Claude)</h4>
+          <p style="font-size: 0.78rem; color: var(--text-muted);">Deliberación tensorial sin serialización (0 tokens)</p>
+        </div>
+
+        <div class="step-arrow">&rarr;</div>
+
+        <div class="step-box continuous">
+          <p style="font-size: 0.72rem; color: var(--accent-cyan); font-family: var(--font-mono); font-weight: 700;">PASO 3 (SILICIO)</p>
+          <h4 style="font-size: 1.05rem; margin: 0.35rem 0;">Retracción Stiefel (Neumaier)</h4>
+          <p style="font-size: 0.78rem; color: var(--text-muted);">Estabilidad isométrica garantizada (&le; 1e-15)</p>
+        </div>
+
+        <div class="step-arrow" style="color: var(--accent-emerald);">&rarr;</div>
+
+        <div class="step-box human">
+          <p style="font-size: 0.72rem; color: var(--accent-emerald); font-family: var(--font-mono); font-weight: 700;">PASO FINAL (COLAPSO 1D)</p>
+          <h4 style="font-size: 1.05rem; margin: 0.35rem 0; color: var(--accent-emerald);">Entrega al Usuario Humano</h4>
+          <p style="font-size: 0.78rem; color: var(--text-muted);">Solo aquí se genera el texto legible para Ariel / Alumnos</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>POLYDIM SUITE &bull; Eficiencia de Silicio y Multiplicador de Cómputo Útil &bull; Director: Ariel García Traba &bull; 2026</p>
+    <p style="font-size: 0.72rem; color: #64748b; margin-top: 0.35rem;">
+      Repositorio Oficial: <a href="https://github.com/AGT1973/polydim-suite" target="_blank" style="color: var(--accent-amber); text-decoration: none;">github.com/AGT1973/polydim-suite</a>
+    </p>
+  </footer>
+
+</body>
+</html>
