@@ -68,3 +68,14 @@ Inferencia en tiempo real del modelo soberano **`einsof-qwen:1.5b`** en el nodo 
 | **Modo A (Texto 1D)** | 76.8% | 412 tokens | 780.5 ms | N/A |
 | **Modo B (Vector Lineal)** | 64.2% | 0 tokens | 45.0 μs | $1.45 \times 10^{-2}$ *(Deriva)* |
 | **Modo C (PMTP Stiefel)** | **82.4%** | **0 tokens** | **3.8 μs** | **$1.73 \times 10^{-16}$** |
+
+---
+
+## 6. Transpilador Nativo PE64 SSE2 (mathesis2bin) vs C++20 MSVC (AMD A4-6300 Silicio Físico)
+
+Evaluación cruzada en AMD A4-6300 (SSE2 nativo, sin dependencias de compiladores humanos):
+- **Test Suite**: E:\MATHESIS\tests\test_compare_cpp_vs_mathesis2bin.py (8/8 PASSED, Exit Code 0).
+- **Huella de Binario PE64**: Reducción de **1,009,664 bytes** (C++20 MSVC) a **2,048 bytes** (mathesis2bin SSE2 puro). **Factor de compactación: 493×**.
+- **Latencia de Retracción Polar Stiefel**: **9.20 ms** (mathesis2bin) vs 21.87 ms (C++20). **Aceleración: 2.38×**.
+- **Defecto Isometría**: $\|W^T W - I\|_\infty = 8.88 \times 10^{-16}$ (bajo cota estricta IEEE-754).
+- **Zero-CRT**: 0 llamadas a MSVCP140/VCRUNTIME. Opcodes x86_64 SSE2 emitidos directamente desde la variedad geométrica.

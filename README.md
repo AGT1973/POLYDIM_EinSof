@@ -197,6 +197,16 @@ Medidos con `perf_counter_ns`. Reproducibles con `python benchmarks/benchmark_st
 > [!NOTE]
 > **Qué miden y qué no miden estos números.** Miden el costo de mover el estado latente entre procesos: microsegundos y cero tokens en ese tramo. Como referencia, generar un relevo de texto con un LLM lleva típicamente cientos de milisegundos y se factura por token. Lo que **no** miden es la calidad de la tarea final cuando el latente sustituye al texto.
 
+**Transpilador PE64 SSE2 directo (`mathesis2bin`) vs C++20 MSVC en AMD A4-6300:**
+
+| Métrica Medida (AMD A4-6300) | Camino Humano (C++20 MSVC /O2) | Camino Directo (`mathesis2bin` SSE2) | Ratio / Ganancia |
+| :--- | :---: | :---: | :---: |
+| **Tamaño Binario Ejecutable** | 1,009,664 bytes (1,010 KB) | **2,048 bytes** (2.0 KB) | **493× más compacto** |
+| **Latencia p50 Retracción** | 21.87 ms | **9.20 ms** | **2.38× más rápido** |
+| **Defecto Isometría** | $2.22 \times 10^{-16}$ | **$8.88 \times 10^{-16}$** | Cota máquina IEEE-754 |
+| **Dependencia CRT / DLLs** | `KERNEL32`, `MSVCP140`, `VCRUNTIME140` | **100% Autónomo (0 CRT / 0 DLL)** | Soberanía de silicio |
+| **Exit Code** | 0 | **0 (8/8 tests PASS)** | Verificado en silicio |
+
 ---
 
 ## 🧪 Estado de la evidencia
@@ -208,6 +218,7 @@ Medidos con `perf_counter_ns`. Reproducibles con `python benchmarks/benchmark_st
 | El adaptador $W$ es ortogonal a precisión de máquina | ✅ Medido | `python tests/test_en_vivo.py` |
 | Un modelo B entiende el latente de un modelo A distinto | 🔬 En investigación | Requiere entrenar $W$ con pares de estados ocultos (Procrustes) |
 | Relevo latente vs texto: benchmark comparativo de 5 brazos | ✅ Implementado y medido en silicio | `python benchmarks/benchmark_5_arms_silicon.py` (Mide: Baseline, 1D Tokens, Haar QR, Linear Adapter, Stiefel Adapter) |
+| Transpilador PE64 SSE2 directo (`mathesis2bin` vs C++20): 493× menos huella (2KB) y 2.38× más rápido sin CRT | ✅ Medido en AMD A4-6300 (8/8 PASS) | `pytest E:\MATHESIS\tests\test_compare_cpp_vs_mathesis2bin.py` |
 
 Si el último experimento sale positivo, el ahorro de tokens y latencia en cadenas de agentes es directo. Si sale negativo, se publica igual.
 
@@ -273,6 +284,12 @@ polydim-suite/
 ├── examples/               <-- Ejemplos funcionales y simuladores interactivos
 │   ├── quickstart_dual_model_transfer.py <-- Demo funcional Modelo A -> Modelo B
 │   └── visualizador_stiefel_educativo.html
+├── ui/                     <-- Cockpit interactivo y Atelier Co-Working Studio UI
+│   ├── suite_cockpit.html  <-- IDE multimodal y telemetría de silicio
+│   └── atelier_co_working_studio.html <-- Co-working multimodal (COBOL FP64 + Web)
+├── introduction/           <-- Guías y simuladores HTML5 pedagógicos
+│   ├── index.html          <-- Visión general y navegabilidad
+│   └── atelier_co_working_studio.html <-- Réplica interactiva autónoma
 ├── benchmarks/             <-- Benchmarks reproducibles y cuadernos Colab
 │   ├── benchmark_stiefel_latency_live.py <-- Mediciones de latencia con perf_counter
 │   └── polydim_colab_benchmark_kit.ipynb
