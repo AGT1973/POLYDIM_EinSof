@@ -198,3 +198,56 @@ def test_memfd_create_0600_sealed_on_linux():
         assert np.allclose(out, v, atol=1e-15)
     finally:
         bus.cleanup()
+
+
+def test_rfc_siphash24_cross_language_parity():
+    from pmtp.pmtp_types import siphash24_u64
+    rfc_key = bytes(range(16))
+    rfc_msg = bytes(range(15))
+    assert siphash24_u64(rfc_key, rfc_msg) == 0xA129CA6149BE45E5
+
+
+def test_dlpack_context_manager_detects_unauthorized_mutation():
+    bus = PmtpShmBus(prefix="t_sec_dlmut", max_slabs=2, max_dim=256)
+    try:
+        v = _unit_vec(dim=128)
+        desc = bus.publish_tensor(v)
+        sid = int(desc.split("_")[2])
+        with pytest.raises(PermissionError, match="PMTP MAC authentication failure"):
+            with bus.get_zero_copy_dlpack_tensor(sid, verify_mac=True) as leased:
+                consumed = np.from_dlpack(leased)
+                # Capa 1: NumPy marca el tensor importado desde DLPack como read-only por defecto
+                with pytest.raises(ValueError, match="read-only"):
+                    consumed[0] += 0.5
+                # Capa 2: NumPy bloquea incluso el intento de forzar writeable=True en el consumidor DLPack
+                with pytest.raises(ValueError, match="cannot set WRITEABLE"):
+                    consumed.flags.writeable = True
+                # Capa 3: Si un proceso malicioso altera directamente el slot activo del mmap durante el lease, __exit__ lo atrapa vía MAC64
+                shm = bus.slabs[sid]["shm"]
+                active_offset = 64 + leased._leased_slot * leased._payload_bytes
+                shm.buf[active_offset] ^= 0xFF
+    finally:
+        bus.cleanup()
+
+
+def test_sabios_non_human_primitives_swhs_hfct_cwgb():
+    from tools.atelier_dev.mathesis_semantic_bus import MathesisSemanticBus
+    msb = MathesisSemanticBus(agent_weight=50, turing_weight=50)
+    rng = np.random.default_rng(2026)
+    q0, _ = np.linalg.qr(rng.standard_normal((128, 8)))
+    q1, _ = np.linalg.qr(q0 + 0.01 * rng.standard_normal((128, 8)))
+    swhs = msb.compute_swhs_holonomy(q0, q1, rank_k=8)
+    assert len(swhs["swhs_phases_rad"]) == 8
+    assert swhs["topological_abort"] is False
+
+    traj = rng.standard_normal((32, 128))
+    hfct = msb.compress_hfct_spectral(traj, m_modes=8)
+    assert hfct["shape"] == (128, 8)
+    assert hfct["isometry_defect"] <= 1e-14
+
+    v1 = _unit_vec(128, seed=1)
+    v2 = _unit_vec(128, seed=2)
+    v3 = _unit_vec(128, seed=3)
+    cwgb = msb.karcher_cwgb_barycenter([v1, v2, v3], weights=[0.5, 0.3, 0.2])
+    assert cwgb["isometry_defect"] <= 1e-15
+    assert cwgb["tokens_consumed"] == 0

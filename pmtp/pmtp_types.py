@@ -168,10 +168,34 @@ def derive_pmtp_key16(key_raw: bytes) -> bytes:
     return hashlib.sha256(key_raw).digest()[:16]
 
 
+def _load_native_siphash():
+    import ctypes
+    import os
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    for ext in ("atelier_siphash.dll", "libatelier_siphash.so", "libatelier_siphash.dylib"):
+        candidate = os.path.join(base_dir, ext)
+        if os.path.exists(candidate):
+            try:
+                lib = ctypes.CDLL(candidate)
+                fn = lib.pmtp_siphash24_u64
+                fn.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_size_t]
+                fn.restype = ctypes.c_uint64
+                return fn
+            except Exception:
+                pass
+    return None
+
+
+_NATIVE_SIPHASH24 = _load_native_siphash()
+
+
 def siphash24_u64(key16: bytes, data: bytes) -> int:
-    """Implementación bit-exacta SipHash-2-4 (64-bit) compatible con atelier_abi.hpp."""
+    """Implementación bit-exacta SipHash-2-4 (64-bit) compatible con atelier_abi.hpp (acelerada por ctypes nativo)."""
     if len(key16) != 16:
         raise ValueError(f"SipHash-2-4 requiere clave de 16 bytes, recibido {len(key16)}")
+
+    if _NATIVE_SIPHASH24 is not None:
+        return int(_NATIVE_SIPHASH24(key16, data, len(data)))
 
     mask = 0xFFFFFFFFFFFFFFFF
 

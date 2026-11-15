@@ -64,14 +64,22 @@ POLYDIM addresses the surrounding packaging: by stripping away the parasitic aer
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 1.1 The 88-Byte Fixed-Width C ABI Tensor Descriptor
-PMTP standardizes inter-process tensor transfers via a strictly aligned 88-byte header:
-- `uint32_t magic`: `0x504D5450` (`PMTP`)
-- `uint16_t version`: `26155`
-- `uint16_t dtype`: Enumerated standard numerical dtypes (FP64, FP32, FP16, BF16)
-- `uint64_t rank`: Tensor rank ($1 \le \text{rank} \le 8$)
-- `uint64_t shape[8]`: Dimension extents along each axis (64 bytes)
-- `uint64_t byte_length`: Total payload length in bytes
+### 1.1 Dual-Profile C ABI Tensor Descriptors: 64-Byte L1 Compact Profile & 88/120-Byte N-D Extended Profile
+PMTP standardizes inter-process tensor transfers via two interoperable binary descriptor profiles defined in `pmtp/pmtp_types.py` and `tools/atelier_kernel/atelier_abi.hpp`:
+
+1. **Profile A — 64-Byte Cache-Line Compact ABI (`PmtpCompactHeader`, Default in `PmtpShmBus` & `atelier_abi.hpp`):**
+   - Fits inside a single 64-byte L1 CPU cache line (`alignas(64)`).
+   - `[0..48)` Immutable metadata: `magic=0x504D5450` (`PMTP`), `version=1`, `dtype_id`, `active_slot`, `slab_id`, `num_elements`, `timestamp_ns`, `scale`, `generation`, `retired_slot0/1`, `reserved_flags`.
+   - `[48..56)` Mutable atomic word: `state_and_readers` (Bit 63 = `DESTROYING_BIT`, Bits 0..62 = active reader leases).
+   - `[56..64)` Cryptographic authentication tag: `mac64` (**SipHash-2-4 MAC-64** over `[0..48)` + payload, key derived via `SHA-256[:16]` from `PMTP_SHM_KEY` or OS CSPRNG).
+2. **Profile B — 88-Byte / 120-Byte Extended N-D Wire Descriptor (`WIRE_DESCRIPTOR_STRUCT`):**
+   - Used for arbitrary rank-$R$ ($1 \le R \le 8$) multi-dimensional tensors across heterogeneous nodes:
+   - `uint32_t magic`: `0x504D5450` (`PMTP`)
+   - `uint16_t version`: `1` (or `26155` enterprise wire tag)
+   - `uint16_t dtype`: Enumerated standard numerical dtypes (FP64, FP32, FP16, BF16)
+   - `uint64_t rank`: Tensor rank ($1 \le \text{rank} \le 8$)
+   - `uint64_t shape[8]`: Dimension extents along each axis (64 bytes)
+   - `uint64_t byte_length`: Total payload length in bytes + 32-byte cryptographic digest.
 
 ### 1.2 Multi-Language Silicon Binding Parity
 1. **C++20 Native:** Fused memory passes, OpenMP `#pragma omp parallel for`, and auto-vectorization without volatile barriers.
