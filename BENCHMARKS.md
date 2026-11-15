@@ -88,3 +88,25 @@ $$S = \frac{1}{1 - 0.80} = 5.0\times \quad \text{up to} \quad S = \frac{1}{1 - 0
 | **Dependencia de CRT / DLLs** | KERNEL32.dll, MSVCP140.dll, VCRUNTIME140.dll | **100% Autónomo (Zero CRT / Zero DLL)** | Soberanía absoluta de silicio |
 | **Salida Ghost Protocol** | Formato de consola tradicional | **Tupla Silicio (ExitCode, Latency, NormErr, Checks)** | Protocolo Fantasma Nativo |
 | **Exit Code** | 0 | **0 (8/8 PASS)** | Verificación física certificada |
+
+---
+
+### 8. Universal Procrustes Anchor Handshake (`< 50 ms`, Visión 2030 Co-Working AI)
+**Script Reproducible:** [`benchmarks/benchmark_procrustes_anchor_handshake.py`](benchmarks/benchmark_procrustes_anchor_handshake.py)  
+**JSON Crudo:** [`benchmarks/benchmark_procrustes_anchor_handshake.json`](benchmarks/benchmark_procrustes_anchor_handshake.json)  
+**Tests Formales:** [`tests/test_procrustes_anchor_handshake.py`](tests/test_procrustes_anchor_handshake.py) (`7/7 PASS`)  
+**Hardware Medido:** AMD64 Family 21 Model 19 Stepping 1 (Host Windows 11, Python 3.15.0, NumPy `2.5.4`)
+
+| Modelo Simulado | $(N_{\text{anclas}}, D, k)$ | Fast Spectral Polar (min / med) | Full SVD (`align_spaces`) | QDWH (`polar_safe_v2`) | Defecto $\|\mathbf{W}^T\mathbf{W}-\mathbf{I}_k\|_F / \sqrt{k}$ | $< 50\,\text{ms}$ (med) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Einsof-ALADIN-Local** | $(64, 1536, 64)$ | **13.96 / 14.55 ms** | 24.37 ms | 107.22 ms | **$2.371 \times 10^{-16}$** | **YES** |
+| **Qwen3-1.5B** | $(64, 2048, 64)$ | **20.35 / 23.04 ms** | 42.51 ms | 208.32 ms | **$2.411 \times 10^{-16}$** | **YES** |
+| **Kimi-K3.1-Pro** | $(64, 4096, 64)$ | **35.88 / 37.54 ms** | 89.33 ms | 374.91 ms | **$2.385 \times 10^{-16}$** | **YES** |
+| **DeepSeek-V4** | $(64, 5120, 64)$ | **43.08 / 45.18 ms** | 120.95 ms | 468.51 ms | **$2.156 \times 10^{-16}$** | **YES** |
+| **Kimi-K3.1-Pro (128A)** | $(128, 4096, 64)$ | **48.45 / 52.46 ms** | 121.52 ms | 441.13 ms | **$2.092 \times 10^{-16}$** | ~50 ms (min $<50$) |
+| **LLaMA-4-70B** | $(64, 8192, 64)$ | **93.36 / 116.02 ms** | 312.18 ms | 1982.57 ms | **$2.632 \times 10^{-16}$** | 17.1× vs QDWH |
+
+- **Alineamiento Inter-Modelos (10 pares heterogéneos):** `noiseless_isometric` $\cos_{\min} = 1.000000000000$; ruido relativo $10\%$ $\cos_{\min} = 0.994740$ ($\cos_{\text{mean}} = 0.994897$).
+- **Cadena de 50 Saltos Heterogéneos:** Stiefel Procrustes preserva $\|\mathbf{h}_{50}\|_2 = 0.999999999999997$ (deriva $2.89 \times 10^{-15}$, $\cos = 1.000000000000000$); operador lineal sin restricción colapsa a $\|\mathbf{h}_{50}\|_2 = 1.210 \times 10^{-14}$.
+- **Integración Zero-Copy `PmtpShmBus` + DLPack + `SipHash-2-4`:** IPC `978.5 us`, error de reconstrucción máx. $1.09 \times 10^{-16}$, `0` tokens consumidos, `modifies_ai_model_weights = false`.
+
