@@ -662,6 +662,9 @@
 
         <!-- Widget de Voz SOTA 2030 -->
         <div class="voice-widget">
+            <button class="btn-ui" onclick="promptUserVoice()" style="background: rgba(0, 229, 255, 0.15); border-color: var(--accent-cyan); color: var(--accent-cyan); font-weight: 700; padding: 3px 10px;" title="Atelier te pregunta por los parlantes qué quieres programar">
+                <span style="font-size: 13px;">🔊</span> "¿Qué quieres programar?"
+            </button>
             <button class="voice-btn" id="voiceToggleBtn" onclick="toggleVoiceControl()" title="Control por Voz (Web Speech API)">
                 <span id="voiceIcon">🎙️</span>
                 <span id="voiceStatusLabel">VOZ: INACTIVA</span>
@@ -761,6 +764,9 @@
                 </div>
                 <div class="tool-tab" id="tab-economy" onclick="switchToolTab('tab-economy')">
                     <span>💰</span> Economía de Tokens
+                </div>
+                <div class="tool-tab" id="tab-speech" onclick="switchToolTab('tab-speech')">
+                    <span>🎙️</span> Meta Speech & Fine-Tuning
                 </div>
             </div>
 
@@ -894,6 +900,36 @@ t = s + x; c += if abs(s)>=abs(x) then (s-t)+x else (x-t)+s; s = t</textarea>
                         <div class="metric-row">
                             <span>Aceleración Neta de Cómputo (Ley de Amdahl):</span>
                             <span class="metric-value" style="color: var(--accent-purple);">5.0× - 10.0× Multiplicador Global</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vista 6: Meta Speech & Continuous Fine-Tuning Bridge -->
+                <div class="view-pane" id="view-speech">
+                    <div class="economy-card">
+                        <h4 style="color: var(--accent-cyan); font-size: 13px;">🎙️ Meta AI Speech Foundation Bridge (MMS & SeamlessM4T v2)</h4>
+                        <div class="metric-row">
+                            <span>Modelo de Voz a Texto SOTA:</span>
+                            <span class="metric-value" style="color: var(--accent-purple);">Meta MMS (Massively Multilingual) / SeamlessM4T v2</span>
+                        </div>
+                        <div class="metric-row">
+                            <span>Espacio Latente del Encoder Acústico:</span>
+                            <span class="metric-value" style="color: var(--accent-cyan);">D = 1024 (Wav2Vec 2.0 / UnitY2)</span>
+                        </div>
+                        <div class="metric-row">
+                            <span>Alineación Tensorial con Mathesis:</span>
+                            <span class="metric-value" style="color: var(--accent-green);">100% Isomórfico con St(k=16, D=1024)</span>
+                        </div>
+                        <div class="metric-row">
+                            <span>Ghost Protocol de Voz (Speech-to-Tensor):</span>
+                            <span class="metric-value" style="color: var(--accent-amber);">0 Tokens de transcripción (Audio continuo directo a memoria)</span>
+                        </div>
+                        <div class="metric-row">
+                            <span>Pipeline de Fine-Tuning Siguiente:</span>
+                            <span class="metric-value" style="color: var(--text-main);">Pares (Latente_Audio_D1024, Slab_Mathesis) vía Colab Bridge (QLoRA)</span>
+                        </div>
+                        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-top: 6px;">
+                            💡 <strong>Revolución Pedagógica 2030:</strong> En lugar de transcribir la voz humana a un texto plano 1D (lo que pierde prosodia, énfasis y produce cuellos de botella de tokens), Atelier conecta el encoder acústico de Meta directamente a la memoria compartida <code>PmtpShmBus</code>. La IA programa en Mathesis entendiendo la geometría de la onda de voz directamente en silicio.
                         </div>
                     </div>
                 </div>
@@ -1386,14 +1422,36 @@ end`
             }
         }
 
+        // Invitación y Pregunta Proactiva por los Parlantes
+        function promptUserVoice() {
+            const promptText = "Hola Ariel. Bienvenido a Atelier 2030. Háblame por el micrófono: dime qué algoritmo, variedad tensorial o pipeline deseas programar hoy en Mathesis, o a qué lenguaje quieres exportarlo.";
+            log("[AUDIO_PROMPT] Reproduciendo por parlantes: '" + promptText + "'");
+            speakText(promptText, () => {
+                if (!isVoiceActive) startVoiceControl();
+            });
+        }
+
         // Síntesis de Voz (TTS) con Prosodia Afectiva
-        function speakText(text) {
-            if (!('speechSynthesis' in window)) return;
+        function speakText(text, onEndCallback) {
+            if (!('speechSynthesis' in window)) {
+                if (onEndCallback) onEndCallback();
+                return;
+            }
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = "es-ES";
             utterance.pitch = 0.95; // Tono firme y reflexivo de Gandalf
             utterance.rate = 1.05;
+
+            // Seleccionar voz neuronal en español si está disponible
+            const voices = window.speechSynthesis.getVoices();
+            const naturalVoice = voices.find(v => v.lang.startsWith("es") && (v.name.includes("Natural") || v.name.includes("Neural") || v.name.includes("Google") || v.name.includes("Jorge") || v.name.includes("Helena"))) || voices.find(v => v.lang.startsWith("es"));
+            if (naturalVoice) utterance.voice = naturalVoice;
+
+            if (onEndCallback) {
+                utterance.onend = onEndCallback;
+                utterance.onerror = onEndCallback;
+            }
             window.speechSynthesis.speak(utterance);
         }
 

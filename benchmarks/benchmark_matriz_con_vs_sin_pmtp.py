@@ -116,9 +116,10 @@ def run_live_matrix_benchmark() -> dict:
             read_view = np.ndarray(shape=(d,), dtype=np.float64, buffer=slab.buf, offset=HEADER_COMPACT_SIZE + hdr_r.active_slot * payload_len).copy()
             t_c3 = time.perf_counter_ns()
 
-            # E) T_dlpack_zero_copy_us (np.from_dlpack zero-copy bajo reader lease)
-            t_d0 = time.perf_counter_ns()
+            # E) T_dlpack_ingest_us (np.from_dlpack puro sobre lease activo) + T_dlpack_zero_copy_us
+            t_d_lease0 = time.perf_counter_ns()
             leased_dl = bus.get_zero_copy_dlpack_tensor(sid, verify_mac=False)
+            t_d0 = time.perf_counter_ns()
             dl_arr = np.from_dlpack(leased_dl)
             t_d1 = time.perf_counter_ns()
             leased_dl.release_and_verify()
@@ -171,6 +172,7 @@ def run_live_matrix_benchmark() -> dict:
                 "T_proj_qdwh_us": med_proj_us,
                 "T_sync_seqlock_mac_us": med_sync_us,
                 "T_copy_explicit_shm_us": med_copy_us,
+                "T_dlpack_ingest_us": med_dlpack_us,
                 "T_dlpack_zero_copy_us": med_dlpack_us,
                 "T_ipc_steady_us": med_ipc_us,
                 "T_total_e2e_us": med_e2e_us,

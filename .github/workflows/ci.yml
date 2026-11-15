@@ -50,10 +50,14 @@ jobs:
           ./atelier_stiefel_cpp 1024 16
           
           if command -v rustc >/dev/null 2>&1; then
-            echo "Compiling Rust Stiefel kernel with rustc..."
+            echo "Compiling Rust Stiefel kernel and hardened concurrency suite..."
             rustc -O atelier_stiefel.rs -o atelier_stiefel_rs
             chmod +x atelier_stiefel_rs
             ./atelier_stiefel_rs 1024 16
+            cd ../..
+            rustc --crate-type cdylib -O pmtp/atelier_siphash.rs -o pmtp/libatelier_siphash.so || true
+            rustc -O tests/test_pmtp_hardened_all_items.rs -o test_pmtp_hardened_rust
+            ./test_pmtp_hardened_rust
           fi
 
       - name: Execute Silicon & Stiefel Test (test_en_vivo.py)
