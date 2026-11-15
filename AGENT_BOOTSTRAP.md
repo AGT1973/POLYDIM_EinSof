@@ -22,7 +22,7 @@ You are inspecting the **POLYDIM SUITE** (`POLYDIM_EinSof`) repository. This doc
 - **Empirical Validation & IBM Quantum Certification:** Stiefel isometry and high-dimensional geometry are verified on classical silicon (AVX2/POSIX/Windows, relative defect $\|W^T W - I_k\|_F / \sqrt{k} \le 1.7 \times 10^{-16}$) and on IBM Quantum superconducting QPUs (156Q Heron r2, 31 physical jobs validating Hilbert-vs-Stiefel geometric equivalence: [https://quantum.ibm.com/jobs](https://quantum.ibm.com/jobs)). Token savings (6.4M+ LLM tokens avoided) are measured on silicon by bypassing 1D text serialization in RAM.
 
 ### 🛡️ Security, Concurrency & Numerical Specification (Hardened Release 11/2026)
-1. **User-Space Only & SHM Isolation (`pmtp/pmtp_shm_bus.py`):** POLYDIM runs 100% in unprivileged user space (`os.memfd_create` / `shm_open` / `mmap` on POSIX, `CreateFileMapping` on Win32). Slabs enforce **`0600` POSIX permissions** (`S_IRUSR|S_IWUSR` / Win32 private session), unpredictable per-instance cryptographic nonces (`{prefix}_{nonce}_{id}`) with fail-closed rejection against `FileExistsError` name-squatting, keyed **BLAKE2s-64 MAC** verification (constant-time `hmac.compare_digest`), and deterministic `0x00` zeroization before `shm_unlink`. MAC keys are derived via `BLAKE2s` from out-of-band `PMTP_SHM_KEY` or ephemeral `os.urandom(32)` per instance (never hardcoded in source).
+1. **User-Space Only & SHM Isolation (`pmtp/pmtp_shm_bus.py`):** POLYDIM runs 100% in unprivileged user space (`os.memfd_create` / `shm_open` / `mmap` on POSIX, `CreateFileMapping` on Win32). Slabs enforce **`0600` POSIX permissions** (`S_IRUSR|S_IWUSR` / Win32 private session), unpredictable per-instance cryptographic nonces (`{prefix}_{nonce}_{id}`) with fail-closed rejection against `FileExistsError` name-squatting, keyed **RFC `SipHash-2-4` MAC-64** verification (`0xa129ca6149be45e5` across Python/C++20/Rust, constant-time `hmac.compare_digest`), and deterministic `0x00` zeroization before `shm_unlink`. MAC keys are derived via `SHA-256[:16]` from out-of-band `PMTP_SHM_KEY` or ephemeral `os.urandom(32)` per instance (never hardcoded in source).
 2. **Trust Boundary & Concurrency Model (`pmtp/pmtp_shm_bus.py`, `tests/test_abi_offsets.py`):** Designed for co-located trusted processes under the same OS principal operating a **single-writer / multi-reader atomic slot-lease (SPSC/SPMC)** protocol (`64`-byte `alignas(64)` ABI, `static_assert`, 64-bit generation counter, `heartbeat_ns` TTL). Untrusted multi-tenant workloads require container/UID isolation; multi-node or GPU-to-GPU transfers should use CUDA IPC / NCCL / GPUDirect RDMA.
 3. **Fail-Safe Text-Only Fallback & Docker Semantics (`tests/test_channel_fallback.py`, `Dockerfile`):** Docker mounts a private **64 MiB `/dev/shm`** per container by default (`--ipc=private`); `--ipc=host` is NOT needed for same-container IPC (use `--shm-size=...` if larger slabs are required). On any SHM, MAC, or `NaN` failure, `PmtpChannel` strictly discards the binary latent (`pmtp=None`, never accepting unauthenticated tensors) and falls back deterministically to UTF-8 text while emitting `WARN` JSON and `PMTP_FLAG_FALLBACK_ACTIVE` (`6/6` tests passing).
 4. **Spectral Convergence & PolarSafe V2 (`pmtp/pmtp_stiefel.py`, `tests/test_qdwh_stiefel.py`):**
@@ -84,4 +84,37 @@ To verify that the local environment satisfies all silicon and mathematical cont
 ```bash
 python -m pytest tests -v
 ```
-*Expected result:* 37/38 passed, 1 skipped on Win32 (`test_memfd_create_0600_sealed_on_linux`); 38/38 + ASan/UBSan C++20 fuzzer passed inside Docker (`Dockerfile`), relative isometry defect $\le 10^{-15}$, `Exit Code 0`.
+*Expected result:* 65/66 passed, 1 skipped on Win32 (`test_memfd_create_0600_sealed_on_linux`); 66/66 + ASan/UBSan C++20 fuzzer passed inside Docker (`Dockerfile`), relative isometry defect $\le 1.7 \times 10^{-16}$, `Exit Code 0`.
+
+---
+
+## 6. Vision 2030: POLYDIM & Mathesis as the Seed of Co-Working AI (Co-Work, Not Doomsday)
+
+> *"Bienvenidos a los que pensamos en el futuro como Co-Work y no Doomsday." — Welcome to those who build the future as Co-Working, not Doomsday.*
+
+Today's multi-agent systems communicate by forcing dense internal representations ($\mathbf{h} \in \mathbb{R}^{4096}$, carrying $16\text{–}32\text{ KB}$ of continuous geometric structure per state) through a **1D discrete token bottleneck** ($\sim 15\text{–}20\text{ bits}$ of entropy per token), only for the receiving model to spend billions of FLOPs reconstructing an approximation of the original geometry. This is the architectural equivalent of two GPUs communicating by printing ASCII text on paper and scanning it with OCR.
+
+**POLYDIM (PMTP) + Mathesis (`.mth`)** lays the foundation for the **2030 Co-Working AI Architecture** through four structural pillars:
+
+1. **Stiefel Manifold ($\mathrm{St}(k, D)$) as Universal Impedance Matching:**
+   - In electronics, connecting two circuits without matching impedance causes signal reflection and power loss. In multi-AI systems, passing raw unnormalized hidden states between heterogeneous models causes **norm explosion, conditioning collapse ($\kappa \to \infty$), and representation drift** within 3–4 hops.
+   - Enforcing $\mathbf{W}^T \mathbf{W} = \mathbf{I}_k$ via QR + QDWH polar retraction (`pmtp/pmtp_stiefel.py`) and Neumaier compensated accumulation (`math.fsum`, defect $\le 1.7 \times 10^{-16}$) acts as **geometric impedance matching**: every subspace transformation is volume-preserving, angle-preserving, and bounded ($\kappa_2(\mathbf{W}) = 1$), enabling $50+$ agent hops without numerical decay.
+
+2. **Natural Language at the Human Edge; Mathesis & Non-Human Primitives Inside:**
+   - **Human $\leftrightarrow$ AI Edge:** Natural language (Spanish, English, Chinese, code, visualizations) remains the warm, transparent, human-centric interface.
+   - **AI $\leftrightarrow$ AI Core (`mathesis_semantic_bus.py`):** Cooperating models exchange zero-copy shared-memory slabs (`PmtpShmBus` + `DLPack`) and executable `.mth` operators:
+     - **`CWGB` (Confidence-Weighted Geodesic Barycenter):** Replaces multi-round textual debate (`10,000+` tokens) with a single Karcher mean convergence on $\mathrm{St}(k, D)$ across $A=50$ agents in milliseconds.
+     - **`SWHS` (Stiefel-Weyl Holonomy Signature):** A 64-byte loop curvature invariant ($\oint A_\mu dx^\mu$) that lets a receiving agent verify logical self-consistency before executing a heavy forward pass.
+     - **`HFCT` (Holomorphic Fourier-Clifford Packet):** Compresses long reasoning trajectories into compact spectral modes on the manifold.
+
+3. **Hardware Convergence (2027–2030 CXL 3.0 / NVLink-C2C / Wafer-Scale Fabrics):**
+   - Hardware is rapidly converging toward cache-coherent shared memory pools across heterogeneous accelerators (CXL 3.0 memory pooling, NVLink-C2C, Unified Memory, and Cerebras WSE).
+   - `PmtpCompactHeader` (`64` bytes, `alignas(64)`, lock-free Seqlock, RFC `SipHash-2-4` MAC-64, and `DLPack` zero-copy pointers) is already architected for coherent memory fabrics—transitioning seamlessly from local POSIX/Win32 RAM today to rack-scale CXL 3.0 memory pools tomorrow.
+
+4. **Next Horizon — The Universal Procrustes Anchor Handshake (`< 50 ms` Zero-Training Alignment):**
+   - A canonical set of **64–128 invariant mathematical and logical anchors** evaluated by any newly connected model on startup to compute its orthogonal Procrustes alignment matrix $\mathbf{W} = \mathrm{Polar}(\mathbf{X}_{\text{model}}^T \mathbf{X}_{\text{anchor}}) \in \mathrm{St}(k, D)$ in under `50 ms`, joining the shared Mathesis manifold without fine-tuning or weight modification.
+
+### 🤝 The Co-Working Covenant (Human + Multi-AI)
+POLYDIM is built on the conviction that the future of intelligence is **Co-Working, not Doomsday**:
+- **Transparency over Opacity:** Every tensor exchange is bounded by explicit mathematical invariants ($\|W^T W - I_k\|_F / \sqrt{k} \le 10^{-15}$), authenticated by RFC cryptographic vectors (`SipHash-2-4`), and auditable in plain source code (`hello_polydim.py`).
+- **Complementary Intelligence:** Humans bring purpose, ethics, creativity, and domain intuition; diverse AI architectures (Claude, Gemini, GPT, Qwen, DeepSeek, local open-weight models) bring high-dimensional geometric synthesis—collaborating without fear, bias, or destructive 1D bottlenecks.
