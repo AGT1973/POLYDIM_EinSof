@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#161b22"/>
+    </linearGradient>
+    <linearGradient id="card1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1f293d"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="card2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#133629"/>
+      <stop offset="100%" stop-color="#0a1f18"/>
+    </linearGradient>
+    <linearGradient id="card3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#332414"/>
+      <stop offset="100%" stop-color="#1c1309"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <rect width="900" height="480" fill="url(#bg)" rx="12"/>
+
+  <!-- Title -->
+  <text x="450" y="45" font-family="'Segoe UI', system-ui, sans-serif" font-size="24" font-weight="800" fill="#58a6ff" text-anchor="middle" letter-spacing="1">
+    POLYDIM SUITE: LOS 3 CAMINOS DE EJECUCIÓN
+  </text>
+  <text x="450" y="75" font-family="'Segoe UI', system-ui, sans-serif" font-size="14" fill="#8b949e" text-anchor="middle">
+    Libertad de elección total para el alumno y su IA asistente
+  </text>
+
+  <!-- Card 1: Binario Precompilado -->
+  <g transform="translate(40, 105)">
+    <rect width="250" height="320" rx="10" fill="url(#card1)" stroke="#58a6ff" stroke-width="2"/>
+    <circle cx="125" cy="50" r="30" fill="#1e3a5f" stroke="#58a6ff" stroke-width="1.5"/>
+    <text x="125" y="58" font-family="'Segoe UI', system-ui, sans-serif" font-size="24" text-anchor="middle">⚡</text>
+    <text x="125" y="105" font-family="'Segoe UI', system-ui, sans-serif" font-size="16" font-weight="700" fill="#58a6ff" text-anchor="middle">
+      Camino A: Binario
+    </text>
+    <text x="125" y="125" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#8b949e" text-anchor="middle">
+      Precompilado Oficial
+    </text>
+
+    <!-- Specs -->
+    <rect x="20" y="145" width="210" height="40" rx="6" fill="#0d1117" stroke="#30363d"/>
+    <text x="30" y="170" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#e6edf3">
+      🪟 Windows (.exe) / 🐧 Linux / 🍎 Mac
+    </text>
+
+    <text x="25" y="210" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#c9d1d9">
+      • Descarga directa en 1-clic
+    </text>
+    <text x="25" y="235" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#c9d1d9">
+      • Hash SHA-256 verificado
+    </text>
+    <text x="25" y="260" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#c9d1d9">
+      • Máxima velocidad nativa
+    </text>
+    <text x="25" y="295" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#f0883e">
+      ⚠️ SmartScreen puede pedir confirmación
+    </text>
+  </g>
+
+  <!-- Card 2: Compilación Soberana -->
+  <g transform="translate(325, 105)">
+    <rect width="250" height="320" rx="10" fill="url(#card2)" stroke="#2ea043" stroke-width="2"/>
+    <circle cx="125" cy="50" r="30" fill="#133629" stroke="#2ea043" stroke-width="1.5"/>
+    <text x="125" y="58" font-family="'Segoe UI', system-ui, sans-serif" font-size="24" text-anchor="middle">🛠️</text>
+    <text x="125" y="105" font-family="'Segoe UI', system-ui, sans-serif" font-size="16" font-weight="700" fill="#3fb950" text-anchor="middle">
+      Camino B: Compilar
+    </text>
+    <text x="125" y="125" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#8b949e" text-anchor="middle">
+      En Silicio Local
+    </text>
+
+    <!-- Specs -->
+    <rect x="20" y="145" width="210" height="40" rx="6" fill="#0d1117" stroke="#30363d"/>
+    <text x="30" y="170" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#e6edf3">
+      ⚙️ g++ / clang / rustc / zig
+    </text>
+
+    <text x="25" y="210" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#c9d1d9">
+      • Compilado en tu propio CPU
+    </text>
+    <text x="25" y="235" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#c9d1d9">
+      • 100% libre de alertas antivirus
+    </text>
+    <text x="25" y="260" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#c9d1d9">
+      • Optimización AVX2/AVX-512
+    </text>
+    <text x="25" y="295" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#3fb950">
+      🛡️ El OS confía al 100% en tu silicio
+    </text>
+  </g>
+
+  <!-- Card 3: Estándar Python -->
+  <g transform="translate(610, 105)">
+    <rect width="250" height="320" rx="10" fill="url(#card3)" stroke="#d29922" stroke-width="2"/>
+    <circle cx="125" cy="50" r="30" fill="#332414" stroke="#d29922" stroke-width="1.5"/>
+    <text x="125" y="58" font-family="'Segoe UI', system-ui, sans-serif" font-size="24" text-anchor="middle">🐍</text>
+    <text x="125" y="105" font-family="'Segoe UI', system-ui, sans-serif" font-size="16" font-weight="700" fill="#d29922" text-anchor="middle">
+      Camino C: Python
+    </text>
+    <text x="125" y="125" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#8b949e" text-anchor="middle">
+      Modo Seguro Nativo
+    </text>
+
+    <!-- Specs -->
+    <rect x="20" y="145" width="210" height="40" rx="6" fill="#0d1117" stroke="#30363d"/>
+    <text x="30" y="170" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#e6edf3">
+      📄 Python 3.10+ &amp; ctypes nativo
+    </text>
+
+    <text x="25" y="210" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#c9d1d9">
+      • Cero binarios externos
+    </text>
+    <text x="25" y="235" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#c9d1d9">
+      • Memoria compartida del OS
+    </text>
+    <text x="25" y="260" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#c9d1d9">
+      • 100% texto plano auditable
+    </text>
+    <text x="25" y="295" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#58a6ff">
+      ✨ Cero instalación de compiladores
+    </text>
+  </g>
+
+  <!-- Footer -->
+  <text x="450" y="455" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#8b949e" text-anchor="middle">
+    POLYDIM-EinsofOS Research Initiative • Director: Ariel García Traba • DOI: 10.5281/zenodo.24122867
+  </text>
+</svg>

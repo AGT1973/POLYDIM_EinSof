@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+*.swp
+*.bak
+
+# Binaries & Compiled Artifacts
+*.exe
+*.obj
+*.pdb
+*.dll
+*.lib
+*.exp

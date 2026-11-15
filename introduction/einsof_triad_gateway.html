@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Einsof Triad Gateway — Qwen, DeepSeek & Kimi Hub</title>
+    <style>
+        :root {
+            --bg: #0b0f17;
+            --panel: #131b26;
+            --border: #223247;
+            --accent: #00e5ff;
+            --green: #00e676;
+            --amber: #ffab00;
+            --text: #e0e8f0;
+            --text-dim: #7a8c9e;
+            --mono: "Fira Code", monospace;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; line-height: 1.5; padding: 24px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 32px; border-bottom: 1px solid var(--border); padding-bottom: 24px; }
+        h1 { font-size: 26px; color: var(--accent); margin-bottom: 8px; }
+        .subtitle { color: var(--text-dim); font-size: 14px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 32px; }
+        .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
+        .card h3 { color: #fff; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .tag { font-size: 11px; padding: 2px 6px; border-radius: 4px; font-family: var(--mono); background: rgba(0, 229, 255, 0.1); color: var(--accent); }
+        .price { font-size: 20px; font-weight: 700; color: var(--green); margin: 12px 0; }
+        .price span { font-size: 12px; color: var(--text-dim); font-weight: 400; }
+        .btn { background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; display: block; }
+        .btn:hover { opacity: 0.9; }
+        .monetization-box { background: rgba(0, 230, 118, 0.05); border: 1px dashed var(--green); border-radius: 8px; padding: 20px; margin-top: 24px; }
+        .monetization-box h4 { color: var(--green); margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>EINSOF TRIAD SOTA GATEWAY</h1>
+            <p class="subtitle">Acceso de Ultra-Baja Latencia a Qwen, DeepSeek y Kimi bajo Protocolo PMTP (Zero-Copy)</p>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <div>
+                    <h3>Qwen-Plus / Qwen4 <span class="tag">ALIBABA DASHSCOPE</span></h3>
+                    <p style="font-size: 13px; color: var(--text-dim);">Optimizada para programación compleja, frontend y agentes autónomos. Integración nativa con variedad de Stiefel.</p>
+                </div>
+                <div>
+                    <div class="price">$0.001 <span>/ consulta</span></div>
+                    <a href="#test" class="btn">Probar Qwen</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div>
+                    <h3>DeepSeek-V3 / R1 <span class="tag">OPEN-WEIGHTS SOTA</span></h3>
+                    <p style="font-size: 13px; color: var(--text-dim);">Arquitectura MoE 671B líder en matemáticas y deducción formal. Ingesta vectorial continua sin pérdida de contexto.</p>
+                </div>
+                <div>
+                    <div class="price">$0.002 <span>/ consulta</span></div>
+                    <a href="#test" class="btn">Probar DeepSeek</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div>
+                    <h3>Einsof Local ALADIN <span class="tag">SOBERANO (DEBIAN 13)</span></h3>
+                    <p style="font-size: 13px; color: var(--text-dim);">Modelo 1.5B corriendo 24/7 en silicio local a 192.168.100.21. Cero costo de tokens, cero latencia de red externa.</p>
+                </div>
+                <div>
+                    <div class="price">$0.000 <span>/ GRATIS</span></div>
+                    <a href="#test" class="btn" style="background: var(--green);">Probar Local</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="monetization-box">
+            <h4>💰 Modelo de Micro-Cobro para Auto-Repago de Alibaba Cloud</h4>
+            <p style="font-size: 13px; color: var(--text-dim); margin-bottom: 12px;">
+                Como el costo en Alibaba es de fracciones de centavo ($0.15 USD por 1M tokens), un programador o alumno que pague <strong>$1.00 USD</strong> recibe 500 a 1.000 consultas completas.
+            </p>
+            <ul style="font-size: 13px; margin-left: 20px; color: var(--text);">
+                <li><strong>GitHub Sponsors / Open Collective:</strong> Micro-donaciones mensuales de $3 a $5 USD que liberan una API Key de acceso al gateway.</li>
+                <li><strong>Mercado Pago / Stripe Micro-Links:</strong> Pago directo de $1 USD por un token de 1.000 requests que financia directamente la cuenta de Alibaba.</li>
+                <li><strong>Ahorro para el usuario:</strong> Paga $1 o $2 USD en vez de los $200 USD que cobra Claude o ChatGPT Plus.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
