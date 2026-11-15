@@ -35,6 +35,70 @@ const _: () = assert!(std::mem::size_of::<AtelierSlabHeader>() == 64,
 const _: () = assert!(std::mem::align_of::<AtelierSlabHeader>() == 64,
     "ABI ROTA: alignof(AtelierSlabHeader) != 64 (cache line)");
 
+#[inline]
+fn rotl64(x: u64, b: u32) -> u64 {
+    (x << b) | (x >> (64 - b))
+}
+
+#[inline]
+fn sipround(v0: &mut u64, v1: &mut u64, v2: &mut u64, v3: &mut u64) {
+    *v0 = v0.wrapping_add(*v1);
+    *v1 = rotl64(*v1, 13) ^ *v0;
+    *v0 = rotl64(*v0, 32);
+    *v2 = v2.wrapping_add(*v3);
+    *v3 = rotl64(*v3, 16) ^ *v2;
+    *v0 = v0.wrapping_add(*v3);
+    *v3 = rotl64(*v3, 21) ^ *v0;
+    *v2 = v2.wrapping_add(*v1);
+    *v1 = rotl64(*v1, 17) ^ *v2;
+    *v2 = rotl64(*v2, 32);
+}
+
+#[inline]
+fn read_le_u64(slice: &[u8]) -> u64 {
+    u64::from_le_bytes([
+        slice[0], slice[1], slice[2], slice[3],
+        slice[4], slice[5], slice[6], slice[7],
+    ])
+}
+
+/// Implementacion RFC SipHash-2-4 (64-bit) bit-exacta con C++20 `atelier_abi.hpp` y Python `pmtp_types.py`.
+pub fn siphash24_mac64(key16: &[u8; 16], data: &[u8]) -> u64 {
+    let k0 = read_le_u64(&key16[0..8]);
+    let k1 = read_le_u64(&key16[8..16]);
+    let mut v0 = 0x736f6d6570736575u64 ^ k0;
+    let mut v1 = 0x646f72616e646f6du64 ^ k1;
+    let mut v2 = 0x6c7967656e657261u64 ^ k0;
+    let mut v3 = 0x7465646279746573u64 ^ k1;
+
+    let n = data.len();
+    let full = n & !7usize;
+    let mut off = 0usize;
+    while off < full {
+        let m = read_le_u64(&data[off..off + 8]);
+        v3 ^= m;
+        sipround(&mut v0, &mut v1, &mut v2, &mut v3);
+        sipround(&mut v0, &mut v1, &mut v2, &mut v3);
+        v0 ^= m;
+        off += 8;
+    }
+
+    let mut b: u64 = ((n & 0xff) as u64) << 56;
+    let rem = n & 7;
+    for idx in 0..rem {
+        b |= (data[full + idx] as u64) << (8 * idx);
+    }
+    v3 ^= b;
+    sipround(&mut v0, &mut v1, &mut v2, &mut v3);
+    sipround(&mut v0, &mut v1, &mut v2, &mut v3);
+    v0 ^= b;
+    v2 ^= 0xff;
+    for _ in 0..4 {
+        sipround(&mut v0, &mut v1, &mut v2, &mut v3);
+    }
+    (v0 ^ v1) ^ (v2 ^ v3)
+}
+
 /// Acumulador de Neumaier para compensacion exacta de errores de redondeo IEEE-754
 #[inline]
 fn neumaier_accumulate(val: f64, sum: &mut f64, comp: &mut f64) {
@@ -206,10 +270,16 @@ fn main() {
         "TIER_MACHINE_EPS_16"
     };
 
+    // Verificacion RFC SipHash-2-4 (vector oficial 15 bytes -> 0xa129ca6149be45e5)
+    let rfc_key: [u8; 16] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+    let rfc_msg: [u8; 15] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+    let rfc_tag = siphash24_mac64(&rfc_key, &rfc_msg);
+    assert_eq!(rfc_tag, 0xa129ca6149be45e5u64, "FALLO RFC SipHash-2-4 en Rust");
+
     println!("[+] 1. Retraccion Polar St(k, D)    : OK (10 iteraciones Newton-Schulz)");
     println!("[+] 2. Defecto Isometria ||W^T W-I||: {:.2e} ({})", defect, tier);
     println!("[+] 3. Latencia de Computo          : {:.1} us", latency_us);
-    println!("[+] 4. Verificacion Zero-Alloc Rust : OK (Memoria estatica garantizada)");
+    println!("[+] 4. Paridad RFC SipHash-2-4 MAC64: OK (0x{:016x})", rfc_tag);
     println!("----------------------------------------------------------------");
     println!("(ExitCode=0, Latency={:.1}us, NormErr={:.2e}, D={}, k={}, Checks=4/4)", latency_us, defect, d, k);
     println!("SLAB_ID: ATELIER_RUST_STIEFEL | MANIFOLD: St({}, {}) | SHM: PmtpShmBus_agt", k, d);

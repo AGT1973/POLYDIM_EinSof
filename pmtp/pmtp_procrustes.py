@@ -5,8 +5,17 @@
 # Base Teórica: Schönemann (1966), Higham (1989), Absil et al. (2008)
 # ============================================================================
 
+import math
 import numpy as np
 from typing import Tuple, Optional
+
+
+def _neumaier_sum_sq(arr: np.ndarray) -> float:
+    """Suma compensada de Neumaier de los cuadrados de `arr` en FP64."""
+    flat = np.asarray(arr, dtype=np.float64).ravel()
+    sq = flat * flat
+    return float(math.fsum(sq))
+
 
 class PmtpOrthogonalProcrustes:
     """
@@ -29,9 +38,14 @@ class PmtpOrthogonalProcrustes:
         con el espacio objetivo Y in R^(N x D2).
         Retorna (W_opt, residual_frobenius, orthogonality_defect).
         """
+        if X.ndim != 2 or Y.ndim != 2:
+            raise ValueError(f"X e Y deben ser matrices 2D, recibido X={X.shape}, Y={Y.shape}")
         N, D1 = X.shape
-        _, D2 = Y.shape
-        assert D1 >= D2, f"D1 ({D1}) debe ser mayor o igual que D2 ({D2}) para inmersión de Stiefel."
+        N2, D2 = Y.shape
+        if N != N2:
+            raise ValueError(f"Número de muestras incompatible: X tiene {N}, Y tiene {N2}")
+        if D1 < D2:
+            raise ValueError(f"D1 ({D1}) debe ser mayor o igual que D2 ({D2}) para inmersión de Stiefel.")
 
         # Matriz de covarianza cruzada M = X^T Y in R^(D1 x D2)
         M = np.dot(X.T, Y)
@@ -46,9 +60,9 @@ class PmtpOrthogonalProcrustes:
         gram = np.dot(W_opt.T, W_opt)
         defect = float(np.max(np.abs(gram - np.eye(D2, dtype=np.float64))))
 
-        # Residuo Frobenius ||X W* - Y||_F
+        # Residuo Frobenius ||X W* - Y||_F con reducción compensada exacta (math.fsum / Neumaier)
         diff = np.dot(X, W_opt) - Y
-        residual = float(np.linalg.norm(diff, 'fro'))
+        residual = math.sqrt(max(0.0, _neumaier_sum_sq(diff)))
 
         return W_opt, residual, defect
 

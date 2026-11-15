@@ -175,6 +175,120 @@ class MathesisSemanticBus:
             "msb_header_hex": header_bytes.hex(),
         }
 
+    # ------------------------------------------------------------------
+    # Primitivas No-Humanas del Tribunal de Sabios (/sabios 2026):
+    # 1. SWHS: Stiefel-Whitney Holonomy Signature (8 autovalores de fase en [-pi, pi])
+    # 2. HFCT: Harmonic Frame Coefficient Tensor (compresión espectral Chebyshev en St(k,D))
+    # 3. CWGB: Constitutional Weighted Geodesic Barycenter (Media de Karcher con A=50, T=50)
+    # ------------------------------------------------------------------
+    @staticmethod
+    def compute_swhs_holonomy(frame_prev: np.ndarray, frame_curr: np.ndarray, rank_k: int = 8) -> dict:
+        """
+        Calcula la Firma de Holonomía de Stiefel-Whitney (SWHS) entre dos marcos ortonormales:
+        H = U_prev^T @ U_curr, proyectada a SO(k), extrayendo los ángulos de fase de transporte paralelo.
+        Permite detectar alucinación o deriva lógica en 64 bytes sin leer el tensor completo.
+        """
+        u0 = np.asarray(frame_prev, dtype=np.float64)
+        u1 = np.asarray(frame_curr, dtype=np.float64)
+        if u0.ndim == 1:
+            u0 = u0.reshape(-1, 1)
+        if u1.ndim == 1:
+            u1 = u1.reshape(-1, 1)
+        m = u0.T @ u1
+        u_svd, _, vt_svd = np.linalg.svd(m, full_matrices=False)
+        holonomy_so = u_svd @ vt_svd
+        eigvals = np.linalg.eigvals(holonomy_so)
+        phases = np.angle(eigvals)
+        padded_phases = np.zeros(rank_k, dtype=np.float64)
+        n_copy = min(rank_k, phases.size)
+        padded_phases[:n_copy] = np.sort(np.abs(phases))[:n_copy]
+        max_curvature_rad = float(np.max(padded_phases))
+        return {
+            "swhs_phases_rad": padded_phases.tolist(),
+            "max_curvature_rad": round(max_curvature_rad, 6),
+            "topological_abort": bool(max_curvature_rad > (np.pi / 4.0)),
+            "swhs_bytes_64b": padded_phases.tobytes().hex(),
+        }
+
+    @staticmethod
+    def compress_hfct_spectral(latent_matrix: np.ndarray, m_modes: int = 16) -> dict:
+        """
+        Tensor de Coeficientes de Marco Armónico (HFCT): proyecta una trayectoria latente L x D
+        sobre los primeros `m_modes` modos armónicos DCT/Chebyshev y ortonormaliza en St(m_modes, D).
+        """
+        mat = np.asarray(latent_matrix, dtype=np.float64)
+        if mat.ndim == 1:
+            mat = mat.reshape(1, -1)
+        seq_l, dim_d = mat.shape
+        m_eff = min(m_modes, seq_l, dim_d)
+        grid = np.linspace(0.0, np.pi, seq_l, dtype=np.float64)
+        basis = np.cos(np.outer(np.arange(m_eff, dtype=np.float64), grid))
+        coeffs = basis @ mat  # (m_eff, dim_d)
+        q_stiefel, _ = np.linalg.qr(coeffs.T, mode="reduced")  # (dim_d, m_eff) in St(m_eff, D)
+        defect = float(np.max(np.abs(q_stiefel.T @ q_stiefel - np.eye(m_eff))))
+        return {
+            "hfct_frame": q_stiefel,
+            "shape": q_stiefel.shape,
+            "isometry_defect": defect,
+            "compression_ratio": round((seq_l * dim_d) / max(1, m_eff * dim_d), 2),
+        }
+
+    def karcher_cwgb_barycenter(self, vectors: list, weights: list = None, max_iters: int = 8) -> dict:
+        """
+        Baricentro Geodésico Ponderado Constitucional (CWGB) sobre S^{D-1}:
+        Resuelve iterativamente la media intrínseca de Fréchet/Karcher ponderada por A=50, T=50
+        usando mapas Log_Y y Exp_Y exactos en la variedad esférica (0 tokens de debate).
+        """
+        t0 = time.perf_counter_ns()
+        if not vectors:
+            raise ValueError("Se requiere al menos un vector en S^{D-1} para CWGB")
+        normed = []
+        for v in vectors:
+            arr = np.asarray(v, dtype=np.float64).ravel()
+            nrm = float(np.linalg.norm(arr))
+            if nrm <= 0.0:
+                raise ValueError("Vector nulo rechazado en CWGB")
+            normed.append(arr / nrm)
+
+        n_vecs = len(normed)
+        if weights is None:
+            w = np.full(n_vecs, 1.0 / n_vecs, dtype=np.float64)
+        else:
+            w = np.asarray(weights, dtype=np.float64)
+            w = w / np.sum(w)
+
+        # Inicialización en el promedio euclídeo proyectado
+        y = np.sum([w[i] * normed[i] for i in range(n_vecs)], axis=0)
+        y /= np.linalg.norm(y)
+
+        # Iteración Riemanniana de Karcher en S^{D-1} modulada por (A=50, T=50)
+        step_scale = (self.param_a + self.param_t) / 100.0
+        for _ in range(max_iters):
+            tangent_sum = np.zeros_like(y)
+            for i, x_i in enumerate(normed):
+                cos_theta = float(np.clip(np.dot(y, x_i), -1.0, 1.0))
+                theta = float(np.arccos(cos_theta))
+                if theta > 1e-12:
+                    log_y_xi = (theta / np.sin(theta)) * (x_i - cos_theta * y)
+                    tangent_sum += w[i] * log_y_xi
+            t_norm = float(np.linalg.norm(tangent_sum))
+            if t_norm < 1e-14:
+                break
+            step_theta = step_scale * t_norm
+            y = np.cos(step_theta) * y + np.sin(step_theta) * (tangent_sum / t_norm)
+            y /= np.linalg.norm(y)
+
+        defect = float(abs(np.linalg.norm(y) - 1.0))
+        latency_us = (time.perf_counter_ns() - t0) / 1000.0
+        return {
+            "barycenter": y,
+            "isometry_defect": defect,
+            "latency_us": round(latency_us, 2),
+            "param_a_agent": self.param_a,
+            "param_t_turing": self.param_t,
+            "tokens_consumed": 0,
+        }
+
 
 if __name__ == "__main__":
     bus = MathesisSemanticBus(agent_weight=50, turing_weight=50)

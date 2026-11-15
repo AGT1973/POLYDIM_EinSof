@@ -20,7 +20,8 @@ import socket
 import struct
 import threading
 import time
-from typing import Optional
+from collections import deque
+from typing import Optional, Union
 
 log = logging.getLogger(__name__)
 
@@ -39,6 +40,8 @@ _HEADER_SIZE = struct.calcsize(_HEADER_FMT)
 assert _HEADER_SIZE == 64, f"Header size mismatch: {_HEADER_SIZE}"
 
 _METADATA_MAX_BYTES = 512
+_MAX_TIMESTAMP_SKEW_NS = 300_000_000_000  # Ventana de frescura anti-replay: ±300 segundos (5 min)
+_MAX_SEEN_NONCES = 65536
 
 # Claves expresamente prohibidas bajo Ghost Protocol (prohibido transportar datos crudos)
 GHOST_FORBIDDEN_KEYS = frozenset({
@@ -85,11 +88,12 @@ def _encode_message(auth_key: bytes, nonce: int, slab_id: int,
 
 
 def _decode_message(auth_key: bytes, data: bytes,
-                    seen_nonces: set[int]) -> tuple[int, dict]:
+                    seen_nonces: Union[set[int], deque[int]],
+                    enforce_freshness: bool = True) -> tuple[int, dict]:
     """
     Decodifica y verifica un mensaje ALADIN.
     Raises:
-        ValueError  — magic, version, MAC inválidos, nonce repetido.
+        ValueError  — magic, version, MAC inválidos, timestamp fuera de ventana o nonce repetido.
     """
     if len(data) < _HEADER_SIZE:
         raise ValueError(f"Mensaje truncado: {len(data)} < {_HEADER_SIZE}")
@@ -102,15 +106,24 @@ def _decode_message(auth_key: bytes, data: bytes,
     if len(data) < _HEADER_SIZE + meta_len:
         raise ValueError("Payload truncado")
     meta_bytes = data[_HEADER_SIZE: _HEADER_SIZE + meta_len]
-    # Anti-replay
+    # Anti-replay: ventana temporal ±300s + registro acotado de nonces
+    if enforce_freshness and ts_ns > 0:
+        skew = abs(time.time_ns() - ts_ns)
+        if skew > _MAX_TIMESTAMP_SKEW_NS:
+            raise ValueError(f"Timestamp fuera de ventana de frescura: skew_ns={skew} > {_MAX_TIMESTAMP_SKEW_NS}")
     if nonce in seen_nonces:
         raise ValueError(f"Replay detectado: nonce={nonce} ya fue visto")
     # MAC verify
     mac_expected = _blake2s_mac(auth_key, nonce, ts_ns, slab_id, meta_bytes)
     if not _hmac_compare(mac_recv, mac_expected):
         raise ValueError("MAC BLAKE2s inválido — mensaje corrupto o forjado")
-    # Nonce se acepta solo después de verificar MAC
-    seen_nonces.add(nonce)
+    # Nonce se acepta solo después de verificar MAC; cota de memoria _MAX_SEEN_NONCES
+    if isinstance(seen_nonces, deque):
+        seen_nonces.append(nonce)
+    else:
+        if len(seen_nonces) >= _MAX_SEEN_NONCES:
+            seen_nonces.pop()
+        seen_nonces.add(nonce)
     metadata = json.loads(meta_bytes.decode("utf-8"))
     return slab_id, metadata
 

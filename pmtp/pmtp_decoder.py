@@ -11,19 +11,11 @@ from typing import List, Dict, Any, Tuple, Optional
 
 def neumaier_sum(arr: np.ndarray) -> float:
     """
-    Suma compensada de Neumaier (1974) en FP64.
-    Garantiza error relativo <= 2 * eps_mach independientemente de la longitud.
+    Suma compensada exacta en FP64 respaldada por `math.fsum` (C-level Shewchuk/Neumaier).
+    Garantiza error relativo <= 1 ULP independientemente de la longitud, sin bucles CPython.
     """
-    s = 0.0
-    c = 0.0
-    for x in arr.flat:
-        t = s + x
-        if abs(s) >= abs(x):
-            c += (s - t) + x
-        else:
-            c += (x - t) + s
-        s = t
-    return s + c
+    flat = np.asarray(arr, dtype=np.float64).ravel()
+    return float(math.fsum(flat))
 
 def neumaier_dot(u: np.ndarray, v: np.ndarray) -> float:
     """Producto interno con acumulador compensado de Neumaier."""

@@ -67,8 +67,8 @@ def run_live_matrix_benchmark() -> dict:
         W_warm, _, _, status_warm = PmtpStiefelAdapter.polar_safe_v2(raw_w, max_iters=10, tol=1e-14)
         assert status_warm in ("ACCEPTED_QDWH_POLAR", "ACCEPTED_SVD_POLAR_FALLBACK")
 
-        # 2. Medicion desglosada End-to-End: T_proj + T_sync + T_copy
-        t_proj_list, t_sync_list, t_copy_list, t_e2e_list = [], [], [], []
+        # 2. Medicion desglosada End-to-End: T_proj + T_sync + T_copy + T_dlpack
+        t_proj_list, t_sync_list, t_copy_list, t_dlpack_list, t_e2e_list = [], [], [], [], []
         last_defect = 1.0
         last_status = "UNKNOWN"
         last_kappa = 0.0
@@ -116,14 +116,24 @@ def run_live_matrix_benchmark() -> dict:
             read_view = np.ndarray(shape=(d,), dtype=np.float64, buffer=slab.buf, offset=HEADER_COMPACT_SIZE + hdr_r.active_slot * payload_len).copy()
             t_c3 = time.perf_counter_ns()
 
+            # E) T_dlpack_zero_copy_us (np.from_dlpack zero-copy bajo reader lease)
+            t_d0 = time.perf_counter_ns()
+            leased_dl = bus.get_zero_copy_dlpack_tensor(sid, verify_mac=False)
+            dl_arr = np.from_dlpack(leased_dl)
+            t_d1 = time.perf_counter_ns()
+            leased_dl.release_and_verify()
+
             assert np.allclose(read_view, v_proj, atol=1e-15)
+            assert np.allclose(dl_arr, v_proj, atol=1e-15)
 
             t_proj_us = (t_p1 - t_p0) / 1000.0
             t_sync_us = (t_s1 - t_s0) / 1000.0
             t_copy_us = ((t_c1 - t_c0) + (t_c3 - t_c2)) / 1000.0
+            t_dlpack_us = (t_d1 - t_d0) / 1000.0
             t_proj_list.append(t_proj_us)
             t_sync_list.append(t_sync_us)
             t_copy_list.append(t_copy_us)
+            t_dlpack_list.append(t_dlpack_us)
             t_e2e_list.append(t_proj_us + t_sync_us + t_copy_us)
 
             if idx == 0:
@@ -138,6 +148,7 @@ def run_live_matrix_benchmark() -> dict:
         med_proj_us = round(float(np.median(t_proj_list)), 2)
         med_sync_us = round(float(np.median(t_sync_list)), 2)
         med_copy_us = round(float(np.median(t_copy_list)), 2)
+        med_dlpack_us = round(float(np.median(t_dlpack_list)), 2)
         med_ipc_us = round(med_sync_us + med_copy_us, 2)
         med_e2e_us = round(float(np.median(t_e2e_list)), 2)
 
@@ -160,11 +171,12 @@ def run_live_matrix_benchmark() -> dict:
                 "T_proj_qdwh_us": med_proj_us,
                 "T_sync_seqlock_mac_us": med_sync_us,
                 "T_copy_explicit_shm_us": med_copy_us,
+                "T_dlpack_zero_copy_us": med_dlpack_us,
                 "T_ipc_steady_us": med_ipc_us,
                 "T_total_e2e_us": med_e2e_us,
                 "speedup_ipc_steady": speedup_ipc,
                 "speedup_e2e_with_proj": speedup_e2e,
-                "copy_mode_note": "T_copy_explicit_shm_us mide copia explicita de validacion; DLPack zero-copy consume 0.0 us en modo lease.",
+                "copy_mode_note": "T_copy_explicit_shm_us mide copia explicita de validacion; T_dlpack_zero_copy_us mide np.from_dlpack(leased) sin copia de payload.",
                 "tokens_transmitted": 0,
                 "stiefel_defect": last_defect,
                 "polarsafe_status": last_status,

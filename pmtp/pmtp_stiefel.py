@@ -92,7 +92,7 @@ class PmtpStiefelAdapter:
         inf_norm = float(np.linalg.norm(X_scaled, ord=np.inf))
         spec_upper = math.sqrt(one_norm * inf_norm) if (one_norm > 0.0 and inf_norm > 0.0 and math.isfinite(one_norm * inf_norm)) else fro_norm
         alpha_upper = min(fro_norm, spec_upper) * 1.000000000001
-        if alpha_upper <= 0.0 or not math.isfinite(alpha_upper):
+        if alpha_upper < float(np.finfo(np.float64).tiny) or not math.isfinite(alpha_upper):
             return np.zeros((D, r), dtype=np.float64), float("inf"), 0.0, "REJECTED_SINGULAR"
 
         Y = (X_scaled / alpha_upper).astype(np.float64)
@@ -246,10 +246,12 @@ class PmtpStiefelAdapter:
         Soporta transparentemente torch.Tensor y np.ndarray.
         """
         if hasattr(H, "dim"):
-            assert H.dim() == 3, f"H debe ser de rango 3 (B, L, D), recibido: {H.shape}"
+            if H.dim() != 3:
+                raise ValueError(f"H debe ser de rango 3 (B, L, D), recibido: {H.shape}")
             h_vec = H[0, token_pos, :].detach().to(torch.float64).cpu().numpy()
         else:
-            assert getattr(H, "ndim", 0) == 3, f"H debe ser de rango 3 (B, L, D), recibido: {getattr(H, 'shape', None)}"
+            if getattr(H, "ndim", 0) != 3:
+                raise ValueError(f"H debe ser de rango 3 (B, L, D), recibido: {getattr(H, 'shape', None)}")
             h_vec = np.asarray(H[0, token_pos, :], dtype=np.float64)
         return self.project_to_spherical(h_vec)
 

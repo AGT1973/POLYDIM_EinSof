@@ -40,6 +40,8 @@ try:
         PmtpState,
         PmtpCompactHeader,
         validate_compact_header,
+        derive_pmtp_key16,
+        siphash24_u64,
     )
 except ImportError:
     from pmtp_types import (
@@ -54,6 +56,8 @@ except ImportError:
         PmtpState,
         PmtpCompactHeader,
         validate_compact_header,
+        derive_pmtp_key16,
+        siphash24_u64,
     )
 
 try:
@@ -92,9 +96,15 @@ class _MemfdShmAdapter:
                 )
                 try:
                     fcntl.fcntl(self.fd, fcntl.F_ADD_SEALS, seals)
+                    f_get_seals = getattr(fcntl, "F_GET_SEALS", 1034)
+                    applied = fcntl.fcntl(self.fd, f_get_seals)
+                    if (applied & seals) != seals:
+                        raise PermissionError(
+                            f"Fail-closed: sellos F_SEAL_* incompletos (esperado {hex(seals)}, aplicado {hex(applied)})"
+                        )
                     self.sealed = True
                 except OSError as exc:
-                    raise PermissionError("Fail-closed: no se pudieron aplicar sellos F_SEAL_* en memfd") from exc
+                    raise PermissionError("Fail-closed: no se pudieron aplicar/verificar sellos F_SEAL_* en memfd") from exc
         except Exception:
             os.close(self.fd)
             raise
@@ -136,12 +146,41 @@ class PmtpLeasedArray(np.ndarray):
     """
     Subclase de ndarray con garantía de ciclo de vida de Lease Atómico y soporte nativo DLPack Zero-Copy.
     Exporta explícitamente `__dlpack__` y `__dlpack_device__` anclados a la memoria física compartida
-    sin realizar copias intermedias.
+    sin realizar copias intermedias, y verifica integridad MAC al cerrar el contexto de lectura.
     """
-    def __dlpack__(self, stream: Any = None):
-        """Exporta cápsula PyCapsule DLPack sobre el buffer leased de SHM sin copia (T_copy = 0.0 us)."""
-        # NumPy prohíbe exportar arrays marcados con writeable=False en DLPack v0.x si no se crea una vista RW
-        # Creamos una vista temporal idéntica que comparte exactamente el mismo puntero físico de memoria
+    def __enter__(self) -> "PmtpLeasedArray":
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        self.release_and_verify()
+
+    def release_and_verify(self) -> None:
+        """Verifica que el slot compartido no fue mutado durante el lease y libera el reader lease."""
+        bus = getattr(self, "_bus_owner", None)
+        shm = getattr(self, "_shm_owner", None)
+        slab_id = getattr(self, "_slab_id", None)
+        slot = getattr(self, "_leased_slot", None)
+        payload_bytes = getattr(self, "_payload_bytes", None)
+        released = getattr(self, "_lease_released", False)
+        if released or bus is None or slab_id is None or slot is None:
+            return
+        self._lease_released = True
+        try:
+            if shm is not None and payload_bytes is not None:
+                hdr = bus.read_header(slab_id)
+                bus._verify_mac(shm, hdr, slot, payload_bytes)
+        finally:
+            bus.release_reader_lease(slab_id, slot)
+
+    def __dlpack__(self, stream: Any = None, max_version: Any = None, dl_device: Any = None, copy: Optional[bool] = None):
+        """
+        Exporta cápsula PyCapsule DLPack sobre el buffer leased de SHM (T_copy = 0.0 us por defecto).
+        Si copy=True es solicitado explícitamente, exporta sobre una copia aislada COW.
+        Cualquier mutación indebida sobre la vista zero-copy es detectada por `release_and_verify()` vía MAC64.
+        """
+        if copy is True:
+            isolated = np.array(self, copy=True)
+            return isolated.__dlpack__(stream=stream)
         rw_view = self.view(np.ndarray)
         rw_view.flags.writeable = True
         return rw_view.__dlpack__(stream=stream)
@@ -197,7 +236,7 @@ class PmtpShmBus:
         else:
             env_secret = os.environ.get("PMTP_SHM_KEY")
             key_raw = env_secret.encode("utf-8") if env_secret else os.urandom(32)
-        self._auth_key: bytes = hashlib.blake2s(key_raw, digest_size=32).digest()
+        self._auth_key: bytes = derive_pmtp_key16(key_raw)
 
         # Subsistema de métricas
         self._metrics = PmtpMetricsCollector(self)
@@ -291,11 +330,12 @@ class PmtpShmBus:
     # ------------------------------------------------------------------
 
     def _compute_mac64(self, header_48b: bytes, payload_bytes: bytes) -> bytes:
-        """Calcula etiqueta MAC BLAKE2s-64 autenticada sobre metadatos inmutables + payload."""
-        h = hashlib.blake2s(key=self._auth_key, digest_size=8)
-        h.update(header_48b)
-        h.update(payload_bytes)
-        return h.digest()
+        """
+        Calcula etiqueta MAC SipHash-2-4 (64 bits, 8 bytes little-endian) autenticada sobre
+        metadatos inmutables [0..48) + payload, bit-exacta con C++20 `atelier_abi.hpp` y Rust `atelier_stiefel.rs`.
+        """
+        tag_u64 = siphash24_u64(self._auth_key, header_48b + payload_bytes)
+        return struct.pack("<Q", tag_u64)
 
     @staticmethod
     def _enforce_0600_permissions(shm_name: str) -> str:
@@ -629,8 +669,11 @@ class PmtpShmBus:
         raw_view.flags.writeable = False
         raw_view._shm_owner = shm
         raw_view._bus_owner = self
+        raw_view._slab_id = slab_id
         raw_view._leased_slot = slot
+        raw_view._payload_bytes = info["payload_bytes"]
         raw_view._generation = gen
+        raw_view._lease_released = False
         weakref.finalize(raw_view, self.release_reader_lease, slab_id, slot)
         return raw_view
 

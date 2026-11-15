@@ -26,7 +26,8 @@ class PmtpRiemannianStiefel:
         T_W St(D, r) = { Delta in R^(D x r) : W^T Delta + Delta^T W = 0 }.
         Formula: Delta = G - W * sym(W^T G) con sym(A) = 0.5 * (A + A^T).
         """
-        assert W.shape == G.shape, f"project_tangent dimension mismatch: W={W.shape}, G={G.shape}"
+        if W.shape != G.shape:
+            raise ValueError(f"project_tangent dimension mismatch: W={W.shape}, G={G.shape}")
         WtG = np.dot(W.T, G)
         sym_WtG = 0.5 * (WtG + WtG.T)
         return G - np.dot(W, sym_WtG)
@@ -48,7 +49,8 @@ class PmtpRiemannianStiefel:
         2. Guarda espectral de condicionamiento sobre el núcleo K con fallback QR incondicional.
         Complejidad computacional: O(D * r^2) en lugar de O(D^3).
         """
-        assert W.shape == Delta.shape, f"cayley_woodbury dimension mismatch: W={W.shape}, Delta={Delta.shape}"
+        if W.shape != Delta.shape:
+            raise ValueError(f"cayley_woodbury dimension mismatch: W={W.shape}, Delta={Delta.shape}")
         D, r = W.shape
 
         # 1. Proyección defensiva sobre el espacio tangente T_W St(D, r) (SOTA Red Team)
@@ -154,7 +156,8 @@ class PmtpRiemannianStiefel:
         gamma(t) = [W, Q] * exp(t * M) * [I_r; 0]
         donde A = W^T Delta, QR = (I - W W^T) Delta, y M = [A, -R^T; R, 0].
         """
-        assert W.shape == Delta.shape, f"edelman_geodesic dimension mismatch: W={W.shape}, Delta={Delta.shape}"
+        if W.shape != Delta.shape:
+            raise ValueError(f"edelman_geodesic dimension mismatch: W={W.shape}, Delta={Delta.shape}")
         D, r = W.shape
         A = np.dot(W.T, Delta)
         # Componente normal

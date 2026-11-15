@@ -84,7 +84,7 @@ $$S = \frac{1}{1 - 0.80} = 5.0\times \quad \text{up to} \quad S = \frac{1}{1 - 0
 | **Tamaño Binario Ejecutable** | 1,009,664 bytes (1,010 KB) | **2,048 bytes** (2.0 KB) | **493× más compacto** |
 | **Secciones del PE** | .text, .rdata, .data, .pdata, .reloc | **1 sola sección unificada (.text)** | Zero headers bloated |
 | **Latencia p50 (Retracción Stiefel)** | 21.87 ms | **9.20 ms** | **2.38× más veloz** |
-| **Defecto Isometría $\|\mathbf{W}^T \mathbf{W} - \mathbf{I}\|_\infty$** | .22 \times 10^{-16}$ | **.88 \times 10^{-16}$** | Cota máquina IEEE-754 ($< 10^{-15}$) |
+| **Defecto Isometría $\|\mathbf{W}^T \mathbf{W} - \mathbf{I}\|_\infty$** | $2.22 \times 10^{-16}$ | **$8.88 \times 10^{-16}$** | Cota máquina IEEE-754 ($< 10^{-15}$) |
 | **Dependencia de CRT / DLLs** | KERNEL32.dll, MSVCP140.dll, VCRUNTIME140.dll | **100% Autónomo (Zero CRT / Zero DLL)** | Soberanía absoluta de silicio |
 | **Salida Ghost Protocol** | Formato de consola tradicional | **Tupla Silicio (ExitCode, Latency, NormErr, Checks)** | Protocolo Fantasma Nativo |
 | **Exit Code** | 0 | **0 (8/8 PASS)** | Verificación física certificada |
