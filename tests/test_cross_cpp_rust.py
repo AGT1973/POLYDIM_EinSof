@@ -23,6 +23,7 @@ import os
 import sys
 import time
 import numpy as np
+import pytest
 from pathlib import Path
 
 DIR = Path(__file__).resolve().parent
@@ -65,6 +66,24 @@ def bind_cpp(lib_path):
         ]
         lib.pmtp_oracle_verify_stiefel.restype = ctypes.c_int
     return lib
+
+@pytest.fixture(scope="module")
+def rust_lib():
+    rust_path = DIR.parent / "prebuilt" / f"kernel_rust{SUFFIX}"
+    if not rust_path.is_file():
+        rust_path = DIR / f"kernel_rust{SUFFIX}"
+    if not rust_path.is_file():
+        pytest.skip(f"Missing {rust_path}")
+    return bind_rust(rust_path)
+
+@pytest.fixture(scope="module")
+def cpp_lib():
+    cpp_path = DIR.parent / "prebuilt" / f"pmtp_kernel_cpp{SUFFIX}"
+    if not cpp_path.is_file():
+        cpp_path = DIR / f"pmtp_kernel_cpp{SUFFIX}"
+    if not cpp_path.is_file():
+        pytest.skip(f"Missing {cpp_path}")
+    return bind_cpp(cpp_path)
 
 def test_rust_v2_workspace(rust_lib):
     print("[TEST 1/5] Rust C-ABI V2 Zero-Allocation Workspace...")
@@ -295,8 +314,12 @@ def test_extreme_subnormal_and_inf(cpp_lib, rust_lib):
     print("  [PASS] Non-finite rejection (scalar, diagonal, row-Inf) and subnormal battery (true, rank-1, mixed-col, spectral-gap) verified.")
 
 def main():
-    cpp_path = DIR / f"pmtp_kernel_cpp{SUFFIX}"
-    rust_path = DIR / f"kernel_rust{SUFFIX}"
+    cpp_path = DIR.parent / "prebuilt" / f"pmtp_kernel_cpp{SUFFIX}"
+    if not cpp_path.is_file():
+        cpp_path = DIR / f"pmtp_kernel_cpp{SUFFIX}"
+    rust_path = DIR.parent / "prebuilt" / f"kernel_rust{SUFFIX}"
+    if not rust_path.is_file():
+        rust_path = DIR / f"kernel_rust{SUFFIX}"
     require(cpp_path.is_file(), f"Missing {cpp_path}")
     require(rust_path.is_file(), f"Missing {rust_path}")
 
