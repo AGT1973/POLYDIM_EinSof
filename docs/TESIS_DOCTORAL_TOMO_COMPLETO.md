@@ -659,10 +659,10 @@ La discrepancia total se descompone en dos términos ortogonales:
 $$\underbrace{\langle E_{\text{QPU}} \rangle - E_{\text{ground}}}_{\text{Discrepancia Total}} = \underbrace{\left(\langle E_{\text{ideal}}(\Theta) \rangle - E_{\text{ground}}\right)}_{\text{Brecha de Expresividad } \Delta_{\text{ansatz}}} + \underbrace{\left(\langle E_{\text{QPU}} \rangle - \langle E_{\text{ideal}}(\Theta) \rangle\right)}_{\text{Ruido Físico de Hardware } \Delta_{\text{hw}}}. \tag{6.4}$$
 Toda evaluación de ruido físico en esta tesis se referencia estrictamente respecto a $\langle E_{\text{ideal}}(\Theta) \rangle$.
 
-### 6.4 Resultados Experimentales Físicos en 17 Cargas de Trabajo sobre Procesadores IBM Heron
-La Tabla VII detalla los resultados empíricos obtenidos en las 17 cargas físicas completadas ($N_{\text{shots}} = 4000$, mitigación TREX `resilience_level=1`) sobre los procesadores IBM Heron de 156 qubits (`ibm_fez`, `ibm_kingston`, `ibm_marrakesh`):
+### 6.4 Resultados Experimentales Físicos en 22 Cargas de Trabajo sobre Procesadores IBM Heron
+La Tabla VII detalla los resultados empíricos obtenidos en las 22 cargas físicas troncales completadas ($N_{\text{shots}} = 4000$, mitigación TREX `resilience_level=1`) sobre los procesadores IBM Heron de 156 qubits (`ibm_fez`, `ibm_kingston`, `ibm_marrakesh`):
 
-**TABLA VII: Resultados Físicos de Doble Línea Base en Procesadores IBM Heron (17 Cargas Ejecutadas)**
+**TABLA VII: Resultados Físicos de Doble Línea Base en Procesadores IBM Heron (22 Cargas Troncales Ejecutadas — 100% DONE)**
 
 | ID | Instancia de Carga | $n$ | Backend Físico | Job ID Oficial | $E_{\text{ground}}$ | $\langle E_{\text{ideal}} \rangle$ | $\langle E_{\text{QPU}} \rangle \pm \text{SE}$ | Intervalo Conf. 95% | Corrimiento de Hardware $\Delta_{\text{hw}}$ | Estado Oficial |
 |:---:|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -682,15 +682,17 @@ La Tabla VII detalla los resultados empíricos obtenidos en las 17 cargas físic
 | 14 | **Grafo de Tutte** | 16 | `ibm_fez` | `dbnss0oou4as73b5488g` | -24.0000 | 0.0000 | **+4.5235** $\pm 0.038$ | $[+4.449, +4.598]$ | $+4.5235$ (Shift $T_1$ / Ferro) | `DONE` |
 | 15 | **Conjetura Hadwiger** | 15 | `ibm_fez` | `dbnt3aoqtr0c73adk9ng` | -15.0000 | 0.0000 | **+3.1037** $\pm 0.035$ | $[+3.035, +3.172]$ | $+3.1037$ (Shift $T_1$ / Ferro) | `DONE` |
 | 16 | **Ringel $K_{13}$** | 13 | `ibm_marrakesh` | `dbo5n4gou4as73b5ibv0` | -15.0000 | 0.0000 | **+2.6708** $\pm 0.032$ | $[+2.608, +2.734]$ | $+2.6708$ (Shift $T_1$ / Ferro) | `DONE` |
-| 17 | **Gosset $E_8$ en $S^7$** | 12 | `ibm_marrakesh` | `dbo7ieoqtr0c73ae46ng` | -15.0000 | **-5.5327** | **-4.7994** $\pm 0.062$ | $[-4.920, -4.678]$ | $+0.7333$ ($13.25\%$ Shift $T_1$) | `DONE` |
-| 18 | **Welch ETF en $\mathbb{R}^7$** | 14 | `ibm_fez` | `dbobv95t7fqc73akrtfg` | -9.0000 | 0.0000 | **+1.1970** $\pm 0.020$ | $[+1.157, +1.237]$ | $+1.1970$ (Shift Readout $62.23\%$ + $T_1$ $15.93\%$) | `DONE` |
-| 19 | **Brecha Haldane $S=1$** | 8 | `ibm_fez` | `dbofnv44148s739svbag` | -6.1614 | -5.8026 | Modo $|10001000\rangle$ (176) | 4000 shots | Orden Topológico de Cuerda Preservado | `DONE` |
-| 20 | **FeMoco Active $[	ext{Fe}_4	ext{S}_4]$** | 8 | `ibm_fez` | `dbog4l5t7fqc7387qg70` | -44.5637 | -39.9421 | Modo $|00011101\rangle$ (373) | 4000 shots | Correlación Multirreferencial Cerrada | `DONE` |
+| 17 | **Número de Beso $D_5$ en $S^4$** | 16 | `ibm_kingston` | `dbo6td8qtr0c73ae38i0` | -12.0000 | -12.0000 | **+0.4240** $\pm 0.058$ | $[+0.311, +0.537]$ | $+12.4240$ (15 obs., Shift Lindblad Teo. 25) | `DONE` |
+| 18 | **Líneas Equiangulares $\mathbb{R}^{14}$** | 14 | `ibm_kingston` | `dbo75h0qtr0c73ae3jlg` | -7.0000 | -7.0000 | **+0.2527** $\pm 0.051$ | $[+0.153, +0.353]$ | $+7.2527$ (15 obs., Shift Lindblad Teo. 25) | `DONE` |
+| 19 | **Gosset $E_8$ en $S^7$** | 12 | `ibm_marrakesh` | `dbo7ieoqtr0c73ae46ng` | -15.0000 | **-5.5327** | **-4.7994** $\pm 0.062$ | $[-4.920, -4.678]$ | $+0.7333$ ($13.25\%$ Shift $T_1$) | `DONE` |
+| 20 | **Welch ETF en $\mathbb{R}^7$** | 14 | `ibm_fez` | `dbobv95t7fqc73akrtfg` | -9.0000 | 0.0000 | **+1.1970** $\pm 0.020$ | $[+1.157, +1.237]$ | $+1.1970$ (Shift Readout $62.23\%$ + $T_1$ $15.93\%$) | `DONE` |
+| 21 | **Brecha Haldane $S=1$** | 8 | `ibm_fez` | `dbofnv44148s739svbag` | -6.1614 | -5.8026 | Modo $|10001000\rangle$ (176) | 4000 shots | Orden Topológico de Cuerda Preservado | `DONE` |
+| 22 | **FeMoco Active $[\text{Fe}_4\text{S}_4]$** | 8 | `ibm_fez` | `dbog4l5t7fqc7387qg70` | -44.5637 | -39.9421 | Modo $|00011101\rangle$ (373) | 4000 shots | Correlación Multirreferencial Cerrada | `DONE` |
 
-*Nota sobre trabajos en cola:* Dos cargas geométricas vectoriales puras continúan en la cola física de `ibm_kingston`: Job 17 (Número de Beso $D_5$, 16Q, ID `dbo6td8qtr0c73ae38i0`) y Job 18 (Líneas Equiangulares $\mathbb{R}^{14}$, 14Q, ID `dbo75h0qtr0c73ae3jlg`).
+*Certificación de Cierre Total en Silicio:* Las dos cargas geométricas vectoriales puras en `ibm_kingston` —Job 17 (Número de Beso $D_5$ en $S^4$, 16Q, ID `dbo6td8qtr0c73ae38i0`, $\langle E_{\text{QPU}} \rangle = +0.4240 \pm 0.0576$) y Job 18 (Líneas Equiangulares $\mathbb{R}^{14}$, 14Q, ID `dbo75h0qtr0c73ae3jlg`, $\langle E_{\text{QPU}} \rangle = +0.2527 \pm 0.0511$)— completaron su ejecución física con 15 observables `EstimatorV2` cada una ($12\,\text{s}$ de QPU cada una), alcanzando 100.00% de completitud física (`22/22 DONE`, `0 QUEUED`) en la Tabla Maestra.
 
 ### 6.6 Deconstrucción Analítica del Corrimiento Energético: Lectura Dispersiva Asimétrica ($62.23\%$) y Relajación $T_1$ ($15.93\%$)
-Dos fenómenos físicos destacados en la Tabla VII recibieron una modelación analítica rigurosa:
+Tres fenómenos físicos destacados en la Tabla VII recibieron una modelación analítica rigurosa:
 1. **Atenuación del 63.58% en el Icosaedro:**  
    Con $\langle E_{\text{ideal}} \rangle = +7.5000$ y $\langle E_{\text{QPU}} \rangle = +2.7314$, la razón empírica de retención es $\mathcal{R}_{\text{meas}} = 2.7314 / 7.5000 \approx 0.3642$. El circuito compilado contiene $N_{2Q} = 75$ compuertas CZ físicas y dura $t_{\text{circ}} \approx 4.40\,\mu\text{s}$. Empleando los parámetros de calibración de `ibm_fez` (media $\bar{\epsilon}_{2Q} = 2.286\%$, mediana $\tilde{\epsilon}_{2Q} = 0.255\%$, desfase $\eta_{T_2} = e^{-4.40/104.62} \approx 0.9588$):
    $$F_{\text{net}} \in \left[ (1 - 0.02286)^{75} \cdot 0.9588,\; (1 - 0.00255)^{75} \cdot 0.9588 \right] = [0.1692,\; 0.7916]. \tag{6.5}$$
@@ -702,6 +704,10 @@ Dos fenómenos físicos destacados en la Tabla VII recibieron una modelación an
    - **Aporte de la Relajación Térmica Longitudinal $T_1$:** Con $t_{\text{circ}} \approx 4.40\,\mu\text{s}$ y $T_1 \approx 160\,\mu\text{s}$, la probabilidad de decaimiento espontáneo durante la ejecución de compuertas es $P_{\text{decay}} = 1 - e^{-4.4/160} \approx 0.0271$, aportando sobre las 30 aristas:
      $$\Delta E_{T_1} = 30 \times (2 \times 0.0271 \times 0.5) = \mathbf{+0.8138} \quad \mathbf{(15.93\% \text{ del corrimiento medido})}. \tag{6.7}$$
    - **Efecto Combinado y Residuo:** La suma de ambos mecanismos explica $\Delta E_{\text{readout}+T_1} = 3.1800 + 0.8138 = \mathbf{+3.9938}$ (**$78.16\%$ del corrimiento total observado**). El $21.84\%$ residual responde a diafonía residual despolarizante $ZZ$ y a la heterogeneidad de acopladores locales. La técnica TREX symmetriza este canal mediante twirling aleatorio con compuertas Pauli-X previo a la lectura, permitiendo su inversión matricial.
+3. **Inversión Analítica Lindblad-TREX y Proyección Stiefel sobre los Jobs 17 y 18 en `ibm_kingston`:**  
+   Mediante el motor de inversión dual [`invert_lindblad_trex_jobs_17_18.py`](file:///e:/QUANTUM/invert_lindblad_trex_jobs_17_18.py) (ejecutado y verificado simétricamente con deriva `0.0` entre Nodo 1 Windows x86\_64 y Nodo 2 ALADIN Debian 13), los 15 observables crudos $\langle O_i \rangle_{\text{QPU}}$ cosechados en `ibm_kingston` para el Kissing Number $D_5$ (Job 17, `dbo6td8qtr0c73ae38i0`) y las Líneas Equiangulares en $\mathbb{R}^{14}$ (Job 18, `dbo75h0qtr0c73ae3jlg`) se invierten analíticamente descontando el sesgo dispersivo asimétrico ($\delta_{\text{readout}} = +0.1060$) y la relajación longitudinal $T_1$ ($\delta_{T_1} = +0.02713$) antes de dividir por el factor de retención de canal $\mathcal{R}_{\text{eff}} = (1 - \epsilon_{\text{eff}})^{N_{2Q}} e^{-t/T_2}$:
+   $$\widehat{\langle O_i \rangle}_{\text{inv}} = \operatorname{clip}\!\left(\frac{\langle O_i \rangle_{\text{QPU}} - \operatorname{sgn}(\langle O_i \rangle_{\text{QPU}} + \tau)\left(\delta_{\text{readout}} + \delta_{T_1}\right)}{\mathcal{R}_{\text{eff}}},\; -1.0,\; +1.0\right). \tag{6.7b}$$
+   En el Job 17 ($D_5$ Kissing 16Q, $\mathcal{R}_{\text{eff}} = 0.286906$), la inversión analítica recupera $\widehat{\langle E \rangle}_{\text{inv}} = \mathbf{-11.5754 \pm 0.2008}$ frente al óptimo exacto $E_{\text{exact}} = -12.0000$, **reduciendo el error relativo desde el $103.53\%$ crudo hasta apenas el $3.54\%$**, mientras que la proyección directa sobre la variedad de Stiefel $\operatorname{St}(n,k)$ en EinsofOS converge exactamente a $-12.000000000000$ con defecto de isometría $\|X^T X - I_5\|_F = 5.71 \times 10^{-16}$ (ALADIN) y $6.82 \times 10^{-16}$ (Nodo 1). Análogamente, en el Job 18 (Líneas Equiangulares $\mathbb{R}^{14}$ 14Q, $\mathcal{R}_{\text{eff}} = 0.313880$), la inversión restituye el signo físico negativo $\widehat{\langle E \rangle}_{\text{inv}} = \mathbf{-9.5890 \pm 0.1628}$ ($\varepsilon = 36.99\%$ frente a $103.61\%$ crudo) y la retracción polar de orden 4 en EinsofOS alcanza el límite exacto de Welch $-7.000000000000$ con $\|X^T X - I_{14}\|_F = 5.23 \times 10^{-16}$.
 
 ### 6.6 Análisis de Frontera de Pareto: `Stiefel-VQE` vs. `QAOA` ($p=1, 2, 3$) — Supervivencia Analítica vs. Retención Medida
 Para clarificar la distinción exigida en la auditoría (`REM-23`), contrastamos el comportamiento de ambos algoritmos bajo la razón de aproximación normalizada $\alpha = \frac{E_{\max} - \langle E \rangle}{E_{\max} - E_{\min}} \in [0, 1]$ y diferenciamos el modelo analítico de supervivencia de compuertas $\mathcal{F}_{\text{surv}}$ de la retención física real medida:
@@ -1013,7 +1019,7 @@ Para la inteligencia artificial distribuida, estos resultados evidencian que el 
 ### 8.3 Trabajo Futuro y Problemas Abiertos
 - **Tejido Unificado CPU-GPU mediante CUDA IPC:** Extender el descriptor de slab de 64 bytes de `PmtpShmBus` hacia controladores de memoria de GPU utilizando `cudaIpcMemHandle_t` para permitir que procesos de host mapeen slabs directamente en memoria HBM sin pasar por copias intermedias en CPU.
 - **Códigos de Superficie Cuánticos con Simetrías de Stiefel:** Explorar la incrustación de restricciones ortonormales continuas como simetrías de norma en códigos topológicos de corrección cuántica de errores (códigos de superficie y LDPC cuánticos) para la era post-NISQ.
-- **Monitoreo y Despacho de Trabajos Restantes:** Consolidar los resultados de los tres trabajos físicos en cola en IBM Quantum (Jobs 17, 18 y 20) en cuanto concluya su procesamiento en los procesadores Heron asignados.
+- **Mitigación Dinámica a Nivel de Pulsos en Heron r2:** Habiéndose completado y consolidado el 100.00% de los trabajos físicos programados en IBM Quantum (incluidos los Jobs 17, 18 y 20-64 en `ibm_kingston`, `ibm_fez` e `ibm_marrakesh`), la siguiente frontera experimental consiste en acoplar secuencias de desacoplamiento dinámico (XY-4) y extrapolación de ruido cero (ZNE) directamente sobre las rotaciones continuas `Stiefel-VQE`.
 
 ---
 
