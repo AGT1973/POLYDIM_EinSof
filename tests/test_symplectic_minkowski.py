@@ -10,8 +10,7 @@ import numpy as np
 # Add workspace to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from pmtp import (
-    neumaier_norm,
+from pmtp.symplectic_minkowski import (
     neumaier_minkowski_inner_product,
     dual_shear_symplectic_rotation_2d,
     high_dim_torus_symplectic_flow,
@@ -122,7 +121,7 @@ def test_high_dim_performance_benchmark():
 
 def test_unitary_symplectic_stiefel_tradeoff():
     print("[TEST 6] Unitary Intersection U(K) = O(2K) cap Sp(2K, R) & Defect Diagnostics...")
-    from pmtp import (
+    from pmtp.symplectic_minkowski import (
         build_canonical_symplectic_matrix,
         compute_orthogonality_defect,
         compute_symplectic_defect,
