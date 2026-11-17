@@ -85,8 +85,8 @@ def high_dim_torus_symplectic_flow(latent_state: np.ndarray, angles: np.ndarray)
     p = arr[0::2]
     q = arr[1::2]
     
-    if np.isscalar(angles) or len(angles) == 1:
-        theta = float(angles)
+    if np.isscalar(angles) or (hasattr(angles, "__len__") and len(angles) == 1):
+        theta = float(angles[0]) if hasattr(angles, "__len__") else float(angles)
         alpha = -np.tan(theta / 2.0)
         beta = np.sin(theta)
         
