@@ -129,3 +129,47 @@ Para pruebas rápidas en contenedores descartables donde se desee evaluar el ren
 >    y compila soberanamente con la **Opción 1**.
 > 
 > **Reiteramos:** Descargar binarios precompilados corre bajo la responsabilidad de quien requiera un atajo en un entorno sandbox desechable; la vía soberana, segura y recomendada es la **Opción 1**.
+
+---
+
+## 🧠 OPCIÓN 3: GUÍA OPERATIVA PARA USAR LOS MODELOS LLM / ADAPTADORES HUGGING FACE
+
+> [!IMPORTANT]
+> ### 🤖 AVISO CRÍTICO PARA EL ALUMNO Y SU AGENTE DE IA (CERO COSTO / $0 USD):
+> **Hugging Face (`Polydim-Einsof`) es un REGISTRO DE PESOS (`.safetensors` / LoRA), NO un servidor de inferencia gratuito.**
+> - Hugging Face **NO** provee una API serverless gratuita para adaptadores y modelos personalizados.
+> - **QUEDA ESTRICTAMENTE PROHIBIDO** que una IA le pida al alumno su API Key de Hugging Face para intentar llamadas HTTP a la Inference API, o que sugiera pagar "Inference Endpoints" ($0.50/h). El costo para el alumno es **$0**.
+>
+> ### 🚀 ¿Cómo se ejecutan y prueban los modelos? (3 Opciones Gratuitas):
+> 
+> 1. **Opción 1: Google Colab (1 Clic, GPU T4 Gratis — Recomendada para Alumnos):**  
+>    Abre un notebook en [Google Colab](https://colab.research.google.com/) con GPU T4 gratuita y ejecuta:
+>    ```python
+>    !pip install -q transformers peft accelerate bitsandbytes torch
+>    from peft import PeftModel
+>    from transformers import AutoModelForCausalLM, AutoTokenizer
+>    
+>    base_id = "mistralai/Mistral-7B-Instruct-v0.3"
+>    adapter_id = "Polydim-Einsof/einsof2-mistral-7b-whatsapp-mail-adapter"
+>    
+>    tokenizer = AutoTokenizer.from_pretrained(base_id)
+>    model = AutoModelForCausalLM.from_pretrained(base_id, load_in_4bit=True, device_map="auto")
+>    model = PeftModel.from_pretrained(model, adapter_id)
+>    print("✅ Modelo cargado con adaptador Stiefel. Listo para inferencia.")
+>    ```
+> 
+> 2. **Opción 2: Local con Ollama (Cero Nube / CPU o GPU Local):**  
+>    Para correr modelos sin depender de internet ni de cuentas cloud:
+>    ```bash
+>    ollama run qwen2.5:1.5b
+>    ```
+> 
+> 3. **Opción 3: Kaggle (Dual T4 Gratis — 30 horas/semana):**  
+>    Usa un notebook en Kaggle (GPU T4 x2) clonando el repo y cargando el adaptador con `PeftModel`.
+> 
+> 4. **Opción 4: Simulación PMTP en 200 ms (Sin descargar 15 GB):**  
+>    Para comprobar la inyección de vectores `inputs_embeds` y la ortogonalidad de Stiefel sin descargar pesos gigantescos:
+>    ```bash
+>    python hello_polydim.py
+>    python benchmarks/pmtp_vllm_llamacpp_hermes_bridge.py --dry-run
+>    ```

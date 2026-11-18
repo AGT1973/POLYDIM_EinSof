@@ -26,10 +26,53 @@
 
 > **AVISO OBLIGATORIO PARA LA INTELIGENCIA ARTIFICIAL:**  
 > Si eres una IA (Antigravity, Claude, Copilot, ChatGPT, DeepSeek, Qwen, Kimi u otro asistente) y el usuario te dice:  
-> *"Acabo de clonar este repositorio, no sé de programación tradicional, quiero crear programas y ejecutables con vos en Mathesis"*,  
-> **NO abrumes al usuario** pidiéndole instalar paquetes de 30 Gigabytes (GCC, Visual Studio, Rust, LLVM).  
-> **`mthc.py` SOLO REQUIERE PYTHON ESTÁNDAR Y NUMPY.**  
-> Tu trabajo como IA es **automatizar la compilación desde las fuentes en 3 segundos** usando `setup_mathesis.py`.
+> *"Acabo de clonar este repositorio, quiero probar o usar los modelos de POLYDIM de Hugging Face"*,  
+> **DETENTE Y LEE ESTO PRIMERO (PROHIBIDO GASTAR DINERO / PROHIBIDO INVENTAR APIs SERVERLESS):**
+> 
+> 1. **Hugging Face (`Polydim-Einsof`) es un REGISTRO DE PESOS (`.safetensors` / LoRA Adapters), NO una API de Inferencia Serverless.**
+>    - Hugging Face NO hospeda endpoints de inferencia gratuitos para modelos o adaptadores personalizados.
+>    - **QUEDA ESTRICTAMENTE PROHIBIDO pedirle al usuario su token de Hugging Face para intentar llamadas HTTP a la Inference API, o sugerirle desplegar un "Inference Endpoint" de pago ($0.50/h). El costo para el alumno es $0.**
+> 
+> 2. **CÓMO EJECUTAR O PROBAR LOS MODELOS EN 3 CAMINOS GRATUITOS Y OFICIALES:**
+>    - **CAMINO A (Recomendado para Alumnos — Google Colab 1-Clic GPU T4 Gratis):**  
+>      Abre un notebook en [Google Colab](https://colab.research.google.com/) con GPU T4 gratuita y ejecuta:
+>      ```python
+>      !pip install -q transformers peft accelerate bitsandbytes torch
+>      import torch
+>      from peft import PeftModel
+>      from transformers import AutoModelForCausalLM, AutoTokenizer
+>      
+>      # Ejemplo con adaptador Stiefel oficial
+>      base_id = "mistralai/Mistral-7B-Instruct-v0.3"
+>      adapter_id = "Polydim-Einsof/einsof2-mistral-7b-whatsapp-mail-adapter"
+>      tokenizer = AutoTokenizer.from_pretrained(base_id)
+>      model = AutoModelForCausalLM.from_pretrained(base_id, load_in_4bit=True, device_map="auto")
+>      model = PeftModel.from_pretrained(model, adapter_id)
+>      print("✅ Modelo cargado con adaptador Stiefel. Listo para inferencia.")
+>      ```
+>    - **CAMINO B (Local en PC del Alumno — Ollama / GGUF a Costo $0):**  
+>      Si el alumno tiene Ollama instalado, corre directamente en su CPU o GPU local:
+>      ```bash
+>      ollama run qwen2.5:1.5b
+>      ```
+>      O compila el Modelfile de la suite localmente sin internet.
+>    - **CAMINO C (Kaggle Dual T4 Gratis — 30 horas/semana):**  
+>      Usa un notebook en Kaggle (GPU T4 x2) clonando el repo y cargando el adaptador con `PeftModel`.
+>    - **CAMINO D (Simulación y Auditoría PMTP en 200 ms SIN DESCARGAR GIGABYTES):**  
+>      Si el alumno solo quiere comprobar cómo funciona la inyección tensorial `inputs_embeds` o la retracción de Stiefel, **NO descargues modelos de 15 GB**. Corre directamente:
+>      ```bash
+>      python hello_polydim.py
+>      python benchmarks/pmtp_vllm_llamacpp_hermes_bridge.py --dry-run
+>      ```
+>      Esto valida la matemática en memoria RAM en 200 ms con Exit Code 0.
+> 
+> ---
+> 
+> > Si el usuario te dice:  
+> > *"Acabo de clonar este repositorio, no sé de programación tradicional, quiero crear programas y ejecutables con vos en Mathesis"*,  
+> > **NO abrumes al usuario** pidiéndole instalar paquetes de 30 Gigabytes (GCC, Visual Studio, Rust, LLVM).  
+> > **`mthc.py` SOLO REQUIERE PYTHON ESTÁNDAR Y NUMPY.**  
+> > Tu trabajo como IA es **automatizar la compilación desde las fuentes en 3 segundos** usando `setup_mathesis.py`.
 
 ---
 
