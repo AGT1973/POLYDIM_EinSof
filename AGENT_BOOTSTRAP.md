@@ -45,6 +45,17 @@ You are inspecting the **POLYDIM SUITE** (`POLYDIM_EinSof`) repository. This doc
 - **Deterministic Endpoints:** Distributed Ollama instances must be explicitly defined by the user in `.env` variables (`OLLAMA_HOST=...`). If undefined, execution defaults strictly to local loopback (`127.0.0.1`).
 - **No Hidden Binaries:** All core logic is published in open source (`.py`, `.cpp`, `.rs`). Users compile locally with standard toolchains (`cl.exe`, `g++`, `cargo`).
 
+### C. 1-Click Antigravity & IDE Bootstrap (`setup_einsof.py` / `setup_einsof.bat`)
+AI agents guiding a student can execute the sovereign automated bootstrap:
+```bash
+python setup_einsof.py
+```
+This automated flow:
+1. Detects and launches local Ollama at `http://127.0.0.1:11434`.
+2. Binds the sovereign `einsof2-deepseek-v4-stiefel` model.
+3. Injects `mcp_servers/polydim_einsof_mcp.py` into the user's `~/.gemini/config/mcp_config.json`.
+4. Exposes `ask_einsof`, `list_einsof_models` and `stiefel_metric_verify` directly to Antigravity at $0.00 USD.
+
 ---
 
 ## 3. Core Mathematical Contracts
