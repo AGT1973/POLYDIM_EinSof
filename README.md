@@ -231,6 +231,17 @@ python verify_8_circuits_hardening.py
 
 ## 🚀 Quick Start
 
+### 0. 🧠 Setup Alumno 1-Clic para Antigravity IDE y Asistentes IA
+Si usas **Google Antigravity**, **Cursor**, **Claude Code** o **Windsurf**, activa los modelos soberanos locales EINSOF-II en un solo paso:
+* **En Windows:** Doble clic en `setup_einsof.bat` (o ejecuta `python setup_einsof.py`).
+* **En Linux / macOS:** Ejecuta `python3 setup_einsof.py`.
+
+El instalador:
+1. Detecta / inicia tu motor local de inferencia Ollama.
+2. Vincula el modelo soberano `einsof2-deepseek-v4-stiefel`.
+3. Registra automáticamente el servidor MCP `polydim_einsof` en tu `~/.gemini/config/mcp_config.json`.
+4. Habilita las herramientas `ask_einsof`, `list_einsof_models` y `stiefel_metric_verify` en tu IDE a **$0.00 USD**.
+
 ### 1. Clone & Set Up
 ```bash
 git clone https://github.com/AGT1973/POLYDIM_EinSof.git
