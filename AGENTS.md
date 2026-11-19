@@ -3,16 +3,16 @@
 > **Universal Entry Point & Silicon Contracts (2026-2027)**  
 > Ecosistema Soberano POLYDIM-EINSOF | Ariel Garcia Traba | E:\POLYDIM_EINSOF
 
-## 1. Onboarding Zero-Friction & Compilacion
-- Ante cualquier usuario nuevo o prueba de Mathesis, ejecutar inmediatamente:
-  ```bash
-  python setup_mathesis.py
-  ```
-- No solicitar toolchains C/C++ ni dependencias externas. Compilar con:
-  - Windows: `python mthc.py <source>.mth -o <output>.exe`
-  - Linux: `python mthc.py <source>.mth -t elf64 -o <output>.elf`
-  - Rust directo: `mathesis2bin <source>.mth`
-- Guia para agentes: [README_FIRST_4_AI.md](file:///e:/POLYDIM_EINSOF/README_FIRST_4_AI.md)
+## 1. Onboarding Zero-Friction (Alumnos Nuevos vs. Colaboradores Experimentados)
+- **Alumnos Nuevos (Facundo y principiantes sin experiencia técnica):**
+  - **MANDATO CONSTITUCIONAL:** El alumno NO sabe usar la terminal, NO sabe Git, NO debe resolver dependencias a mano.
+  - **SU PROPIA IA DEBE INSTALARLO TODO EN SEGUNDO PLANO Y EXPLICAR EL PROPÓSITO:**
+    1. Ejecutar en silencio: `python setup_einsof.py` (instala servidores MCP, modelos locales y el Student Skills Pack `skills/`).
+    2. Explicarle con calidez y claridad el propósito: erradicación del colapso 1D en memoria compartida física, variedad de Stiefel $S^{D-1}$, costo $0 USD y presentarle sus 8 habilidades listas para usar con slash commands (`/council`, `/call`, `/query`, `/ghost`, `/whisper`, `/verify-manifold`, `/redteam`, `/einsof-bootstrap`).
+    3. Invitarlo a dar su primer paso juntos sin tecnicismos abrumadores.
+- **Colaboradores Experimentados / 'Los Viejos' (Rafael, Emilio, Carlos):**
+  - Saben usar la consola y Git. Pueden actualizarse con `git pull` o ejecutando el script de 1 clic `skills/install_skills.bat`.
+- Guía detallada para el agente: [AGENT_BOOTSTRAP.md](AGENT_BOOTSTRAP.md) · [skills/README.md](skills/README.md)
 
 ## 2. Silicon Contracts & Reglas Constitucionales
 - **Regla 1 (Radical Honesty):** Exit Code 0 + log crudo obligatorio para toda afirmacion. Cero victorias ficticias.

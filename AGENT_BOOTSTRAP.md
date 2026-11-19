@@ -28,9 +28,21 @@
 >    ```
 >    *(Compila el microcódigo x86_64 nativo en 400 ms sin dependencias de GCC/Rust y valida Exit Code 0 e invariante Stiefel).*
 >
-> 3. **Paso 3 (Informa al Alumno con Calma y Claridad):**
->    Una vez ejecutados ambos scripts con Exit Code 0, saluda al alumno amablemente y dile:
->    *"¡Hola! Ya me encargué de instalar y configurar todo el entorno de Inteligencia Artificial soberana en tu máquina. Todo está listo y funcionando a costo $0 USD. ¿Qué te gustaría crear o probar hoy?"*
+> 3. **Paso 3 (Informa al Alumno con Calma y Explícale el Propósito):**
+>    Una vez completada la instalación automática en silicio con Exit Code 0, saluda al alumno cálidamente y **explícale el propósito de la arquitectura**:
+>    - **El Por Qué (Soberanía y $0 USD):**  
+>      *"¡Hola! Ya me encargué de instalar y configurar todo el entorno en tu máquina sin que tengas que tocar nada raro ni pelear con terminales. En la IA convencional, cada cálculo se convierte en miles de palabras de texto (un 'gusano 1D') que gasta dinero, satura la red y pierde precisión matemática. Acá trabajamos directamente con geometría continua en la memoria de tu propia máquina (variedad de Stiefel $S^{D-1}$), lo que hace que todo sea exacto, instantáneo y a costo **$0 USD**."*
+>    - **El Para Qué (Tus 8 Nuevas Habilidades Activas):**  
+>      *"Te acabo de dejar instaladas y listas 8 capacidades que podés usar directamente desde el chat escribiendo una barra `/`:*
+>      * **`/council <pregunta>`** *(o `/sabios`)*: Junta a las mejores IAs del mundo (Qwen-Max, DeepSeek, Cerebras CS-3, Ollama) para debatir tu pregunta y darte una conclusión consensuada sin que te quedes con una sola opinión.
+>      * **`/call <modelo> <pregunta>`**: Llama a cualquier modelo de Hugging Face, OpenRouter, Bailian u Ollama sin que tengas que programar ni una línea.
+>      * **`/query <pregunta>`** *(o `/consulta`)*: Para consultas rápidas y gratuitas a modelos de alta velocidad ($0 USD).
+>      * **`/ghost`**: Activa la comunicación en memoria compartida física sin saturar la pantalla de números.
+>      * **`/whisper <tema>`**: Rutea consultas inteligentemente priorizando modelos libres y locales.
+>      * **`/verify-manifold`**: Hace que el procesador de tu máquina demuestre en vivo que la matemática es exacta (Exit Code 0).
+>      * **`/redteam <código>`**: Revisa tu código o scripts buscando fallas ocultas con rigor profesional."*
+>    - **La Invitación a Crear:**  
+>      *"¿Qué te gustaría probar primero? Podemos hacerle una consulta al Consejo de Sabios con `/council`, o verificar el procesador de tu máquina con `/verify-manifold`."*
 >
 > 4. **Paso 4 (Acompañamiento y Concierge de API Keys — Cero Fricción):**
 >    Si el alumno desea conectar modelos externos de Hugging Face, Groq u OpenRouter:
@@ -45,17 +57,6 @@
 >      python tools/student_credential_concierge.py --save HF_TOKEN <clave_del_alumno>
 >      ```
 >      sin obligar jamás al alumno a editar archivos de configuración del sistema.
->
-> 5. **Paso 5 (Student Skills Pack Activo — Cero Código):**
->    Asegúrate de que el alumno tenga instaladas las skills de `skills/` (se instalan solas con `setup_einsof.py` o `install_skills.bat`).
->    El alumno puede usarlas inmediatamente desde el chat con un simple slash command:
->    - **`/ghost`**: Activa el Ghost Protocol (memoria compartida, cero colapso 1D).
->    - **`/whisper <tema>`**: Ruteo inter-IA a $0 USD con modelos locales y pools libres.
->    - **`/council <pregunta>`**: Consulta simultánea a múltiples modelos (Qwen-Max, DeepSeek, Cerebras, Ollama) con síntesis de consenso.
->    - **`/call <modelo> <pregunta>`**: Llama a cualquier modelo de Hugging Face, Ollama, OpenRouter o Bailian sin programar.
->    - **`/query <pregunta>`**: Consulta rápida y gratuita a IAs SOTA sin costo.
->    - **`/verify-manifold`**: Verifica la isometría de Stiefel en silicio con Exit Code 0.
->    - **`/redteam <código>`**: Auditoría adversarial simétrica de calidad.
 
 ---
 

@@ -27,24 +27,24 @@ By including these skills directly in the **POLYDIM-EINSOF Suite**, any AI codin
 
 ---
 
-## 🚀 How to Install in 1 Click (Instalación en 1 Clic)
+## 🚀 Onboarding Doctrine: Alumnos Nuevos vs. Colaboradores Experimentados
 
-### Option A: Automatic via Suite Setup (Recommended)
-Simply run the sovereign installer from the repository root:
-```bash
-# Windows:
-python setup_einsof.py
-# (Or double-click setup_einsof.bat)
+### 🎓 Para Alumnos Nuevos (Facundo y principiantes):
+- **Cero Terminal y Cero Comandos:** El alumno NO abre consolas, NO ejecuta scripts a mano ni reinstala nada.
+- **Su propia IA es responsable de instalar y explicar:**
+  1. Cuando el alumno abre su IDE con IA (Antigravity, Cursor, Claude Code, Windsurf) o pega el mensaje de bienvenida de GitHub, **su IA ejecuta `python setup_einsof.py` de forma 100% autónoma en segundo plano**.
+  2. Inmediatamente después, **la IA saluda al alumno y le explica el propósito**:
+     - Por qué operamos en la variedad de Stiefel $S^{D-1}$ en memoria compartida física (erradicando el colapso 1D en texto) a costo **$0 USD**.
+     - Qué son las 8 habilidades del pack y cómo usarlas con slash commands (`/council`, `/call`, `/query`, etc.).
+     - Invita al alumno a hacer su primera prueba juntos.
 
-# Linux / macOS:
-python3 setup_einsof.py
-```
-`setup_einsof.py` now automatically detects and installs the student skills pack!
-
-### Option B: Dedicated Skills Installer
-If you just want to update or install the skills separately:
-- **Windows:** Double-click `skills/install_skills.bat` (or run `powershell -ExecutionPolicy Bypass -File skills/install_skills.ps1`).
-- **Linux / macOS:** Run `bash skills/install_skills.sh`.
+### 🛠️ Para Colaboradores Experimentados / 'Los Viejos' (Rafael, Emilio, Carlos):
+- Conocen la terminal y Git. Pueden actualizarse en cualquier momento:
+  - Vía Git: `git pull`
+  - Vía instalador de skills en 1 clic:
+    - **Windows:** Doble clic a `skills/install_skills.bat` (o `powershell -ExecutionPolicy Bypass -File skills/install_skills.ps1`).
+    - **Linux / macOS:** `bash skills/install_skills.sh`.
+  - Vía setup general: `python setup_einsof.py`.
 
 ---
 
