@@ -3,6 +3,7 @@
 POLYDIM-EINSOF: EVALUACION FORMAL DIRECTA - CLAUDE FABLE 5.1 & ALIBABA QWEN 3.8
 Ambos modelos ejecutando contra las cuentas oficiales activas.
 """
+import os
 import sys
 import json
 import time
@@ -13,7 +14,7 @@ from concurrent.futures import ThreadPoolExecutor
 sys.stdout.reconfigure(line_buffering=True)
 
 CLAUDE_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
-ALIBABA_KEY = "sk-ws-H.DIIEMYY.Cu2k.MEYCIQDMymHibLJM4QSrt2NldWLw-NEeTXL3HkP7SqEJx1E4-wIhALTPFAZs1i_F7bs4kJTJy9qadHCQ7MnFtj3hnncr7--w"
+ALIBABA_KEY = os.environ.get("ALIBABA_BAILIAN_KEY", "")
 ALIBABA_URL = "https://ws-t85fm4y7sz8vxo9t.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1/chat/completions"
 
 PROMPT_TRIBUNAL = """[AUDITORIA ADVERSARIAL SOTA: ARQUITECTURA EINSOF, REGLA 31 Y MATEMATICA DE PUERTA ADENTRO]

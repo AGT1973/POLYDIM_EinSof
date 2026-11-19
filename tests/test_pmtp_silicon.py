@@ -11,15 +11,28 @@ import time
 import json
 import numpy as np
 
-try:
-    import torch
-    from transformers import AutoTokenizer, AutoModelForCausalLM
-    HAS_TORCH = True
-except ImportError:
-    torch = None
-    AutoTokenizer = None
-    AutoModelForCausalLM = None
-    HAS_TORCH = False
+torch = None
+AutoTokenizer = None
+AutoModelForCausalLM = None
+HAS_TORCH = False
+
+
+def _ensure_torch():
+    global torch, AutoTokenizer, AutoModelForCausalLM, HAS_TORCH
+    if HAS_TORCH:
+        return True
+    if os.environ.get("POLYDIM_RUN_HEAVY_TESTS") != "1":
+        return False
+    try:
+        import torch as _torch
+        from transformers import AutoTokenizer as _AT, AutoModelForCausalLM as _AM
+        torch = _torch
+        AutoTokenizer = _AT
+        AutoModelForCausalLM = _AM
+        HAS_TORCH = True
+        return True
+    except ImportError:
+        return False
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "pmtp")))
 from pmtp_shm_bus import PmtpShmBus
@@ -177,8 +190,8 @@ def test_03_sequence_abi_and_immutability():
 
 def test_04_real_qwen_kv_cache_interop():
     print("[4/4] Auditando T-MP22: Interoperabilidad Neuronal Real Qwen con KV-Cache...")
-    if not HAS_TORCH:
-        print("      [SKIP] PyTorch/Transformers no disponible en entorno host (CPython freethreaded).")
+    if not _ensure_torch():
+        print("      [SKIP] PyTorch/Transformers lazy-skipped (define POLYDIM_RUN_HEAVY_TESTS=1 para habilitar).")
         return True
     snap_path = r"C:\Users\eluithi\.cache\huggingface\hub\models--Qwen--Qwen2.5-0.5B\snapshots\060db6499f32faf8b98477b0a26969ef7d8b9987"
     if not os.path.exists(snap_path):

@@ -1,188 +1,352 @@
 #!/usr/bin/env python3
 """
-POLYDIM-EINSOF — Instalador Automatizado de 1-Clic para Alumnos (Estándar 2030)
-================================================================================
-Configura el entorno de cómputo soberano en la PC del alumno:
-1. Verifica el servicio local Ollama.
-2. Verifica / registra el modelo soberano EINSOF-II (DeepSeek-V4, GLM-4, etc.).
-3. Configura automáticamente el Servidor MCP en Antigravity IDE (mcp_config.json).
-4. Verifica la ejecución en silicio físico con Exit Code 0.
+POLYDIM-EINSOF — Instalador Soberano de 1-Clic para Antigravity IDE (v2.0 Hardened)
+====================================================================================
+Configura y verifica en silicio el entorno EINSOF-II + Mathesis PMTP:
+  1. Verifica Python >= 3.8 y asegura NumPy (>= 1.26 recomendado) antes de registrar MCP.
+  2. Descubre Ollama con failover multi-nodo: local (127.0.0.1:11434) -> ALADIN LAN (192.168.100.21:11434).
+  3. Valida modelos reales disponibles (sin crear alias engañosos sobre modelos ajenos).
+  4. Respalda y configura ~/.gemini/config/mcp_config.json verificando rutas fisicas en disco.
+  5. Ejecuta smoke-test real JSON-RPC 2.0 stdio (Stiefel <= 1e-15 + rechazo k > D) antes de Exit Code 0.
 
 Uso:
-  python setup_einsof.py
+  python setup_einsof.py [--aladin-host 192.168.100.21] [--open-intro]
 """
 
 import sys
 import os
 import json
+import time
+import shutil
+import argparse
 import platform
 import subprocess
-import time
 import urllib.request
 import urllib.error
+from pathlib import Path
 
-SUITE_DIR = os.path.abspath(os.path.dirname(__file__))
-MCP_SERVER_PATH = os.path.join(SUITE_DIR, "mcp_servers", "polydim_einsof_mcp.py").replace("\\", "/")
-OLLAMA_URL = "http://127.0.0.1:11434"
+SUITE_DIR = Path(__file__).resolve().parent
+MCP_DIR = SUITE_DIR / "mcp_servers"
+LOCAL_OLLAMA_URL = "http://127.0.0.1:11434"
+DEFAULT_ALADIN_IP = os.environ.get("ALADIN_HOST", "192.168.100.21")
+
 
 def print_banner():
     print("""
 ======================================================================
-  🧠 POLYDIM-EINSOF — INSTALADOR SOBERANO PARA ALUMNOS (1-CLIC)
-  Investigación Independiente | Ariel García Traba | Estándar 2030
+  POLYDIM-EINSOF — INSTALADOR SOBERANO ANTIGRAVITY (v2.0 HARDENED)
+  Investigacion Independiente | Ariel Garcia Traba | Estandar 2030
 ======================================================================
 """)
 
-def check_python():
-    v = platform.python_version()
-    print(f"[1/4] Python detectado: {v} en {sys.executable}")
-    if sys.version_info < (3, 8):
-        print("  ❌ Se requiere Python 3.8 o superior.")
-        sys.exit(1)
-    print("  ✅ Python compatible.")
 
-def check_or_start_ollama():
-    print(f"\n[2/4] Verificando motor de inferencia Ollama en {OLLAMA_URL}...")
+def check_python_and_numpy():
+    v = platform.python_version()
+    print(f"[1/5] Python detectado: {v} en {sys.executable}")
+    if sys.version_info < (3, 8):
+        print("  [X] Se requiere Python 3.8 o superior.")
+        sys.exit(1)
     try:
-        req = urllib.request.Request(f"{OLLAMA_URL}/api/tags")
-        with urllib.request.urlopen(req, timeout=3) as r:
-            data = json.loads(r.read().decode())
+        import numpy as np
+        print(f"  [OK] Python compatible y NumPy v{np.__version__} disponible.")
+    except ImportError:
+        print("  [!] NumPy no encontrado (requerido por el servidor MCP). Instalando...")
+        res = subprocess.run([sys.executable, "-m", "pip", "install", "numpy"], capture_output=True, text=True)
+        if res.returncode != 0:
+            print(f"  [X] Error instalando NumPy: {res.stderr.strip()[:300]}")
+            sys.exit(1)
+        import numpy as np
+        print(f"  [OK] NumPy v{np.__version__} instalado correctamente.")
+
+
+def _probe_ollama(url: str, timeout: float = 2.0) -> tuple[bool, list[str]]:
+    try:
+        req = urllib.request.Request(f"{url.rstrip('/')}/api/tags")
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            data = json.loads(r.read().decode("utf-8"))
             models = [m["name"] for m in data.get("models", [])]
-            print(f"  ✅ Ollama está ONLINE. Modelos instalados: {len(models)}")
             return True, models
     except Exception:
-        print("  ⚠️ Ollama no responde en el puerto 11434. Intentando iniciar en segundo plano...")
+        return False, []
 
-    # Intentar arrancar ollama serve
+
+def check_or_start_ollama(aladin_ip: str) -> tuple[str | None, list[str], bool]:
+    """Retorna (endpoint_activo, lista_modelos, es_local)."""
+    env_url = os.environ.get("OLLAMA_HOST", "").strip()
+    if env_url and not env_url.startswith(("http://", "https://")):
+        env_url = f"http://{env_url}"
+
+    print(f"\n[2/5] Descubriendo motor Ollama (Local -> ALADIN {aladin_ip}:11434)...")
+    if env_url:
+        ok, models = _probe_ollama(env_url, timeout=2.0)
+        if ok:
+            print(f"  [OK] Ollama ONLINE via OLLAMA_HOST={env_url} ({len(models)} modelos).")
+            return env_url.rstrip("/"), models, ("127.0.0.1" in env_url or "localhost" in env_url)
+
+    ok, models = _probe_ollama(LOCAL_OLLAMA_URL, timeout=2.0)
+    if ok:
+        print(f"  [OK] Ollama local ONLINE en {LOCAL_OLLAMA_URL} ({len(models)} modelos).")
+        return LOCAL_OLLAMA_URL, models, True
+
+    print("  [!] Ollama local no responde. Intentando iniciar 'ollama serve'...")
     try:
         if platform.system() == "Windows":
             subprocess.Popen(["ollama", "serve"], creationflags=subprocess.CREATE_NO_WINDOW)
         else:
             subprocess.Popen(["ollama", "serve"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        
-        # Esperar hasta 5 segundos
         for _ in range(5):
             time.sleep(1)
-            try:
-                req = urllib.request.Request(f"{OLLAMA_URL}/api/tags")
-                with urllib.request.urlopen(req, timeout=2) as r:
-                    data = json.loads(r.read().decode())
-                    models = [m["name"] for m in data.get("models", [])]
-                    print(f"  ✅ Ollama iniciado exitosamente. Modelos: {len(models)}")
-                    return True, models
-            except Exception:
-                pass
+            ok, models = _probe_ollama(LOCAL_OLLAMA_URL, timeout=2.0)
+            if ok:
+                print(f"  [OK] Ollama local iniciado ({len(models)} modelos).")
+                return LOCAL_OLLAMA_URL, models, True
     except FileNotFoundError:
-        print("  ❌ Ollama no está instalado en el sistema.")
-        if platform.system() == "Windows":
-            print("     Descárgalo gratis de: https://ollama.com/download/OllamaSetup.exe")
-        else:
-            print("     Instálalo ejecutando: curl -fsSL https://ollama.com/install.sh | sh")
-        return False, []
+        print("  [i] Binario local 'ollama' no instalado en PATH.")
+    except Exception as e:
+        print(f"  [!] No se pudo iniciar Ollama local: {e}")
 
-    print("  ⚠️ No se pudo iniciar Ollama automáticamente. Asegúrate de ejecutar 'ollama serve'.")
-    return False, []
+    aladin_url = f"http://{aladin_ip}:11434"
+    ok, models = _probe_ollama(aladin_url, timeout=2.5)
+    if ok:
+        print(f"  [OK] Failover LAN activo -> Nodo ALADIN ONLINE en {aladin_url} ({len(models)} modelos).")
+        return aladin_url, models, False
 
-def check_einsof_model(models):
-    print("\n[3/4] Verificando modelo soberano EINSOF-II en Ollama...")
-    einsof_models = [m for m in models if "einsof" in m.lower() or "polydim" in m.lower()]
-    if einsof_models:
-        print(f"  ✅ Modelos EINSOF-II detectados en tu máquina: {einsof_models}")
-        return True
+    print("  [!] Ningun servidor Ollama local o ALADIN responde actualmente.")
+    print("      Las herramientas matematicas Stiefel/PMTP seguiran funcionando 100% en silicio local.")
+    return None, [], False
 
-    print("  ℹ️ No se detectó un modelo con nombre 'einsof' en Ollama.")
-    # Buscar si tiene algún modelo base compatible para crear el alias
-    base_candidates = [m for m in models if any(k in m.lower() for k in ["deepseek", "qwen", "llama", "gemma", "mistral"])]
-    if base_candidates:
-        target_base = base_candidates[0]
-        print(f"  💡 Se encontró el modelo base '{target_base}'. Creando alias especializado 'einsof2-local'...")
-        modelfile_content = f"""FROM {target_base}
-PARAMETER temperature 0.2
-PARAMETER num_ctx 4096
-SYSTEM "Eres EINSOF-II, asistente de razonamiento matemático especializado en geometría de variedades de Stiefel S^{{D-1}}, retracción polar de orden 4 y suma de Neumaier de la iniciativa POLYDIM. Responde con rigor técnico y matemático."
-"""
-        temp_mf = os.path.join(SUITE_DIR, "Modelfile.temp_student")
-        with open(temp_mf, "w", encoding="utf-8") as f:
-            f.write(modelfile_content)
-        try:
-            r = subprocess.run(["ollama", "create", "einsof2-deepseek-v4-stiefel", "-f", temp_mf], capture_output=True, text=True)
-            if r.returncode == 0:
-                print("  ✅ Modelo 'einsof2-deepseek-v4-stiefel' creado exitosamente en Ollama.")
-                if os.path.exists(temp_mf): os.remove(temp_mf)
-                return True
-        except Exception as e:
-            print(f"  ⚠️ Error creando alias: {e}")
-        if os.path.exists(temp_mf): os.remove(temp_mf)
 
-    print("  📥 Para descargar los pesos completos GGUF (4.8 GB) entrenados con retracción Stiefel:")
-    print("     https://huggingface.co/Polydim-Einsof/einsof2-deepseek-v4-stiefel-adapter")
-    return False
+def resolve_einsof_model(endpoint: str | None, models: list[str], is_local: bool) -> str:
+    print("\n[3/5] Verificando catalogo real de modelos EINSOF-II...")
+    if not endpoint or not models:
+        print("  [i] Sin catalogo Ollama activo. Modelo por defecto configurado: mathesis-quantum:1.5b")
+        return "mathesis-quantum:1.5b"
 
-def configure_antigravity_mcp():
-    print("\n[4/4] Configurando integración MCP en Antigravity IDE...")
-    
-    # Determinar ruta del mcp_config.json
-    home = os.path.expanduser("~")
-    config_dir = os.path.join(home, ".gemini", "config")
-    os.makedirs(config_dir, exist_ok=True)
-    config_path = os.path.join(config_dir, "mcp_config.json")
+    sovereign = [
+        m for m in models
+        if any(k in m.lower() for k in ("einsof2", "mathesis", "einsof", "polydim"))
+    ]
+    if sovereign:
+        # Prioritize reasoning EINSOF-II / Mathesis models over lightweight comms SLMs
+        chosen = sovereign[0]
+        for pref in ("einsof2-deepseek", "einsof2-", "mathesis-quantum", "einsof"):
+            hits = [m for m in sovereign if pref in m.lower() and "comms" not in m.lower()]
+            if hits:
+                chosen = hits[0]
+                break
+        print(f"  [OK] Modelos soberanos detectados ({len(sovereign)}) -> seleccionado '{chosen}'.")
+        return chosen
+
+    if is_local:
+        compatible = [m for m in models if any(k in m.lower() for k in ("deepseek", "qwen", "gemma", "glm", "llama", "mistral"))]
+        if compatible:
+            base = compatible[0]
+            alias_name = "einsof2-local-stiefel"
+            print(f"  [i] Modelo base local '{base}' detectado. Creando perfil honesto '{alias_name}'...")
+            modelfile_content = (
+                f"FROM {base}\n"
+                "PARAMETER temperature 0.2\n"
+                "PARAMETER num_ctx 4096\n"
+                f'SYSTEM "Eres EINSOF-II (perfil local sobre {base}), asistente matematico especializado en variedad de Stiefel St(k,D), retraccion polar QDWH y suma de Neumaier."\n'
+            )
+            temp_mf = SUITE_DIR / "Modelfile.temp_student"
+            temp_mf.write_text(modelfile_content, encoding="utf-8")
+            try:
+                r = subprocess.run(["ollama", "create", alias_name, "-f", str(temp_mf)], capture_output=True, text=True)
+                if r.returncode == 0:
+                    print(f"  [OK] Perfil '{alias_name}' creado sobre '{base}'.")
+                    return alias_name
+            except Exception as e:
+                print(f"  [!] No se pudo crear perfil local: {e}")
+            finally:
+                if temp_mf.exists():
+                    temp_mf.unlink()
+            return base
+
+    chosen = models[0]
+    print(f"  [OK] Usando modelo disponible en {endpoint}: '{chosen}'.")
+    return chosen
+
+
+def _resolve_mcp_paths() -> tuple[Path, Path | None]:
+    einsof_mcp = MCP_DIR / "polydim_einsof_mcp.py"
+    if not einsof_mcp.is_file():
+        print(f"  [X] ERROR CRITICO: No existe {einsof_mcp}. Verifica la integridad del repositorio.")
+        sys.exit(1)
+
+    mathesis_mcp = None
+    for cand in (MCP_DIR / "mathesis_mcp_server.py", SUITE_DIR / "mathesis_mcp_server.py"):
+        if cand.is_file():
+            mathesis_mcp = cand
+            break
+    return einsof_mcp, mathesis_mcp
+
+
+def configure_antigravity_mcp(endpoint: str | None, default_model: str) -> tuple[Path, dict]:
+    print("\n[4/5] Configurando integracion MCP en Antigravity IDE...")
+    einsof_mcp, mathesis_mcp = _resolve_mcp_paths()
+
+    config_dir = Path.home() / ".gemini" / "config"
+    config_dir.mkdir(parents=True, exist_ok=True)
+    config_path = config_dir / "mcp_config.json"
 
     mcp_config = {"mcpServers": {}}
-    if os.path.exists(config_path):
+    if config_path.exists():
         try:
-            with open(config_path, "r", encoding="utf-8") as f:
-                mcp_config = json.load(f)
+            mcp_config = json.loads(config_path.read_text(encoding="utf-8"))
+            backup_path = config_dir / "mcp_config.json.bak"
+            shutil.copy2(config_path, backup_path)
+            print(f"  [i] Respaldo previo guardado en: {backup_path}")
         except Exception:
             mcp_config = {"mcpServers": {}}
 
-    if "mcpServers" not in mcp_config:
-        mcp_config["mcpServers"] = {}
+    if not isinstance(mcp_config, dict) or "mcpServers" not in mcp_config or not isinstance(mcp_config["mcpServers"], dict):
+        mcp_config = {"mcpServers": {}}
 
-    # Inyectar el servidor polydim_einsof
     py_exec = sys.executable.replace("\\", "/")
+    env_vars = {
+        "PYTHONIOENCODING": "utf-8",
+        "PYTHONUNBUFFERED": "1",
+        "EINSOF_DEFAULT_MODEL": default_model,
+    }
+    if endpoint:
+        env_vars["OLLAMA_HOST"] = endpoint
+
     mcp_config["mcpServers"]["polydim_einsof"] = {
         "command": py_exec,
-        "args": [
-            "-W", "ignore",
-            "-u",
-            MCP_SERVER_PATH
-        ],
-        "env": {
-            "PYTHONIOENCODING": "utf-8",
-            "PYTHONUNBUFFERED": "1"
-        }
+        "args": ["-W", "ignore", "-u", str(einsof_mcp).replace("\\", "/")],
+        "env": env_vars,
     }
 
-    with open(config_path, "w", encoding="utf-8") as f:
-        json.dump(mcp_config, f, indent=2, ensure_ascii=False)
+    if mathesis_mcp is not None:
+        mcp_config["mcpServers"]["mathesis_pmtp"] = {
+            "command": py_exec,
+            "args": ["-W", "ignore", "-u", str(mathesis_mcp).replace("\\", "/")],
+            "env": {
+                "PYTHONIOENCODING": "utf-8",
+                "PYTHONUNBUFFERED": "1",
+            },
+        }
 
-    print(f"  ✅ Servidor MCP 'polydim_einsof' registrado en: {config_path}")
-    print(f"     Script de servidor: {MCP_SERVER_PATH}")
+    config_path.write_text(json.dumps(mcp_config, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"  [OK] mcp_config.json actualizado en: {config_path}")
+    print(f"       -> polydim_einsof: {einsof_mcp}")
+    if mathesis_mcp:
+        print(f"       -> mathesis_pmtp : {mathesis_mcp}")
+    return config_path, {"einsof_mcp": einsof_mcp, "mathesis_mcp": mathesis_mcp, "env": env_vars}
 
-def print_completion():
-    print("""
+
+def run_mcp_smoke_test(server_info: dict):
+    print("\n[5/5] Ejecutando smoke-test real JSON-RPC 2.0 stdio en silicio...")
+    einsof_mcp = server_info["einsof_mcp"]
+    env = os.environ.copy()
+    env.update(server_info["env"])
+
+    reqs = [
+        {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2024-11-05", "capabilities": {}, "clientInfo": {"name": "setup_einsof", "version": "2.0"}}},
+        {"jsonrpc": "2.0", "method": "notifications/initialized"},
+        {"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": {}},
+        {"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {"name": "stiefel_metric_verify", "arguments": {"dim_d": 128, "dim_k": 16, "order": 4}}},
+        {"jsonrpc": "2.0", "id": 4, "method": "tools/call", "params": {"name": "stiefel_metric_verify", "arguments": {"dim_d": 4, "dim_k": 16, "order": 4}}},
+    ]
+    stdin_payload = "\n".join(json.dumps(r) for r in reqs) + "\n"
+    proc = subprocess.run(
+        [sys.executable, "-W", "ignore", "-u", str(einsof_mcp)],
+        input=stdin_payload,
+        capture_output=True,
+        text=True,
+        timeout=25,
+        env=env,
+    )
+    if proc.returncode != 0:
+        print(f"  [X] Smoke-test MCP fallo con rc={proc.returncode}: {proc.stderr[:300]}")
+        sys.exit(1)
+
+    resps = {}
+    for line in proc.stdout.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        obj = json.loads(line)
+        if "id" in obj:
+            resps[obj["id"]] = obj
+
+    tools = [t["name"] for t in resps.get(2, {}).get("result", {}).get("tools", [])]
+    if "stiefel_metric_verify" not in tools or "ask_einsof" not in tools:
+        print(f"  [X] tools/list incompleto: {tools}")
+        sys.exit(1)
+
+    valid_res = resps.get(3, {}).get("result", {})
+    valid_json = json.loads(valid_res.get("content", [{}])[0].get("text", "{}"))
+    defect = valid_json.get("isometry_defect_inf", 1.0)
+    if valid_res.get("isError") or not valid_json.get("is_machine_precision") or defect > 1e-15:
+        print(f"  [X] Falla verificacion Stiefel St(16,128): {valid_json}")
+        sys.exit(1)
+
+    adv_res = resps.get(4, {}).get("result", {})
+    if not adv_res.get("isError"):
+        print(f"  [X] Falla guardia adversarial k>D (acepto dim_d=4, dim_k=16): {adv_res}")
+        sys.exit(1)
+
+    print(f"  [OK] Smoke-test polydim_einsof PASS | tools={len(tools)} | St(16,128) defect={defect:.2e} | k>D rechazado.")
+
+    mathesis_mcp = server_info.get("mathesis_mcp")
+    if mathesis_mcp is not None:
+        m_reqs = [
+            {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2024-11-05", "capabilities": {}, "clientInfo": {"name": "setup_einsof", "version": "2.0"}}},
+            {"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": {}},
+        ]
+        m_proc = subprocess.run(
+            [sys.executable, "-W", "ignore", "-u", str(mathesis_mcp)],
+            input="\n".join(json.dumps(r) for r in m_reqs) + "\n",
+            capture_output=True,
+            text=True,
+            timeout=20,
+            env=env,
+        )
+        if m_proc.returncode != 0:
+            print(f"  [X] Smoke-test mathesis_pmtp fallo rc={m_proc.returncode}: {m_proc.stderr[:250]}")
+            sys.exit(1)
+        m_lines = [json.loads(l) for l in m_proc.stdout.splitlines() if l.strip()]
+        m_tools = [t["name"] for t in m_lines[-1].get("result", {}).get("tools", [])]
+        print(f"  [OK] Smoke-test mathesis_pmtp PASS | tools={len(m_tools)}")
+
+
+def print_completion(endpoint: str | None, default_model: str):
+    intro_html = SUITE_DIR / "introduction" / "index.html"
+    print(f"""
 ======================================================================
-  🎉 ¡INSTALACIÓN COMPLETADA EXITOSAMENTE! (EXIT CODE 0)
+  INSTALACION Y VERIFICACION EN SILICIO COMPLETADAS (EXIT CODE 0)
 ======================================================================
-  ¿Cómo usarlo en Antigravity ahora mismo?
-  1. Abre Antigravity IDE.
-  2. En el chat con tu agente, tienes disponibles las herramientas:
-     • ask_einsof           -> Inferencia matemática local soberana ($0 USD).
-     • list_einsof_models   -> Ver modelos activos en tu silicio.
-     • stiefel_metric_verify -> Verificación de retracción polar orden 4.
-  3. También puedes pedirle al agente:
-     'Usa einsof para explicarme la variedad de Stiefel'
+  Endpoint Ollama : {endpoint or 'Offline (Stiefel/PMTP local 100% operativo)'}
+  Modelo EINSOF   : {default_model}
+  Herramientas MCP: ask_einsof, list_einsof_models, stiefel_metric_verify,
+                    ask_cerebras_einsof + mathesis_pmtp (6 tools)
+  Guia visual     : {intro_html if intro_html.exists() else SUITE_DIR / 'AGENT_BOOTSTRAP.md'}
 ======================================================================
 """)
 
+
 def main():
+    parser = argparse.ArgumentParser(description="Instalador Soberano POLYDIM-EINSOF v2.0 para Antigravity")
+    parser.add_argument("--aladin-host", default=DEFAULT_ALADIN_IP, help="IP del nodo ALADIN LAN para failover Ollama")
+    parser.add_argument("--open-intro", action="store_true", help="Abre introduction/index.html en el navegador al finalizar")
+    args = parser.parse_args()
+
     print_banner()
-    check_python()
-    ollama_ok, models = check_or_start_ollama()
-    if ollama_ok:
-        check_einsof_model(models)
-    configure_antigravity_mcp()
-    print_completion()
+    check_python_and_numpy()
+    endpoint, models, is_local = check_or_start_ollama(args.aladin_host)
+    default_model = resolve_einsof_model(endpoint, models, is_local)
+    _, server_info = configure_antigravity_mcp(endpoint, default_model)
+    run_mcp_smoke_test(server_info)
+    print_completion(endpoint, default_model)
+
+    if args.open_intro:
+        intro_html = SUITE_DIR / "introduction" / "index.html"
+        if intro_html.exists():
+            import webbrowser
+            webbrowser.open(intro_html.as_uri())
+
 
 if __name__ == "__main__":
     main()

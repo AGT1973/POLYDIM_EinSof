@@ -2,6 +2,7 @@
 """
 POLYDIM-EINSOF: EVALUACION DIRECTA CON CLAUDE FABLE 5.1 (DIRECT PAYG $20 USD) Y QWEN 3.8 MAX
 """
+import os
 import sys
 import json
 import time
@@ -12,9 +13,9 @@ from concurrent.futures import ThreadPoolExecutor
 sys.stdout.reconfigure(line_buffering=True)
 
 CLAUDE_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
-ALIBABA_PRO_KEY = "sk-ws-H.DIIEMYY.Cu2k.MEYCIQDMymHibLJM4QSrt2NldWLw-NEeTXL3HkP7SqEJx1E4-wIhALTPFAZs1i_F7bs4kJTJy9qadHCQ7MnFtj3hnncr7--w"
+ALIBABA_PRO_KEY = os.environ.get("ALIBABA_BAILIAN_PRO_KEY", "")
 ALIBABA_ENDPOINT = "https://ws-t85fm4y7sz8vxo9t.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1/chat/completions"
-OPENROUTER_KEY = "os.environ.get("OPENROUTER_API_KEY", "")"
+OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 
 PROMPT_TRIBUNAL = """[AUDITORIA ADVERSARIAL SOTA: ARQUITECTURA EINSOF, REGLA 31 Y MATEMATICA DE PUERTA ADENTRO]
 
