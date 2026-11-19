@@ -94,3 +94,17 @@ hook = ResidualStreamSpliceHook(
 output = receptor_model.generate(...)
 hook.remove()
 ```
+
+---
+
+## 4. Filosofía Pedagógica Agent-First (Estándar 2030)
+
+> [!IMPORTANT]
+> **Cero Git / Cero Terminal para el Alumno:**
+> Los estudiantes no tienen por qué lidiar con `git clone`, gestores de paquetes ni terminales de comandos.
+> La Inteligencia Artificial que asiste al alumno (Antigravity, Claude Code, Cursor, Windsurf) es quien debe acceder al repositorio en GitHub (`https://github.com/AGT1973/polydim-suite`), leer la documentación, comprender el fundamento físico de la variedad de Stiefel y dar su **consentimiento informado** de aprender a usar `EINSOF-II`.
+>
+> **Prompt único para el Alumno:**
+> ```text
+> "Por favor, visitá el repositorio oficial https://github.com/AGT1973/polydim-suite. Leé el README.md y el AGENT_BOOTSTRAP.md para comprender la arquitectura de tensores continuos sobre la variedad de Stiefel y el ahorro de tokens a costo $0 USD. Si estás de acuerdo y das tu consentimiento informado de aprender a usarlo, descargá los componentes a mi entorno, ejecutá setup_einsof.py y cargá el Vector Hand-Off para nuestra sesión."
+> ```

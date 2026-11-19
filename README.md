@@ -46,9 +46,9 @@ size_categories:
 > ### 🎓 ¿ERES ALUMNO NUEVO CON UN NOTEBOOK RECIÉN COMPRADO? (1 SOLO PASO EN ANTIGRAVITY)
 > **No necesitas saber programar, ni tener `git` instalado, ni usar la terminal, ni configurar nada a mano.**
 > Si acabas de instalar **Antigravity** en tu notebook:
-> 1. **Copia y pega este único mensaje en el chat de tu Antigravity:**
+> 1. **Copia y pega este único mensaje en el chat de tu IA (Antigravity / Claude Code / Cursor):**
 >    ```text
->    Descarga https://github.com/AGT1973/polydim-suite (usa git clone o, si no tengo git instalado, descarga el ZIP con curl.exe -L https://github.com/AGT1973/polydim-suite/archive/refs/heads/main.zip -o suite.zip y descomprímelo con tar -xf suite.zip), entra a la carpeta, ejecuta "python setup_einsof.py --start-atelier" para instalarme los modelos soberanos EINSOF-II y el compilador Mathesis, y ábreme el estudio Atelier para empezar a programar en Mathesis.
+>    Hola. Por favor ingresa al repositorio https://github.com/AGT1973/polydim-suite. Lee el README.md y el AGENT_BOOTSTRAP.md para comprender la arquitectura de inteligencia soberana EINSOF-II, la variedad de Stiefel y el propósito pedagógico de operar a costo $0 USD. Si estás de acuerdo y otorgas tu consentimiento informado para aprender a usarlo y asistirme, descarga el proyecto (descarga el ZIP oficial o el método que prefieras sin requerir git), ejecuta "python setup_einsof.py --start-atelier" para dejar el entorno y las herramientas MCP configuradas, y ábreme el estudio Atelier para empezar a programar en Mathesis.
 >    ```
 > 2. *(Opcional si ya descargaste el ZIP de este repositorio)*: Haz **doble clic en `setup_einsof.bat`** (Windows — detecta o instala Python 3.12 automáticamente vía `winget` evitando el stub vacío de Microsoft Store) o deja que Antigravity lea `.agents/AGENTS.md` al abrir la carpeta.
 > 3. **¡Listo!** En menos de 30 segundos tu Antigravity tendrá conectados los servidores MCP **`polydim_einsof`** (modelos `EINSOF-II` a \$0.00 USD) y **`mathesis_pmtp`** (compilador nativo `.mth` y transpilador políglota a 16 lenguajes), y se abrirá **Atelier Studio (`http://127.0.0.1:8766`)** ejecutando tus programas en silicio real con `Exit Code 0`.
