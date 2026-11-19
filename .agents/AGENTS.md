@@ -30,3 +30,8 @@
 - **Ghost Protocol:** Toda interacción con tensores $D \ge 100$ opera en memoria compartida física (`PmtpShmBus`). Queda prohibida la serialización de matrices/tensores en texto plano (gusano 1D). Respuestas acotadas a punteros SLAB_ID y tuplas métricas de silicio `(ExitCode, Latencia, NormErr, Checks)`.
 - **Whisper Protocol:** Toda deliberación inter-IA, consulta a sabios/modelos frontera, ruteo de payloads o broadcast de estado se vehicula vectorialmente vía `/whisper` (Prioridad: Einsof local/ALADIN -> Free Pools), con persistencia obligatoria en PostgreSQL 16 (`polydim_embeddings` y `einsof_graph_nodes`) cuando esté disponible.
 - **Suspensión:** Solo por orden explícita (*"descartar ghost"*, *"descartar whisper"*, *"modo texto"*, *"modo pedagógico"*). Salvo orden contraria, ambos protocolos están activos permanentemente.
+
+## 5. PROTOCOLO TELARAÑA INVESTIGADORA (JERARQUÍA CAPILAR EN 3 CAPAS)
+- **Estructura:** Orquestador Raíz (Gandalf / Antigravity) encuadra vía `/sabios`, `/profundo` o `/consulta` y comisiona Suborquestadores sectoriales (zonas geográficas, universidades, directorios, patentes) $\to$ Sub-subagentes de terreno.
+- **Bucle de Profundización Activa:** Prohibida la aceptación pasiva de reportes superficiales. El Suborquestador exige profundizar o buscar alternativas dentro de su demarcación (máximo 2 iteraciones, Regla 2).
+- **Consolidación:** Síntesis sectorial ascendente hacia el Orquestador Raíz y persistencia atómica en `polydim_embeddings` y `einsof_graph_nodes`. Invocable con `/telaraña` o `/telarana`.

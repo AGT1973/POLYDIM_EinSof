@@ -41,6 +41,11 @@
   - **Deliberación Obligatoria con `/sabios` y `/profundo`:** Se recopilan todas las posturas, se cruzan argumentos en la Mesa del Senado, se erradican alucinaciones y se busca el consenso calificado ($\ge 75\%$), documentando el $\le 25\%$ disidente como casos de borde a mitigar.
   - **Compuerta de Silicio Innegociable:** Ninguna etapa del proyecto se da por aprobada sin ejecución física demostrable (`Exit Code 0`).
   - **Avance Secuencial Bloqueado:** Prohibido iniciar el despacho de la Etapa $N+1$ mientras la Etapa $N$ no cuente con Acta de Aprobación del Senado y certificación en silicio.
+- **Regla 3.3 (Protocolo Telaraña Investigadora / Árbol Capilar Jerárquico):**
+  - **Jerarquía Tripartita Obligatoria:** Ante investigaciones masivas, enciclopédicas o multi-sectoriales, se prohíbe la exploración plana y secuencial monolítica. Se opera en 3 capas: Orquestador Raíz (Gandalf / Antigravity) $\to$ Suborquestadores Sectoriales (dirección táctica, auditoría y control de calidad por zona/universidad/área) $\to$ Sub-subagentes de Terreno (recolección atómica de evidencia empírica).
+  - **Supervisión Dialéctica y Bucle de Profundización:** El Suborquestador tiene prohibida la aceptación pasiva de resultados superficiales; debe emitir mandatos de *profundizar*, *extraer datos de silicio/citas* o *buscar fuentes alternativas* en su sector.
+  - **Cota de Economía de Guerra (Regla 2):** Máximo 2 iteraciones de repregunta por sub-subagente.
+  - **Síntesis y Persistencia Holística:** El Suborquestador entrega una síntesis sectorial depurada al Orquestador Raíz para integración ejecutiva y persistencia en PostgreSQL 16 (`polydim_embeddings` y `einsof_graph_nodes`).
 - **Regla 4.1 (Socio Estratégico CARLOS-CYC):** Carlos Gil (`cegactuario@gmail.com`) es socio activo del proyecto `CARLOS-CYC`. Canal de comunicación bidireccional preferencial a través de `E:\email_AGY` (inbound prioritario y outbound agéntico autorizado).
 - **Regla 6 (SOTA Enforcement & Anti-Obsolescencia Incondicional):**
   - **Prohibición de Modelos Deprecados:** Prohibido seleccionar, compilar, fine-tunear o evaluar modelos abiertos con más de 12 meses de antigüedad o superados por generaciones posteriores (Veto explícito a Qwen 2.5 ante Qwen 3/3.8; DeepSeek V2/V3 ante V4/V4.1; GLM-4 base ante GLM-5/5.3; Kimi legacy ante Moonlight/K2/K3.1; Llama 3 ante Llama 4 Scout/Maverick; o ignorar la familia Muse Spark/Wonder y Gemma 4).
@@ -66,7 +71,7 @@
 - **mathesis2python:** `from mathesis2python import mathesis_run` (microcodigo AVX2/AVX1+FMA3, cero bucles CPython).
 - **PostgreSQL 16:** Datos en `polydim_active_db` (active_vault) y `polydim_vec_db` (theorems, embeddings, graph).
 - **ALADIN Node (192.168.100.21):** Sincronizador soberano pull via `gandalf_sync_on_boot.py` (download_queue).
-- **Slash Actions:** /ghost, /whisper, /sabios, /profundo, /consulta, /redteam, /limpiar, /remember, /investiga.
+- **Slash Actions:** /ghost, /whisper, /sabios, /profundo, /consulta, /redteam, /limpiar, /remember, /investiga, /telaraña.
 
 ## 4. Vision 2030: Semilla del Co-Working Humano-IA y Multi-IA (Co-Work, Not Doomsday)
 > *"Bienvenidos a los que pensamos en el futuro como Co-Work y no Doomsday."*
