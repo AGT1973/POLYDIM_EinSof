@@ -459,7 +459,7 @@ pub const NeumaierAcc = struct {{
 
     def export_all(self) -> Dict[str, str]:
         r"""Exporta código listo para compilar a todos los lenguajes soportados."""
-        res = {{}}
+        res = {}
         res.update(self.to_ada2022())
         res["stiefel_manifold.f90"] = self.to_fortran2023()
         res["STIEFEL.cbl"] = self.to_cobol()
