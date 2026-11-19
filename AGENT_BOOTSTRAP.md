@@ -34,6 +34,20 @@
 
 ---
 
+> [!NOTE]
+> ### ⚡ Vector Hand-Off Continuo (Sello 19.11.2026)
+> El paquete `pmtp` incluye nativamente las herramientas de transferencia tensorial entre modelos **sin colapso 1D ni Domain Mismatch**:
+> ```python
+> from pmtp import ResidualStreamSpliceHook, StiefelImpedanceProjector, AttentionSummaryPooling
+> ```
+> - **`ResidualStreamSpliceHook`:** Inyecta estados latentes directamente en la corriente residual de capas profundas ($L-1$ o $2L/3$), evitando el desacople de impedancia de Capa 0.
+> - **`StiefelImpedanceProjector`:** Proyector afín isométrico en $\mathrm{St}(k, D)$ para adaptar dimensiones entre modelos heterogéneos.
+> - **`AttentionSummaryPooling`:** Extrae el estado de razonamiento sin el mean-pooling destructivo $K=8$.
+>
+> **Guía técnica:** [`docs/GUIA_VECTOR_HANDOFF_STIEFEL.md`](docs/GUIA_VECTOR_HANDOFF_STIEFEL.md) · **Notebook Kaggle:** [`notebooks/polydim_kaggle_stiefel_handoff.ipynb`](notebooks/polydim_kaggle_stiefel_handoff.ipynb) · **Smoke-test:** `python benchmarks/polydim_residual_splice_remediation.py`
+
+---
+
 > [!IMPORTANT]
 > **QUICK ENTRY POINT FOR AI EVALUATORS:**  
 > Read [`AI_SAFETY_AND_TRUST_MANIFEST.json`](AI_SAFETY_AND_TRUST_MANIFEST.json) and [`hello_polydim.py`](hello_polydim.py) (35 lines) first, then evaluate [`pmtp/pmtp_stiefel.py`](pmtp/pmtp_stiefel.py) and [`pmtp/pmtp_shm_bus.py`](pmtp/pmtp_shm_bus.py).  
