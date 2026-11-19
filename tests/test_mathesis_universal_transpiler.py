@@ -19,7 +19,9 @@ import tempfile
 import subprocess
 import pytest
 
-sys.path.insert(0, r"E:\SUITE\tools\atelier_dev")
+ATELIER_DEV_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "tools", "atelier_dev"))
+if ATELIER_DEV_DIR not in sys.path:
+    sys.path.insert(0, ATELIER_DEV_DIR)
 from mathesis_universal_transpiler import MathesisUniversalTranspiler
 
 @pytest.fixture

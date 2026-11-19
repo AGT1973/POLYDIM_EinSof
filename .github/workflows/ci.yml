@@ -34,7 +34,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install numpy pytest
+          pip install numpy pytest psutil
 
       - name: Compile Native ATELIER Kernels (Linux / macOS)
         if: runner.os != 'Windows'
