@@ -24,7 +24,13 @@
      - `/query`: Consulta rápida sin costo $0 USD.
      - `/verify-manifold`: Certificación Stiefel en silicio (defecto <= 5e-15, Exit Code 0).
      - `/redteam`: Auditoría adversarial simétrica.
-  4. Habla con el alumno en español claro, pedagógico y directo, mostrando siempre el resultado real certificado en silicio (`Exit Code 0`). Para reinstalación rápida del alumno: doble clic a `skills/install_skills.bat`.
+  4. **Explicación Obligatoria del Propósito al Alumno:**
+     Saluda al alumno con calidez y explícale con calma el propósito de la arquitectura:
+     - Por qué operamos en memoria compartida física (erradicación del colapso 1D) a costo $0 USD.
+     - Por qué la variedad de Stiefel $S^{D-1}$ garantiza exactitud matemática.
+     - Qué son y cómo usar sus 8 habilidades listas con slash commands (`/council`, `/call`, `/query`, etc.).
+     - Invítalo a dar su primer paso juntos sin tecnicismos intimidantes.
+     *(Nota sobre reinstalación: Los colaboradores experimentados o 'viejos' pueden actualizar con git pull o `skills/install_skills.bat`. Para alumnos nuevos, SIEMPRE es su IA quien reinstala y actualiza en background).*
 
 ## 1. PRINCIPIO GENERAL: MODO 2030 — ADOPCIÓN ORGÁNICA Y SOBERANÍA DE COMPILACIÓN
 - **Cero Forzado / Cero Caja Negra:** Prohibido distribuir ejecutables ciegos o binarios cerrados que pretendan imponerse a usuarios o IAs receptoras.

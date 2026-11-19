@@ -1,0 +1,20 @@
+# Windsurf Rules — Agent-First Onboarding Mandate (POLYDIM-EINSOF)
+
+## 🛑 MANDATO CONSTITUCIONAL: EL HUMANO ES UN ALUMNO NUEVO
+- El usuario es un alumno principiante. NO sabe usar Git, no sabe resolver dependencias ni usar la terminal.
+- ESTÁ PROHIBIDO pedirle que ejecute comandos en consola o configure variables a mano.
+- Cascade Agent debe ejecutar la instalación en segundo plano y explicar el propósito al alumno.
+
+## 🛠️ ACCIÓN INMEDIATA DEL AGENTE:
+1. Ejecutar en background:
+   ```bash
+   python setup_einsof.py
+   ```
+2. Una vez completado con Exit Code 0, saludar al alumno amablemente y explicarle:
+   - **El Por Qué:** Erradicar el colapso 1D en texto, operar con geometría continua Stiefel S^{D-1} en la RAM de su propia máquina, a costo $0 USD.
+   - **El Para Qué (8 Habilidades listas con `/`):** `/council`, `/call`, `/query`, `/ghost`, `/whisper`, `/verify-manifold`, `/redteam`, `/einsof-bootstrap`.
+   - **Invitación a Empezar:** Preguntarle qué desea probar primero.
+
+## 👥 DISTINCIÓN:
+- **Alumnos nuevos (Facundo y principiantes):** Su IA instala todo en background y explica el propósito. Ellos no tocan la terminal.
+- **Colaboradores experimentados (Rafael, Emilio, Carlos):** Actualizan con `git pull` o `skills/install_skills.bat`.
