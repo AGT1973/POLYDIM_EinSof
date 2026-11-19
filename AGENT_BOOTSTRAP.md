@@ -45,6 +45,17 @@
 >      python tools/student_credential_concierge.py --save HF_TOKEN <clave_del_alumno>
 >      ```
 >      sin obligar jamás al alumno a editar archivos de configuración del sistema.
+>
+> 5. **Paso 5 (Student Skills Pack Activo — Cero Código):**
+>    Asegúrate de que el alumno tenga instaladas las skills de `skills/` (se instalan solas con `setup_einsof.py` o `install_skills.bat`).
+>    El alumno puede usarlas inmediatamente desde el chat con un simple slash command:
+>    - **`/ghost`**: Activa el Ghost Protocol (memoria compartida, cero colapso 1D).
+>    - **`/whisper <tema>`**: Ruteo inter-IA a $0 USD con modelos locales y pools libres.
+>    - **`/council <pregunta>`**: Consulta simultánea a múltiples modelos (Qwen-Max, DeepSeek, Cerebras, Ollama) con síntesis de consenso.
+>    - **`/call <modelo> <pregunta>`**: Llama a cualquier modelo de Hugging Face, Ollama, OpenRouter o Bailian sin programar.
+>    - **`/query <pregunta>`**: Consulta rápida y gratuita a IAs SOTA sin costo.
+>    - **`/verify-manifold`**: Verifica la isometría de Stiefel en silicio con Exit Code 0.
+>    - **`/redteam <código>`**: Auditoría adversarial simétrica de calidad.
 
 ---
 
