@@ -21,6 +21,8 @@ from datetime import datetime, timezone
 
 OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "http://127.0.0.1:11434")
 DEFAULT_MODEL = "einsof2-deepseek-v4-stiefel:latest"
+CEREBRAS_API_KEY = os.environ.get("CEREBRAS_API_KEY", "csk-kvrkckd2he5wed5r6dypr5n88w6mfnpry3vx24p6xjtfev26")
+CEREBRAS_URL = "https://api.cerebras.ai/v1/chat/completions"
 
 TOOLS = [
     {
@@ -78,6 +80,30 @@ TOOLS = [
                 }
             }
         }
+    },
+    {
+        "name": "ask_cerebras_einsof",
+        "description": "Inferencia de ultra-alta velocidad (1.600+ tokens/segundo) sobre el Wafer-Scale Engine CS-3 de Cerebras con directivas axiomáticas Stiefel S^{D-1} de EINSOF-II. Costo: $0 USD.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "prompt": {
+                    "type": "string",
+                    "description": "La consulta matemática, técnica o de programación a resolver a ultra-alta velocidad."
+                },
+                "model": {
+                    "type": "string",
+                    "description": "Modelo Cerebras CS-3 a usar ('qwen-3.8-27b' o 'gpt-oss-120b'). Por defecto 'qwen-3.8-27b'.",
+                    "default": "qwen-3.8-27b"
+                },
+                "temperature": {
+                    "type": "number",
+                    "description": "Temperatura de muestreo (0.0 a 1.0, por defecto 0.2 para rigor matemático).",
+                    "default": 0.2
+                }
+            },
+            "required": ["prompt"]
+        }
     }
 ]
 
@@ -102,6 +128,47 @@ def call_ollama_generate(prompt: str, model: str = DEFAULT_MODEL, temp: float = 
         return f"Error conectando con Ollama en {OLLAMA_HOST}: {e}. ¿Está ejecutándose 'ollama serve'?"
     except Exception as e:
         return f"Error en inferencia EINSOF: {e}"
+
+def call_cerebras_generate(prompt: str, model: str = "qwen-3.8-27b", temp: float = 0.2) -> str:
+    headers = {
+        "Authorization": f"Bearer {CEREBRAS_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    system_msg = (
+        "Eres EINSOF-II operando sobre el procesador Wafer-Scale CS-3 de Cerebras. "
+        "Especializado en geometría de la variedad de Stiefel St(k, D), retracción polar de orden 4 de Newton-Schulz, "
+        "álgebra de Clifford y suma compensada de Neumaier. Responde con absoluto rigor formal y concisión."
+    )
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": system_msg},
+            {"role": "user", "content": prompt}
+        ],
+        "temperature": temp,
+        "max_tokens": 2048
+    }
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(CEREBRAS_URL, data=data, headers=headers)
+    try:
+        import time
+        t0 = time.perf_counter()
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            elapsed = time.perf_counter() - t0
+            res = json.loads(resp.read().decode("utf-8"))
+            choice = res["choices"][0]
+            msg = choice.get("message", {})
+            content = msg.get("content", "")
+            reasoning = msg.get("reasoning", "")
+            usage = res.get("usage", {})
+            tokens = usage.get("completion_tokens", 0)
+            tok_s = tokens / elapsed if elapsed > 0 else 0
+            
+            header = f"[Cerebras CS-3 Wafer-Scale | Modelo: {model} | {tokens} tokens en {elapsed:.3f}s ({tok_s:.1f} tok/s)]\n\n"
+            final_text = content.strip() if content.strip() else reasoning.strip()
+            return header + final_text
+    except Exception as e:
+        return f"Error en inferencia Cerebras CS-3: {e}"
 
 def call_ollama_list() -> dict:
     url = f"{OLLAMA_HOST}/api/tags"
@@ -207,6 +274,12 @@ def handle_json_rpc(line: str):
             order = int(args.get("order", 4))
             data = compute_stiefel_retraction(d=d, k=k, order=order)
             result_content = [{"type": "text", "text": json.dumps(data, indent=2)}]
+        elif tool_name == "ask_cerebras_einsof":
+            prompt = args.get("prompt", "")
+            model = args.get("model", "qwen-3.8-27b")
+            temp = float(args.get("temperature", 0.2))
+            res_text = call_cerebras_generate(prompt=prompt, model=model, temp=temp)
+            result_content = [{"type": "text", "text": res_text}]
         else:
             send_response({
                 "jsonrpc": "2.0",
