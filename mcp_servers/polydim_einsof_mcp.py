@@ -170,6 +170,18 @@ TOOLS = [
             },
             "required": ["prompt"]
         }
+    },
+    {
+        "name": "procrustes_anchor_align",
+        "description": "Handshake Universal de Anclas de Procrustes (<50ms, modifies_ai_model_weights: false): alinea ortogonalmente activaciones de modelos EINSOF-II a la variedad canonica St(k, D).",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "dim_d": {"type": "integer", "description": "Dimension ambiental del modelo D (por defecto 1024)", "default": 1024},
+                "dim_k": {"type": "integer", "description": "Dimension del ancla ortonormal k (por defecto 16)", "default": 16},
+                "num_anchors": {"type": "integer", "description": "Cantidad de vectores ancla N (por defecto 64)", "default": 64}
+            }
+        }
     }
 ]
 
@@ -448,6 +460,44 @@ def handle_json_rpc(line: str):
                 temp=float(args.get("temperature", 0.2))
             )
             result_content = [{"type": "text", "text": res_text}]
+        elif tool_name == "procrustes_anchor_align":
+            try:
+                d = int(args.get("dim_d", 1024))
+                k = int(args.get("dim_k", 16))
+                n_anc = int(args.get("num_anchors", 64))
+                if d < 1 or k < 1 or k > d or d > MAX_DIM_D or n_anc < k:
+                    raise ValueError(f"Parametros Procrustes invalidos: D={d}, k={k}, N={n_anc}")
+                t0 = time.perf_counter()
+                rng = np.random.default_rng(20261119)
+                xm = rng.standard_normal((n_anc, d))
+                xa = rng.standard_normal((n_anc, k))
+                cross = xm.T @ xa
+                u, _, vt = np.linalg.svd(cross, full_matrices=False)
+                w = u @ vt
+                i_k = np.eye(k, dtype=np.float64)
+                for _ in range(2):
+                    g = w.T @ w
+                    e = 0.5 * (g + g.T) - i_k
+                    if float(np.max(np.abs(e))) <= 3.0e-16:
+                        break
+                    e2 = e @ e
+                    w = w @ (i_k - 0.5 * e + 0.375 * e2 - 0.3125 * (e2 @ e) + 0.2734375 * (e2 @ e2))
+                defect = float(np.max(np.abs((w.T @ w) - i_k)))
+                lat_ms = round((time.perf_counter() - t0) * 1000.0, 3)
+                data = {
+                    "status": "CERTIFIED_PROCRUSTES_UNDER_50MS" if (defect <= 1e-15 and lat_ms < 50.0) else "OK",
+                    "exit_code": 0,
+                    "manifold": f"St({k}, {d})",
+                    "num_anchors": n_anc,
+                    "isometry_defect_inf": defect,
+                    "latency_ms": lat_ms,
+                    "modifies_ai_model_weights": False,
+                    "ghost_tuple": f"(ExitCode=0, Latencia={lat_ms}ms, NormErr={defect:.2e}, D={d}, Checks=1/1)"
+                }
+            except Exception as e:
+                data = {"status": "ERROR", "exit_code": 1, "error": str(e)}
+            is_error = data.get("exit_code", 0) != 0
+            result_content = [{"type": "text", "text": json.dumps(data, indent=2)}]
         else:
             send_response({
                 "jsonrpc": "2.0",

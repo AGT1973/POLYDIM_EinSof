@@ -529,18 +529,28 @@ class AIIDEHandler(BaseHTTPRequestHandler):
             self.end_headers()
             return
 
-        if path in ("/", "/index.html", "/aiide.html", "/atelier", "/ui/atelier_co_working_studio.html", "/tools/atelier_dev/atelier_studio_ui.html"):
+        if path in ("/", "/index.html", "/aiide.html", "/atelier", "/ui/atelier_co_working_studio.html", "/tools/atelier_dev/atelier_studio_ui.html", "/OMNIMODALIDAD_CONTINUA_STIEFEL.md") or path.startswith("/introduction/"):
             if path in ("/atelier", "/ui/atelier_co_working_studio.html"):
                 html_path = os.path.join(BASE_DIR, "ui", "atelier_co_working_studio.html")
             elif path == "/tools/atelier_dev/atelier_studio_ui.html":
                 html_path = os.path.join(BASE_DIR, "tools", "atelier_dev", "atelier_studio_ui.html")
+            elif path == "/OMNIMODALIDAD_CONTINUA_STIEFEL.md":
+                html_path = os.path.join(BASE_DIR, "OMNIMODALIDAD_CONTINUA_STIEFEL.md")
+            elif path.startswith("/introduction/"):
+                rel_name = os.path.basename(path) or "index.html"
+                html_path = os.path.join(BASE_DIR, "introduction", rel_name)
             else:
                 html_path = os.path.join(BASE_DIR, "aiide.html")
+            ok_static, safe_html = _is_safe_project_path(html_path, for_write=False)
+            if not ok_static or not os.path.exists(safe_html):
+                self.send_error(404, "Recurso no encontrado")
+                return
             try:
-                with open(html_path, "rb") as f:
+                with open(safe_html, "rb") as f:
                     content = f.read()
+                ctype = "text/markdown; charset=utf-8" if safe_html.endswith(".md") else "text/html; charset=utf-8"
                 self.send_response(200)
-                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Type", ctype)
                 self.send_header("Content-Length", str(len(content)))
                 self._send_cors_headers()
                 self.end_headers()
