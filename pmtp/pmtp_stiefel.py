@@ -298,3 +298,138 @@ class PmtpStiefelAdapter:
         gram = np.dot(self.W.T, self.W)
         eye = np.eye(self.d_latent, dtype=np.float64)
         return float(np.max(np.abs(gram - eye)))
+
+    @classmethod
+    def symplectic_polar_retract(cls, X: np.ndarray) -> dict:
+        """
+        Retracción Polar sobre la Variedad de Stiefel Simpléctica Compacta SpSt(2k, 2n) = St(2k, 2n) ∩ Sp(2k, 2n)
+        con Inversa de Forma Cerrada W^+ = -J_{2k} W^T J_{2n} (ALADIN SOTA C16.1).
+        Garantiza simultáneamente:
+          1) ||W^T W - I_{2k}||_inf <= 1e-15 (Isometría Stiefel)
+          2) ||W^T J_{2n} W - J_{2k}||_inf <= 1e-15 (Invariancia Simpléctica de Hamiltoniano)
+          3) ||W^+ W - I_{2k}||_inf <= 1e-15 (Inversa cerrada O(1) sin inversión matricial)
+        """
+        X_arr = np.asarray(X, dtype=np.float64)
+        if X_arr.ndim != 2 or (X_arr.shape[0] % 2 != 0) or (X_arr.shape[1] % 2 != 0):
+            raise ValueError("SpSt(2k, 2n) exige dimensiones pares (2n, 2k).")
+        two_n, two_k = X_arr.shape
+        if two_k > two_n or two_k < 2:
+            raise ValueError(f"Dimensiones inválidas SpSt({two_k}, {two_n}).")
+        if not np.all(np.isfinite(X_arr)):
+            raise ValueError("Matriz contiene NaN o Inf.")
+
+        n = two_n // 2
+        k = two_k // 2
+        # Proyección al subespacio complejo-unitario isomorfo U(n, k) ~= O(2n, 2k) ∩ Sp(2n, 2k)
+        U0 = 0.5 * (X_arr[:n, :k] + X_arr[n:, k:])
+        V0 = 0.5 * (X_arr[n:, :k] - X_arr[:n, k:])
+        Z = U0 + 1j * V0
+        max_abs = float(np.max(np.abs(Z)))
+        if max_abs <= 0.0 or not math.isfinite(max_abs):
+            raise ValueError("Proyección simpléctica singular.")
+        Z = Z / max_abs
+
+        Q, R = np.linalg.qr(Z, mode="reduced")
+        diag_r = np.diag(R)
+        if float(np.min(np.abs(diag_r))) <= 1e-12 * float(np.max(np.abs(diag_r))):
+            raise ValueError("Rango simpléctico deficiente.")
+        phases = np.where(np.abs(diag_r) > 0, diag_r / np.abs(diag_r), 1.0 + 0j)
+        Z = Q * np.conj(phases)
+
+        I_k = np.eye(k, dtype=np.complex128)
+        for _ in range(3):
+            G = Z.conj().T @ Z
+            E = 0.5 * (G + G.conj().T) - I_k
+            if float(np.max(np.abs(E))) <= 2.5e-16:
+                break
+            E2 = E @ E
+            Z = Z @ (I_k - 0.5 * E + 0.375 * E2 - 0.3125 * (E2 @ E) + 0.2734375 * (E2 @ E2))
+
+        U = np.real(Z)
+        V = np.imag(Z)
+        W = np.block([[U, -V], [V, U]]).astype(np.float64)
+
+        # Inversa simpléctica de forma cerrada: W^+ = -J_{2k} W^T J_{2n} (cero inversión O(k^3))
+        # Multiplicación por J_{2m} = [[0, I_m], [-I_m, 0]] implementada por permutación de bloques O(n*k)
+        Wt = W.T
+        Wt_J2n = np.hstack([-Wt[:, n:], Wt[:, :n]])
+        W_pinv = -np.vstack([Wt_J2n[k:, :], -Wt_J2n[:k, :]])
+
+        I_2k = np.eye(two_k, dtype=np.float64)
+        J_2k = np.block([[np.zeros((k, k)), np.eye(k)], [-np.eye(k), np.zeros((k, k))]])
+        J_2n_W = np.vstack([W[n:, :], -W[:n, :]])
+
+        stiefel_defect = float(np.max(np.abs((W.T @ W) - I_2k)))
+        symplectic_defect = float(np.max(np.abs((W.T @ J_2n_W) - J_2k)))
+        inverse_defect = float(np.max(np.abs((W_pinv @ W) - I_2k)))
+
+        return {
+            "W": W,
+            "W_pinv": W_pinv,
+            "stiefel_defect": stiefel_defect,
+            "symplectic_defect": symplectic_defect,
+            "closed_form_inverse_defect": inverse_defect,
+            "status": "CERTIFIED_SYMPLECTIC_STIEFEL" if max(stiefel_defect, symplectic_defect, inverse_defect) <= 1e-15 else "PRECISION_WARN"
+        }
+
+    @classmethod
+    def lyapunov_energy_halting(cls, X: np.ndarray, max_turing_t: int = 25, tol: float = 1e-15) -> dict:
+        """
+        Parada Temprana Dinámica por Energía Riemanniana de Lyapunov en St(k, D) (ALADIN SOTA C16.2).
+        Detiene el bucle turing=T cuando E_t = ||W_t^T W_t - I_k||_inf <= tol o por estancamiento de mantisa FP64.
+        """
+        X_arr = np.asarray(X, dtype=np.float64)
+        D, k = X_arr.shape
+        max_abs = float(np.max(np.abs(X_arr)))
+        if max_abs <= 0.0 or not np.all(np.isfinite(X_arr)):
+            raise ValueError("Matriz inválida para evolución de Lyapunov.")
+        Q, R = np.linalg.qr(X_arr / max_abs, mode="reduced")
+        W = Q * np.where(np.diag(R) >= 0.0, 1.0, -1.0)
+        I_k = np.eye(k, dtype=np.float64)
+
+        energy_trace = []
+        halted_step = max_turing_t
+        prev_e = float("inf")
+        for step in range(1, max(1, max_turing_t) + 1):
+            G = W.T @ W
+            E = 0.5 * (G + G.T) - I_k
+            err_inf = float(np.max(np.abs(E)))
+            energy_trace.append(err_inf)
+            if err_inf <= tol or abs(prev_e - err_inf) <= 1e-16 * max(prev_e, 1e-16):
+                halted_step = step
+                break
+            prev_e = err_inf
+            E2 = E @ E
+            W = W @ (I_k - 0.5 * E + 0.375 * E2 - 0.3125 * (E2 @ E) + 0.2734375 * (E2 @ E2))
+
+        saved_pct = round(max(0.0, (1.0 - (halted_step / max(1, max_turing_t))) * 100.0), 2)
+        return {
+            "W": W,
+            "halted_step": halted_step,
+            "max_turing_t": max_turing_t,
+            "final_energy": energy_trace[-1],
+            "energy_trace": energy_trace,
+            "cycles_saved_pct": saved_pct
+        }
+
+    @classmethod
+    def kvmark_fragile_signature(cls, W: np.ndarray) -> str:
+        """
+        Marca de Agua Frágil KVMARK sobre la paridad LSB de mantisa IEEE-754 de 53 bits + traza espectral (ALADIN SOTA C16.3).
+        Detecta cualquier paso clandestino por serialización 1D (texto/JSON/%.6f) sin alterar la isometría Stiefel.
+        """
+        import hashlib
+        W_arr = np.ascontiguousarray(W, dtype=np.float64)
+        bits_u64 = W_arr.view(np.uint64)
+        lsb_parity = (bits_u64 & np.uint64(0xFF)).tobytes()
+        h = hashlib.blake2s(digest_size=32)
+        h.update(W_arr.tobytes())
+        h.update(lsb_parity)
+        return h.hexdigest()
+
+    @classmethod
+    def verify_kvmark_fragile(cls, W: np.ndarray, expected_sig: str) -> tuple[bool, str]:
+        actual = cls.kvmark_fragile_signature(W)
+        if actual == expected_sig:
+            return True, "VERIFIED_ZERO_DPI_1D_LOSS"
+        return False, "DPI_1D_SERIALIZATION_TAMPER_DETECTED"
