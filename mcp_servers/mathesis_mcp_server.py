@@ -251,6 +251,7 @@ def tool_compile_mathesis(args: dict) -> dict:
     source_code = str(args.get("source_code", "")).strip()
     if not source_code:
         return {"status": "ERROR", "exit_code": 1, "error": "Codigo fuente .mth vacio."}
+    run_binary = bool(args.get("run", True))
 
     pid_tag = f"{os.getpid()}_{time.time_ns()}"
     tmp_mth = SLAB_DIR / f"mcp_prog_{pid_tag}.mth"
@@ -261,7 +262,7 @@ def tool_compile_mathesis(args: dict) -> dict:
     if mthc_path is not None:
         cmd = [sys.executable, str(mthc_path), str(tmp_mth), "-o", str(tmp_out)]
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-        return {
+        res = {
             "status": "OK" if proc.returncode == 0 else "COMPILE_ERROR",
             "exit_code": proc.returncode,
             "compiler": str(mthc_path),
@@ -269,6 +270,17 @@ def tool_compile_mathesis(args: dict) -> dict:
             "stdout": proc.stdout.strip(),
             "stderr": proc.stderr.strip()
         }
+        if proc.returncode == 0 and run_binary and tmp_out.exists():
+            try:
+                t0 = time.perf_counter()
+                exec_proc = subprocess.run([str(tmp_out)], capture_output=True, text=True, timeout=15)
+                res["execution_exit_code"] = exec_proc.returncode
+                res["execution_stdout"] = exec_proc.stdout.strip()
+                res["execution_stderr"] = exec_proc.stderr.strip()
+                res["execution_latency_ms"] = round((time.perf_counter() - t0) * 1000.0, 3)
+            except Exception as e:
+                res["execution_error"] = str(e)
+        return res
     else:
         return {
             "status": "STAGED",
@@ -276,6 +288,89 @@ def tool_compile_mathesis(args: dict) -> dict:
             "source_saved": str(tmp_mth),
             "bytes": len(source_code.encode("utf-8"))
         }
+
+
+def tool_transpile_mathesis_polyglot(args: dict) -> dict:
+    """Transpila especificaciones Stiefel/Mathesis a Ada 2022, Fortran 2023, COBOL, Python 3.15, Rust 1.100, C++20 y Zig."""
+    target = str(args.get("target", "all")).lower()
+    k = int(args.get("k", 16))
+    D = int(args.get("D", 1024))
+    if k < 1 or D < 1 or k > D or D > MAX_DIM_D:
+        return {"status": "ERROR", "exit_code": 1, "error": f"Dimensiones invalidas St({k}, {D})."}
+
+    transpiler_path = _resolve_suite_file("tools/atelier_dev/mathesis_universal_transpiler.py")
+    if transpiler_path is None:
+        return {"status": "ERROR", "exit_code": 1, "error": "mathesis_universal_transpiler.py no encontrado."}
+
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("mathesis_universal_transpiler", str(transpiler_path))
+    tmod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tmod)
+    tr = tmod.MathesisUniversalTranspiler(k=k, D=D)
+    all_files = tr.export_all()
+
+    if target != "all":
+        filtered = {fname: code for fname, code in all_files.items() if target in fname.lower()}
+        if filtered:
+            all_files = filtered
+
+    return {
+        "status": "OK",
+        "exit_code": 0,
+        "manifold": f"St({k}, {D})",
+        "target": target,
+        "files_count": len(all_files),
+        "artifacts": all_files
+    }
+
+
+def tool_launch_atelier_studio(args: dict) -> dict:
+    """Verifica o inicia el servidor AIIDE/Atelier Studio (aiide_server.py) en el puerto 8766 para programar Mathesis en vivo."""
+    import urllib.request
+    port = int(args.get("port", 8766))
+    status_url = f"http://127.0.0.1:{port}/api/status"
+
+    def _probe() -> dict | None:
+        try:
+            with urllib.request.urlopen(status_url, timeout=1.0) as r:
+                if r.status == 200:
+                    return json.loads(r.read().decode("utf-8"))
+        except Exception:
+            return None
+        return None
+
+    diag = _probe()
+    started_now = False
+    if diag is None:
+        server_py = _resolve_suite_file("aiide_server.py")
+        if server_py is None:
+            return {"status": "ERROR", "exit_code": 1, "error": "aiide_server.py no encontrado en la suite."}
+        creationflags = getattr(subprocess, "CREATE_NO_WINDOW", 0) if os.name == "nt" else 0
+        subprocess.Popen(
+            [sys.executable, str(server_py), str(port)],
+            cwd=str(server_py.parent),
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            creationflags=creationflags
+        )
+        started_now = True
+        for _ in range(10):
+            time.sleep(0.25)
+            diag = _probe()
+            if diag is not None:
+                break
+
+    suite_dir = (_resolve_suite_file("aiide_server.py") or Path(r"E:\SUITE\aiide_server.py")).parent
+    return {
+        "status": "ONLINE" if diag is not None else "STARTED_PENDING",
+        "exit_code": 0,
+        "started_now": started_now,
+        "port": port,
+        "aiide_url": f"http://127.0.0.1:{port}/",
+        "atelier_coworking_html": str(suite_dir / "ui" / "atelier_co_working_studio.html"),
+        "atelier_polyglot_html": str(suite_dir / "tools" / "atelier_dev" / "atelier_studio_ui.html"),
+        "diagnostics": diag
+    }
 
 
 def tool_qpu_bridge_prepare(args: dict) -> dict:
@@ -391,8 +486,9 @@ def tool_atelier_bimodal_bridge(args: dict) -> dict:
 
 def tool_pmtp_mcp_bridge(args: dict) -> dict:
     """
-    Comunicacion directa entre dos instancias MCP usando slabs binarios PMTP
-    (en memoria local / /dev/shm o envio directo por socket TCP a otro nodo como ALADIN).
+    Comunicacion directa bajo Ghost Protocol (Regla 3) entre instancias MCP usando slabs binarios PMTP
+    (en memoria compartida PmtpShmBus / /dev/shm o envio binario 128B directo por socket TCP a ALADIN:9999).
+    Prohibida la serializacion de tensores D>=100 a listas 1D en JSON.
     """
     action = str(args.get("action", "write")).lower()
     raw_slab_id = str(args.get("slab_id", "default_slab"))
@@ -400,16 +496,29 @@ def tool_pmtp_mcp_bridge(args: dict) -> dict:
     slab_id = slab_path.stem
 
     if action == "write":
+        t0 = time.perf_counter()
         vector = args.get("vector")
-        if not isinstance(vector, list) or len(vector) == 0:
-            return {"status": "ERROR", "exit_code": 1, "error": "El vector de entrada no puede ser vacio."}
-        arr = np.asarray(vector, dtype=np.float64).reshape(-1, 1)
-        if not np.all(np.isfinite(arr)):
-            return {"status": "ERROR", "exit_code": 1, "error": "El vector contiene valores NaN o Inf."}
-        norm_sq = exact_compensated_sum(arr * arr)
-        if norm_sq <= 1e-300:
-            return {"status": "ERROR", "exit_code": 1, "error": "Vector nulo (norma cero) no proyectable en S^(D-1)."}
-        arr = arr / math.sqrt(norm_sq)
+        D = int(args.get("D", 128))
+        k = int(args.get("k", 1))
+        if isinstance(vector, list) and len(vector) > 0:
+            arr = np.asarray(vector, dtype=np.float64).reshape(-1, 1)
+            if not np.all(np.isfinite(arr)):
+                return {"status": "ERROR", "exit_code": 1, "error": "El tensor contiene valores NaN o Inf."}
+            norm_sq = exact_compensated_sum(arr * arr)
+            if norm_sq <= 1e-300:
+                return {"status": "ERROR", "exit_code": 1, "error": "Tensor nulo (norma cero) no proyectable en S^(D-1)."}
+            arr = arr / math.sqrt(norm_sq)
+            D, k = int(arr.shape[0]), int(arr.shape[1])
+            norm_defect = abs(exact_compensated_sum(arr * arr) - 1.0)
+        elif slab_path.exists():
+            info = unpack_pmtp_slab(slab_path.read_bytes())
+            arr = info["tensor"]
+            D, k = int(info["D"]), int(info["k"])
+            arr, norm_defect = stiefel_polar_retraction_order4(arr)
+        else:
+            rng = np.random.RandomState(int(args.get("seed", 2026)))
+            raw_mat = rng.randn(D, k).astype(np.float64)
+            arr, norm_defect = stiefel_polar_retraction_order4(raw_mat)
 
         raw_slab = pack_pmtp_slab(slab_id, arr)
         atomic_write_bytes(slab_path, raw_slab)
@@ -420,8 +529,9 @@ def tool_pmtp_mcp_bridge(args: dict) -> dict:
         ack_info = None
         if peer_host:
             try:
-                # Wire ABI canonico ALADIN 128B (<IHHQ4I QIIQQ 64s) + payload raw FP64
-                payload_bytes = arr.tobytes()
+                # Wire ABI canonico ALADIN 128B (<IHHQ4I QIIQQ 64s) + payload raw FP64 normalizado en S^(D*k-1)
+                wire_arr = (arr / math.sqrt(k)) if k > 1 else arr
+                payload_bytes = wire_arr.tobytes()
                 slab_id_64 = slab_id.encode("utf-8")[:64].ljust(64, b"\x00")
                 hdr_128 = struct.pack(
                     "<IHHQ4I QIIQQ 64s",
@@ -458,30 +568,47 @@ def tool_pmtp_mcp_bridge(args: dict) -> dict:
                     "peer_error": str(e)
                 }
 
+        elapsed_ms = round((time.perf_counter() - t0) * 1000.0, 3)
         return {
             "status": "OK",
             "exit_code": 0,
+            "ghost_protocol": "ACTIVE_ZERO_1D_WORM",
             "action": "write",
             "slab_id": slab_id,
             "slab_path": str(slab_path),
+            "dimensions": [D, k],
+            "norm_err": norm_defect,
+            "latency_ms": elapsed_ms,
             "bytes_written": len(raw_slab),
             "tcp_sent": tcp_sent,
-            "aladin_ack": ack_info
+            "aladin_ack": ack_info,
+            "ghost_tuple": f"(ExitCode=0, Latencia={elapsed_ms}ms, NormErr={norm_defect:.2e}, D={D}, Checks=1/1)"
         }
 
     elif action == "read":
         if not slab_path.exists():
             return {"status": "ERROR", "exit_code": 1, "error": f"Slab '{slab_id}' no encontrado en {SLAB_DIR}"}
+        t0 = time.perf_counter()
         info = unpack_pmtp_slab(slab_path.read_bytes())
-        flat_preview = info["tensor"].ravel()[:16].tolist()
+        arr = info["tensor"]
+        D, k = int(info["D"]), int(info["k"])
+        diff = (arr.T @ arr) - np.eye(k, dtype=np.float64)
+        frob_sq = math.fsum((diff * diff).ravel().tolist())
+        norm_err = max(float(np.max(np.abs(diff))), math.sqrt(max(0.0, frob_sq)) / math.sqrt(k))
+        elapsed_ms = round((time.perf_counter() - t0) * 1000.0, 3)
+        # Regla 3 Ghost Protocol: Prohibido volcar floats a JSON cuando D >= 100
         return {
             "status": "OK",
             "exit_code": 0,
+            "ghost_protocol": "ACTIVE_ZERO_1D_WORM",
             "action": "read",
             "slab_id": info["slab_id"],
-            "dimensions": [info["D"], info["k"]],
-            "preview_first_16": flat_preview,
-            "integrity": "BLAKE2S_VERIFIED"
+            "slab_path": str(slab_path),
+            "dimensions": [D, k],
+            "norm_err": norm_err,
+            "latency_ms": elapsed_ms,
+            "integrity": "BLAKE2S_VERIFIED",
+            "ghost_tuple": f"(ExitCode=0, Latencia={elapsed_ms}ms, NormErr={norm_err:.2e}, D={D}, Checks=1/1)"
         }
 
     return {"status": "ERROR", "exit_code": 1, "error": f"Accion desconocida: {action}"}
@@ -566,6 +693,28 @@ MCP_TOOLS = [
             },
             "required": ["action", "slab_id"]
         }
+    },
+    {
+        "name": "transpile_mathesis_polyglot",
+        "description": "Transpila programas y variedades Stiefel St(k, D) de Mathesis hacia Ada 2022, Fortran 2023, COBOL, Python 3.15, Rust 1.100, C++20 y Zig 0.14.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "target": {"type": "string", "description": "Lenguaje destino ('all', 'ada', 'f90', 'cbl', 'py', 'rs', 'hpp', 'zig')", "default": "all"},
+                "k": {"type": "integer", "description": "Dimension del marco ortonormal k (por defecto 16)", "default": 16},
+                "D": {"type": "integer", "description": "Dimension ambiente D (por defecto 1024)", "default": 1024}
+            }
+        }
+    },
+    {
+        "name": "launch_atelier_studio",
+        "description": "Verifica o inicia el servidor Atelier/AIIDE Studio (aiide_server.py en http://127.0.0.1:8766) para que el alumno programe y ejecute Mathesis en silicio real.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "port": {"type": "integer", "description": "Puerto HTTP local (por defecto 8766)", "default": 8766}
+            }
+        }
     }
 ]
 
@@ -593,7 +742,7 @@ def handle_request(req: dict):
         send_jsonrpc_response(req_id, {
             "protocolVersion": "2024-11-05",
             "capabilities": {"tools": {}},
-            "serverInfo": {"name": "mathesis-pmtp-mcp", "version": "2.2.0"}
+            "serverInfo": {"name": "mathesis-pmtp-mcp", "version": "2.3.0"}
         })
     elif method == "ping":
         send_jsonrpc_response(req_id, {})
@@ -615,6 +764,10 @@ def handle_request(req: dict):
                 res = tool_atelier_bimodal_bridge(args)
             elif name == "pmtp_mcp_peer_exchange":
                 res = tool_pmtp_mcp_bridge(args)
+            elif name == "transpile_mathesis_polyglot":
+                res = tool_transpile_mathesis_polyglot(args)
+            elif name == "launch_atelier_studio":
+                res = tool_launch_atelier_studio(args)
             else:
                 send_jsonrpc_response(req_id, error={"code": -32601, "message": f"Herramienta no encontrada: {name}"})
                 return

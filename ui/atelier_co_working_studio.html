@@ -1531,25 +1531,77 @@ end`
             renderFrame();
         }
 
-        // Acciones Principales
-        function evaluateWithAI() {
-            log("\n--- [FASE 1: EVALUAR POR IA (SOTA 2030)] ---");
-            log("[IA] Auditando condición de número κ(X) en variedad St(16, 1024)...");
-            log("[IA] Acumulador Neumaier compensado detectado (Deriva < 4.44e-16).");
-            log("[IA] Retracción polar QDWH Nakatsukasa-Bai-Gygi 2010 verificada.");
-            document.querySelectorAll(".node-card").forEach(c => c.classList.add("ai-optimized"));
-            setTimeout(() => {
-                document.querySelectorAll(".node-card").forEach(c => c.classList.remove("ai-optimized"));
-            }, 1800);
-            speakText("Grafo certificado. Cero deriva numérica.");
+        // Acciones Principales conectadas en vivo a aiide_server.py (http://127.0.0.1:8766)
+        const ATELIER_API_BASE = (window.location.protocol.startsWith("http") && window.location.port === "8766")
+            ? ""
+            : "http://127.0.0.1:8766";
+
+        function _getActiveMathesisCode() {
+            const ed = document.getElementById("codeViewArea");
+            if (ed && ed.innerText && ed.innerText.trim().length > 0) {
+                return ed.innerText.trim();
+            }
+            return "INGEST slab=0x100, dim=1024\nEVOLVE slab=0x100, sages=0x03, dt=0.05\nCOLLAPSE slab=0x100, dim=1024\nEMIT slab=0x100, target=MMIO_VIDEO\nHALT";
         }
 
-        function runInterpreter() {
-            log("\n--- [FASE 2: INTERPRETAR (VM CONTINUA)] ---");
-            log("[VM] Ingesta ejecutada en 189.2 µs.");
-            log("[VM] Acumulación compensada Neumaier: Error 0.0.");
-            log("[VM] Retracción polar Stiefel: ||W^T W - I|| = 4.44e-16.");
-            speakText("Interpretación completada en tres punto ocho microsegundos.");
+        async function evaluateWithAI() {
+            log("\n--- [FASE 1: EVALUAR POR IA (EINSOF-II SOTA)] ---");
+            document.querySelectorAll(".node-card").forEach(c => c.classList.add("ai-optimized"));
+            try {
+                const resp = await fetch(`${ATELIER_API_BASE}/api/ai/chat`, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        provider: "einsof_sovereign",
+                        prompt: "Audita la isometría Stiefel St(16, 1024) y certifica la estabilidad numérica de este grafo Mathesis en 2 líneas.",
+                        current_code: _getActiveMathesisCode(),
+                        agent_a: 2,
+                        turing_t: 10
+                    })
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    log(`[IA REAL | ${data.provider}] Dictamen recibido:`);
+                    (data.reply || "").split("\n").slice(0, 6).forEach(ln => { if (ln.trim()) log(`  ${ln}`); });
+                } else {
+                    log(`[IA ERROR] ${data.error || "Fallo en /api/ai/chat"}`);
+                }
+            } catch (err) {
+                log("[MODO VISTA PREVIA ESTÁTICA] Backend http://127.0.0.1:8766 no detectado. Ejecuta 'python setup_einsof.py --start-atelier' para evaluación IA en vivo.");
+            } finally {
+                setTimeout(() => {
+                    document.querySelectorAll(".node-card").forEach(c => c.classList.remove("ai-optimized"));
+                }, 1200);
+            }
+            speakText("Evaluación de grafo completada.");
+        }
+
+        async function runInterpreter() {
+            log("\n--- [FASE 2: INTERPRETAR Y EJECUTAR EN SILICIO (/api/execute)] ---");
+            try {
+                const resp = await fetch(`${ATELIER_API_BASE}/api/execute`, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        code: _getActiveMathesisCode(),
+                        mode: "mathesis",
+                        agent_a: 2,
+                        turing_t: 10
+                    })
+                });
+                const res = await resp.json();
+                log(`[SILICIO REAL] Exit Code: ${res.exit_code} | Latencia: ${res.latency_us} µs | Instrucciones: ${res.num_instructions} (${res.binary_size_bytes} B)`);
+                log(`[STIEFEL FP64] Deriva Neumaier medida: ||W^T W - I|| = ${res.neumaier_deriv} | Pixel MMIO: ${res.pixel_hex}`);
+                if (res.stdout) {
+                    res.stdout.split("\n").forEach(ln => { if (ln.trim()) log(`  ${ln}`); });
+                }
+                if (res.stderr) {
+                    log(`[STDERR] ${res.stderr}`);
+                }
+                speakText(`Ejecución en silicio completada con código de salida ${res.exit_code}.`);
+            } catch (err) {
+                log("[MODO VISTA PREVIA ESTÁTICA] Backend http://127.0.0.1:8766 no activo. Inicia 'python aiide_server.py' para ejecución real en silicio.");
+            }
         }
 
         function openCompileModal() {
@@ -1565,14 +1617,34 @@ end`
             document.getElementById("selectedModalLabel").textContent = `Destino: ${targetId.toUpperCase()}`;
         }
 
-        function executeCompilation() {
+        async function executeCompilation() {
             closeCompileModal();
-            log("\n--- [FASE 3: COMPILAR Y EXPORTAR] ---");
-            log("[COLAPSO] Generando fuentes en /src y binarios en /bin...");
-            log("[SILICON] Binario PE64 SSE2 emitido sin dependencias de CRT (2.0 KB).");
-            log("[SHM] Slab publicado en PmtpShmBus con permisos 0600.");
+            log("\n--- [FASE 3: COMPILAR Y TRANSPILAR EN SILICIO (/api/execute + /api/transpile)] ---");
+            try {
+                const [execResp, trResp] = await Promise.all([
+                    fetch(`${ATELIER_API_BASE}/api/execute`, {
+                        method: "POST",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify({code: _getActiveMathesisCode(), mode: "mathesis"})
+                    }),
+                    fetch(`${ATELIER_API_BASE}/api/transpile`, {
+                        method: "POST",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify({target: "all", k: 16, D: 1024})
+                    })
+                ]);
+                const execData = await execResp.json();
+                const trData = await trResp.json();
+                log(`[SILICON COMPILER] Exit Code: ${execData.exit_code} | Binario emitido: ${execData.binary_size_bytes} B en ${execData.latency_us} µs | Deriva: ${execData.neumaier_deriv}`);
+                if (trData.success && trData.artifacts) {
+                    const files = Object.keys(trData.artifacts);
+                    log(`[TRANSPILADOR POLÍGLOTA] ${files.length} artefactos generados: ${files.join(", ")}`);
+                }
+            } catch (err) {
+                log("[MODO VISTA PREVIA ESTÁTICA] Inicia 'python setup_einsof.py --start-atelier' para compilación y transpilación real en silicio.");
+            }
             switchToolTab('tab-code');
-            speakText("Compilación completada. Código exportado.");
+            speakText("Compilación completada.");
         }
 
         function insertStep(afterCardId) {

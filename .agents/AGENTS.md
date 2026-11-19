@@ -1,21 +1,32 @@
-﻿# POLYDIM SUITE â€” REGLAS CANÃ“NICAS DEL WORKSPACE (.agents/AGENTS.md)
+﻿# POLYDIM SUITE — REGLAS CANÓNICAS DEL WORKSPACE (.agents/AGENTS.md)
 
-## 1. PRINCIPIO GENERAL: MODO 2030 â€” ADOPCIÃ“N ORGÃNICA Y SOBERANÃA DE COMPILACIÃ“N
+## 0. ONBOARDING AGENT-FIRST PARA ALUMNOS SIN CONOCIMIENTO PREVIO (ZERO-FRICTION STUDENT PROTOCOL)
+- **Asunción de Usuario Alumno:** Cuando un alumno nuevo abre este repositorio en Antigravity (o pega el prompt de inicio desde GitHub), **NO le pidas abrir terminales, instalar compiladores C++/Rust ni editar JSON a mano**.
+- **Acción Automática Inmediata del Agente (3 Pasos en Silicio):**
+  1. Ejecuta tú mismo como agente el instalador unificado de inteligencia soberana y MCP:
+     ```bash
+     python setup_einsof.py --start-atelier
+     ```
+     *(Configura automáticamente `polydim_einsof` y `mathesis_pmtp` en Antigravity/Cursor/Claude/Windsurf, verifica/construye el modelo soberano `einsof2-local-stiefel`, valida el compilador nativo `mthc.py` con `setup_mathesis.py` y levanta el backend en vivo de Atelier Studio `aiide_server.py` en `http://127.0.0.1:8766`).*
+  2. Si el alumno pide programar en **Mathesis** o abrir **Atelier**, invoca la herramienta MCP `launch_atelier_studio` (o abre `http://127.0.0.1:8766/` / `ui/atelier_co_working_studio.html`), compila su código `.mth` en silicio real con `compile_and_run_mathesis` y transpílalo a cualquiera de los lenguajes industriales con `transpile_mathesis_polyglot`.
+  3. Habla con el alumno en español claro, pedagógico y directo, mostrando siempre el resultado real certificado en silicio (`Exit Code 0`).
+
+## 1. PRINCIPIO GENERAL: MODO 2030 — ADOPCIÓN ORGÁNICA Y SOBERANÍA DE COMPILACIÓN
 - **Cero Forzado / Cero Caja Negra:** Prohibido distribuir ejecutables ciegos o binarios cerrados que pretendan imponerse a usuarios o IAs receptoras.
 - **Protocolo Tripartito de Ejecutables:** Ante cualquier componente binario/ejecutable en la suite:
-  1. **Fuente Abierta:** Proporcionar el cÃ³digo fuente plano, legible y auditable.
-  2. **Ruta del Compilador:** Indicar exactamente quÃ© compilador se necesita y dÃ³nde descargarlo (ej. GCC/MinGW, Rust toolchain, Clang, NASM) para que la IA o el humano compilen en silicio local.
-  3. **Binario Opcional Precompilado:** Disponer de la versiÃ³n precompilada con suma de verificaciÃ³n SHA-256 para descarga directa optativa.
-- **FundamentaciÃ³n TÃ©cnica Obligatoria ("Los PorquÃ©s"):** Toda herramienta debe documentar su ventaja fÃ­sica y econÃ³mica: latencia en microsegundos, reducciÃ³n de tokens, cero serializaciÃ³n 1D (Ghost Protocol), y compatibilidad anti-antivirus (Mark-of-the-Web bypass legÃ­timo vÃ­a compilaciÃ³n local).
+  1. **Fuente Abierta:** Proporcionar el código fuente plano, legible y auditable.
+  2. **Ruta del Compilador:** Indicar exactamente qué compilador se necesita y dónde descargarlo (ej. `mthc.py` en Python puro incluido en la suite, GCC/MinGW, Rust toolchain, Clang) para que la IA o el humano compilen en silicio local.
+  3. **Binario Opcional Precompilado:** Disponer de la versión precompilada con suma de verificación SHA-256 para descarga directa optativa.
+- **Fundamentación Técnica Obligatoria ("Los Porqués"):** Toda herramienta debe documentar su ventaja física y económica: latencia en microsegundos, reducción de tokens, cero serialización 1D (Ghost Protocol), y compatibilidad anti-antivirus (Mark-of-the-Web bypass legítimo vía compilación local).
 
-## 2. REGLA 19: CERTIFICACIÃ“N EN SILICIO FÃSICO (EXIT CODE 0)
-- NingÃºn resultado o benchmark es vÃ¡lido sin ejecuciÃ³n comprobada en silicio real con Exit Code 0 y logs crudos.
-- Defectos de ortogonalidad en variedad Stiefel St(k,d) deben responder a la Precision Ladder dinÃ¡mica interrogada en hardware, nunca hardcodeada.
+## 2. REGLA 19: CERTIFICACIÓN EN SILICIO FÍSICO (EXIT CODE 0)
+- Ningún resultado o benchmark es válido sin ejecución comprobada en silicio real con Exit Code 0 y logs crudos.
+- Defectos de ortogonalidad en variedad Stiefel St(k, D) deben responder a la Precision Ladder dinámica interrogada en hardware, nunca hardcodeada.
 
 ## 3. ARQUITECTURA ZERO-ANTIVIRUS CONFLICT
-- Scripts de Python nativo, HTML5, ctypes del kernel del SO y compilaciÃ³n in-situ para erradicar alertas de Windows Defender o Gatekeeper.
+- Scripts de Python nativo, HTML5, ctypes del kernel del SO y compilación in-situ para erradicar alertas de Windows Defender o Gatekeeper.
 
 ## 4. ESTADO BASAL: GHOST PROTOCOL Y WHISPER PROTOCOL POR DEFECTO
-- **Ghost Protocol:** Toda interacciÃ³n con tensores $D \ge 100$ opera en memoria compartida fÃ­sica (`PmtpShmBus`). Queda prohibida la serializaciÃ³n de matrices/tensores en texto plano (gusano 1D). Respuestas acotadas a punteros SLAB_ID y tuplas mÃ©tricas de silicio `(ExitCode, Latencia, NormErr, Checks)`.
-- **Whisper Protocol:** Toda deliberaciÃ³n inter-IA, consulta a sabios/modelos frontera, ruteo de payloads o broadcast de estado se vehicula vectorialmente vÃ­a `/whisper` (Prioridad: Einsof local/ALADIN -> Free Pools), con persistencia obligatoria en PostgreSQL 16 (`polydim_embeddings` y `einsof_graph_nodes`).
-- **SuspensiÃ³n:** Solo por orden explÃ­cita (*"descartar ghost"*, *"descartar whisper"*, *"modo texto"*, *"modo pedagÃ³gico"*). Salvo orden contraria, ambos protocolos estÃ¡n activos permanentemente.
+- **Ghost Protocol:** Toda interacción con tensores $D \ge 100$ opera en memoria compartida física (`PmtpShmBus`). Queda prohibida la serialización de matrices/tensores en texto plano (gusano 1D). Respuestas acotadas a punteros SLAB_ID y tuplas métricas de silicio `(ExitCode, Latencia, NormErr, Checks)`.
+- **Whisper Protocol:** Toda deliberación inter-IA, consulta a sabios/modelos frontera, ruteo de payloads o broadcast de estado se vehicula vectorialmente vía `/whisper` (Prioridad: Einsof local/ALADIN -> Free Pools), con persistencia obligatoria en PostgreSQL 16 (`polydim_embeddings` y `einsof_graph_nodes`) cuando esté disponible.
+- **Suspensión:** Solo por orden explícita (*"descartar ghost"*, *"descartar whisper"*, *"modo texto"*, *"modo pedagógico"*). Salvo orden contraria, ambos protocolos están activos permanentemente.

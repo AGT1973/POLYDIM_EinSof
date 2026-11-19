@@ -312,34 +312,93 @@ def run_mcp_smoke_test(server_info: dict):
         print(f"  [OK] Smoke-test mathesis_pmtp PASS | tools={len(m_tools)}")
 
 
-def print_completion(endpoint: str | None, default_model: str):
+def verify_mathesis_and_atelier(start_atelier: bool = False, port: int = 8766) -> str:
+    mthc_py = SUITE_DIR / "mthc.py"
+    setup_mth = SUITE_DIR / "setup_mathesis.py"
+    aiide_py = SUITE_DIR / "aiide_server.py"
+    if mthc_py.exists():
+        print(f"  [OK] Compilador nativo Mathesis detectado: {mthc_py}")
+    elif setup_mth.exists():
+        print(f"  [OK] Bootstrap Mathesis detectado: {setup_mth}")
+
+    status_url = f"http://127.0.0.1:{port}/api/status"
+
+    def _is_atelier_up() -> bool:
+        try:
+            with urllib.request.urlopen(status_url, timeout=0.8) as r:
+                return r.status == 200
+        except Exception:
+            return False
+
+    if _is_atelier_up():
+        print(f"  [OK] Atelier Studio (aiide_server.py) ONLINE en http://127.0.0.1:{port}/")
+        return f"ONLINE (http://127.0.0.1:{port}/)"
+
+    if start_atelier and aiide_py.exists():
+        print(f"  [*] Iniciando Atelier Studio (aiide_server.py) en http://127.0.0.1:{port}/ ...")
+        creationflags = getattr(subprocess, "CREATE_NO_WINDOW", 0) if os.name == "nt" else 0
+        subprocess.Popen(
+            [sys.executable, str(aiide_py), str(port)],
+            cwd=str(SUITE_DIR),
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            creationflags=creationflags,
+        )
+        for _ in range(10):
+            time.sleep(0.25)
+            if _is_atelier_up():
+                print(f"  [OK] Atelier Studio iniciado en http://127.0.0.1:{port}/atelier")
+                return f"ONLINE (http://127.0.0.1:{port}/atelier)"
+        return f"STARTING (http://127.0.0.1:{port}/atelier)"
+
+    return f"READY (python aiide_server.py -> http://127.0.0.1:{port}/atelier)"
+
+
+def print_completion(endpoint: str | None, default_model: str, atelier_status: str = "READY"):
     intro_html = SUITE_DIR / "introduction" / "index.html"
     print(f"""
 ======================================================================
   INSTALACION Y VERIFICACION EN SILICIO COMPLETADAS (EXIT CODE 0)
 ======================================================================
-  Endpoint Ollama : {endpoint or 'Offline (Stiefel/PMTP local 100% operativo)'}
+  Endpoint Ollama : {endpoint or 'Offline (Motor Analitico Stiefel/Mathesis local 100% operativo)'}
   Modelo EINSOF   : {default_model}
   Herramientas MCP: ask_einsof, list_einsof_models, stiefel_metric_verify,
-                    ask_cerebras_einsof + mathesis_pmtp (6 tools)
+                    ask_cerebras_einsof + mathesis_pmtp (8 tools incl. Atelier & Polyglot)
+  Atelier Studio  : {atelier_status}
   Guia visual     : {intro_html if intro_html.exists() else SUITE_DIR / 'AGENT_BOOTSTRAP.md'}
 ======================================================================
 """)
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Instalador Soberano POLYDIM-EINSOF v2.0 para Antigravity")
+    parser = argparse.ArgumentParser(description="Instalador Soberano POLYDIM-EINSOF v2.2 para Antigravity & Atelier")
     parser.add_argument("--aladin-host", default=DEFAULT_ALADIN_IP, help="IP del nodo ALADIN LAN para failover Ollama")
     parser.add_argument("--open-intro", action="store_true", help="Abre introduction/index.html en el navegador al finalizar")
+    parser.add_argument("--check-only", action="store_true", help="Ejecuta auditoria rapida sin modificar mcp_config.json")
+    parser.add_argument("--start-atelier", action="store_true", help="Inicia el servidor Atelier Studio (aiide_server.py) en el puerto 8766")
+    parser.add_argument("--auto", action="store_true", help="Modo onboarding automatico para alumnos sin conocimientos previos")
     args = parser.parse_args()
 
     print_banner()
     check_python_and_numpy()
+    einsof_mcp, mathesis_mcp = _resolve_mcp_paths()
+
+    if args.check_only:
+        atelier_st = verify_mathesis_and_atelier(start_atelier=False)
+        run_mcp_smoke_test({
+            "einsof_mcp": einsof_mcp,
+            "mathesis_mcp": mathesis_mcp,
+            "env": {"PYTHONIOENCODING": "utf-8", "PYTHONUNBUFFERED": "1"},
+        })
+        print(f"  [OK] Check-only completado exitosamente | Atelier: {atelier_st}")
+        return
+
     endpoint, models, is_local = check_or_start_ollama(args.aladin_host)
     default_model = resolve_einsof_model(endpoint, models, is_local)
     _, server_info = configure_antigravity_mcp(endpoint, default_model)
+    atelier_st = verify_mathesis_and_atelier(start_atelier=(args.start_atelier or args.auto))
     run_mcp_smoke_test(server_info)
-    print_completion(endpoint, default_model)
+    print_completion(endpoint, default_model, atelier_st)
 
     if args.open_intro:
         intro_html = SUITE_DIR / "introduction" / "index.html"

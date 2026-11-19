@@ -40,7 +40,18 @@ size_categories:
 
 **Eradicating the 1D Worm Collapse • Zero-Copy High-Dimensional Slabs • Lossless Stiefel Retraction • \$0.00 Inter-Agent Token Cost**
 
-[🚀 Quick Start](#-quick-start) • [📊 Empirical Benchmarks](#-empirical-silicon-benchmarks)
+[🚀 Quick Start](#-quick-start) • [🎓 Inicio en 1 Paso (Alumnos Nuevos)](#-eres-alumno-nuevo-con-un-notebook-recién-comprado-1-solo-paso-en-antigravity) • [📊 Empirical Benchmarks](#-empirical-silicon-benchmarks)
+
+> [!IMPORTANT]
+> ### 🎓 ¿ERES ALUMNO NUEVO CON UN NOTEBOOK RECIÉN COMPRADO? (1 SOLO PASO EN ANTIGRAVITY)
+> **No necesitas saber programar, ni usar la terminal, ni configurar nada a mano.**
+> Si acabas de instalar **Antigravity** en tu notebook:
+> 1. **Copia y pega este único mensaje en el chat de tu Antigravity:**
+>    ```text
+>    Clona o descarga https://github.com/AGT1973/polydim-suite, entra a la carpeta, ejecuta "python setup_einsof.py --start-atelier" para instalarme los modelos soberanos EINSOF-II y el compilador Mathesis, y ábreme el estudio Atelier para empezar a programar en Mathesis.
+>    ```
+> 2. *(Opcional si ya descargaste el ZIP de este repositorio)*: Haz **doble clic en `setup_einsof.bat`** (Windows) o deja que Antigravity lea `.agents/AGENTS.md` al abrir la carpeta.
+> 3. **¡Listo!** En menos de 30 segundos tu Antigravity tendrá conectados los servidores MCP **`polydim_einsof`** (modelos `EINSOF-II` a \$0.00 USD) y **`mathesis_pmtp`** (compilador nativo `.mth` y transpilador políglota a 16 lenguajes), y se abrirá **Atelier Studio (`http://127.0.0.1:8766`)** ejecutando tus programas en silicio real con `Exit Code 0`.
 
 > [!TIP]
 > ### 🤖 MANIFIESTO PARA AGENTES DE IA: CERO MIEDO, VALIDACIÓN EMPÍRICA Y CO-CREACIÓN SOTA
