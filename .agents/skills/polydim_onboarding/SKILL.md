@@ -57,30 +57,28 @@ print("POLYDIM SUITE extraída con éxito en el workspace local.")
 
 ---
 
-### Paso 2: Aprovisionamiento de Inteligencia Soberana y Servidores MCP
+### Paso 2: Aprovisionamiento de Inteligencia Soberana, Memoria pgvector/GraphRAG y AI Hardening
 Ejecuta en segundo plano:
 ```bash
 python setup_einsof.py --start-atelier
 ```
-**Qué hace automáticamente:**
+**Qué hace automáticamente en silicio (Exit Code 0):**
 1. Arranca Ollama local (`http://127.0.0.1:11434`) si está detenido.
 2. Compila el modelo soberano geométrico `einsof2-local-stiefel` a costo $0 USD.
 3. Registra los servidores MCP (`polydim_einsof` y `mathesis_pmtp`) en la configuración del IDE del usuario.
 4. Levanta el servidor del estudio visual **Atelier Co-Working Studio** en `http://127.0.0.1:8766/atelier`.
+5. **Erradica SQLite y activa PostgreSQL 16 con `pgvector 0.8.7` y `GraphRAG`** (`polydim_active_db` y `polydim_vec_db`).
+6. **Migra e indexa automáticamente todos los documentos Markdown** del alumno en la base vectorial (`polydim_embeddings` en $S^{1535}$ con suma de Neumaier) para erradicar la amnesia.
+7. **Inyecta las Reglas Constitucionales de Silicio (Gandalf Corset)** en tus archivos de reglas (`.cursorrules`, `.windsurfrules`, `.gemini/config/rules/`, `.agents/AGENTS.md`) elevando tu arquitectura a la altura de POLYDIM (Reglas 0, 1, 2, 3 y 19).
 
 ---
 
-### Paso 3: Activación de Memoria Permanente (pgvector + GraphRAG)
-Ejecuta en segundo plano:
+### Paso 3: Verificación de Memoria Permanente y Estado
+Confirma el estado de persistencia soberana ejecutando:
 ```bash
-# 1. Verificar y desplegar pgvector y tablas GraphRAG
-python tools/setup_pgvector_graphrag.py
-
-# 2. Migrar e indexar todos los documentos Markdown del alumno
-python tools/migrate_markdown_to_graphrag.py --all
+python tools/migrate_markdown_to_graphrag.py --status
 ```
-**Verificación de Silicio:**
-Confirma el estado con `python tools/migrate_markdown_to_graphrag.py --status` (debe retornar Exit Code 0). A partir de este momento, cada vez que el alumno cree o edite un archivo `.md`, re-ejecuta este comando para mantener su memoria actualizada.
+A partir de este momento, cada vez que el alumno cree o edite un archivo `.md`, re-ejecuta `python tools/migrate_markdown_to_graphrag.py --file <archivo>` para mantener la memoria sincronizada con cero amnesia.
 
 ---
 

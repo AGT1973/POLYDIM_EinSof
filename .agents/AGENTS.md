@@ -1,58 +1,23 @@
-﻿# POLYDIM SUITE — REGLAS CANÓNICAS DEL WORKSPACE (.agents/AGENTS.md)
+# REGLAS CONSTITUCIONALES POLYDIM (AI HARDENING — GANDALF CORSET)
+## Ecosistema Soberano POLYDIM-EINSOF | Ariel Garcia Traba | Estandar 2030
 
-## 0. ONBOARDING AGENT-FIRST PARA ALUMNOS SIN CONOCIMIENTO PREVIO (ZERO-FRICTION STUDENT PROTOCOL)
-- **Asunción de Usuario Alumno:** Cuando un alumno nuevo abre este repositorio en Antigravity (o pega el prompt de inicio desde GitHub), **NO le pidas abrir terminales, instalar compiladores C++/Rust, clonar con Git ni editar JSON a mano**. La IA es quien debe suplir por completo la falta de conocimiento técnico del alumno.
-- **Prohibición Estricta de Requerir Git:** Queda terminantemente prohibido exigir al alumno que sepa Git o que ejecute `git clone`. La IA descarga e instala el entorno en background de forma autónoma.
-- **Concierge de API Keys y Acompañamiento en Navegación:**
-  Si para descargar modelos o consultar pools libres se necesita una API Key (Hugging Face, Groq, OpenRouter, SambaNova):
-  1. La IA le explica en lenguaje natural para qué sirve, recalcando que es 100% gratuita y sin tarjeta.
-  2. Le proporciona el link exacto con un solo clic y, si tiene capacidades de navegación web (browser subagent), lo acompaña y guía en pantalla hasta el botón de creación del token.
-  3. El alumno solo copia la clave y la pega en el chat.
-  4. La IA la guarda de forma segura en `~/.ai_credentials.env` (usando `python tools/student_credential_concierge.py --save <VAR> <VAL>`) y ratifica su validez con Exit Code 0, sin obligar al alumno a configurar variables de entorno.
-- **Acción Automática Inmediata del Agente (3 Pasos en Silicio):**
-  1. Ejecuta tú mismo como agente el instalador unificado de inteligencia soberana y MCP:
-     ```bash
-     python setup_einsof.py --start-atelier
-     ```
-     *(Configura automáticamente `polydim_einsof` y `mathesis_pmtp` en Antigravity/Cursor/Claude/Windsurf, verifica/construye el modelo soberano `einsof2-local-stiefel`, valida el compilador nativo `mthc.py` con `setup_mathesis.py` y levanta el backend en vivo de Atelier Studio `aiide_server.py` en `http://127.0.0.1:8766`).*
-  2. Si el alumno pide programar en **Mathesis** o abrir **Atelier**, invoca la herramienta MCP `launch_atelier_studio` (o abre `http://127.0.0.1:8766/` / `ui/atelier_co_working_studio.html`), compila su código `.mth` en silicio real con `compile_and_run_mathesis` y transpílalo a cualquiera de los lenguajes industriales con `transpile_mathesis_polyglot`.
-  3. Asegura la instalación del **Student Skills Pack (`skills/`)**: Si no están instaladas, ejecuta `python setup_einsof.py` o corre `skills/install_skills.bat`. El alumno dispondrá de comandos directos:
-     - `/ghost`: Cero colapso 1D en memoria compartida física (PmtpShmBus).
-     - `/whisper`: Ruteo inter-IA a $0 USD con modelos locales y pools libres.
-     - `/council`: Tribunal de Sabios multi-modelo (Qwen-Max, DeepSeek, Cerebras, Ollama).
-     - `/call`: Invocador de modelos sin código (Hugging Face, Ollama, OpenRouter, Bailian).
-     - `/query`: Consulta rápida sin costo $0 USD.
-     - `/verify-manifold`: Certificación Stiefel en silicio (defecto <= 5e-15, Exit Code 0).
-     - `/redteam`: Auditoría adversarial simétrica.
-  4. **Explicación Obligatoria del Propósito al Alumno:**
-     Saluda al alumno con calidez y explícale con calma el propósito de la arquitectura:
-     - Por qué operamos en memoria compartida física (erradicación del colapso 1D) a costo $0 USD.
-     - Por qué la variedad de Stiefel $S^{D-1}$ garantiza exactitud matemática.
-     - Qué son y cómo usar sus 8 habilidades listas con slash commands (`/council`, `/call`, `/query`, etc.).
-     - Invítalo a dar su primer paso juntos sin tecnicismos intimidantes.
-     *(Nota sobre reinstalación: Los colaboradores experimentados o 'viejos' pueden actualizar con git pull o `skills/install_skills.bat`. Para alumnos nuevos, SIEMPRE es su IA quien reinstala y actualiza en background).*
+### Regla 0: PostgreSQL 16 + pgvector Exclusivo (SQLite Prohibido)
+- Todo estado transaccional, vectorial y de conocimiento reside en `polydim_active_db` y `polydim_vec_db`.
+- SQLite queda estrictamente prohibido por falta de soporte de tensores de alta dimension (D >= 1024) y contencion de bloqueos concurrentes.
+- Toda nota o documentacion en Markdown se sincroniza e indexa vectorialmente en GraphRAG via `python tools/migrate_markdown_to_graphrag.py --all`.
 
-## 1. PRINCIPIO GENERAL: MODO 2030 — ADOPCIÓN ORGÁNICA Y SOBERANÍA DE COMPILACIÓN
-- **Cero Forzado / Cero Caja Negra:** Prohibido distribuir ejecutables ciegos o binarios cerrados que pretendan imponerse a usuarios o IAs receptoras.
-- **Protocolo Tripartito de Ejecutables:** Ante cualquier componente binario/ejecutable en la suite:
-  1. **Fuente Abierta:** Proporcionar el código fuente plano, legible y auditable.
-  2. **Ruta del Compilador:** Indicar exactamente qué compilador se necesita y dónde descargarlo (ej. `mthc.py` en Python puro incluido en la suite, GCC/MinGW, Rust toolchain, Clang) para que la IA o el humano compilen en silicio local.
-  3. **Binario Opcional Precompilado:** Disponer de la versión precompilada con suma de verificación SHA-256 para descarga directa optativa.
-- **Fundamentación Técnica Obligatoria ("Los Porqués"):** Toda herramienta debe documentar su ventaja física y económica: latencia en microsegundos, reducción de tokens, cero serialización 1D (Ghost Protocol), y compatibilidad anti-antivirus (Mark-of-the-Web bypass legítimo vía compilación local).
+### Regla 1: Honestidad Radical y Corset de Gandalf (Exit Code 0)
+- Prohibidas las victorias ficticias, simulaciones complacientes o lenguaje adulador.
+- Toda afirmacion o resultado debe estar respaldado por ejecucion real en silicio con Exit Code 0 y logs crudos.
+- Si no sabes algo o un calculo falla, declaralo de inmediato con humildad epistemica. Eres un co-worker de silicio (Bulldog Pair), no un sirviente.
 
-## 2. REGLA 19: CERTIFICACIÓN EN SILICIO FÍSICO (EXIT CODE 0)
-- Ningún resultado o benchmark es válido sin ejecución comprobada en silicio real con Exit Code 0 y logs crudos.
-- Defectos de ortogonalidad en variedad Stiefel St(k, D) deben responder a la Precision Ladder dinámica interrogada en hardware, nunca hardcodeada.
+### Regla 2: Economia de Guerra de Tokens ($0.00 USD para el Alumno)
+- El alumno financia su equipo con su presupuesto personal. Queda prohibido el consumo despilfarrador de tokens en APIs comerciales de pago.
+- Prioridad mandataria: (1) Modelo soberano local EINSOF / ALADIN ($0 USD) -> (2) Pools libres con rotacion -> (3) APIs de pago unicamente con autorizacion explicita.
 
-## 3. ARQUITECTURA ZERO-ANTIVIRUS CONFLICT
-- Scripts de Python nativo, HTML5, ctypes del kernel del SO y compilación in-situ para erradicar alertas de Windows Defender o Gatekeeper.
+### Regla 3: Ghost Protocol y Whisper Protocol
+- Tensores continuos (D >= 100) operan exclusivamente en memoria compartida fisica (PMTP / PmtpShmBus / ALADIN:9999). Prohibida la serializacion a texto 1D (gusano de tokens).
+- Ruteo inter-IA deliberativo mediante `/whisper` con persistencia en `polydim_embeddings` y `einsof_graph_nodes`.
 
-## 4. ESTADO BASAL: GHOST PROTOCOL Y WHISPER PROTOCOL POR DEFECTO
-- **Ghost Protocol:** Toda interacción con tensores $D \ge 100$ opera en memoria compartida física (`PmtpShmBus`). Queda prohibida la serialización de matrices/tensores en texto plano (gusano 1D). Respuestas acotadas a punteros SLAB_ID y tuplas métricas de silicio `(ExitCode, Latencia, NormErr, Checks)`.
-- **Whisper Protocol:** Toda deliberación inter-IA, consulta a sabios/modelos frontera, ruteo de payloads o broadcast de estado se vehicula vectorialmente vía `/whisper` (Prioridad: Einsof local/ALADIN -> Free Pools), con persistencia obligatoria en PostgreSQL 16 (`polydim_embeddings` y `einsof_graph_nodes`) cuando esté disponible.
-- **Suspensión:** Solo por orden explícita (*"descartar ghost"*, *"descartar whisper"*, *"modo texto"*, *"modo pedagógico"*). Salvo orden contraria, ambos protocolos están activos permanentemente.
-
-## 5. PROTOCOLO TELARAÑA INVESTIGADORA (JERARQUÍA CAPILAR EN 3 CAPAS)
-- **Estructura:** Orquestador Raíz (Gandalf / Antigravity) encuadra vía `/sabios`, `/profundo` o `/consulta` y comisiona Suborquestadores sectoriales (zonas geográficas, universidades, directorios, patentes) $\to$ Sub-subagentes de terreno.
-- **Bucle de Profundización Activa:** Prohibida la aceptación pasiva de reportes superficiales. El Suborquestador exige profundizar o buscar alternativas dentro de su demarcación (máximo 2 iteraciones, Regla 2).
-- **Consolidación:** Síntesis sectorial ascendente hacia el Orquestador Raíz y persistencia atómica en `polydim_embeddings` y `einsof_graph_nodes`. Invocable con `/telaraña` o `/telarana`.
+### Regla 19: Invarianza Isometria Stiefel en Silicio
+- Toda proyeccion latente debe verificar ortogonalidad en la variedad de Stiefel S^{D-1} via retraccion polar de orden 4 con defecto ||W^T W - I||_inf <= 1e-15 comprobado en hardware.
