@@ -2,6 +2,7 @@
 """
 POLYDIM-EINSOF — Instalador Soberano de 1-Clic para Antigravity IDE (v2.0 Hardened)
 ====================================================================================
+Sello de Calibración: 19.11.2026 | Ecosistema POLYDIM-EINSOF | Ariel García Traba
 Configura y verifica en silicio el entorno EINSOF-II + Mathesis PMTP:
   1. Verifica Python >= 3.8 y asegura NumPy (>= 1.26 recomendado) antes de registrar MCP.
   2. Descubre Ollama con failover multi-nodo: local (127.0.0.1:11434) -> ALADIN LAN (192.168.100.21:11434).
@@ -36,6 +37,7 @@ def print_banner():
 ======================================================================
   POLYDIM-EINSOF — INSTALADOR SOBERANO ANTIGRAVITY (v2.0 HARDENED)
   Investigacion Independiente | Ariel Garcia Traba | Estandar 2030
+  Sello de Calibracion: 19.11.2026
 ======================================================================
 """)
 
@@ -387,6 +389,7 @@ def print_completion(endpoint: str | None, default_model: str, atelier_status: s
     print(f"""
 ======================================================================
   INSTALACION Y VERIFICACION EN SILICIO COMPLETADAS (EXIT CODE 0)
+  Sello de Calibracion: 19.11.2026
 ======================================================================
   Endpoint Ollama : {endpoint or 'Offline (Motor Analitico Stiefel/Mathesis local 100% operativo)'}
   Modelo EINSOF   : {default_model}
@@ -399,7 +402,7 @@ def print_completion(endpoint: str | None, default_model: str, atelier_status: s
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Instalador Soberano POLYDIM-EINSOF v2.2 para Antigravity & Atelier")
+    parser = argparse.ArgumentParser(description="Instalador Soberano POLYDIM-EINSOF v2.2 (19.11.2026) para Antigravity & Atelier")
     parser.add_argument("--aladin-host", default=DEFAULT_ALADIN_IP, help="IP del nodo ALADIN LAN para failover Ollama")
     parser.add_argument("--open-intro", action="store_true", help="Abre introduction/index.html en el navegador al finalizar")
     parser.add_argument("--check-only", action="store_true", help="Ejecuta auditoria rapida sin modificar mcp_config.json")
