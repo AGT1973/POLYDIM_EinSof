@@ -384,6 +384,31 @@ def verify_mathesis_and_atelier(start_atelier: bool = False, port: int = 8766) -
     return f"READY (python aiide_server.py -> http://127.0.0.1:{port}/atelier)"
 
 
+def install_student_skills_pack():
+    skills_dir = SUITE_DIR / "skills"
+    if not skills_dir.exists():
+        return
+    print("  [*] Instalando Pack de Skills Soberanas para el Alumno...")
+    home = Path.home()
+    targets = [
+        home / ".gemini" / "antigravity" / "skills",
+        home / ".gemini" / "config" / "skills",
+    ]
+    skills_to_copy = ["ghost", "whisper", "council", "model-bridge", "quick-query", "manifold-verify", "redteam", "einsof-bootstrap"]
+    for target in targets:
+        try:
+            target.mkdir(parents=True, exist_ok=True)
+            for s in skills_to_copy:
+                src = skills_dir / s / "SKILL.md"
+                if src.exists():
+                    dest = target / s
+                    dest.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(src, dest / "SKILL.md")
+        except Exception as e:
+            print(f"  [!] Advertencia instalando skills en {target}: {e}")
+    print(f"  [OK] {len(skills_to_copy)} skills soberanas instaladas para Antigravity (/ghost, /whisper, /council, /call, /query, /verify-manifold, /redteam).")
+
+
 def print_completion(endpoint: str | None, default_model: str, atelier_status: str = "READY"):
     intro_html = SUITE_DIR / "introduction" / "index.html"
     print(f"""
@@ -395,6 +420,8 @@ def print_completion(endpoint: str | None, default_model: str, atelier_status: s
   Modelo EINSOF   : {default_model}
   Herramientas MCP: ask_einsof, list_einsof_models, stiefel_metric_verify,
                     ask_cerebras_einsof + mathesis_pmtp (8 tools incl. Atelier & Polyglot)
+  Skills Alumno   : ghost, whisper, council, model-bridge, quick-query,
+                    manifold-verify, redteam, einsof-bootstrap (skills/README.md)
   Atelier Studio  : {atelier_status}
   Guia visual     : {intro_html if intro_html.exists() else SUITE_DIR / 'AGENT_BOOTSTRAP.md'}
 ======================================================================
@@ -428,6 +455,7 @@ def main():
     default_model = resolve_einsof_model(endpoint, models, is_local)
     _, server_info = configure_antigravity_mcp(endpoint, default_model)
     atelier_st = verify_mathesis_and_atelier(start_atelier=(args.start_atelier or args.auto))
+    install_student_skills_pack()
     run_mcp_smoke_test(server_info)
     print_completion(endpoint, default_model, atelier_st)
 
