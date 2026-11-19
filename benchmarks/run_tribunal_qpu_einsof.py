@@ -5,6 +5,7 @@ Debate y Formulación SOTA:
 1. Umbral Modal Einsof en Memoria Vectorial (49%/51% ramas válidas vs 99,998 estados inválidos bajo el umbral).
 2. Traslado del Colapso Modal de FUERA del QPU a DENTRO del QPU (Coherent Intra-QPU Einsof Operator en ibm_fez 156 qubits).
 """
+import os
 import sys
 import json
 import time
@@ -14,11 +15,11 @@ from concurrent.futures import ThreadPoolExecutor
 
 sys.stdout.reconfigure(line_buffering=True)
 
-DEEPSEEK_KEY = "os.environ.get("DEEPSEEK_API_KEY", "")"
-OPENROUTER_KEY = "os.environ.get("OPENROUTER_API_KEY", "")"
-ALIBABA_PRO_KEY = "sk-ws-H.DIIEMYY.Cu2k.MEYCIQDMymHibLJM4QSrt2NldWLw-NEeTXL3HkP7SqEJx1E4-wIhALTPFAZs1i_F7bs4kJTJy9qadHCQ7MnFtj3hnncr7--w"
-ALIBABA_FLASH_KEY = "sk-ws-H.DIIEMYR.9gHP.MEQCIGIhwW5YCKP2yEQlp1h2nxZi1eCijOAgkfq6bNf-dkQ2AiByQRqShpJm0oY5ZQV3imuHsI3OLYwLI9PduDT6c-s4LQ"
-ALIBABA_TOKEN_KEY = "sk-sp-H.LYREI.SDg8.MEUCIEzc9kSo3fxx3cW6z0lnigSjw_LyEtsHvB-XKT94cAsnAiEAvNBSf_YPS693VYKy7bL4KOtZ4WSZiF9b-YvWBpQaeV4"
+DEEPSEEK_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
+OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+ALIBABA_PRO_KEY = os.environ.get("ALIBABA_BAILIAN_PRO_KEY", "")
+ALIBABA_FLASH_KEY = os.environ.get("ALIBABA_BAILIAN_FLASH_KEY", "")
+ALIBABA_TOKEN_KEY = os.environ.get("ALIBABA_BAILIAN_TOKEN_KEY", "")
 
 PROMPT_DEBATE = """[DEBATE DE FRONTERA SOTA: ARQUITECTURA EINSOF DENTRO DE LA MEMORIA VECTORIAL Y DENTRO DEL QPU]
 
