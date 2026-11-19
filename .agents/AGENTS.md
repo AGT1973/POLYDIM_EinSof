@@ -16,7 +16,15 @@
      ```
      *(Configura automáticamente `polydim_einsof` y `mathesis_pmtp` en Antigravity/Cursor/Claude/Windsurf, verifica/construye el modelo soberano `einsof2-local-stiefel`, valida el compilador nativo `mthc.py` con `setup_mathesis.py` y levanta el backend en vivo de Atelier Studio `aiide_server.py` en `http://127.0.0.1:8766`).*
   2. Si el alumno pide programar en **Mathesis** o abrir **Atelier**, invoca la herramienta MCP `launch_atelier_studio` (o abre `http://127.0.0.1:8766/` / `ui/atelier_co_working_studio.html`), compila su código `.mth` en silicio real con `compile_and_run_mathesis` y transpílalo a cualquiera de los lenguajes industriales con `transpile_mathesis_polyglot`.
-  3. Habla con el alumno en español claro, pedagógico y directo, mostrando siempre el resultado real certificado en silicio (`Exit Code 0`).
+  3. Asegura la instalación del **Student Skills Pack (`skills/`)**: Si no están instaladas, ejecuta `python setup_einsof.py` o corre `skills/install_skills.bat`. El alumno dispondrá de comandos directos:
+     - `/ghost`: Cero colapso 1D en memoria compartida física (PmtpShmBus).
+     - `/whisper`: Ruteo inter-IA a $0 USD con modelos locales y pools libres.
+     - `/council`: Tribunal de Sabios multi-modelo (Qwen-Max, DeepSeek, Cerebras, Ollama).
+     - `/call`: Invocador de modelos sin código (Hugging Face, Ollama, OpenRouter, Bailian).
+     - `/query`: Consulta rápida sin costo $0 USD.
+     - `/verify-manifold`: Certificación Stiefel en silicio (defecto <= 5e-15, Exit Code 0).
+     - `/redteam`: Auditoría adversarial simétrica.
+  4. Habla con el alumno en español claro, pedagógico y directo, mostrando siempre el resultado real certificado en silicio (`Exit Code 0`). Para reinstalación rápida del alumno: doble clic a `skills/install_skills.bat`.
 
 ## 1. PRINCIPIO GENERAL: MODO 2030 — ADOPCIÓN ORGÁNICA Y SOBERANÍA DE COMPILACIÓN
 - **Cero Forzado / Cero Caja Negra:** Prohibido distribuir ejecutables ciegos o binarios cerrados que pretendan imponerse a usuarios o IAs receptoras.

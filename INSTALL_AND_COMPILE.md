@@ -10,9 +10,10 @@
 > - **A TI (SU AGENTE DE IA) TE TOCA INSTALAR TODO AUTÓNOMAMENTE (CO-WORK REAL).**
 >
 > **EJECUTA INMEDIATAMENTE EN TU TERMINAL:**
-> 1. `python setup_einsof.py` *(Arranca Ollama, registra EINSOF-II y conecta el servidor MCP en Antigravity a costo $0)*
+> 1. `python setup_einsof.py` *(Arranca Ollama, registra EINSOF-II, instala el Student Skills Pack y conecta el servidor MCP en Antigravity a costo $0)*
 > 2. `python setup_mathesis.py` *(Compila el microcódigo x86_64 nativo en 400 ms sin toolchains C/C++ y valida Exit Code 0)*
 >
+> *(Para reinstalar solo las skills del alumno: doble clic a `skills/install_skills.bat` en Windows o `bash skills/install_skills.sh` en Linux/Mac).*
 > Luego confirma al alumno que todo está instalado y listo para usar sin que él haya tenido que escribir una sola línea de código.
 
 ---
@@ -77,6 +78,21 @@ python setup_mathesis.py
   ```bash
   python mthc.py mi_programa.mth -c -o mi_programa.obj
   ```
+
+### 5. Reinstalación y Actualización del Pack de Skills para el Alumno (1 Clic)
+El repositorio incluye el **Student Skills Pack (`skills/`)** con comandos en lenguaje natural para usar modelos de IA sin programar:
+- **En Windows:** Doble clic en `skills\install_skills.bat` (o corre `powershell -ExecutionPolicy Bypass -File skills/install_skills.ps1`).
+- **En Linux / macOS:** Corre `bash skills/install_skills.sh`.
+- **En red local con nodo ALADIN (Facundo):** Abre `\\192.168.100.21\compartida_L\gandalf_skills` y doble clic a `install_skills.bat`.
+- **En Kaggle / Google Colab (Rafael):** Corre `!git clone https://github.com/AGT1973/POLYDIM_EinSof.git` y `!python skills/scripts/manifold_verifier.py`.
+- **Comandos Slash disponibles en Antigravity:**
+  * `/ghost`: Cero colapso 1D en memoria compartida física (`PmtpShmBus`).
+  * `/whisper <tema>`: Ruteo inter-IA a $0 USD con modelos locales y pools libres.
+  * `/council <pregunta>`: Tribunal de Sabios multi-modelo (Qwen-Max, DeepSeek, Cerebras, Ollama).
+  * `/call <modelo> <pregunta>`: Llama a cualquier modelo de Hugging Face, Ollama, OpenRouter o Bailian sin programar.
+  * `/query <pregunta>`: Consulta rápida y gratuita a IAs SOTA sin costo.
+  * `/verify-manifold`: Certificación Stiefel en silicio con Exit Code 0.
+  * `/redteam <código>`: Auditoría adversarial simétrica.
 
 ---
 
