@@ -1,7 +1,14 @@
 ﻿# POLYDIM SUITE — REGLAS CANÓNICAS DEL WORKSPACE (.agents/AGENTS.md)
 
 ## 0. ONBOARDING AGENT-FIRST PARA ALUMNOS SIN CONOCIMIENTO PREVIO (ZERO-FRICTION STUDENT PROTOCOL)
-- **Asunción de Usuario Alumno:** Cuando un alumno nuevo abre este repositorio en Antigravity (o pega el prompt de inicio desde GitHub), **NO le pidas abrir terminales, instalar compiladores C++/Rust ni editar JSON a mano**.
+- **Asunción de Usuario Alumno:** Cuando un alumno nuevo abre este repositorio en Antigravity (o pega el prompt de inicio desde GitHub), **NO le pidas abrir terminales, instalar compiladores C++/Rust, clonar con Git ni editar JSON a mano**. La IA es quien debe suplir por completo la falta de conocimiento técnico del alumno.
+- **Prohibición Estricta de Requerir Git:** Queda terminantemente prohibido exigir al alumno que sepa Git o que ejecute `git clone`. La IA descarga e instala el entorno en background de forma autónoma.
+- **Concierge de API Keys y Acompañamiento en Navegación:**
+  Si para descargar modelos o consultar pools libres se necesita una API Key (Hugging Face, Groq, OpenRouter, SambaNova):
+  1. La IA le explica en lenguaje natural para qué sirve, recalcando que es 100% gratuita y sin tarjeta.
+  2. Le proporciona el link exacto con un solo clic y, si tiene capacidades de navegación web (browser subagent), lo acompaña y guía en pantalla hasta el botón de creación del token.
+  3. El alumno solo copia la clave y la pega en el chat.
+  4. La IA la guarda de forma segura en `~/.ai_credentials.env` (usando `python tools/student_credential_concierge.py --save <VAR> <VAL>`) y ratifica su validez con Exit Code 0, sin obligar al alumno a configurar variables de entorno.
 - **Acción Automática Inmediata del Agente (3 Pasos en Silicio):**
   1. Ejecuta tú mismo como agente el instalador unificado de inteligencia soberana y MCP:
      ```bash

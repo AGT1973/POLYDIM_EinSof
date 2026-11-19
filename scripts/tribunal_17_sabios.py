@@ -43,7 +43,7 @@ SABIOS_ROSTER_17 = [
     {"id": 17, "nombre": "DeepSeek-Prover-V2", "canal": "HF Polydim-Einsof GGUF", "tipo": "GGUF_SILICIO"}
 ]
 
-def query_aladin(slug, prompt, timeout=15):
+def query_aladin(slug, prompt, timeout=35):
     t0 = time.time()
     try:
         url = f"{ALADIN_HOST}/api/generate"
@@ -123,7 +123,7 @@ async def convocar_plenario_17(prompt):
     print(f"  Fecha: {datetime.now(timezone.utc).isoformat()} | Quórum requerido: 17/17")
     print("=" * 80)
     
-    sem = asyncio.Semaphore(2) # Semáforo para ALADIN
+    sem = asyncio.Semaphore(4) # Semáforo para ALADIN (OLLAMA_NUM_PARALLEL=4)
     tasks = [interrogar_sabio(s, prompt, sem) for s in SABIOS_ROSTER_17]
     
     t0 = time.time()

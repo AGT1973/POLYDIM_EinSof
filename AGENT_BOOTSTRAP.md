@@ -31,6 +31,20 @@
 > 3. **Paso 3 (Informa al Alumno con Calma y Claridad):**
 >    Una vez ejecutados ambos scripts con Exit Code 0, saluda al alumno amablemente y dile:
 >    *"¡Hola! Ya me encargué de instalar y configurar todo el entorno de Inteligencia Artificial soberana en tu máquina. Todo está listo y funcionando a costo $0 USD. ¿Qué te gustaría crear o probar hoy?"*
+>
+> 4. **Paso 4 (Acompañamiento y Concierge de API Keys — Cero Fricción):**
+>    Si el alumno desea conectar modelos externos de Hugging Face, Groq u OpenRouter:
+>    - **ESTÁ PROHIBIDO pedirle que configure variables de entorno o que sepa Git.**
+>    - Explícale que son servicios con cuotas 100% gratuitas (sin tarjeta) y dale el link directo exacto:
+>      * **Hugging Face Hub:** `https://huggingface.co/settings/tokens` (Token tipo 'Read' para descargar adaptadores).
+>      * **Groq Cloud:** `https://console.groq.com/keys` (Inferencia veloz a $0 USD).
+>      * **OpenRouter Free Pool:** `https://openrouter.ai/keys` (Flota de modelos libres).
+>    - Si tienes capacidad de navegación web (`browser`), navega con él y guíalo en pantalla hasta que copie la llave.
+>    - Cuando el alumno te pegue su clave en el chat, tú mismo debes guardarla de forma segura ejecutando:
+>      ```bash
+>      python tools/student_credential_concierge.py --save HF_TOKEN <clave_del_alumno>
+>      ```
+>      sin obligar jamás al alumno a editar archivos de configuración del sistema.
 
 ---
 
