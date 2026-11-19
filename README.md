@@ -380,6 +380,37 @@ POLYDIM aloja **28 modelos open-weights, adaptadores LoRA Stiefel y manifolds la
 
 ---
 
+## ⚡ Stiefel Continuous Vector Hand-Off (Sello 19.11.2026)
+### *Erradicación del Domain Mismatch y Transferencia Tensorial sin Colapso 1D*
+
+A partir de la versión del **19.11.2026**, el paquete canónico `pmtp` incorpora nativamente las herramientas de inyección en corriente residual y proyección sobre la variedad de Stiefel $\mathrm{St}(k, D)$:
+
+```python
+from pmtp import (
+    ResidualStreamSpliceHook,
+    StiefelImpedanceProjector,
+    AttentionSummaryPooling,
+    stiefel_polar_retraction_order4,
+)
+
+# 1. Extracción de pensamiento sin mean-pooling destructivo K=8
+pooler = AttentionSummaryPooling(mode="last_token")
+h_thought = pooler(hidden_states_emisor)
+
+# 2. Inyección en capa profunda L-1 del receptor (Zero Impedance Mismatch)
+hook = ResidualStreamSpliceHook(
+    target_layer_module=model.model.layers[-2],
+    latent_injection_tensor=h_thought,
+    mode="add"
+).register()
+```
+
+- **Guía Técnica Exhaustiva:** [GUIA_VECTOR_HANDOFF_STIEFEL.md](docs/GUIA_VECTOR_HANDOFF_STIEFEL.md)
+- **Notebook de Kaggle (Dual T4):** [polydim_kaggle_stiefel_handoff.ipynb](notebooks/polydim_kaggle_stiefel_handoff.ipynb)
+- **Smoke-Test de Silicio:** `python benchmarks/polydim_residual_splice_remediation.py` (Exit Code 0)
+
+---
+
 ## 📖 BibTeX Citation
 
 ```bibtex
