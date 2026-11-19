@@ -406,6 +406,7 @@ hook = ResidualStreamSpliceHook(
 ```
 
 - **Guía Técnica Exhaustiva:** [GUIA_VECTOR_HANDOFF_STIEFEL.md](docs/GUIA_VECTOR_HANDOFF_STIEFEL.md)
+- **Persistencia pgvector & GraphRAG:** [AUTOINSTALACION_PGVECTOR_Y_GRAPHRAG_PARA_IAS.md](docs/AUTOINSTALACION_PGVECTOR_Y_GRAPHRAG_PARA_IAS.md) (`python tools/setup_pgvector_graphrag.py`)
 - **Notebook de Kaggle (Dual T4):** [polydim_kaggle_stiefel_handoff.ipynb](notebooks/polydim_kaggle_stiefel_handoff.ipynb)
 - **Smoke-Test de Silicio:** `python benchmarks/polydim_residual_splice_remediation.py` (Exit Code 0)
 
