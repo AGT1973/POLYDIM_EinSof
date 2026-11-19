@@ -15,6 +15,13 @@ from .pmtp_security import (
     load_numpy_safe,
 )
 from .pmtp_aladin import AladinTelepathyClient
+from .pmtp_residual_splice import (
+    ResidualStreamSpliceHook,
+    StiefelImpedanceProjector,
+    AttentionSummaryPooling,
+    stiefel_polar_retraction_order4,
+    neumaier_sum,
+)
 from .symplectic_minkowski import (
     neumaier_norm,
     neumaier_minkowski_inner_product,
@@ -52,4 +59,9 @@ __all__ = [
     "build_safe_hf_load_kwargs",
     "load_numpy_safe",
     "AladinTelepathyClient",
+    "ResidualStreamSpliceHook",
+    "StiefelImpedanceProjector",
+    "AttentionSummaryPooling",
+    "stiefel_polar_retraction_order4",
+    "neumaier_sum",
 ]

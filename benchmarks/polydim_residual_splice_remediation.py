@@ -24,94 +24,26 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-
-def neumaier_sum(values):
-    """Suma compensada de Neumaier con precisión de máquina (error <= 1 ULP)."""
-    s = 0.0
-    c = 0.0
-    for v in values:
-        t = s + v
-        if abs(s) >= abs(v):
-            c += (s - t) + v
-        else:
-            c += (v - t) + s
-        s = t
-    return s + c
-
-
-def stiefel_polar_retraction_order4(W: np.ndarray) -> np.ndarray:
-    """
-    Retracción polar de orden 4 en la variedad de Stiefel St(k, D):
-    W_proj = W * (W^T W)^{-1/2} garantizando ||W^T W - I||_F <= 1e-15.
-    """
-    U, S, Vt = np.linalg.svd(W, full_matrices=False)
-    W_retracted = U @ Vt
-    return W_retracted
-
-
-class StiefelImpedanceProjector(nn.Module):
-    """
-    Proyector Lineal de Impedancia Semántica (W_proj).
-    Mapea estados ocultos profundos R^{D_out} -> R^{D_in} (Capa 0)
-    sin destruir las codificaciones posicionales ni saturar la RMSNorm.
-    """
-    def __init__(self, d_hidden: int = 2048, d_embed: int = 1536):
-        super().__init__()
-        # Inicialización isométrica sobre la variedad de Stiefel
-        rng = np.random.default_rng(20261119)
-        W_init = rng.standard_normal((d_hidden, d_embed), dtype=np.float32)
-        W_stiefel = stiefel_polar_retraction_order4(W_init)
-        
-        self.proj = nn.Linear(d_hidden, d_embed, bias=False)
-        self.proj.weight.data = torch.from_numpy(W_stiefel.T)
-        self.norm = nn.LayerNorm(d_embed, eps=1e-6)
-
-    def forward(self, h_states: torch.Tensor) -> torch.Tensor:
-        """
-        Adapta el tensor continuo post-razonamiento al espacio de entrada.
-        h_states: [batch_size, seq_len, d_hidden]
-        Retorna: [batch_size, seq_len, d_embed] apto para inputs_embeds sin ruido.
-        """
-        projected = self.proj(h_states)
-        return self.norm(projected)
-
-
-class ResidualStreamSpliceHook:
-    """
-    Hook de Inyección en Corriente Residual (Residual Stream Splice).
-    Inserta el estado latente en la capa profunda L-1 o 2L/3, evitando
-    pasar por las capas tempranas de vocabulario para las cuales no fue calibrado.
-    """
-    def __init__(self, target_layer_module, latent_injection_tensor: torch.Tensor, mode: str = "add"):
-        self.target_layer = target_layer_module
-        self.latent_tensor = latent_injection_tensor
-        self.mode = mode
-        self.hook_handle = None
-
-    def register(self):
-        def hook_fn(module, input_tuple, output_tuple):
-            # output_tuple[0] es la corriente residual [batch, seq_len, hidden_dim]
-            residual_stream = output_tuple[0]
-            if self.mode == "add":
-                # Inyección aditiva con ponderación controlada
-                modified = residual_stream + self.latent_tensor.to(residual_stream.device)
-            elif self.mode == "replace":
-                modified = self.latent_tensor.to(residual_stream.device)
-            else:
-                modified = residual_stream
-            
-            # Devolver la tupla respetando el formato del Transformer
-            if isinstance(output_tuple, tuple):
-                return (modified,) + output_tuple[1:]
-            return modified
-
-        self.hook_handle = self.target_layer.register_forward_hook(hook_fn)
-        return self
-
-    def remove(self):
-        if self.hook_handle:
-            self.hook_handle.remove()
-            self.hook_handle = None
+# Importación canónica desde el paquete de silicio pmtp
+try:
+    from pmtp import (
+        ResidualStreamSpliceHook,
+        StiefelImpedanceProjector,
+        AttentionSummaryPooling,
+        stiefel_polar_retraction_order4,
+        neumaier_sum,
+    )
+except ImportError:
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from pmtp import (
+        ResidualStreamSpliceHook,
+        StiefelImpedanceProjector,
+        AttentionSummaryPooling,
+        stiefel_polar_retraction_order4,
+        neumaier_sum,
+    )
 
 
 def test_remediation_pipeline():
