@@ -27,7 +27,7 @@ size_categories:
 ### *Dimension Is All You Need: Native High-Dimensional Manifold Inter-Process Communication in $\mathbb{S}^{D-1}$*
 
 [![Hugging Face Org](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Polydim--Einsof-yellow.svg?style=for-the-badge)](https://huggingface.co/Polydim-Einsof)
-[![Open In Colab](https://img.shields.io/badge/Google%20Colab-Interactive%20T4%20Demo-F9AB00?style=for-the-badge&logo=googlecolab&logoColor=white)](https://colab.research.google.com/github/AGT1973/POLYDIM_EinSof/blob/polydim.einsof/tests/polydim_einsof_colab_ii_alumnos.ipynb)
+[![Open In Colab](https://img.shields.io/badge/Google%20Colab-Interactive%20T4%20Demo-F9AB00?style=for-the-badge&logo=googlecolab&logoColor=white)](https://colab.research.google.com/github/AGT1973/polydim-suite/blob/main/tests/polydim_einsof_colab_ii_alumnos.ipynb)
 [![DOI - 10.5281/zenodo.21209973](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21209973-blue.svg?style=for-the-badge)](https://doi.org/10.5281/zenodo.21209973)
 [![HAL Open Science](https://img.shields.io/badge/HAL%20Science-05847496v1-brightgreen.svg?style=for-the-badge)](https://hal.science/hal-05847496v1)
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
@@ -285,7 +285,7 @@ print("Transfer completed in < 0.1 ms with exact IEEE-754 fidelity!")
 
 ### 3. Run Interactive Google Colab Suite
 Test PMTP and the high-dimensional manifold models directly on a free cloud GPU without installing anything locally:
-👉 **[Open Interactive Colab Notebook](https://colab.research.google.com/github/AGT1973/POLYDIM_EinSof/blob/polydim.einsof/tests/polydim_einsof_colab_ii_alumnos.ipynb)**
+👉 **[Open Interactive Colab Notebook](https://colab.research.google.com/github/AGT1973/POLYDIM_EinSof/blob/main/tests/polydim_einsof_colab_ii_alumnos.ipynb)**
 
 ---
 
