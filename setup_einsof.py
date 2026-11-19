@@ -50,8 +50,10 @@ def check_python_and_numpy():
         import numpy as np
         print(f"  [OK] Python compatible y NumPy v{np.__version__} disponible.")
     except ImportError:
-        print("  [!] NumPy no encontrado (requerido por el servidor MCP). Instalando...")
-        res = subprocess.run([sys.executable, "-m", "pip", "install", "numpy"], capture_output=True, text=True)
+        print("  [!] NumPy no encontrado (requerido por el servidor MCP). Instalando wheel binario precompilado...")
+        res = subprocess.run([sys.executable, "-m", "pip", "install", "--only-binary=:all:", "numpy"], capture_output=True, text=True)
+        if res.returncode != 0:
+            res = subprocess.run([sys.executable, "-m", "pip", "install", "numpy"], capture_output=True, text=True)
         if res.returncode != 0:
             print(f"  [X] Error instalando NumPy: {res.stderr.strip()[:300]}")
             sys.exit(1)
@@ -118,9 +120,14 @@ def check_or_start_ollama(aladin_ip: str) -> tuple[str | None, list[str], bool]:
 
 def resolve_einsof_model(endpoint: str | None, models: list[str], is_local: bool) -> str:
     print("\n[3/5] Verificando catalogo real de modelos EINSOF-II...")
+    if is_local and endpoint and not models and os.environ.get("EINSOF_AUTO_PULL", "") == "1":
+        print("  [i] Ollama local tiene 0 modelos. Descargando modelo base ligero qwen2.5-coder:1.5b...")
+        subprocess.run(["ollama", "pull", "qwen2.5-coder:1.5b"], check=False)
+        _, models = _probe_ollama(endpoint, timeout=2.0)
+
     if not endpoint or not models:
-        print("  [i] Sin catalogo Ollama activo. Modelo por defecto configurado: mathesis-quantum:1.5b")
-        return "mathesis-quantum:1.5b"
+        print("  [i] Sin catalogo Ollama activo. Usando Motor Analitico Soberano Local (einsof2-analytical-stiefel, $0 USD).")
+        return "einsof2-analytical-stiefel"
 
     sovereign = [
         m for m in models
@@ -230,6 +237,27 @@ def configure_antigravity_mcp(endpoint: str | None, default_model: str) -> tuple
 
     config_path.write_text(json.dumps(mcp_config, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"  [OK] mcp_config.json actualizado en: {config_path}")
+
+    # Sincronizar tambien con rutas adicionales de Antigravity/IDEs si existen en la maquina del alumno
+    for extra_cfg in (
+        Path.home() / ".gemini" / "antigravity" / "mcp_config.json",
+        Path.home() / ".cursor" / "mcp.json",
+    ):
+        if extra_cfg.parent.exists() and extra_cfg != config_path:
+            try:
+                ext_data = {"mcpServers": {}}
+                if extra_cfg.exists():
+                    ext_data = json.loads(extra_cfg.read_text(encoding="utf-8"))
+                if not isinstance(ext_data, dict) or "mcpServers" not in ext_data:
+                    ext_data = {"mcpServers": {}}
+                ext_data["mcpServers"]["polydim_einsof"] = mcp_config["mcpServers"]["polydim_einsof"]
+                if "mathesis_pmtp" in mcp_config["mcpServers"]:
+                    ext_data["mcpServers"]["mathesis_pmtp"] = mcp_config["mcpServers"]["mathesis_pmtp"]
+                extra_cfg.write_text(json.dumps(ext_data, indent=2, ensure_ascii=False), encoding="utf-8")
+                print(f"  [OK] Configuracion MCP sincronizada en: {extra_cfg}")
+            except Exception:
+                pass
+
     print(f"       -> polydim_einsof: {einsof_mcp}")
     if mathesis_mcp:
         print(f"       -> mathesis_pmtp : {mathesis_mcp}")
