@@ -59,14 +59,27 @@ def stiefel_polar_retraction_order4(W: np.ndarray) -> np.ndarray:
 if _TORCH_AVAILABLE:
     class StiefelImpedanceProjector(nn.Module):
         """
-        Proyector Lineal de Impedancia Semántica (W_proj).
-        Mapea estados ocultos profundos R^{D_out} -> R^{D_in} (Capa 0)
-        sin saturar RMSNorm ni descalibrar las codificaciones posicionales.
+        Proyector Lineal de Impedancia Semántica (W_proj) con Compensación RoPE R_theta.
+        Mapea estados ocultos profundos R^{D_out} -> R^{D_in} (Capa 0 o Residual Splice)
+        sin saturar RMSNorm ni descalibrar las codificaciones posicionales rotacionales.
+        Incorpora RoPE Phase Compensator R_theta para acoplar modelos con bases rotacionales
+        heterogéneas (ej: theta_source=10.000 vs theta_target=500.000).
         """
-        def __init__(self, d_hidden: int = 2048, d_embed: int = 1536, seed: int = 20261119):
+        def __init__(
+            self, 
+            d_hidden: int = 2048, 
+            d_embed: int = 1536, 
+            seed: int = 20261119,
+            base_source: float = 10000.0,
+            base_target: float = 10000.0,
+            enable_rope_compensation: bool = True
+        ):
             super().__init__()
             self.d_hidden = d_hidden
             self.d_embed = d_embed
+            self.base_source = float(base_source)
+            self.base_target = float(base_target)
+            self.enable_rope_compensation = enable_rope_compensation and (self.base_source != self.base_target)
             
             rng = np.random.default_rng(seed)
             W_init = rng.standard_normal((d_hidden, d_embed), dtype=np.float64)
@@ -76,13 +89,53 @@ if _TORCH_AVAILABLE:
             self.proj.weight.data = torch.from_numpy(W_stiefel.T.astype(np.float32))
             self.norm = nn.LayerNorm(d_embed, eps=1e-6)
 
-        def forward(self, h_states: torch.Tensor) -> torch.Tensor:
+        def apply_rope_phase_compensation(self, x: torch.Tensor, seq_offset: int = 0) -> torch.Tensor:
+            """
+            Aplica rotación isométrica de compensación de fase RoPE:
+            Delta_theta_i = (base_target)^(-2i/d) - (base_source)^(-2i/d)
+            Garantiza que la rotación se realice en bloques ortogonales 2x2 en O(d),
+            preservando exactamente la norma unitaria euclídea (||R_theta x|| = ||x|| <= 1e-15).
+            """
+            if not self.enable_rope_compensation:
+                return x
+            
+            # x: [batch_size, seq_len, d_embed]
+            batch_size, seq_len, d = x.shape
+            device = x.device
+            dtype = x.dtype
+            
+            dim_pairs = d // 2
+            indices = torch.arange(dim_pairs, device=device, dtype=torch.float64)
+            theta_src = self.base_source ** (-2.0 * indices / d)
+            theta_tgt = self.base_target ** (-2.0 * indices / d)
+            delta_theta = (theta_tgt - theta_src)
+            
+            positions = torch.arange(seq_offset, seq_offset + seq_len, device=device, dtype=torch.float64)
+            angles = positions[:, None] * delta_theta[None, :]
+            cos_angles = torch.cos(angles).to(dtype=dtype)
+            sin_angles = torch.sin(angles).to(dtype=dtype)
+            
+            x_even = x[..., 0:2*dim_pairs:2]
+            x_odd  = x[..., 1:2*dim_pairs:2]
+            
+            x_rot_even = x_even * cos_angles - x_odd * sin_angles
+            x_rot_odd  = x_even * sin_angles + x_odd * cos_angles
+            
+            x_out = x.clone()
+            x_out[..., 0:2*dim_pairs:2] = x_rot_even
+            x_out[..., 1:2*dim_pairs:2] = x_rot_odd
+            return x_out
+
+        def forward(self, h_states: torch.Tensor, seq_offset: int = 0) -> torch.Tensor:
             """
             h_states: [batch_size, seq_len, d_hidden]
-            Retorna: [batch_size, seq_len, d_embed] adaptado a Capa 0.
+            Retorna: [batch_size, seq_len, d_embed] adaptado e isométricamente alineado en RoPE.
             """
             projected = self.proj(h_states)
-            return self.norm(projected)
+            normed = self.norm(projected)
+            if self.enable_rope_compensation:
+                return self.apply_rope_phase_compensation(normed, seq_offset=seq_offset)
+            return normed
 
         def stiefel_defect(self) -> float:
             """Calcula el defecto de isometría ||W W^T - I||_F."""
