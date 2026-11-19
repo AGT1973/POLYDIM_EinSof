@@ -1,12 +1,13 @@
 import ctypes
 import os
 import time
-import psutil
+import pytest
+
+psutil = pytest.importorskip("psutil")
 
 dll_path = r"E:\POLYDIM_EINSOF\ENTREGAS\ENTREGA_2026_10_31_V_turing_018\02_FUENTES_KERNELS_SILICIO\pmtp_tri_segment.dll"
 if not os.path.exists(dll_path):
-    print(f"ERROR: DLL not found at {dll_path}")
-    exit(1)
+    pytest.skip(f"V018 legacy DLL not found at {dll_path}", allow_module_level=True)
 
 tri = ctypes.CDLL(dll_path)
 
@@ -116,6 +117,9 @@ def run_tests():
 
     print(f"SILICON_TUPLE: (Exit Code: 0, Latency: {dt_ms:.2f} ms, RAM: {ram_mb:.2f} MB, Checks: {checks_passed}/{checks_passed} passed)")
     print("ALL D04 & D13 ANTI-REPLAY AND LEASE SECURITY TESTS PASSED ON WINDOWS AGY HOST")
+
+def test_v018_lease_anti_replay():
+    run_tests()
 
 if __name__ == "__main__":
     run_tests()
