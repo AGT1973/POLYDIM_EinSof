@@ -189,3 +189,15 @@ Para pruebas rápidas en contenedores descartables donde se desee evaluar el ren
 >    python hello_polydim.py
 >    python benchmarks/pmtp_vllm_llamacpp_hermes_bridge.py --dry-run
 >    ```
+> 
+> 5. **Opción 5: Vector Hand-Off Continuo (Sello 19.11.2026):**  
+>    Para transferir estados latentes entre modelos sin colapso 1D ni Domain Mismatch (evitando la inyección cruda en `inputs_embeds` Capa 0):
+>    ```bash
+>    python benchmarks/polydim_residual_splice_remediation.py
+>    ```
+>    Los componentes canónicos están en el paquete `pmtp`:
+>    ```python
+>    from pmtp import ResidualStreamSpliceHook, StiefelImpedanceProjector, AttentionSummaryPooling
+>    ```
+>    Guía técnica completa: [`docs/GUIA_VECTOR_HANDOFF_STIEFEL.md`](docs/GUIA_VECTOR_HANDOFF_STIEFEL.md)  
+>    Notebook de Kaggle listo para correr: [`notebooks/polydim_kaggle_stiefel_handoff.ipynb`](notebooks/polydim_kaggle_stiefel_handoff.ipynb)
