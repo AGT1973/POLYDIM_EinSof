@@ -46,7 +46,7 @@ def get_connection():
             dbname="polydim_vec_db",
             connect_timeout=3
         )
-        conn.autocommit = True
+        conn.autocommit = False
         return conn
     except Exception:
         conn = psycopg2.connect(
@@ -56,7 +56,7 @@ def get_connection():
             dbname="polydim_vec_db",
             connect_timeout=3
         )
-        conn.autocommit = True
+        conn.autocommit = False
         return conn
 
 
@@ -151,7 +151,12 @@ def ingest_file(filepath: Path, conn) -> int:
     # 1. Asegurar o crear nodo documento padre en GraphRAG
     file_hash = hashlib.sha256(open(filepath, 'rb').read()).hexdigest()
     doc_node_name = f"DOC:{filepath.stem.upper()}"
-    
+
+    cur.execute("SELECT node_id, properties->>'file_hash' FROM einsof_graph_nodes WHERE name = %s;", (doc_node_name,))
+    existing = cur.fetchone()
+    if existing and existing[1] == file_hash:
+        return 0
+
     cur.execute("""
         INSERT INTO einsof_graph_nodes (name, node_type, domain, topic, theorem_text, properties)
         VALUES (%s, 'markdown_document', 'DOCUMENTATION', %s, %s, %s)
@@ -172,6 +177,11 @@ def ingest_file(filepath: Path, conn) -> int:
         cur.execute("SELECT node_id FROM einsof_graph_nodes WHERE name = %s;", (doc_node_name,))
         r = cur.fetchone()
         doc_node_id = r[0] if r else None
+
+    # Limpiar secciones viejas si el archivo fue editado
+    if doc_node_id:
+        cur.execute("DELETE FROM polydim_embeddings WHERE metadata->>'file' = %s;", (filepath.name,))
+        cur.execute("DELETE FROM einsof_graph_nodes WHERE properties->>'file' = %s;", (filepath.name,))
 
     # Conectar el documento al nodo maestro del ecosistema si existe
     if doc_node_id:
@@ -225,6 +235,7 @@ def ingest_file(filepath: Path, conn) -> int:
         })))
         ingested_count += 1
 
+    conn.commit()
     return ingested_count
 
 

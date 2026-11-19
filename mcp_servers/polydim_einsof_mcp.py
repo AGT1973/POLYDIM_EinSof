@@ -16,10 +16,14 @@ import os
 import json
 import math
 import time
+import socket
 import urllib.request
 import urllib.error
 from pathlib import Path
 from datetime import datetime, timezone
+
+# Impide que Windows TCP SYN congele conexiones a hosts no alcanzables
+socket.setdefaulttimeout(1.5)
 
 # Preserve stdout exclusively for JSON-RPC 2.0 responses
 _REAL_STDOUT = sys.stdout

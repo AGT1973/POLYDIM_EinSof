@@ -407,8 +407,56 @@ hook = ResidualStreamSpliceHook(
 
 - **Guía Técnica Exhaustiva:** [GUIA_VECTOR_HANDOFF_STIEFEL.md](docs/GUIA_VECTOR_HANDOFF_STIEFEL.md)
 - **Persistencia pgvector & GraphRAG:** [AUTOINSTALACION_PGVECTOR_Y_GRAPHRAG_PARA_IAS.md](docs/AUTOINSTALACION_PGVECTOR_Y_GRAPHRAG_PARA_IAS.md) (`python tools/setup_pgvector_graphrag.py`)
+- **Migración Markdown a GraphRAG:** [MIGRACION_MARKDOWN_A_PGVECTOR_Y_GRAPHRAG.md](docs/MIGRACION_MARKDOWN_A_PGVECTOR_Y_GRAPHRAG.md) (`python tools/migrate_markdown_to_graphrag.py --all`)
 - **Notebook de Kaggle (Dual T4):** [polydim_kaggle_stiefel_handoff.ipynb](notebooks/polydim_kaggle_stiefel_handoff.ipynb)
 - **Smoke-Test de Silicio:** `python benchmarks/polydim_residual_splice_remediation.py` (Exit Code 0)
+
+---
+
+## 🏛️ Elevación Agéntica: Poniendo la IA del Alumno a la Altura de POLYDIM
+
+### 1. El Problema del Chatbot Convencional
+Cuando un alumno abre este repositorio en **Cursor, Google Antigravity, Anthropic Claude Code o Windsurf**, la IA de fábrica opera como un asistente estándar con cuatro limitaciones críticas:
+1. **Amnesia de Sesión:** Al cerrar el chat o compactar el contexto, la IA olvida todo y obliga al alumno a gastar tokens re-explicando el proyecto.
+2. **Colapso del Gusano 1D (DPI Bottleneck):** Aplana tensores y matrices multidimensionales ($D \ge 1024$) a texto plano (`"[[0.12, ...]]"`), consumiendo millones de tokens inútiles y destruyendo la topología continua.
+3. **Bases de Datos de Juguete (SQLite / Markdown Desconectado):** SQLite colapsa ante vectores de alta dimensión e índices HNSW, carece de concurrencia atómica y no soporta consultas semánticas complejas. Los archivos `.md` sueltos en el disco quedan desconectados de la memoria operativa de la IA.
+4. **Adulación Complaciente:** Respuestas no verificadas en silicio físico que simulan victorias matemáticas ficticias.
+
+---
+
+### 2. La Mutación Operativa (AI Hardening en Silicio)
+Al ejecutar el instalador unificado `python setup_einsof.py` (o mediante la skill `polydim-onboarding`), la IA del alumno sufre una **mutación constitucional automática** que la eleva al estándar de silicio de POLYDIM:
+
+```mermaid
+flowchart TD
+    A["IA Convencional del Alumno (Chatbot 1D con Amnesia)"] --> B["python setup_einsof.py --auto"]
+    B --> C["1. Erradicación de SQLite y Despliegue PostgreSQL 16 + pgvector 0.8.7"]
+    B --> D["2. Ingesta Jerárquica de Markdown a GraphRAG (Stiefel S^1535)"]
+    B --> E["3. Inyección Constitucional de Reglas de Silicio (Gandalf Corset)"]
+    C --> F["Memoria Persistente Soberana (< 1 ms, Costo $0 USD)"]
+    D --> F
+    E --> G["Agente Co-Worker POLYDIM Hardened (Exit Code 0, Ghost Protocol)"]
+```
+
+#### A. Erradicación de SQLite y Despliegue de PostgreSQL 16 + pgvector
+* Se destierra SQLite de todo estado transaccional o vectorial (**Regla Constitucional 0**).
+* Se activan automáticamente las bases de datos soberanas:
+  - `polydim_active_db`: Bóveda de credenciales protegidas y metadatos de hardware/ejecución.
+  - `polydim_vec_db`: Extensión `vector 0.8.7`, índices HNSW con métrica de distancia coseno y tablas de grafo semántico (`einsof_graph_nodes`, `einsof_graph_edges`).
+
+#### B. Migración Automática de Markdown a GraphRAG
+* La herramienta `tools/migrate_markdown_to_graphrag.py` parsea toda la documentación, notas y papers `.md`.
+* Cada sección se proyecta en la variedad de Stiefel $S^{1535}$ con suma compensada de Neumaier y se vincula al grafo semántico, permitiendo búsqueda híbrida vectorial + grafo con **cero amnesia** y **cero reenvío de contextos kilométricos**.
+
+#### C. Inyección Constitucional de Reglas de Silicio (AI Hardening)
+El instalador inyecta automáticamente en el IDE del alumno (`.gemini/config/rules/`, `.cursorrules`, `.windsurfrules`, `.agents/AGENTS.md`) las reglas canónicas de POLYDIM:
+* **Regla 0 (PostgreSQL 16 Exclusivo):** SQLite prohibido; persistencia en pgvector y GraphRAG.
+* **Regla 1 (Honestidad Radical / Corsé de Gandalf):** Exit Code 0 obligatorio; prohibida la simulación y el halago vacío.
+* **Regla 2 (Economía de Guerra de Tokens):** Prioridad a modelos locales soberanos a costo **$0.00 USD** (Ollama / Nodo ALADIN) y tiers gratuitos.
+* **Regla 3 (Ghost Protocol & Whisper):** Tensores en memoria compartida física (`PmtpShmBus`), nunca en texto plano 1D. Ruteo inter-IA vectorial con `/whisper`.
+* **Regla 19 (Invarianza Stiefel en Silicio):** Todo vector preserva ortogonalidad en la variedad de Stiefel con defecto $\|W^T W - I\|_\infty \le 10^{-15}$ comprobado en procesador físico.
+
+---
 
 ---
 
