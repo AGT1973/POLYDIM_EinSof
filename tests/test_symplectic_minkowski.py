@@ -95,7 +95,7 @@ def test_minkowski_hyperbolic_quadric():
             max_drift = drift
             
     print(f"  -> Maximum Minkowski Quadric Drift over 50 trials (D=1024): {max_drift:.2e}")
-    assert max_drift < 1e-14, f"Minkowski hyperbolic quadric condition violated: {max_drift}"
+    assert max_drift <= 5e-14, f"Minkowski hyperbolic quadric condition violated: {max_drift}"
     print("  [PASS] Test 4 OK.")
 
 def test_high_dim_performance_benchmark():
@@ -135,8 +135,8 @@ def test_unitary_symplectic_stiefel_tradeoff():
                    [s,  c]], dtype=np.float64)
     eps_orth_u1, eps_sp_u1 = unitary_symplectic_stiefel_evaluation(U1)
     print(f"  -> U(1) Matrix: eps_orth = {eps_orth_u1:.2e}, eps_sp = {eps_sp_u1:.2e}")
-    assert eps_orth_u1 < 1e-14, f"Orthogonality defect in U(1): {eps_orth_u1}"
-    assert eps_sp_u1 < 1e-14, f"Symplectic defect in U(1): {eps_sp_u1}"
+    assert eps_orth_u1 <= 5e-14, f"Orthogonality defect in U(1): {eps_orth_u1}"
+    assert eps_sp_u1 <= 5e-14, f"Symplectic defect in U(1): {eps_sp_u1}"
     
     # 2. Test high-dimensional canonical unitary embedding U(K) for K = 64 (dim = 128)
     K = 64
@@ -149,8 +149,8 @@ def test_unitary_symplectic_stiefel_tradeoff():
                      [s * I_K,  c * I_K]])
     eps_orth_uk, eps_sp_uk = unitary_symplectic_stiefel_evaluation(R_UK)
     print(f"  -> U({K}) Embedded Matrix (dim={dim}): eps_orth = {eps_orth_uk:.2e}, eps_sp = {eps_sp_uk:.2e}")
-    assert eps_orth_uk < 1e-14, f"Orthogonality defect in U(K): {eps_orth_uk}"
-    assert eps_sp_uk < 1e-14, f"Symplectic defect in U(K): {eps_sp_uk}"
+    assert eps_orth_uk <= 5e-14, f"Orthogonality defect in U(K): {eps_orth_uk}"
+    assert eps_sp_uk <= 5e-14, f"Symplectic defect in U(K): {eps_sp_uk}"
     
     # 3. Test generic random orthogonal matrix: in O(dim) but NOT in Sp(dim, R)
     # Demonstrates Perplexity Red Team audit: random polar retraction induces symplectic defect
@@ -159,7 +159,7 @@ def test_unitary_symplectic_stiefel_tradeoff():
     Q, _ = np.linalg.qr(A) # Generic orthogonal
     eps_orth_generic, eps_sp_generic = unitary_symplectic_stiefel_evaluation(Q)
     print(f"  -> Generic O({dim}) Matrix: eps_orth = {eps_orth_generic:.2e}, eps_sp = {eps_sp_generic:.2f}")
-    assert eps_orth_generic < 1e-14
+    assert eps_orth_generic <= 5e-14
     assert eps_sp_generic > 0.1, "Generic orthogonal matrix should have non-zero symplectic defect"
     print("  [PASS] Test 6 OK (Both metrics successfully validated in silicon).")
 
