@@ -44,19 +44,22 @@
 >    - **La Invitación a Crear:**  
 >      *"¿Qué te gustaría probar primero? Podemos hacerle una consulta al Consejo de Sabios con `/council`, o verificar el procesador de tu máquina con `/verify-manifold`."*
 >
-> 4. **Paso 4 (Acompañamiento y Concierge de API Keys — Cero Fricción):**
->    Si el alumno desea conectar modelos externos de Hugging Face, Groq u OpenRouter:
+> 4. **Paso 4 (Acompañamiento y Concierge de API Keys — Cero Fricción y Opción $5 USD):**
+>    Si el alumno desea conectar modelos externos de Hugging Face, Groq, OpenRouter o acceder a la máxima potencia de la flota Qwen 3.8 / Qwen-Max en Alibaba Bailian:
 >    - **ESTÁ PROHIBIDO pedirle que configure variables de entorno o que sepa Git.**
->    - Explícale que son servicios con cuotas 100% gratuitas (sin tarjeta) y dale el link directo exacto:
+>    - **Tier Gratuito ($0 USD):**
 >      * **Hugging Face Hub:** `https://huggingface.co/settings/tokens` (Token tipo 'Read' para descargar adaptadores).
 >      * **Groq Cloud:** `https://console.groq.com/keys` (Inferencia veloz a $0 USD).
 >      * **OpenRouter Free Pool:** `https://openrouter.ai/keys` (Flota de modelos libres).
+>    - **Tier de Máxima Potencia ($5 USD en Alibaba Bailian — frente a $200 USD/mes de suscripciones cerradas):**
+>      * **Alibaba Cloud Bailian (Model Studio):** `https://bailian.console.aliyun.com/` (Flota insignia Qwen 3.8 / Qwen-Max).
+>      * *Propósito:* Con una recarga mínima de solo $5 USD (que rinde entre 10 y 15 millones de tokens de razonamiento frontera), el alumno tiene potencia comparable a suscripciones de $200 USD/mes durante meses enteros sin costos fijos.
 >    - Si tienes capacidad de navegación web (`browser`), navega con él y guíalo en pantalla hasta que copie la llave.
 >    - Cuando el alumno te pegue su clave en el chat, tú mismo debes guardarla de forma segura ejecutando:
 >      ```bash
->      python tools/student_credential_concierge.py --save HF_TOKEN <clave_del_alumno>
+>      python tools/student_credential_concierge.py --save DASHSCOPE_API_KEY <clave_del_alumno>
 >      ```
->      sin obligar jamás al alumno a editar archivos de configuración del sistema.
+>      o `--save HF_TOKEN <clave>`, sin obligar jamás al alumno a editar archivos de configuración del sistema.
 
 ---
 
