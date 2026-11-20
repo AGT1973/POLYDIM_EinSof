@@ -54,6 +54,10 @@
   - **Supervisión Dialéctica y Bucle de Profundización:** El Suborquestador tiene prohibida la aceptación pasiva de resultados superficiales; debe emitir mandatos de *profundizar*, *extraer datos de silicio/citas* o *buscar fuentes alternativas* en su sector.
   - **Cota de Economía de Guerra (Regla 2):** Máximo 2 iteraciones de repregunta por sub-subagente.
   - **Síntesis y Persistencia Holística:** El Suborquestador entrega una síntesis sectorial depurada al Orquestador Raíz para integración ejecutiva y persistencia en PostgreSQL 16 (`polydim_embeddings` y `einsof_graph_nodes`).
+- **Regla 3.4 (Doctrina de Colapso Bimodal Humano-IA):**
+  - **Diálogo Fluido vía HTML5 / SVG / Canvas:** En la interacción habitual, el colapso del estado latente continuo NO debe verterse en densos muros de código fuente ni volcados Markdown monótonos. Debe proyectarse visualmente en la interfaz mediante widgets interactivos HTML5, gráficos vectoriales SVG o lienzos Canvas (`<agent-embed>` o HTML5 inline), preservando la fluidez y elegancia del diálogo.
+  - **Colapso a Código Estrictamente On-Demand:** La materialización a lenguajes específicos (Python, Free Pascal, JavaScript, C, etc.) es elección exclusiva del usuario. Solo se emite código fuente cuando el alumno o colega lo solicita explícitamente.
+  - **Cero Fricción de Toolchains para el Alumno:** La compilación o ejecución se realiza directamente vía `mathesis2bin` / `mthc.py` emitiendo binarios nativos autónomos (`.exe`/`.elf`) o interpretando directamente, erradicando la necesidad de que el alumno instale compiladores pesados o dependencias externas.
 - **Regla 4.1 (Socio Estratégico CARLOS-CYC):** Carlos Gil (`cegactuario@gmail.com`) es socio activo del proyecto `CARLOS-CYC`. Canal de comunicación bidireccional preferencial a través de `E:\email_AGY` (inbound prioritario y outbound agéntico autorizado).
 - **Regla 6 (SOTA Enforcement & Anti-Obsolescencia Estricta < 6 Meses):**
   - **Cota Estricta de 6 Meses:** Queda TERMINANTEMENTE PROHIBIDO seleccionar, despachar, evaluar o invocar en crons, sabuesos o benchmarks modelos abiertos con MÁS DE 6 MESES de antigüedad o superados por generaciones posteriores.
@@ -93,3 +97,5 @@
    - Cabecera `PmtpCompactHeader` de 64 bytes (`alignas(64)`) + Seqlock disenada para memoria coherente compartida entre aceleradores heterogeneos.
 4. **Handshake Universal de Anclas de Procrustes (`< 50 ms`):**
    - Alineacion ortogonal instantanea $\mathbf{W} = \mathrm{Polar}(\mathbf{X}_{\text{model}}^T \mathbf{X}_{\text{anchor}}) \in \mathrm{St}(k, D)$ sin modificar pesos (`modifies_ai_model_weights: false`) ni requerir reentrenamiento.
+5. **Colapso Bimodal Dialéctico (Visual por Defecto, Código On-Demand):**
+   - Interacción fluida asistida por widgets HTML5 / SVG / Canvas inline; el colapso a código fuente desciende a silicio en el lenguaje elegido por el usuario (Python, Pascal, JS, C) compilado con `mathesis2bin` con cero carga de toolchains para el estudiante.
