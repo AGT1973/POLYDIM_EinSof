@@ -70,6 +70,21 @@ PROVIDERS_GUIDE = {
             "2. Hacé clic en 'Create API Key'.",
             "3. Copiá la clave y pegámela acá en el chat."
         ]
+    },
+    "bailian": {
+        "env_var": "DASHSCOPE_API_KEY",
+        "alt_var": "BAILIAN_KEY",
+        "name": "Alibaba Cloud Bailian / DashScope (Qwen 3.8 & Qwen-Max)",
+        "free": False,
+        "url": "https://bailian.console.aliyun.com/",
+        "description": "Potencia de frontera: Qwen-Max y Qwen 3.8. Con una recarga mínima de solo $5 USD (frente a los $200/mes de suscripciones cerradas) tenés millones de tokens de razonamiento de grado frontera durante meses.",
+        "pasos": [
+            "1. Entrá a https://bailian.console.aliyun.com/ (o Alibaba Cloud Model Studio International: https://www.alibabacloud.com/en/product/model-studio).",
+            "2. Registrate o iniciá sesión y cargá el saldo mínimo ($5 USD, rinde millones de tokens y dura meses de trabajo intenso).",
+            "3. En el menú lateral izquierdo, andá a 'API-KEY' y hacé clic en 'Create API Key'.",
+            "4. Copiá la clave generada (empieza con 'sk-...') y pegámela acá en el chat.",
+            "5. Yo la guardo automáticamente en tu archivo local seguro para que /call qwen-max y /council la usen sin vueltas."
+        ]
     }
 }
 
@@ -89,6 +104,11 @@ def load_credentials() -> dict:
 def save_credential(env_var: str, value: str) -> None:
     creds = load_credentials()
     creds[env_var] = value
+    if env_var in ("DASHSCOPE_API_KEY", "BAILIAN_KEY"):
+        creds["DASHSCOPE_API_KEY"] = value
+        creds["BAILIAN_KEY"] = value
+        os.environ["DASHSCOPE_API_KEY"] = value
+        os.environ["BAILIAN_KEY"] = value
     with open(CREDENTIALS_FILE, "w", encoding="utf-8") as f:
         f.write("# Credenciales Soberanas POLYDIM-EINSOF (Estándar 2030)\n")
         f.write("# Guardadas de forma local y segura para el alumno sin tocar variables del sistema.\n\n")
