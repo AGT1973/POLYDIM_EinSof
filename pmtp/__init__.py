@@ -22,6 +22,9 @@ from .pmtp_residual_splice import (
     stiefel_polar_retraction_order4,
     neumaier_sum,
 )
+from .pmtp_kv_cache_bridge import (
+    PmtpSharedKVCacheBridge,
+)
 from .symplectic_minkowski import (
     neumaier_norm,
     neumaier_minkowski_inner_product,
@@ -62,6 +65,7 @@ __all__ = [
     "ResidualStreamSpliceHook",
     "StiefelImpedanceProjector",
     "AttentionSummaryPooling",
+    "PmtpSharedKVCacheBridge",
     "stiefel_polar_retraction_order4",
     "neumaier_sum",
 ]
