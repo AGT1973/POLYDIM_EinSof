@@ -12,17 +12,24 @@ import os
 import sys
 import time
 import struct
+import tempfile
 import multiprocessing
+import pytest
 
 TOTAL_SHM_SIZE = 1024 * 1024 # 1MB
+
+def _get_shm_path(shm_name):
+    shm_dir = "/dev/shm" if os.path.exists("/dev/shm") else tempfile.gettempdir()
+    return os.path.join(shm_dir, shm_name)
 
 def writer_crash_process(shm_name, crash_phase):
     # Simulates a writer that abruptly terminates via os._exit(137) (simulating SIGKILL)
     if sys.platform == 'win32':
         shm = mmap.mmap(-1, TOTAL_SHM_SIZE, tagname=shm_name)
     else:
-        # POSIX
-        fd = os.open(f"/dev/shm/{shm_name}", os.O_RDWR | os.O_CREAT, 0o666)
+        # POSIX (/dev/shm on Linux or tempfile on macOS)
+        shm_file = _get_shm_path(shm_name)
+        fd = os.open(shm_file, os.O_RDWR | os.O_CREAT, 0o666)
         os.ftruncate(fd, TOTAL_SHM_SIZE)
         shm = mmap.mmap(fd, TOTAL_SHM_SIZE, mmap.MAP_SHARED, mmap.PROT_READ | mmap.PROT_WRITE)
     
@@ -47,12 +54,13 @@ def writer_crash_process(shm_name, crash_phase):
 
 def run_audit():
     shm_name = f"pmtp_crash_test_{os.getpid()}"
+    shm_file = _get_shm_path(shm_name)
     
     # Parent holds an open reference so the kernel doesn't discard named mapping on Windows when child dies
     if sys.platform == 'win32':
         parent_shm = mmap.mmap(-1, TOTAL_SHM_SIZE, tagname=shm_name)
     else:
-        fd = os.open(f"/dev/shm/{shm_name}", os.O_RDWR | os.O_CREAT, 0o666)
+        fd = os.open(shm_file, os.O_RDWR | os.O_CREAT, 0o666)
         os.ftruncate(fd, TOTAL_SHM_SIZE)
         parent_shm = mmap.mmap(fd, TOTAL_SHM_SIZE, mmap.MAP_SHARED, mmap.PROT_READ | mmap.PROT_WRITE)
 
@@ -83,11 +91,21 @@ def run_audit():
     # 3. Watchdog recovery: reaper detects dead writer PID / timeout, safely rolls back generation to even
     shm.close()
     if sys.platform != 'win32':
-        os.unlink(f"/dev/shm/{shm_name}")
-        os.close(fd)
+        if os.path.exists(shm_file):
+            try:
+                os.unlink(shm_file)
+            except OSError:
+                pass
+        try:
+            os.close(fd)
+        except OSError:
+            pass
     
     print("CRASH_RESILIENCE_TUPLE: (Exit Code: 0, Torn Reads: 0, Slot Corruption: 0, PASS)")
     return 0
+
+def test_writer_crash_resilience():
+    assert run_audit() == 0
 
 if __name__ == '__main__':
     sys.exit(run_audit())
