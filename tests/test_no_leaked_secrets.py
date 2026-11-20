@@ -20,12 +20,27 @@ TEXT_EXTS = {".py", ".md", ".json", ".ps1", ".sh", ".bat", ".txt", ".yml", ".yam
 
 
 def test_no_leaked_secrets_in_tracked_files():
-    res = subprocess.run(["git", "-C", str(SUITE_ROOT), "ls-files"], capture_output=True, text=True, check=True)
+    import shutil
+    git_bin = shutil.which("git")
+    candidate_files = []
+    if git_bin and (SUITE_ROOT / ".git").exists():
+        try:
+            res = subprocess.run([git_bin, "-C", str(SUITE_ROOT), "ls-files"], capture_output=True, text=True, check=True)
+            for rel in res.stdout.splitlines():
+                candidate_files.append(SUITE_ROOT / rel)
+        except Exception:
+            candidate_files = []
+
+    if not candidate_files:
+        for p in SUITE_ROOT.rglob("*"):
+            if p.is_file() and not any(part.startswith(".") for part in p.relative_to(SUITE_ROOT).parts):
+                candidate_files.append(p)
+
     leaks = []
-    for rel in res.stdout.splitlines():
-        p = SUITE_ROOT / rel
+    for p in candidate_files:
         if not p.is_file() or p.suffix.lower() not in TEXT_EXTS:
             continue
+        rel = p.relative_to(SUITE_ROOT)
         content = p.read_text(encoding="utf-8", errors="ignore")
         for label, rx in SECRET_PATTERNS:
             for m in rx.finditer(content):
