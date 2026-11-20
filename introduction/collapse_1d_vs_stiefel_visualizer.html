@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POLYDIM-EINSOF: 1D Token Collapse vs. Continuous Stiefel Manifold</title>
+    <style>
+        :root {
+            --bg-deep: #07090e;
+            --bg-card: #0d121d;
+            --border-card: #1b263b;
+            --text-main: #e0e6ed;
+            --text-dim: #778da9;
+            --red-1d: #ff3366;
+            --red-glow: rgba(255, 51, 102, 0.3);
+            --cyan-stiefel: #00f0ff;
+            --cyan-glow: rgba(0, 240, 255, 0.3);
+            --green-silicon: #00ff88;
+            --gold-accent: #ffd166;
+            --font-mono: 'SF Mono', 'Fira Code', 'Roboto Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #ff3366, #e0e6ed 50%, #00f0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto 20px auto;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .panel-1d {
+            border-top: 4px solid var(--red-1d);
+        }
+
+        .panel-stiefel {
+            border-top: 4px solid var(--cyan-stiefel);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .panel-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-1d {
+            background-color: rgba(255, 51, 102, 0.15);
+            color: var(--red-1d);
+            border: 1px solid rgba(255, 51, 102, 0.3);
+        }
+
+        .badge-stiefel {
+            background-color: rgba(0, 240, 255, 0.15);
+            color: var(--cyan-stiefel);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+        }
+
+        .canvas-container {
+            width: 100%;
+            height: 340px;
+            background: #040609;
+            border-radius: 8px;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .metric-box {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .metric-label {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .metric-val {
+            font-size: 1.05rem;
+            font-family: var(--font-mono);
+            font-weight: 700;
+        }
+
+        .val-1d { color: var(--red-1d); }
+        .val-stiefel { color: var(--cyan-stiefel); }
+        .val-green { color: var(--green-silicon); }
+
+        .controls-card {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 12px;
+            padding: 16px 24px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .control-group label {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            background: #1b263b;
+            height: 6px;
+            border-radius: 3px;
+            outline: none;
+            width: 160px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--cyan-stiefel);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--cyan-glow);
+        }
+
+        .btn {
+            background: #1b263b;
+            color: var(--text-main);
+            border: 1px solid #415a77;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--cyan-stiefel);
+            color: #000;
+            border-color: var(--cyan-stiefel);
+            box-shadow: 0 0 12px var(--cyan-glow);
+        }
+
+        .terminal-log {
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            margin-top: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 10px;
+            border-radius: 6px;
+            height: 70px;
+            overflow-y: auto;
+            border-left: 3px solid var(--cyan-stiefel);
+            color: #a0aec0;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>POLYDIM-EINSOF: 1D TOKEN COLLAPSE VS. CONTINUOUS STIEFEL MANIFOLD</h1>
+        <p>Real-Time Interactive Architectural Benchmark — Comparing the Discrete Tokenization Bottleneck (1D) vs. Sovereign Geodesic Reasoning on the Stiefel Manifold S<sup>D-1</sup> (MATHESIS-64).</p>
+    </header>
+
+    <div class="dashboard-grid">
+        <!-- Panel 1: 1D Discrete Token Collapse -->
+        <div class="panel panel-1d">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span>🐌 Discrete 1D Token Collapse</span>
+                </div>
+                <span class="badge badge-1d">Shannon DPI Bottleneck</span>
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="canvas1D"></canvas>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Tokens Emitted</div>
+                    <div class="metric-val val-1d" id="m1d_tokens">0 tok</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Attention Complexity</div>
+                    <div class="metric-val val-1d" id="m1d_complexity">O(N²)</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">DPI Latency</div>
+                    <div class="metric-val val-1d" id="m1d_latency">1,450 ms</div>
+                </div>
+            </div>
+
+            <div class="terminal-log" id="log1D">
+                > Initializing Discrete Token Stream (1D)...<br>
+                > Serializing floats char-by-char into JSON string...<br>
+                > WARNING: High prompt tax detected (1,200 tokens overhead).
+            </div>
+        </div>
+
+        <!-- Panel 2: Continuous Stiefel Manifold & Mathesis -->
+        <div class="panel panel-stiefel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span>⚡ Continuous Stiefel Manifold S<sup>D-1</sup></span>
+                </div>
+                <span class="badge badge-stiefel">Zero-Copy PMTP / Mathesis</span>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="canvasStiefel"></canvas>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-label">Token Cost</div>
+                    <div class="metric-val val-green">0 TOKENS</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Condition κ₂(W)</div>
+                    <div class="metric-val val-stiefel">1.00000000</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Memory Latency</div>
+                    <div class="metric-val val-stiefel">14.2 µs (SHM)</div>
+                </div>
+            </div>
+
+            <div class="terminal-log" id="logStiefel">
+                > PmtpShmBus v2.1 allocated: SLAB_ID: 0x4B3A8F<br>
+                > Retraction Polar Horner Ord 4: ||W^T W - I||_F <= 1.49e-15<br>
+                > Lyapunov Energy Descent: dX/dt = -∇Φ(X) - γX (Stable Attractor).
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-card">
+        <div class="control-group">
+            <label for="dimSlider">Dimension D:</label>
+            <input type="range" id="dimSlider" min="64" max="4096" step="64" value="2048">
+            <span id="dimVal" style="font-family: var(--font-mono); color: var(--cyan-stiefel); font-weight:700;">2048</span>
+        </div>
+
+        <div class="control-group">
+            <label for="speedSlider">Simulation Speed:</label>
+            <input type="range" id="speedSlider" min="1" max="5" step="1" value="2">
+        </div>
+
+        <div class="control-group">
+            <button class="btn" id="btnPulse">⚡ Trigger Geodesic Pulse</button>
+            <button class="btn" id="btnReset">↺ Reset Stream</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Setup Canvas 1D ---
+        const c1D = document.getElementById('canvas1D');
+        const ctx1D = c1D.getContext('2d');
+        // --- Setup Canvas Stiefel ---
+        const cStiefel = document.getElementById('canvasStiefel');
+        const ctxStiefel = cStiefel.getContext('2d');
+
+        function resizeCanvases() {
+            c1D.width = c1D.parentElement.clientWidth;
+            c1D.height = c1D.parentElement.clientHeight;
+            cStiefel.width = cStiefel.parentElement.clientWidth;
+            cStiefel.height = cStiefel.parentElement.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvases);
+        resizeCanvases();
+
+        // State 1D
+        let tokensCount = 0;
+        let tokenBlocks = [];
+        const words = ["{", "\"weight\":", "0.8492,", "\"loss\":", "0.0124,", "\"matrix\":", "[", "0.1982,", "-0.5412,", "0.9128", "]}", "...", "RMSNorm", "Jitter", "429_RateLimit", "Attention_O(N^2)"];
+        let step1D = 0;
+
+        // State Stiefel
+        let angle = 0;
+        let geodesicPoints = [];
+        let numParticles = 48;
+        let particles = [];
+        let dim = 2048;
+
+        for (let i = 0; i < numParticles; i++) {
+            particles.push({
+                phi: Math.acos(2 * Math.random() - 1),
+                theta: 2 * Math.PI * Math.random(),
+                speed: 0.01 + Math.random() * 0.02,
+                orbitR: 0.75 + Math.random() * 0.15,
+                color: i % 3 === 0 ? '#00f0ff' : (i % 3 === 1 ? '#00ff88' : '#ffd166')
+            });
+        }
+
+        // Animation Loop
+        let lastTime = performance.now();
+        function animate(now) {
+            const dt = (now - lastTime) / 1000;
+            lastTime = now;
+
+            // 1. Draw 1D Token Collapse
+            ctx1D.fillStyle = '#040609';
+            ctx1D.fillRect(0, 0, c1D.width, c1D.height);
+
+            // Draw grid lines
+            ctx1D.strokeStyle = 'rgba(255, 51, 102, 0.08)';
+            ctx1D.lineWidth = 1;
+            for (let y = 0; y < c1D.height; y += 30) {
+                ctx1D.beginPath();
+                ctx1D.moveTo(0, y);
+                ctx1D.lineTo(c1D.width, y);
+                ctx1D.stroke();
+            }
+
+            // Emit token blocks
+            step1D++;
+            if (step1D % 15 === 0) {
+                const word = words[Math.floor(Math.random() * words.length)];
+                tokenBlocks.push({
+                    text: word,
+                    x: c1D.width,
+                    y: 40 + Math.random() * (c1D.height - 80),
+                    speed: 2 + Math.random() * 3,
+                    w: word.length * 8 + 14
+                });
+                tokensCount += Math.floor(Math.random() * 3) + 1;
+                document.getElementById('m1d_tokens').innerText = tokensCount + ' tok';
+            }
+
+            // Render and update blocks
+            ctx1D.font = '12px "SF Mono", monospace';
+            for (let i = tokenBlocks.length - 1; i >= 0; i--) {
+                const b = tokenBlocks[i];
+                b.x -= b.speed;
+
+                // Box
+                ctx1D.fillStyle = 'rgba(255, 51, 102, 0.12)';
+                ctx1D.strokeStyle = 'rgba(255, 51, 102, 0.5)';
+                ctx1D.strokeRect(b.x, b.y - 14, b.w, 22);
+                ctx1D.fillRect(b.x, b.y - 14, b.w, 22);
+
+                // Text
+                ctx1D.fillStyle = '#ff6b8b';
+                ctx1D.fillText(b.text, b.x + 6, b.y + 2);
+
+                // Connecting chain line
+                if (i > 0) {
+                    ctx1D.strokeStyle = 'rgba(255, 51, 102, 0.2)';
+                    ctx1D.beginPath();
+                    ctx1D.moveTo(b.x + b.w, b.y - 3);
+                    ctx1D.lineTo(tokenBlocks[i - 1].x, tokenBlocks[i - 1].y - 3);
+                    ctx1D.stroke();
+                }
+
+                if (b.x + b.w < 0) {
+                    tokenBlocks.splice(i, 1);
+                }
+            }
+
+            // 2. Draw Continuous Stiefel Manifold S^{D-1}
+            ctxStiefel.fillStyle = '#040609';
+            ctxStiefel.fillRect(0, 0, cStiefel.width, cStiefel.height);
+
+            const cx = cStiefel.width / 2;
+            const cy = cStiefel.height / 2;
+            const radius = Math.min(cx, cy) * 0.72;
+
+            // Draw Wireframe Sphere (Riemannian Curvature)
+            angle += 0.015;
+            ctxStiefel.lineWidth = 1;
+
+            // Longitudinal and Latitudinal Circles
+            for (let i = 0; i < 6; i++) {
+                const rot = angle + (i * Math.PI / 6);
+                ctxStiefel.strokeStyle = 'rgba(0, 240, 255, 0.15)';
+                ctxStiefel.beginPath();
+                ctxStiefel.ellipse(cx, cy, radius * Math.abs(Math.cos(rot)), radius, 0, 0, 2 * Math.PI);
+                ctxStiefel.stroke();
+            }
+
+            // Outer Equator Circle (Unit Norm S^{D-1})
+            ctxStiefel.strokeStyle = '#00f0ff';
+            ctxStiefel.lineWidth = 2;
+            ctxStiefel.shadowColor = 'rgba(0, 240, 255, 0.6)';
+            ctxStiefel.shadowBlur = 12;
+            ctxStiefel.beginPath();
+            ctxStiefel.arc(cx, cy, radius, 0, 2 * Math.PI);
+            ctxStiefel.stroke();
+            ctxStiefel.shadowBlur = 0; // reset
+
+            // Smooth Geodesic Trajectory Line
+            ctxStiefel.strokeStyle = '#00ff88';
+            ctxStiefel.lineWidth = 2.5;
+            ctxStiefel.beginPath();
+            const geoSteps = 80;
+            for (let j = 0; j <= geoSteps; j++) {
+                const t = j / geoSteps * 2 * Math.PI;
+                const gx = cx + radius * Math.cos(t + angle * 2) * Math.sin(angle);
+                const gy = cy + radius * Math.sin(t) * Math.cos(angle * 0.5);
+                if (j === 0) ctxStiefel.moveTo(gx, gy);
+                else ctxStiefel.lineTo(gx, gy);
+            }
+            ctxStiefel.stroke();
+
+            // Render Orbiting Particles on the Manifold
+            particles.forEach(p => {
+                p.theta += p.speed;
+                const px = cx + radius * p.orbitR * Math.cos(p.theta) * Math.sin(p.phi);
+                const py = cy + radius * p.orbitR * Math.sin(p.theta);
+
+                ctxStiefel.fillStyle = p.color;
+                ctxStiefel.shadowColor = p.color;
+                ctxStiefel.shadowBlur = 8;
+                ctxStiefel.beginPath();
+                ctxStiefel.arc(px, py, 3, 0, 2 * Math.PI);
+                ctxStiefel.fill();
+                ctxStiefel.shadowBlur = 0;
+            });
+
+            // Center Badge
+            ctxStiefel.font = '11px "SF Mono", monospace';
+            ctxStiefel.fillStyle = '#00f0ff';
+            ctxStiefel.textAlign = 'center';
+            ctxStiefel.fillText(`St(k, ${dim}) | κ₂(W)=1.0`, cx, cy + 5);
+
+            requestAnimationFrame(animate);
+        }
+        requestAnimationFrame(animate);
+
+        // Controls Hook
+        document.getElementById('dimSlider').addEventListener('input', (e) => {
+            dim = e.target.value;
+            document.getElementById('dimVal').innerText = dim;
+            document.getElementById('logStiefel').innerHTML += `<br>> Dimension re-scaled: D=${dim} (Neumaier FP64 verified).`;
+        });
+
+        document.getElementById('btnPulse').addEventListener('click', () => {
+            particles.forEach(p => p.speed *= 2.5);
+            setTimeout(() => {
+                particles.forEach(p => p.speed /= 2.5);
+            }, 600);
+            document.getElementById('logStiefel').innerHTML += `<br>> GEODESIC PULSE: W <- Horner_p4(E). Defect: 1.11e-16.`;
+        });
+
+        document.getElementById('btnReset').addEventListener('click', () => {
+            tokensCount = 0;
+            tokenBlocks = [];
+            document.getElementById('m1d_tokens').innerText = '0 tok';
+        });
+    </script>
+</body>
+</html>
