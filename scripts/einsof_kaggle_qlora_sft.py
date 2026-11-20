@@ -187,9 +187,10 @@ class StiefelImpedanceProjector:
     def __init__(self, d_latent=2048, d_model=5120):
         import numpy as np
         rng = np.random.default_rng(2026)
-        raw = rng.standard_normal((d_latent, d_model))
-        Q, _ = np.linalg.qr(raw)
-        self.W = Q  # W^T W = I
+        # To get d_latent orthonormal vectors in R^{d_model}:
+        raw = rng.standard_normal((d_model, d_latent))
+        Q, _ = np.linalg.qr(raw)  # Q shape: (d_model, d_latent), Q^T Q = I_latent
+        self.W = Q.T  # W shape: (d_latent, d_model), W W^T = I_latent
 
     def project(self, z):
         return z @ self.W

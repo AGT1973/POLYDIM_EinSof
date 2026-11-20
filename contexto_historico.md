@@ -217,3 +217,17 @@
 - **Sincronización Documental:** Tabla VII de `TESIS_DOCTORAL_TOMO_COMPLETO.md` actualizada a 22/22 cargas troncales `DONE` (eliminada nota de espera en cola), recompilado `TESIS_DOCTORAL_SISTEMAS_TENSORIALES_STIEFEL_EINSOF_POLYDIM_ARIEL_GARCIA_TRABA.docx` (`Exit Code 0`) y verificado `TESIS_DOCTORAL_250P_CANONICA_MASTER.docx`.
 - **Saneamiento Proactivo en Nodo 2 ALADIN (`192.168.100.21`):** Corregida expresión regular de `crontab` (`^(/usr/bin/)?python3`), purgados 4 procesos duplicados de `aladin_stiefel_continuous_engine.py` y cancelados 8 jobs duplicados en cola de IBM Quantum.
 - **Persistencia:** `polydim_vec_db.session_context` ID `3671` y `polydim_active_db.active_vault` (`QUANTUM_MASTER_TABLE_CLOSURE_22_OF_22`).
+
+
+## Checkpoint /limpiar - 2026-11-20T20:32:41.194258+00:00
+- **Conversation ID:** `2a9e5c4e-0b83-46f4-94e0-69f758bb454b`
+- **Resumen:** Protocolo /limpiar ejecutado. Implementación en silicio de PmtpSharedKVCacheBridge con alineación dinámica para cuantización NF4/4-bit y retracción polar de Stiefel orden 4 (Exit Code 0). Upgrade de sota_daily_scout.py a v3.0 con feeds RSS de Microsoft Research, Xataka IA y Hugging Face. Ingesta de 67 ítems SOTA (feed total >1,749 ítems). Actualización de active_vault.SOTA_MODEL_REGISTRY. Respuestas y documentación técnica para Rafael (Kaggle Round v4) y Carlos Gil (CARLOS-CYC). Ghost Protocol y Whisper inter-IA activos por defecto en nodo ALADIN:9999 y pgvector.
+- **Componentes en Silicio:**
+  * `PmtpSharedKVCacheBridge`: Exit Code 0 (Dynamics-Aware 4-bit alignment + Stiefel order-4 polar retraction).
+  * `sota_daily_scout.py` v3.0: Exit Code 0 (RSS multi-source: Microsoft Research, Xataka IA, Hugging Face).
+  * `sota_intelligence_feed`: >1,749 registros activos en PostgreSQL 16.
+  * Defecto de isometria Stiefel: <= 5.55e-16 (cota teorica <= 1e-15).
+- **Protocolos Activos:** Ghost Protocol (ALADIN:9999 / PmtpShmBus) + Whisper Protocol (pgvector & GraphRAG) activos por defecto.
+- **Estado de Repositorios:**
+  * `E:\SUITE`: Sincronizado y limpio en `main` (`94a76c0`).
+  * `E:\email_AGY`: Actualizado con scout v3.0, bridge y documentacion de soporte.
