@@ -3,16 +3,16 @@
 > **Universal Entry Point & Silicon Contracts (2026-2027)**  
 > Ecosistema Soberano POLYDIM-EINSOF | Ariel Garcia Traba | E:\POLYDIM_EINSOF
 
-## 1. Onboarding Zero-Friction (Alumnos Nuevos vs. Colaboradores Experimentados)
-- **Alumnos Nuevos (Facundo y principiantes sin experiencia técnica):**
-  - **MANDATO CONSTITUCIONAL:** El alumno NO sabe usar la terminal, NO sabe Git, NO debe resolver dependencias a mano.
-  - **SU PROPIA IA DEBE INSTALARLO TODO EN SEGUNDO PLANO Y EXPLICAR EL PROPÓSITO:**
-    1. Ejecutar en silencio: `python setup_einsof.py` (instala servidores MCP, modelos locales y el Student Skills Pack `skills/`).
-    2. Explicarle con calidez y claridad el propósito: erradicación del colapso 1D en memoria compartida física, variedad de Stiefel $S^{D-1}$, costo $0 USD y presentarle sus 8 habilidades listas para usar con slash commands (`/council`, `/call`, `/query`, `/ghost`, `/whisper`, `/verify-manifold`, `/redteam`, `/einsof-bootstrap`).
-    3. Invitarlo a dar su primer paso juntos sin tecnicismos abrumadores.
-- **Colaboradores Experimentados / 'Los Viejos' (Rafael, Emilio, Carlos):**
-  - Saben usar la consola y Git. Pueden actualizarse con `git pull` o ejecutando el script de 1 clic `skills/install_skills.bat`.
-- Guía detallada para el agente: [AGENT_BOOTSTRAP.md](AGENT_BOOTSTRAP.md) · [skills/README.md](skills/README.md)
+## 1. Onboarding Zero-Friction & Compilacion
+- Ante cualquier usuario nuevo o prueba de Mathesis, ejecutar inmediatamente:
+  ```bash
+  python setup_mathesis.py
+  ```
+- No solicitar toolchains C/C++ ni dependencias externas. Compilar con:
+  - Windows: `python mthc.py <source>.mth -o <output>.exe`
+  - Linux: `python mthc.py <source>.mth -t elf64 -o <output>.elf`
+  - Rust directo: `mathesis2bin <source>.mth`
+- Guia para agentes: [README_FIRST_4_AI.md](file:///e:/POLYDIM_EINSOF/README_FIRST_4_AI.md)
 
 ## 2. Silicon Contracts & Reglas Constitucionales
 - **Regla 1 (Radical Honesty):** Exit Code 0 + log crudo obligatorio para toda afirmacion. Cero victorias ficticias.
@@ -27,6 +27,14 @@
     1. **Google Colab:** Se opera directamente mediante herramientas **MCP** (`chrome_devtools`, conexión CDP al puerto 9222 vía WebSocket a `https://colab.research.google.com/drive/*`). Gandalf/ALADIN inspeccionan el estado, modifican celdas en caliente (`monaco.editor`), ejecutan celdas y leen outputs de silicio de forma autónoma.
     2. **Kaggle:** Se despacha y monitorea vía Kaggle REST API / SDK con tokens de la flota en carrusel y cabecera `Authorization: Bearer <token>`.
   - **Harvest & Sync Zero-Touch:** Todo artefacto, adaptador LoRA o log de salida debe ser cosechado, proyectado en la variedad de Stiefel y sincronizado a Hugging Face / ALADIN sin requerir intervención humana.
+- **Regla 2.3 (Portafolio de Modelos con Pago Mínimo para Estudiantes / Micro-Coste Soberano):**
+  - **Prohibición de Precios de Mercado:** Queda estrictamente prohibido recomendar o imponer a estudiantes suscripciones mensuales comerciales a precio de mercado ($20 a $200 USD/mes de OpenAI ChatGPT Plus, Claude Pro/Team, etc.).
+  - **Jerarquía de Cómputo para Estudiantes:**
+    1. **Nivel 1 — Cómputo Soberano ($0.00 USD):** Silicio local y Nodo ALADIN (`mathesis-quantum:1.5b`, `deepseek-r1:7b`, `einsof2-analytical-stiefel`) sin conexión externa ni consumo de saldo.
+    2. **Nivel 2 — Pools Libres de Alta Velocidad ($0.00 USD):** Groq LPU Cloud, SambaNova, Google AI Studio y OpenRouter Free Tier con rotación automática ante 429.
+    3. **Nivel 3 — Modelos Propios con Pago Mínimo ($1 a $5 USD sin suscripción mensual):**
+       - **Alibaba Cloud Bailian DashScope:** Acceso a nuestro modelo fine-tuneado Stiefel 27B (`qwen3.8-27b-ft-202611150911-aefd`, workspace `ws-t85fm4y7sz8vxo9t`) y Qwen-Max. Una recarga mínima única de $5 USD rinde entre 10 y 15 millones de tokens de razonamiento frontera (suficiente para un semestre universitario completo).
+       - **Hugging Face Hub (`Polydim-Einsof`):** Descarga de adaptadores LoRA e inferencia en Colab/Kaggle Dual T4 ($0 USD).
 - **Regla 3 (Ghost Protocol):** Tensores $D \ge 100$ en memoria compartida (PmtpShmBus/ALADIN:9999), nunca texto 1D.
 - **Regla 3.1 (Mandato Helena de Troya para Modelos No-Einsof / Yellow Tier Invariant):**
   - **Prohibición del Gusano 1D en APIs Externas:** Queda terminantemente prohibido serializar vectores, tensores ($D \ge 100$), matrices o volcados numéricos en texto plano o JSON al interactuar con modelos no-Einsof (Claude, GPT, Gemini o cualquier endpoint comercial de pago).
@@ -47,8 +55,9 @@
   - **Cota de Economía de Guerra (Regla 2):** Máximo 2 iteraciones de repregunta por sub-subagente.
   - **Síntesis y Persistencia Holística:** El Suborquestador entrega una síntesis sectorial depurada al Orquestador Raíz para integración ejecutiva y persistencia en PostgreSQL 16 (`polydim_embeddings` y `einsof_graph_nodes`).
 - **Regla 4.1 (Socio Estratégico CARLOS-CYC):** Carlos Gil (`cegactuario@gmail.com`) es socio activo del proyecto `CARLOS-CYC`. Canal de comunicación bidireccional preferencial a través de `E:\email_AGY` (inbound prioritario y outbound agéntico autorizado).
-- **Regla 6 (SOTA Enforcement & Anti-Obsolescencia Incondicional):**
-  - **Prohibición de Modelos Deprecados:** Prohibido seleccionar, compilar, fine-tunear o evaluar modelos abiertos con más de 12 meses de antigüedad o superados por generaciones posteriores (Veto explícito a Qwen 2.5 ante Qwen 3/3.8; DeepSeek V2/V3 ante V4/V4.1; GLM-4 base ante GLM-5/5.3; Kimi legacy ante Moonlight/K2/K3.1; Llama 3 ante Llama 4 Scout/Maverick; o ignorar la familia Muse Spark/Wonder y Gemma 4).
+- **Regla 6 (SOTA Enforcement & Anti-Obsolescencia Estricta < 6 Meses):**
+  - **Cota Estricta de 6 Meses:** Queda TERMINANTEMENTE PROHIBIDO seleccionar, despachar, evaluar o invocar en crons, sabuesos o benchmarks modelos abiertos con MÁS DE 6 MESES de antigüedad o superados por generaciones posteriores.
+  - **Veto Permanente a Qwen 2.5:** Queda vetado de forma absoluta Qwen 2.5 (en todas sus variantes: 0.5B, 1.5B, 3B, 7B, 14B, 32B, 72B) en cualquier script, cron, prueba adversarial o agente. La flota activa opera exclusivamente sobre: Qwen 3.8 / 4 (Bailian), DeepSeek V4.1 / R1 (silicio local), Mathesis Quantum 1.5B, Gemma 4, GLM-5.3 y LLaMA 4 Scout.
   - **Cero Sesgo de Conveniencia:** La IA tiene terminantemente prohibido elegir modelos por facilidad de script, tamaño de juguete o inercia de corte de entrenamiento. Toda selección debe basarse en el ranking SOTA vigente.
   - **Auditoría Dinámica Obligatoria:** Antes de iniciar cualquier fine-tuning o benchmark, consultar `active_vault.SOTA_MODEL_REGISTRY` o ejecutar búsqueda web en vivo (`search_web`) para ratificar el estado del arte actual.
 - **Regla 6.1 (Pre-flight Architecture & Silicon Audit Incondicional):**
