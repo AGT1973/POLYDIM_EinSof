@@ -20,6 +20,7 @@ from .pmtp_residual_splice import (
     StiefelImpedanceProjector,
     AttentionSummaryPooling,
     stiefel_polar_retraction_order4,
+    orthogonal_procrustes_alignment,
     neumaier_sum,
 )
 from .pmtp_kv_cache_bridge import (
@@ -67,5 +68,6 @@ __all__ = [
     "AttentionSummaryPooling",
     "PmtpSharedKVCacheBridge",
     "stiefel_polar_retraction_order4",
+    "orthogonal_procrustes_alignment",
     "neumaier_sum",
 ]

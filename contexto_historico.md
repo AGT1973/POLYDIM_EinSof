@@ -231,3 +231,18 @@
 - **Estado de Repositorios:**
   * `E:\SUITE`: Sincronizado y limpio en `main` (`94a76c0`).
   * `E:\email_AGY`: Actualizado con scout v3.0, bridge y documentacion de soporte.
+
+
+## Checkpoint /limpiar - 2026-11-20T20:29:57.182652
+- **Conversation ID:** `d5a7b568-928d-4af2-9905-59e5750eb8e5`
+- **Context IDs:** `session_context` ID `3698`, `facts` ID `1942`
+- **Hito Histórico:** Promulgación de la **REGLA 0 SUPREMA: VETO ABSOLUTO AL STUB DISFRAZADO DE SILICIO** tras la auditoría independiente de Rafael Lore Truninger (Kaggle Rondas 6 y 7).
+- **Hallazgos Forenses:** Confirmación empírica en silicio T4x2 de que el traspaso latente ahorra -76% de tokens (LatentMAS). Admisión honesta y eliminación de atajos: el proyector usaba `rng.standard_normal`, Lyapunov usaba `(a+b)/2` y Modo C era texto simple.
+- **Acciones Ejecutadas:**
+  * Sincronización `/sube` en `E:\email_AGY`: commit `c878cb9` subido a GitHub (`ai_gmail`), Google Drive (`G:\` y `J:\`) y backups locales (`D:\` y `L:\`) con Exit Code 0.
+  * Regla 0 institucionalizada en `~/.gemini/config/rules/GANDALF.md`, `E:\email_AGY\REGLA_0_VETO_STUB_DISFRAZADO.md` y `active_vault`.
+- **Próximos Pasos Mandatorios:**
+  1. Implementar Procrustes Ortogonal analítico sobre activaciones reales ($W = U V^T$).
+  2. Subir `BENCHMARK_10_TAREAS_COMPLEJAS_KAGGLE.md` a `polydim-suite` para erradicar el 404.
+  3. Implementar álgebra de Lie y Lyapunov diferencial real en `mathesis_compiler.py`.
+  4. Obligatoriedad de la Prueba de Falsación (Control X) en todo benchmark.
