@@ -30,7 +30,7 @@ def test_stiefel_polar_retraction():
 
 
 def test_stiefel_projector_and_hook():
-    import torch
+    torch = pytest.importorskip("torch")
     import torch.nn as nn
 
     d_hidden = 128
