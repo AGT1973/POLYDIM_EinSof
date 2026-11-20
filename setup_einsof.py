@@ -386,27 +386,47 @@ def verify_mathesis_and_atelier(start_atelier: bool = False, port: int = 8766) -
 
 def install_student_skills_pack():
     skills_dir = SUITE_DIR / "skills"
-    if not skills_dir.exists():
+    agents_skills_dir = SUITE_DIR / ".agents" / "skills"
+    if not skills_dir.exists() and not agents_skills_dir.exists():
         return
-    print("  [*] Instalando Pack de Skills Soberanas para el Alumno...")
+    print("  [*] Instalando y Activando Pack de Skills Soberanas para el Alumno...")
     home = Path.home()
     targets = [
         home / ".gemini" / "antigravity" / "skills",
         home / ".gemini" / "config" / "skills",
+        SUITE_DIR / ".agents" / "skills",
     ]
-    skills_to_copy = ["ghost", "whisper", "council", "model-bridge", "quick-query", "manifold-verify", "redteam", "einsof-bootstrap"]
+    if (home / ".cursor").exists():
+        targets.append(home / ".cursor" / "skills")
+    if (home / ".windsurf").exists():
+        targets.append(home / ".windsurf" / "skills")
+
+    # Recolectar todas las skills disponibles en la suite
+    available_skills = {}
+    for base in (skills_dir, agents_skills_dir):
+        if base.exists():
+            for p in base.glob("*"):
+                if p.is_dir() and (p / "SKILL.md").exists():
+                    available_skills[p.name] = p / "SKILL.md"
+
+    installed_count = 0
     for target in targets:
         try:
             target.mkdir(parents=True, exist_ok=True)
-            for s in skills_to_copy:
-                src = skills_dir / s / "SKILL.md"
-                if src.exists():
-                    dest = target / s
-                    dest.mkdir(parents=True, exist_ok=True)
-                    shutil.copy2(src, dest / "SKILL.md")
+            for s_name, s_file in available_skills.items():
+                dest = target / s_name
+                dest.mkdir(parents=True, exist_ok=True)
+                dest_file = dest / "SKILL.md"
+                if s_file.resolve() != dest_file.resolve():
+                    shutil.copy2(s_file, dest_file)
+                installed_count += 1
         except Exception as e:
             print(f"  [!] Advertencia instalando skills en {target}: {e}")
-    print(f"  [OK] {len(skills_to_copy)} skills soberanas instaladas para Antigravity (/ghost, /whisper, /council, /call, /query, /verify-manifold, /redteam).")
+
+    skill_names = sorted(list(available_skills.keys()))
+    print(f"  [OK] {len(skill_names)} skills soberanas activadas para el alumno:")
+    print(f"       Comandos listos: /remember, /ghost, /whisper, /council, /call, /query,")
+    print(f"                        /verify-manifold, /redteam, /telaraña, /ask-sage, /save-tokens")
 
 
 def setup_pgvector_graphrag_and_rules() -> tuple[bool, str]:
@@ -529,6 +549,7 @@ def main():
             "mathesis_mcp": mathesis_mcp,
             "env": {"PYTHONIOENCODING": "utf-8", "PYTHONUNBUFFERED": "1"},
         })
+        install_student_skills_pack()
         _, mem_st = setup_pgvector_graphrag_and_rules()
         print(f"  [OK] Check-only completado exitosamente | Atelier: {atelier_st} | Memoria: {mem_st}")
         return
