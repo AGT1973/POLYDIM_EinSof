@@ -50,7 +50,7 @@ exit /b 1
 
 :RUN_SETUP
 echo [OK] Usando interprete Python verificado: %PY_CMD%
-%PY_CMD% "%~dp0setup_einsof.py" --start-atelier %*
+%PY_CMD% "%~dp0setup_einsof.py" --start-atelier --open-intro %*
 
 echo.
 echo Presiona cualquier tecla para finalizar...

@@ -563,10 +563,13 @@ def main():
     _, mem_st = setup_pgvector_graphrag_and_rules()
     print_completion(endpoint, default_model, atelier_st, mem_status=mem_st)
 
-    if args.open_intro:
+    if args.open_intro or args.auto:
         intro_html = SUITE_DIR / "introduction" / "index.html"
+        if not intro_html.exists():
+            intro_html = SUITE_DIR / "index.html"
         if intro_html.exists():
             import webbrowser
+            print(f"\n[*] Abriendo guia interactiva y visual con Canvas en tu navegador ({intro_html.name})...")
             webbrowser.open(intro_html.as_uri())
 
 
