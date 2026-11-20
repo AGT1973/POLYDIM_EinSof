@@ -53,12 +53,12 @@ def test_transpile_and_run_python315(transpiler):
     py_code = transpiler.to_python315()
     assert "Python 3.15" in py_code
     
-    with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False) as f:
+    with tempfile.NamedTemporaryFile("w", suffix=".py", encoding="utf-8", delete=False) as f:
         f.write(py_code)
         f_path = f.name
         
     try:
-        res = subprocess.run([sys.executable, f_path], capture_output=True, text=True)
+        res = subprocess.run([sys.executable, f_path], capture_output=True, text=True, encoding="utf-8")
         assert res.returncode == 0, f"Python execution failed: {res.stderr}"
         assert "Exit Code 0" in res.stdout
     finally:
@@ -66,10 +66,14 @@ def test_transpile_and_run_python315(transpiler):
             os.remove(f_path)
 
 def test_transpile_and_compile_rust1100(transpiler):
+    import shutil
+    if not shutil.which("rustc"):
+        pytest.skip("rustc not installed on this system")
+
     rs_code = transpiler.to_rust1100()
     assert "#![no_std]" in rs_code
     
-    with tempfile.NamedTemporaryFile("w", suffix=".rs", delete=False) as f:
+    with tempfile.NamedTemporaryFile("w", suffix=".rs", encoding="utf-8", delete=False) as f:
         f.write(rs_code)
         f_path = f.name
         
@@ -79,7 +83,8 @@ def test_transpile_and_compile_rust1100(transpiler):
         res = subprocess.run(
             ["rustc", "--crate-type=lib", f_path, "-o", out_lib],
             capture_output=True,
-            text=True
+            text=True,
+            encoding="utf-8"
         )
         assert res.returncode == 0, f"Rustc 1.100 failed: {res.stderr}"
         assert os.path.exists(out_lib)
