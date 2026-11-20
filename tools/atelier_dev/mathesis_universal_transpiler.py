@@ -324,6 +324,11 @@ pub const K_FRAME: usize = {self.k};
 pub const D_SPACE: usize = {self.D};
 pub const TOLERANCE: f64 = {self.tolerance};
 
+#[inline(always)]
+fn f64_abs(val: f64) -> f64 {{
+    if val < 0.0 {{ -val }} else {{ val }}
+}}
+
 /// Acumulador compensado Neumaier en f64
 #[inline(always)]
 pub fn neumaier_dot(a: &[f64; D_SPACE], b: &[f64; D_SPACE]) -> f64 {{
@@ -332,7 +337,7 @@ pub fn neumaier_dot(a: &[f64; D_SPACE], b: &[f64; D_SPACE]) -> f64 {{
     for i in 0..D_SPACE {{
         let x = a[i] * b[i];
         let t = sum + x;
-        if sum.abs() >= x.abs() {{
+        if f64_abs(sum) >= f64_abs(x) {{
             c += (sum - t) + x;
         }} else {{
             c += (x - t) + sum;
@@ -358,7 +363,7 @@ impl StiefelEngine {{
             for j in 0..K_FRAME {{
                 let dot = neumaier_dot(&frames[i], &frames[j]);
                 let target = if i == j {{ 1.0 }} else {{ 0.0 }};
-                let err = (dot - target).abs();
+                let err = f64_abs(dot - target);
                 if err > max_err {{
                     max_err = err;
                 }}
