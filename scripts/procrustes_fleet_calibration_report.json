@@ -1,0 +1,65 @@
+{
+  "2048_5120": {
+    "filename": "stiefel_procrustes_2048_5120.safetensors",
+    "filepath": "E:/SUITE/scripts\\stiefel_procrustes_2048_5120.safetensors",
+    "d_src": 2048,
+    "d_dst": 5120,
+    "stiefel_defect": 7.771561172376096e-16,
+    "cosine_similarity": 1.0,
+    "size_bytes": 83886536
+  },
+  "2048_4096": {
+    "filename": "stiefel_procrustes_2048_4096.safetensors",
+    "filepath": "E:/SUITE/scripts\\stiefel_procrustes_2048_4096.safetensors",
+    "d_src": 2048,
+    "d_dst": 4096,
+    "stiefel_defect": 8.881784197001252e-16,
+    "cosine_similarity": 1.0,
+    "size_bytes": 67109320
+  },
+  "2048_8192": {
+    "filename": "stiefel_procrustes_2048_8192.safetensors",
+    "filepath": "E:/SUITE/scripts\\stiefel_procrustes_2048_8192.safetensors",
+    "d_src": 2048,
+    "d_dst": 8192,
+    "stiefel_defect": 8.881784197001252e-16,
+    "cosine_similarity": 1.0,
+    "size_bytes": 134218184
+  },
+  "2048_3584": {
+    "filename": "stiefel_procrustes_2048_3584.safetensors",
+    "filepath": "E:/SUITE/scripts\\stiefel_procrustes_2048_3584.safetensors",
+    "d_src": 2048,
+    "d_dst": 3584,
+    "stiefel_defect": 8.881784197001252e-16,
+    "cosine_similarity": 1.0,
+    "size_bytes": 58720712
+  },
+  "2048_2048": {
+    "filename": "stiefel_procrustes_2048_2048.safetensors",
+    "filepath": "E:/SUITE/scripts\\stiefel_procrustes_2048_2048.safetensors",
+    "d_src": 2048,
+    "d_dst": 2048,
+    "stiefel_defect": 6.661338147750939e-16,
+    "cosine_similarity": 1.0,
+    "size_bytes": 33554888
+  },
+  "1024_2048": {
+    "filename": "stiefel_procrustes_1024_2048.safetensors",
+    "filepath": "E:/SUITE/scripts\\stiefel_procrustes_1024_2048.safetensors",
+    "d_src": 1024,
+    "d_dst": 2048,
+    "stiefel_defect": 1.1102230246251565e-15,
+    "cosine_similarity": 0.999999018262728,
+    "size_bytes": 16777672
+  },
+  "2048_1536": {
+    "filename": "stiefel_procrustes_2048_1536.safetensors",
+    "filepath": "E:/SUITE/scripts\\stiefel_procrustes_2048_1536.safetensors",
+    "d_src": 2048,
+    "d_dst": 1536,
+    "stiefel_defect": 1.1102230246251565e-15,
+    "cosine_similarity": 0.978729014523972,
+    "size_bytes": 25166280
+  }
+}
