@@ -1,0 +1,37 @@
+{
+  "peft_type": "PMTP_STIEFEL_PROCRUSTES",
+  "qlora_version": "v3-procrustes-zero-prompt-4-remediations",
+  "model_id": "Einsof Analytical Stiefel",
+  "slug": "einsof-analytical-stiefel",
+  "base_model_name_or_path": "EinsofOS-PmtpShmBus-Port9999",
+  "d_in": 2048,
+  "d_out": 2048,
+  "stiefel_manifold": "St(2048, 2048)",
+  "dtype": "float64",
+  "stiefel_defect_fp64": 6.661338147750939e-16,
+  "control_x_cos": 0.026558630267989873,
+  "rope_phase_drift": 6.324128693839643e-16,
+  "stream_sharding_err": 1.1102230246251565e-16,
+  "armijo_delta": -29.913554065410153,
+  "ghost_protocol_ready": true,
+  "trigger_tokens": [
+    "<|einsof|>",
+    "<|mathesis|>"
+  ],
+  "prompt_overhead_tokens": 0,
+  "splice_layer": "Direct-Silicon",
+  "splice_mode": "stiefel_blend",
+  "splice_alpha": 0.85,
+  "remediations_certified": {
+    "domain_mismatch_procrustes": true,
+    "rope_phase_compensator_R_theta": true,
+    "stream_cache_sharding_10e6": true,
+    "riemannian_armijo_line_search": true
+  },
+  "safetensors_file": "stiefel_procrustes_2048_2048.safetensors",
+  "runtime_script": "einsof_kaggle_qlora_sft.py",
+  "zenodo_concept_doi": "10.5281/zenodo.21136742",
+  "zenodo_paper_v2_doi": "10.5281/zenodo.24122867",
+  "canonical_github": "https://github.com/AGT1973/polydim-suite",
+  "author": "Ariel Garcia Traba (POLYDIM-EINSOF)"
+}

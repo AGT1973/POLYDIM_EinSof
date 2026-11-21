@@ -1,0 +1,37 @@
+{
+  "peft_type": "PMTP_STIEFEL_PROCRUSTES",
+  "qlora_version": "v3-procrustes-zero-prompt-4-remediations",
+  "model_id": "DeepSeek V4.1 Flash MoE",
+  "slug": "deepseek-v4.1-flash-moe",
+  "base_model_name_or_path": "deepseek-ai/DeepSeek-V4.1-Flash",
+  "d_in": 5120,
+  "d_out": 2048,
+  "stiefel_manifold": "St(2048, 5120)",
+  "dtype": "float64",
+  "stiefel_defect_fp64": 7.771561172376096e-16,
+  "control_x_cos": -0.015801371043421854,
+  "rope_phase_drift": 3.983757299906962e-16,
+  "stream_sharding_err": 0.0,
+  "armijo_delta": -51.7346255446173,
+  "ghost_protocol_ready": true,
+  "trigger_tokens": [
+    "<|einsof|>",
+    "<|mathesis|>"
+  ],
+  "prompt_overhead_tokens": 0,
+  "splice_layer": "L-2 (Layer 62)",
+  "splice_mode": "stiefel_blend",
+  "splice_alpha": 0.85,
+  "remediations_certified": {
+    "domain_mismatch_procrustes": true,
+    "rope_phase_compensator_R_theta": true,
+    "stream_cache_sharding_10e6": true,
+    "riemannian_armijo_line_search": true
+  },
+  "safetensors_file": "stiefel_procrustes_2048_5120.safetensors",
+  "runtime_script": "einsof_kaggle_qlora_sft.py",
+  "zenodo_concept_doi": "10.5281/zenodo.21136742",
+  "zenodo_paper_v2_doi": "10.5281/zenodo.24122867",
+  "canonical_github": "https://github.com/AGT1973/polydim-suite",
+  "author": "Ariel Garcia Traba (POLYDIM-EINSOF)"
+}
