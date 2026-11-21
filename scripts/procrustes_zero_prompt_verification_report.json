@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "stiefel_defect": 6.661338147750939e-16,
+  "isometry_ratio": 1.0000000368114978,
+  "control_x_cos_sim": 0.0395438910343433,
+  "safetensors_file": "E:\\SUITE\\scripts\\stiefel_procrustes_2048_5120.safetensors",
+  "safetensors_size_bytes": 83886368,
+  "target_layer": "L-2",
+  "splice_mode": "stiefel_blend",
+  "trigger_token": "<|einsof|>",
+  "prompt_tokens_overhead": 0,
+  "exit_code": 0
+}
