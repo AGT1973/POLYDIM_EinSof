@@ -1,0 +1,25 @@
+{
+  "status": "ALL_4_REMEDIATIONS_CERTIFIED_IN_QLORA_PACKAGE",
+  "point_1_procrustes": {
+    "defect": 7.771561172376096e-16,
+    "isometry_ratio": 0.9999999999999998,
+    "control_x_cos": 0.03954389069953441
+  },
+  "point_2_rope_compensator": {
+    "norm_drift": 4.440892098500626e-16,
+    "phase_error_uncomp": 1.9432369071477122,
+    "phase_error_comp": 1.7763568394002505e-15
+  },
+  "point_3_stream_sharding": {
+    "D": 1000000,
+    "err_sharded": 9.401384036291348e-09,
+    "rel_err": 6.631182113450276e-17
+  },
+  "point_4_riemannian_armijo": {
+    "iters": 9,
+    "alpha_final": 0.0048828125,
+    "delta_safe": -75.21897045763217,
+    "defect_safe": 6.661338147750939e-16
+  },
+  "exit_code": 0
+}
