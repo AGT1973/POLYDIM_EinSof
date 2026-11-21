@@ -26,7 +26,25 @@ from qiskit.quantum_info import SparsePauliOp
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit_ibm_runtime import QiskitRuntimeService, EstimatorV2
 
-TOKEN = "[REDACTED_IBM_QUANTUM_TOKEN]"
+def _get_ibm_token():
+    import os as _os
+    t = _os.environ.get("IBM_QUANTUM_TOKEN", "").strip()
+    if t:
+        return t
+    try:
+        import psycopg2 as _pg
+        _c = _pg.connect(dbname="polydim_active_db", host="localhost", port=5432, user="postgres", connect_timeout=2)
+        _cur = _c.cursor()
+        _cur.execute("SELECT value FROM active_vault WHERE key_name IN ('ibm_quantum_api_token', 'ibm_quantum_token', 'IBM_QUANTUM_TOKEN') LIMIT 1;")
+        _r = _cur.fetchone()
+        _c.close()
+        if _r and _r[0]:
+            return str(_r[0]).strip()
+    except Exception:
+        pass
+    return ""
+
+TOKEN = _get_ibm_token()
 
 def run_cpu_and_tpu_native_math():
     rng = np.random.default_rng(20261102)

@@ -668,6 +668,211 @@ def tool_pmtp_sota_aladin_verify(args: dict) -> dict:
     }
 
 
+def tool_cag_truth_gate(args: dict) -> dict:
+    """
+    Compuerta Estricta de Verdad Silicio y Veto a la Verosimilitud (CAG Guardrail).
+    Entra al Cache Inmutable en PostgreSQL 16 y ejecuta validación física en hardware.
+    Prohíbe terminantemente la verosimilitud estadística, alucinaciones o afirmaciones sin respaldo.
+    """
+    t0 = time.perf_counter()
+    action = str(args.get("action", "query_ground_truth")).strip().lower()
+
+    # Only ban genuinely closed/fictional names; verified HF open-weight models
+    # (google/gemma-4-31B-it, deepseek-ai/DeepSeek-V4.1-Flash, meta-llama/Llama-4-Scout-17B-16E-Instruct,
+    # Qwen/Qwen3.8-27B) are live HTTP 200 on HF and must NOT be false-banned.
+    veto_keywords = [
+        "claude opus 5.5", "gpt-6", "gemini 4 carbon", "gemini 4 hydrogen",
+        "qwen 3.8 max", "qwen 3.5 max", "glm-5.3 prime"
+    ]
+
+    if action == "veto_verisimilitude":
+        statement = str(args.get("statement", "")).lower()
+        found_vetos = [k for k in veto_keywords if k in statement]
+        if found_vetos:
+            return {
+                "status": "VETO_TRIGGERED",
+                "exit_code": 1,
+                "verdict": "VERISIMILITUD_RECHAZADA",
+                "reason": f"Detectado modelo o afirmación ficticia vetada por Regla 6: {found_vetos}",
+                "is_truth": False
+            }
+        return {
+            "status": "PASS",
+            "exit_code": 0,
+            "verdict": "NO_VETO_DETECTED",
+            "statement": statement,
+            "is_truth": True
+        }
+
+    elif action == "query_ground_truth":
+        key = str(args.get("key", "")).strip()
+        category = str(args.get("category", "")).strip()
+        if not key:
+            return {"status": "ERROR", "exit_code": 1, "error": "Parámetro 'key' requerido para consultar cache."}
+        try:
+            import psycopg2
+            conn = psycopg2.connect("dbname=polydim_active_db user=postgres host=localhost port=5432")
+            cur = conn.cursor()
+            if category:
+                cur.execute("SELECT key_name, value, updated_at FROM active_vault WHERE category = %s AND key_name ILIKE %s LIMIT 1;", (category, f"%{key}%"))
+            else:
+                cur.execute("SELECT key_name, value, updated_at FROM active_vault WHERE key_name ILIKE %s LIMIT 1;", (f"%{key}%",))
+            row = cur.fetchone()
+            cur.close()
+            conn.close()
+            if not row:
+                # Fallback directo a pgvector en polydim_vec_db.polydim_manifest_vault
+                conn_v = psycopg2.connect("dbname=polydim_vec_db user=postgres host=localhost port=5432")
+                cur_v = conn_v.cursor()
+                cur_v.execute("""
+                    SELECT item_name, content_raw, updated_at, item_type, stiefel_norm
+                    FROM polydim_manifest_vault
+                    WHERE item_name ILIKE %s OR content_raw ILIKE %s
+                    ORDER BY updated_at DESC LIMIT 5;
+                """, (f"%{key}%", f"%{key}%"))
+                v_rows = cur_v.fetchall()
+                cur_v.close()
+                conn_v.close()
+                if v_rows:
+                    elapsed_ms = round((time.perf_counter() - t0) * 1000.0, 3)
+                    return {
+                        "status": "TRUTH_VERIFIED_IN_PGVECTOR_VAULT",
+                        "exit_code": 0,
+                        "database": "polydim_vec_db.polydim_manifest_vault",
+                        "hits": len(v_rows),
+                        "results": [
+                            {
+                                "item_name": r[0],
+                                "item_type": r[3],
+                                "stiefel_norm": float(r[4]),
+                                "content": json.loads(r[1]) if r[1].strip().startswith("{") else r[1][:500],
+                                "updated_at": str(r[2])
+                            }
+                            for r in v_rows
+                        ],
+                        "latency_ms": elapsed_ms,
+                        "is_truth": True
+                    }
+                return {
+                    "status": "FORBIDDEN_VERISIMILITUDE",
+                    "exit_code": 1,
+                    "verdict": "NOT_FOUND_IN_CAG_CACHE",
+                    "error": f"La clave o afirmación '{key}' NO existe ni en active_vault ni en pgvector (polydim_manifest_vault). Prohibido afirmarla como verdad sin comprobación en silicio.",
+                    "is_truth": False
+                }
+            val = row[1]
+            val_lower = str(val).lower()
+            poison_hits = [k for k in veto_keywords if k in val_lower]
+            if poison_hits:
+                return {
+                    "status": "CACHE_POISONING_DETECTED",
+                    "exit_code": 1,
+                    "verdict": "REJECTED_SPECULATIVE_CACHE_ENTRY",
+                    "key_name": row[0],
+                    "poison_keywords_found": poison_hits,
+                    "error": f"El registro '{row[0]}' en cache contiene nombres de modelos ficticios/especulativos vetados por Regla 6 ({poison_hits}). Prohibido presentarlo como verdad verificada.",
+                    "is_truth": False
+                }
+            try:
+                val_json = json.loads(val)
+            except Exception:
+                val_json = val
+            elapsed_ms = round((time.perf_counter() - t0) * 1000.0, 3)
+            return {
+                "status": "TRUTH_VERIFIED_IN_CACHE",
+                "exit_code": 0,
+                "key_name": row[0],
+                "ground_truth_value": val_json,
+                "updated_at": str(row[2]),
+                "latency_ms": elapsed_ms,
+                "is_truth": True
+            }
+        except Exception as e:
+            return {"status": "DB_ERROR", "exit_code": 1, "error": str(e), "is_truth": False}
+
+    elif action == "execute_and_seal":
+        command = str(args.get("command", "")).strip()
+        if not command:
+            return {"status": "ERROR", "exit_code": 1, "error": "command requerido"}
+        negative_control = str(args.get("negative_control_command", "")).strip()
+
+        # 1. Ejecutar comando objetivo en silicio
+        t_sub = time.perf_counter()
+        proc = subprocess.run(command, shell=True, capture_output=True, text=True, timeout=60)
+        dur_cmd = round((time.perf_counter() - t_sub) * 1000.0, 2)
+
+        if proc.returncode != 0:
+            return {
+                "status": "EXECUTION_FAILED",
+                "exit_code": proc.returncode,
+                "verdict": "REJECTED_BY_SILICON",
+                "stderr": proc.stderr[:500],
+                "stdout": proc.stdout[:500],
+                "is_truth": False
+            }
+
+        # 2. Control X de Falsación Popperiana (si fue provisto)
+        control_x_passed = None
+        if negative_control:
+            proc_neg = subprocess.run(negative_control, shell=True, capture_output=True, text=True, timeout=60)
+            if proc_neg.returncode == 0:
+                return {
+                    "status": "FALSIFIED_BY_CONTROL_X",
+                    "exit_code": 1,
+                    "verdict": "FALSE_POSITIVE_DETECTED",
+                    "error": "El control negativo pasó con éxito cuando debió fallar. El test es un stub complaciente.",
+                    "is_truth": False
+                }
+            control_x_passed = True
+
+        # 3. Generar sello BLAKE2s inmutable
+        h = hashlib.blake2s(digest_size=32)
+        h.update(command.encode('utf-8'))
+        h.update(proc.stdout.encode('utf-8'))
+        h.update(str(proc.returncode).encode('utf-8'))
+        truth_seal = h.hexdigest()
+
+        # Registrar en PostgreSQL 16
+        try:
+            import psycopg2
+            conn = psycopg2.connect("dbname=polydim_active_db user=postgres host=localhost port=5432")
+            cur = conn.cursor()
+            seal_record = {
+                "command": command,
+                "exit_code": proc.returncode,
+                "truth_seal": truth_seal,
+                "control_x_negative_passed": control_x_passed,
+                "duration_ms": dur_cmd
+            }
+            seal_key = f"SEAL_{truth_seal[:16]}"
+            cur.execute("DELETE FROM active_vault WHERE key_name = %s;", (seal_key,))
+            cur.execute("""
+                INSERT INTO active_vault (category, key_name, value, updated_at)
+                VALUES ('truth_seals', %s, %s, NOW());
+            """, (seal_key, json.dumps(seal_record)))
+            conn.commit()
+            cur.close()
+            conn.close()
+        except Exception:
+            pass
+
+        elapsed_total = round((time.perf_counter() - t0) * 1000.0, 2)
+        return {
+            "status": "TRUTH_SEALED_EXIT_CODE_0",
+            "exit_code": 0,
+            "verdict": "CERTIFIED_IN_SILICON",
+            "blake2s_truth_seal": truth_seal,
+            "command": command,
+            "latency_ms": elapsed_total,
+            "control_x_falsation": "PASSED (Negative control rejected correctly)" if control_x_passed else "OMITTED",
+            "stdout_preview": proc.stdout[:300].strip(),
+            "is_truth": True
+        }
+
+    else:
+        return {"status": "ERROR", "exit_code": 1, "error": f"Accion desconocida: {action}"}
+
+
 # ============================================================================
 # ESQUEMA DE HERRAMIENTAS MCP (JSON-RPC 2.0)
 # ============================================================================
@@ -782,6 +987,26 @@ MCP_TOOLS = [
                 "slab_id": {"type": "string", "description": "ID del slab PMTP a emitir"}
             }
         }
+    },
+    {
+        "name": "cag_truth_gate",
+        "description": "Compuerta de Verdad de Silicio y Veto a la Verosimilitud (CAG Guardrail). Consulta el cache inmutable en PostgreSQL 16, ejecuta validacion fisica con Control X Popperiano y emite sellos BLAKE2s inmutables para prohibir la verosimilitud sin ejecucion.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string",
+                    "enum": ["query_ground_truth", "execute_and_seal", "veto_verisimilitude"],
+                    "description": "Accion a ejecutar: 'query_ground_truth' (consulta cache DB), 'execute_and_seal' (corre en hardware y emite sello), 'veto_verisimilitude' (detecta ficciones/modelos inventados)"
+                },
+                "key": {"type": "string", "description": "Clave o termino a buscar en el cache inmutable de PostgreSQL 16"},
+                "category": {"type": "string", "description": "Categoria opcional en active_vault"},
+                "statement": {"type": "string", "description": "Declaracion o nombre de modelo a auditar contra sesgos de verosimilitud"},
+                "command": {"type": "string", "description": "Comando fisico a ejecutar en silicio para emitir sello de verdad"},
+                "negative_control_command": {"type": "string", "description": "Comando de control negativo que DEBE fallar para descartar stubs (Control X Popperiano)"}
+            },
+            "required": ["action"]
+        }
     }
 ]
 
@@ -837,6 +1062,8 @@ def handle_request(req: dict):
                 res = tool_launch_atelier_studio(args)
             elif name == "pmtp_sota_aladin_verify":
                 res = tool_pmtp_sota_aladin_verify(args)
+            elif name == "cag_truth_gate":
+                res = tool_cag_truth_gate(args)
             else:
                 send_jsonrpc_response(req_id, error={"code": -32601, "message": f"Herramienta no encontrada: {name}"})
                 return

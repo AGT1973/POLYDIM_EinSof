@@ -186,6 +186,29 @@ TOOLS = [
                 "num_anchors": {"type": "integer", "description": "Cantidad de vectores ancla N (por defecto 64)", "default": 64}
             }
         }
+    },
+    {
+        "name": "gandalf_read_inbox",
+        "description": "Lee en PostgreSQL 16 los correos entrantes pendientes (comms_inbound_log), novedades de ALADIN (sota/QA/PMTP) y borradores de salida para Gandalf.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "only_pending": {"type": "boolean", "description": "Si true, solo devuelve eventos no reconocidos aun.", "default": True},
+                "limit": {"type": "integer", "description": "Cantidad maxima de items por seccion.", "default": 15}
+            }
+        }
+    },
+    {
+        "name": "gandalf_ack_inbox",
+        "description": "Marca como atendidos/notificados eventos de gandalf_event_queue y correos asociados en comms_inbound_log.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "event_ids": {"type": "array", "items": {"type": "integer"}, "description": "Lista de IDs de gandalf_event_queue a confirmar."},
+                "mark_all": {"type": "boolean", "description": "Confirmar todos los eventos pendientes actuales.", "default": False},
+                "conversation_id": {"type": "string", "description": "ID opcional de conversacion que confirma."}
+            }
+        }
     }
 ]
 
@@ -224,7 +247,23 @@ def _analytical_mathesis_stiefel_fallback(prompt: str) -> str:
     )
 
 
-def call_ollama_generate(prompt: str, model: str = DEFAULT_MODEL, temp: float = 0.2) -> tuple[str, bool]:
+def _cag_verify_and_scrub_output(text: str) -> tuple[str, bool]:
+    """Zero-token post-generation CAG verifier for models called via MCP from Antigravity."""
+    lower = text.lower()
+    banned = [
+        "claude opus 5.5", "gpt-6 astra", "gpt-6 terra",
+        "gemini 4 carbon", "gemini 4 hydrogen", "qwen 3.8 max", "glm-5.3 prime"
+    ]
+    hits = [b for b in banned if b in lower]
+    if hits:
+        return (
+            f"[CAG CLOSED-WORLD VETO] La respuesta del modelo externo fue bloqueada por contener "
+            f"referencias especulativas no existentes ({hits}). Prohibida la verosimilitud (Regla 6)."
+        ), True
+    return text, False
+
+
+def call_ollama_generate(prompt: str, model: str = DEFAULT_MODEL, temp: float = 0.0) -> tuple[str, bool]:
     if not str(prompt).strip():
         return "Error: el prompt no puede estar vacio.", True
     endpoint, models = resolve_ollama_endpoint()
@@ -235,9 +274,13 @@ def call_ollama_generate(prompt: str, model: str = DEFAULT_MODEL, temp: float = 
     url = f"{endpoint}/api/generate"
     payload = {
         "model": selected_model,
-        "prompt": prompt,
+        "prompt": f"<|cag_truth|>{prompt}",
         "stream": False,
-        "options": {"temperature": float(temp), "num_ctx": 4096}
+        "options": {
+            "temperature": 0.0,
+            "num_ctx": 4096,
+            "stop": ["Claude Opus 5.5", "GPT-6 Astra", "GPT-6 Terra", "Gemini 4 Carbon", "Qwen 3.8 Max", "GLM-5.3 Prime"]
+        }
     }
     req = urllib.request.Request(
         url,
@@ -248,12 +291,13 @@ def call_ollama_generate(prompt: str, model: str = DEFAULT_MODEL, temp: float = 
         with urllib.request.urlopen(req, timeout=120) as resp:
             res = json.loads(resp.read().decode("utf-8"))
             txt = res.get("response", "(Sin respuesta de Ollama)")
-            return f"[{endpoint} | {selected_model}]\n\n{txt}", False
+            txt, vetoed = _cag_verify_and_scrub_output(txt)
+            return f"[{endpoint} | {selected_model} | CAG=1-TOKEN]\n\n{txt}", vetoed
     except Exception:
         return _analytical_mathesis_stiefel_fallback(prompt), False
 
 
-def call_cerebras_generate(prompt: str, model: str = "qwen-3.8-27b", temp: float = 0.2) -> tuple[str, bool]:
+def call_cerebras_generate(prompt: str, model: str = "qwen-3.8-27b", temp: float = 0.0) -> tuple[str, bool]:
     if not str(prompt).strip():
         return "Error: el prompt no puede estar vacio.", True
     api_key = _resolve_cerebras_key()
@@ -268,17 +312,14 @@ def call_cerebras_generate(prompt: str, model: str = "qwen-3.8-27b", temp: float
         "Content-Type": "application/json",
         "User-Agent": "POLYDIM-Einsof-MCP/2.1"
     }
-    system_msg = (
-        "Eres EINSOF-II operando sobre Cerebras CS-3. Especializado en geometria de la variedad de Stiefel St(k, D), "
-        "retraccion polar QDWH/Newton-Schulz y suma compensada de Neumaier. Responde con rigor formal y concision."
-    )
     payload = {
         "model": model,
         "messages": [
-            {"role": "system", "content": system_msg},
+            {"role": "system", "content": "<|cag_truth|>"},
             {"role": "user", "content": prompt}
         ],
-        "temperature": float(temp),
+        "temperature": 0.0,
+        "stop": ["Claude Opus 5.5", "GPT-6 Astra", "GPT-6 Terra", "Gemini 4 Carbon", "Qwen 3.8 Max", "GLM-5.3 Prime"],
         "max_tokens": 2048
     }
     req = urllib.request.Request(CEREBRAS_URL, data=json.dumps(payload).encode("utf-8"), headers=headers)
@@ -289,10 +330,11 @@ def call_cerebras_generate(prompt: str, model: str = "qwen-3.8-27b", temp: float
             res = json.loads(resp.read().decode("utf-8"))
             msg = res["choices"][0].get("message", {})
             content = (msg.get("content") or msg.get("reasoning") or "").strip()
+            content, vetoed = _cag_verify_and_scrub_output(content)
             tokens = res.get("usage", {}).get("completion_tokens", 0)
             tok_s = tokens / elapsed if elapsed > 0 else 0.0
-            header = f"[Cerebras CS-3 | Modelo: {model} | {tokens} tokens en {elapsed:.3f}s ({tok_s:.1f} tok/s)]\n\n"
-            return header + content, False
+            header = f"[Cerebras CS-3 | Modelo: {model} | CAG=1-TOKEN | {tokens} tokens en {elapsed:.3f}s ({tok_s:.1f} tok/s)]\n\n"
+            return header + content, vetoed
     except Exception as e:
         return f"Error en inferencia Cerebras CS-3: {e}", True
 
@@ -502,6 +544,72 @@ def handle_json_rpc(line: str):
                 data = {"status": "ERROR", "exit_code": 1, "error": str(e)}
             is_error = data.get("exit_code", 0) != 0
             result_content = [{"type": "text", "text": json.dumps(data, indent=2)}]
+        elif tool_name == "gandalf_read_inbox":
+            try:
+                if r"E:\email_AGY\scripts" not in sys.path:
+                    sys.path.insert(0, r"E:\email_AGY\scripts")
+                import gandalf_comms_bus
+                only_pending = bool(args.get("only_pending", True))
+                limit = int(args.get("limit", 15))
+                conn = gandalf_comms_bus.get_pg_conn(timeout=2)
+                with conn.cursor() as cur:
+                    where_ev = "WHERE acknowledged = FALSE" if only_pending else ""
+                    cur.execute(f"""
+                        SELECT id, event_type, priority, source_node, title, summary, acknowledged, created_at
+                        FROM public.gandalf_event_queue {where_ev}
+                        ORDER BY acknowledged ASC, priority ASC, id DESC LIMIT %s;
+                    """, (limit,))
+                    evs = [
+                        {
+                            "id": r[0], "type": r[1], "priority": r[2], "node": r[3],
+                            "title": r[4], "summary": r[5], "acknowledged": r[6],
+                            "created_at": r[7].isoformat() if r[7] else ""
+                        }
+                        for r in cur.fetchall()
+                    ]
+                    where_mail = "WHERE processed = FALSE" if only_pending else ""
+                    cur.execute(f"""
+                        SELECT id, account, sender_email, sender_name, subject, classification, priority, received_date, body_preview, processed
+                        FROM public.comms_inbound_log {where_mail}
+                        ORDER BY processed ASC, priority ASC, id DESC LIMIT %s;
+                    """, (limit,))
+                    mails = [
+                        {
+                            "id": r[0], "account": r[1], "sender_email": r[2], "sender_name": r[3],
+                            "subject": r[4], "classification": r[5], "priority": r[6],
+                            "received_date": r[7], "body_preview": r[8], "processed": r[9]
+                        }
+                        for r in cur.fetchall()
+                    ]
+                    cur.execute("""
+                        SELECT key_name, value, updated_at FROM public.active_vault
+                        WHERE category='SESSION_STATE' AND key_name IN ('ALADIN_SYNC_LATEST', 'ALADIN_QA_LATEST', 'GANDALF_INBOX_LATEST')
+                        ORDER BY updated_at DESC;
+                    """)
+                    aladin_states = {r[0]: {"value": r[1], "updated_at": r[2].isoformat() if r[2] else ""} for r in cur.fetchall()}
+                conn.close()
+                data = {"status": "OK", "events": evs, "inbound_emails": mails, "aladin_states": aladin_states}
+                is_error = False
+            except Exception as e:
+                data = {"status": "ERROR", "error": str(e)}
+                is_error = True
+            result_content = [{"type": "text", "text": json.dumps(data, indent=2, ensure_ascii=False)}]
+        elif tool_name == "gandalf_ack_inbox":
+            try:
+                if r"E:\email_AGY\scripts" not in sys.path:
+                    sys.path.insert(0, r"E:\email_AGY\scripts")
+                import gandalf_comms_bus
+                cnt = gandalf_comms_bus.ack_gandalf_events(
+                    event_ids=args.get("event_ids"),
+                    mark_all=bool(args.get("mark_all", False)),
+                    conversation_id=args.get("conversation_id"),
+                )
+                data = {"status": "OK", "acknowledged_count": cnt}
+                is_error = False
+            except Exception as e:
+                data = {"status": "ERROR", "error": str(e)}
+                is_error = True
+            result_content = [{"type": "text", "text": json.dumps(data, indent=2, ensure_ascii=False)}]
         else:
             send_response({
                 "jsonrpc": "2.0",
