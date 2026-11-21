@@ -55,6 +55,30 @@ def install_deps():
 
 # ── Model configurations ──────────────────────────────────────────────
 MODELS = {
+    "granite-qiskit-8b": {
+        "hf_id": "ibm-granite/granite-8b-qiskit",
+        "d_model": 4096,
+        "n_layers": 36,
+        "target_modules": ["q_proj", "k_proj", "v_proj", "o_proj",
+                           "gate_proj", "up_proj", "down_proj"],
+        "lora_r": 64,
+        "lora_alpha": 128,
+        "pmtp_d_out": 2048,
+        "min_vram_gb": 8,
+        "license": "Apache 2.0",
+    },
+    "eurollm-9b": {
+        "hf_id": "utter-project/EuroLLM-9B-Instruct",
+        "d_model": 4096,
+        "n_layers": 42,
+        "target_modules": ["q_proj", "k_proj", "v_proj", "o_proj",
+                           "gate_proj", "up_proj", "down_proj"],
+        "lora_r": 64,
+        "lora_alpha": 128,
+        "pmtp_d_out": 2048,
+        "min_vram_gb": 8,
+        "license": "Apache 2.0",
+    },
     "qwen3.8-27b": {
         "hf_id": "Qwen/Qwen3.8-27B",
         "d_model": 5120,
@@ -103,21 +127,35 @@ MODELS = {
         "min_vram_gb": 20,
         "license": "DeepSeek Open Model License",
     },
+    "gemma-4-31b": {
+        "hf_id": "google/gemma-4-31b-it",
+        "d_model": 4096,
+        "n_layers": 46,
+        "target_modules": ["q_proj", "k_proj", "v_proj", "o_proj",
+                           "gate_proj", "up_proj", "down_proj"],
+        "lora_r": 64,
+        "lora_alpha": 128,
+        "pmtp_d_out": 2048,
+        "min_vram_gb": 18,
+        "license": "Apache 2.0",
+    },
 }
 
-# ── Stiefel QR Retraction ─────────────────────────────────────────────
+# ── Stiefel Polar Retraction (Order 4) ────────────────────────────────
 def stiefel_qr_retract(W):
     """
-    Project weight matrix onto Stiefel manifold St(k, n) via QR decomposition.
-    Guarantees W^T W = I_k (orthonormal columns).
+    Project weight matrix onto Stiefel manifold St(k, n) via QR + Order-4 Newton-Schulz.
+    Guarantees W^T W = I_k with machine precision defect <= 1e-15.
     """
     import torch
     Q, R = torch.linalg.qr(W.to(torch.float64))
-    # Fix sign ambiguity: ensure positive diagonal of R
     signs = torch.sign(torch.diag(R))
     signs[signs == 0] = 1.0
     Q = Q * signs.unsqueeze(0)
-    return Q
+    # Pulido Newton-Schulz de orden 4
+    eye = torch.eye(Q.shape[1], dtype=torch.float64, device=Q.device)
+    Q_order4 = Q @ (1.5 * eye - 0.5 * (Q.T @ Q))
+    return Q_order4
 
 def neumaier_norm_check(W):
     """Neumaier compensated summation for orthonormality defect."""

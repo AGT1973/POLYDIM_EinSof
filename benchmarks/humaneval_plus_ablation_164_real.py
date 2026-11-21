@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
 """
 humaneval_plus_ablation_164_real.py
-Evaluacion Real en Silicio + Telemetria Oficial Pilot-20 HumanEval+ (Cerebras CS-3 + C++20/Rust)
-Con solver polar QDWH primario (Nakatsukasa-Bai-Gygi) + desglose T_proj + T_sync + T_copy.
+Evaluación de Silicio y Memoria Compartida (QDWH Polar + PMTP SHM IPC)
+=============================================================================
+NOTA METODOLÓGICA (Corset de Gandalf / Radical Honesty - Regla 1):
+- Este script mide en silicio físico la latencia pura de álgebra lineal (QDWH,
+  retracción Stiefel, IPC por memoria compartida y serialización JSON) sobre 164 trials.
+- Las métricas de exactitud Pass@1 mostradas corresponden al reporte histórico
+  registrado en PILOT20_HUMANEVALPLUS_REPORT_A_B_C_D.json y NO a inferencia de LLMs en vivo.
+- Para evaluar inferencia de modelos en vivo sobre código, ejecutar run_10_complex_benchmarks.py
+  o einsof_kaggle_qlora_sft.py con el modelo cargado en GPU.
+=============================================================================
 """
 
 import os

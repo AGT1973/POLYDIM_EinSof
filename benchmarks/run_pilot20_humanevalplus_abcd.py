@@ -372,6 +372,10 @@ def main():
 
             # -----------------------------------------------------------------
             # BRAZO C: POLYDIM V26505 (Stiefel S^(D-1) + PMTP V6 Seqlock C++->Rust)
+            # NOTA METODOLÓGICA: En APIs REST remotas como Cerebras, el canal HTTP
+            # no permite transferencia directa de punteros de RAM. El tensor se procesa
+            # en silicio local (C++/Rust) y la directiva se transmite vía prompt.
+            # Para traspaso vectorial puro de 0 tokens, usar einsof_kaggle_qlora_sft.py en GPU local/Kaggle.
             # -----------------------------------------------------------------
             t_c0 = time.perf_counter()
             vec_c = np.zeros(D_cam, dtype=np.float64)
