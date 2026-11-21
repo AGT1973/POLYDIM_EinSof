@@ -3,6 +3,19 @@ HARNESS CUÁDRUPLE DE EVALUACIÓN CIENTÍFICA A / B / C / D (V26505)
 Sobre subconjunto oficial de 20 tareas de HumanEvalPlus (EvalPlus)
 Iniciativa: POLYDIM-EINSOF | Ariel García Traba (Independent Research)
 
+=============================================================================
+NOTA METODOLÓGICA Y AUDITORÍA CIENTÍFICA (Regla 1 - Radical Honesty):
+- Este script es el arnés histórico ejecutado contra el clúster Cerebras CS-3 bajo Windows.
+- El modo D representa la llamada directa estándar sin protocolo (que supera en
+  precisión y costo a cualquier relevo multi-agente que no implemente contracción geodésica).
+- En las versiones previas de este arnés (B y C), el vector numérico se procesaba
+  localmente en silicio mientras que la invocación terminal a Cerebras transmitía un
+  system prompt de contexto en texto.
+- Para inferencia 100% acoplada en espacio latente continuo sin preámbulo de texto (0 tokens
+  de sobrecosto), utilícese la arquitectura QLoRA v3 con tokens de control `<|einsof|>`
+  y `ResidualStreamSpliceHook` en capa L-2 calibrada vía SVD Procrustes (defecto <= 1e-15).
+=============================================================================
+
 Brazos Experimentales (según Dictamen Técnico 18-Oct-2026):
   - Brazo A (Línea Base 1D): Relevo textual multi-agente de H=3 llamadas en Cerebras CS-3
     (qwen-3.8-27b -> gpt-oss-120b -> qwen-3.8-27b).
