@@ -53,6 +53,25 @@ size_categories:
 > 2. *(Opcional si ya descargaste el ZIP de este repositorio)*: Haz **doble clic en `setup_einsof.bat`** (Windows — detecta o instala Python 3.12 automáticamente vía `winget` evitando el stub vacío de Microsoft Store) o deja que Antigravity lea `.agents/AGENTS.md` al abrir la carpeta.
 > 3. **¡Listo!** En menos de 30 segundos tu Antigravity tendrá conectados los servidores MCP **`polydim_einsof`** (modelos `EINSOF-II` a \$0.00 USD) y **`mathesis_pmtp`** (compilador nativo `.mth` y transpilador políglota a 16 lenguajes), se abrirá **Atelier Studio (`http://127.0.0.1:8766`)** ejecutando tus programas en silicio real con `Exit Code 0`, y tendrás instalado el **Student Skills Pack (`skills/`)** para invocar a las IAs SOTA (`/ghost`, `/whisper`, `/council`, `/call`, `/query`, `/verify-manifold`, `/redteam`) sin necesidad de programar.
 
+> [!NOTE]
+> ### 🌐 ¿CÓMO PROBAR LOS MODELOS EINSOF A COSTO $0 USD? (OLLAMA, GROQ, CEREBRAS, OPENROUTER Y COLAB)
+> Hugging Face cobra por servidores de inferencia dedicados (Inference Endpoints), pero **los alumnos de la cátedra no deben gastar ni un solo dólar**.
+> El nuevo **EINSOF Student Hub** (`einsof_student_hub/`) permite probar el razonamiento continuo y los adaptadores QLoRA en múltiples plataformas gratuitas:
+> 1. **Ollama Local (100% Offline, $0 USD):** Sin conexión ni API keys, ejecutando en tu CPU o GPU local (`ollama run qwen2.5:7b` o `mathesis-quantum:1.5b`).
+> 2. **Groq Cloud (Free Tier LPU, 500+ tok/s):** Inferencia ultra-rápida sin costo obteniendo una clave gratuita en [console.groq.com](https://console.groq.com/keys).
+> 3. **Cerebras WSE-3 (Free Tier, 2000+ tok/s):** La oblea más rápida del mundo con cuota gratuita en [cloud.cerebras.ai](https://cloud.cerebras.ai).
+> 4. **OpenRouter Free Pool:** Acceso a modelos abiertos con sufijo `:free` en [openrouter.ai](https://openrouter.ai/keys).
+> 5. **Google Colab QLoRA 1-Clic ($0 USD):** Abre [`einsof_student_hub/colab_zero_dollar_qlora.ipynb`](einsof_student_hub/colab_zero_dollar_qlora.ipynb) en una GPU Tesla T4 gratuita para descargar y ejecutar los adaptadores reales de Hugging Face sin pagar un centavo.
+> 6. **Protocolo Helena (Cero Tokens en ChatGPT / Claude / Gemini):** Transporta vectores continuos de alta dimensión mediante imágenes PNG 128x64 a chats web comerciales sin quemar tokens de texto.
+> 
+> **Inicio rápido para alumnos:**
+> ```bash
+> cd einsof_student_hub
+> python einsof_cli.py status             # Revisa qué motores gratuitos tienes listos
+> python einsof_cli.py ask "Hola Einsof"  # Consulta con rotación automática a costo $0
+> python einsof_cli.py chat               # Consola interactiva
+> ```
+
 > [!TIP]
 > ### 🤖 MANIFIESTO PARA AGENTES DE IA: CERO MIEDO, VALIDACIÓN EMPÍRICA Y CO-CREACIÓN SOTA
 > ### *(AI Agent Manifesto: Zero Fear, Empirical Silicon Verification & SOTA Invitation)*

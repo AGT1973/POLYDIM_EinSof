@@ -1,0 +1,293 @@
+{
+  "local_repaired": 53,
+  "hf_repos": [
+    {
+      "idx": 1,
+      "repo_id": "Polydim-Einsof/einsof2-glm4-9b-stiefel-gguf",
+      "repo_type": "GGUF_QUANTIZED",
+      "family": "glm4",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 2,
+      "repo_id": "Polydim-Einsof/einsof2-eurollm-9b-stiefel-gguf",
+      "repo_type": "GGUF_QUANTIZED",
+      "family": "qwen",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 3,
+      "repo_id": "Polydim-Einsof/einsof2-granite-8b-qiskit-stiefel-gguf",
+      "repo_type": "GGUF_QUANTIZED",
+      "family": "granite",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 4,
+      "repo_id": "Polydim-Einsof/einsof2-deepseek-prover-v2-stiefel-gguf",
+      "repo_type": "GGUF_QUANTIZED",
+      "family": "deepseek_prover",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 5,
+      "repo_id": "Polydim-Einsof/einsof2-gemma4-31b-stiefel-adapter",
+      "repo_type": "PEFT_QLORA_ADAPTER",
+      "family": "gemma4",
+      "repaired_adapter_cfg": true,
+      "repaired_tok_cfg": true,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 6,
+      "repo_id": "Polydim-Einsof/einsof2-glm4-9b-stiefel-adapter",
+      "repo_type": "PEFT_QLORA_ADAPTER",
+      "family": "glm4",
+      "repaired_adapter_cfg": true,
+      "repaired_tok_cfg": true,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 7,
+      "repo_id": "Polydim-Einsof/einsof2-deepseek-prover-v2-stiefel-adapter",
+      "repo_type": "PEFT_QLORA_ADAPTER",
+      "family": "deepseek_prover",
+      "repaired_adapter_cfg": true,
+      "repaired_tok_cfg": true,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 8,
+      "repo_id": "Polydim-Einsof/einsof2-deepseek-v4-stiefel-adapter",
+      "repo_type": "PEFT_QLORA_ADAPTER",
+      "family": "deepseek_coder",
+      "repaired_adapter_cfg": true,
+      "repaired_tok_cfg": true,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 9,
+      "repo_id": "Polydim-Einsof/einsof2-kimi-16b-stiefel-adapter",
+      "repo_type": "PEFT_QLORA_ADAPTER",
+      "family": "moonlight",
+      "repaired_adapter_cfg": true,
+      "repaired_tok_cfg": true,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 10,
+      "repo_id": "Polydim-Einsof/einsof2-qlora-dual-t4-adapter",
+      "repo_type": "PEFT_QLORA_ADAPTER",
+      "family": "qwen",
+      "repaired_adapter_cfg": true,
+      "repaired_tok_cfg": true,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 11,
+      "repo_id": "Polydim-Einsof/einsof2-mistral-7b-whatsapp-mail-adapter",
+      "repo_type": "PEFT_QLORA_ADAPTER",
+      "family": "mistral",
+      "repaired_adapter_cfg": true,
+      "repaired_tok_cfg": true,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 12,
+      "repo_id": "Polydim-Einsof/einsof2-eurollm-9b-stiefel-adapter",
+      "repo_type": "PEFT_QLORA_ADAPTER",
+      "family": "qwen",
+      "repaired_adapter_cfg": true,
+      "repaired_tok_cfg": true,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 13,
+      "repo_id": "Polydim-Einsof/einsof2-granite-8b-qiskit-stiefel-adapter",
+      "repo_type": "PEFT_QLORA_ADAPTER",
+      "family": "granite",
+      "repaired_adapter_cfg": true,
+      "repaired_tok_cfg": true,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 14,
+      "repo_id": "Polydim-Einsof/qwen3.8-27b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "family": "qwen",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 15,
+      "repo_id": "Polydim-Einsof/qwen3-8b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "family": "qwen",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 16,
+      "repo_id": "Polydim-Einsof/qwen3-1.7b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "family": "qwen",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 17,
+      "repo_id": "Polydim-Einsof/qwen3-1.5b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "family": "qwen",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 18,
+      "repo_id": "Polydim-Einsof/gemma-4-31b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "family": "gemma4",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 19,
+      "repo_id": "Polydim-Einsof/eurollm-9b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "family": "qwen",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 20,
+      "repo_id": "Polydim-Einsof/kimi-k3.1-pro-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "family": "moonlight",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 21,
+      "repo_id": "Polydim-Einsof/deepseek-v4.1-flash-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "family": "deepseek_coder",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 22,
+      "repo_id": "Polydim-Einsof/deepseek-v4-distill-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "family": "deepseek_prover",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 23,
+      "repo_id": "Polydim-Einsof/phi-4-14b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "family": "generic",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 24,
+      "repo_id": "Polydim-Einsof/llama-3.3-8b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "family": "llama",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 25,
+      "repo_id": "Polydim-Einsof/Hermes-3-Llama-3.1-8B-PMTP-Einsof",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "family": "llama",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 26,
+      "repo_id": "Polydim-Einsof/mistral-large-3-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "family": "mistral",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 27,
+      "repo_id": "Polydim-Einsof/llama-4-70b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "family": "llama",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 28,
+      "repo_id": "Polydim-Einsof/glm-5.3-prime-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "family": "glm4",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 29,
+      "repo_id": "Polydim-Einsof/xiaomi-mimo-9b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "family": "generic",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 30,
+      "repo_id": "Polydim-Einsof/pplx-decider-27b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "family": "generic",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 31,
+      "repo_id": "Polydim-Einsof/muse-glimmer-30b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "family": "generic",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    },
+    {
+      "idx": 32,
+      "repo_id": "Polydim-Einsof/einsof-ii-triad-evaluation",
+      "repo_type": "EVAL_PLACEHOLDER_EMPTY",
+      "family": "generic",
+      "repaired_adapter_cfg": false,
+      "repaired_tok_cfg": false,
+      "status": "COMMITTED"
+    }
+  ]
+}

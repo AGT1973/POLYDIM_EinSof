@@ -1,0 +1,299 @@
+{
+  "report_title": "POLYDIM-EINSOF QLoRA 2027.4.0 Hugging Face 32 Repositories Remediation Report",
+  "timestamp_iso": "2026-11-21T19:55:00Z",
+  "total_repos": 32,
+  "successful_repos": 32,
+  "failed_repos": 0,
+  "results": [
+    {
+      "repo_id": "Polydim-Einsof/einsof2-glm4-9b-stiefel-gguf",
+      "repo_type": "GGUF_QUANTIZED",
+      "operations_count": 18,
+      "commit_oid": "9ed64877e3",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/einsof2-glm4-9b-stiefel-gguf/commit/9ed64877e304b7f388c7498fbeab6bb8db120cbc",
+      "duration_s": 0.5174805999995442,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/einsof2-eurollm-9b-stiefel-gguf",
+      "repo_type": "GGUF_QUANTIZED",
+      "operations_count": 18,
+      "commit_oid": "0393bf2f49",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/einsof2-eurollm-9b-stiefel-gguf/commit/0393bf2f499cbf1de60050efe1d8598e47285d43",
+      "duration_s": 1.6939439999987371,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/einsof2-granite-8b-qiskit-stiefel-gguf",
+      "repo_type": "GGUF_QUANTIZED",
+      "operations_count": 18,
+      "commit_oid": "3d92f20558",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/einsof2-granite-8b-qiskit-stiefel-gguf/commit/3d92f20558b2f25dbe60c9d32dfa87d87c104c05",
+      "duration_s": 1.4691097000031732,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/einsof2-deepseek-prover-v2-stiefel-gguf",
+      "repo_type": "GGUF_QUANTIZED",
+      "operations_count": 18,
+      "commit_oid": "6c9bf416a1",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/einsof2-deepseek-prover-v2-stiefel-gguf/commit/6c9bf416a16ed82e7c96786557f15b490e2358a9",
+      "duration_s": 1.1924216999905184,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/einsof2-gemma4-31b-stiefel-adapter",
+      "repo_type": "PEFT_QLORA_ADAPTER",
+      "operations_count": 22,
+      "commit_oid": "ecd53dc2bb",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/einsof2-gemma4-31b-stiefel-adapter/commit/ecd53dc2bb153eba400a7d13287c4e4fb8678f41",
+      "duration_s": 40.732794200011995,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/einsof2-glm4-9b-stiefel-adapter",
+      "repo_type": "PEFT_QLORA_ADAPTER",
+      "operations_count": 22,
+      "commit_oid": "fec028fec7",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/einsof2-glm4-9b-stiefel-adapter/commit/fec028fec781b29ef30aa183d33c71093050abf2",
+      "duration_s": 17.248929900000803,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/einsof2-deepseek-prover-v2-stiefel-adapter",
+      "repo_type": "PEFT_QLORA_ADAPTER",
+      "operations_count": 22,
+      "commit_oid": "e329b0a55c",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/einsof2-deepseek-prover-v2-stiefel-adapter/commit/e329b0a55c4a7df6e286709f05eb481ed3f3085d",
+      "duration_s": 23.83860679999634,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/einsof2-deepseek-v4-stiefel-adapter",
+      "repo_type": "PEFT_QLORA_ADAPTER",
+      "operations_count": 22,
+      "commit_oid": "665b9cebe1",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/einsof2-deepseek-v4-stiefel-adapter/commit/665b9cebe1cbba103033fc5a33b5093222fd6736",
+      "duration_s": 8.658876399989822,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/einsof2-kimi-16b-stiefel-adapter",
+      "repo_type": "PEFT_QLORA_ADAPTER",
+      "operations_count": 22,
+      "commit_oid": "aad00bea61",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/einsof2-kimi-16b-stiefel-adapter/commit/aad00bea61df9fcd96ee1d878a1535d9f2e3186b",
+      "duration_s": 5.673919400011073,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/einsof2-qlora-dual-t4-adapter",
+      "repo_type": "PEFT_QLORA_ADAPTER",
+      "operations_count": 22,
+      "commit_oid": "b78b166456",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/einsof2-qlora-dual-t4-adapter/commit/b78b1664568fb939555d4f765fcae9110d4f71e7",
+      "duration_s": 13.375242299996899,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/einsof2-mistral-7b-whatsapp-mail-adapter",
+      "repo_type": "PEFT_QLORA_ADAPTER",
+      "operations_count": 22,
+      "commit_oid": "e72fe08f75",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/einsof2-mistral-7b-whatsapp-mail-adapter/commit/e72fe08f7545618d2b3c6635ca7f93184a26e799",
+      "duration_s": 6.341576000006171,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/einsof2-eurollm-9b-stiefel-adapter",
+      "repo_type": "PEFT_QLORA_ADAPTER",
+      "operations_count": 22,
+      "commit_oid": "a92cbcbbd1",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/einsof2-eurollm-9b-stiefel-adapter/commit/a92cbcbbd1eac960eed07d1097580c2b4c13d85b",
+      "duration_s": 22.154111199997715,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/einsof2-granite-8b-qiskit-stiefel-adapter",
+      "repo_type": "PEFT_QLORA_ADAPTER",
+      "operations_count": 22,
+      "commit_oid": "a82a6fc2d8",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/einsof2-granite-8b-qiskit-stiefel-adapter/commit/a82a6fc2d892dfcb31ce46f0d1d8bde3d37340d8",
+      "duration_s": 20.432539499990526,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/qwen3.8-27b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "operations_count": 19,
+      "commit_oid": "dc0c9cbcb6",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/qwen3.8-27b-pmtp/commit/dc0c9cbcb6681edd257b17650d98bf375acc871d",
+      "duration_s": 0.8981889999995474,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/qwen3-8b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "operations_count": 19,
+      "commit_oid": "d5d9f4431b",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/qwen3-8b-pmtp/commit/d5d9f4431b50a826fcbc7fe84148a9e0dbe6349a",
+      "duration_s": 1.0896399000048405,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/qwen3-1.7b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "operations_count": 19,
+      "commit_oid": "b1bfaaea9f",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/qwen3-1.7b-pmtp/commit/b1bfaaea9fd1607cd0b6968c412316d57d42c3db",
+      "duration_s": 0.9749829000065802,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/qwen3-1.5b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "operations_count": 19,
+      "commit_oid": "768810155f",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/qwen3-1.5b-pmtp/commit/768810155f5d7d43663095090c2fceca8da4f63b",
+      "duration_s": 1.1073939000052633,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/gemma-4-31b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "operations_count": 19,
+      "commit_oid": "be921cafd2",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/gemma-4-31b-pmtp/commit/be921cafd2166d4e0033949c46704709c068b4f2",
+      "duration_s": 1.203677500001504,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/eurollm-9b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "operations_count": 19,
+      "commit_oid": "5441764f92",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/eurollm-9b-pmtp/commit/5441764f929cc00198d216e3bd53d39276e33ac3",
+      "duration_s": 1.0715937000059057,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/kimi-k3.1-pro-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "operations_count": 19,
+      "commit_oid": "6e687356c9",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/kimi-k3.1-pro-pmtp/commit/6e687356c9216b026c80bd5c14d36599bd011173",
+      "duration_s": 1.1403204999951413,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/deepseek-v4.1-flash-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "operations_count": 19,
+      "commit_oid": "965be19494",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/deepseek-v4.1-flash-pmtp/commit/965be19494badab8b76b5faf1054592130f31a63",
+      "duration_s": 1.1536468999984208,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/deepseek-v4-distill-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "operations_count": 19,
+      "commit_oid": "62783c0cce",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/deepseek-v4-distill-pmtp/commit/62783c0cce3007202b716e7a198744bf5524b58e",
+      "duration_s": 1.1537898000096902,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/phi-4-14b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "operations_count": 19,
+      "commit_oid": "f036ff000e",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/phi-4-14b-pmtp/commit/f036ff000e1d12f1e6e7053781ea5214b1509387",
+      "duration_s": 1.0880925000092248,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/llama-3.3-8b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "operations_count": 19,
+      "commit_oid": "7a53d30fff",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/llama-3.3-8b-pmtp/commit/7a53d30fff64c7fc064fe1e6ba5b29a00d2805ae",
+      "duration_s": 1.2352774000028148,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/Hermes-3-Llama-3.1-8B-PMTP-Einsof",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "operations_count": 19,
+      "commit_oid": "18b1cb02b1",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/Hermes-3-Llama-3.1-8B-PMTP-Einsof/commit/18b1cb02b1f008f3babaa04c8bb4b6b40f068e34",
+      "duration_s": 1.1168204999994487,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/mistral-large-3-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "operations_count": 19,
+      "commit_oid": "97c7c0a20a",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/mistral-large-3-pmtp/commit/97c7c0a20a560bbe9761e210f1fc5986d7ce9893",
+      "duration_s": 1.0273841000016546,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/llama-4-70b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "operations_count": 19,
+      "commit_oid": "1f90e490ce",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/llama-4-70b-pmtp/commit/1f90e490ce17db74de865a4a420ff3632be9587f",
+      "duration_s": 1.094090500002494,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/glm-5.3-prime-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "operations_count": 19,
+      "commit_oid": "89b042609e",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/glm-5.3-prime-pmtp/commit/89b042609ee8afa30635b13cdc3b668e1fb0d452",
+      "duration_s": 1.0118387000111397,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/xiaomi-mimo-9b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "operations_count": 19,
+      "commit_oid": "661ddd2dd7",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/xiaomi-mimo-9b-pmtp/commit/661ddd2dd716f2c2062277c956df5df3858b61d0",
+      "duration_s": 1.1310886999999639,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/pplx-decider-27b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "operations_count": 19,
+      "commit_oid": "27cf93c58d",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/pplx-decider-27b-pmtp/commit/27cf93c58ddb302e26d98c4c58cef75107796a20",
+      "duration_s": 0.8878302000084659,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/muse-glimmer-30b-pmtp",
+      "repo_type": "PMTP_STIEFEL_PROJECTOR",
+      "operations_count": 19,
+      "commit_oid": "315be854f0",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/muse-glimmer-30b-pmtp/commit/315be854f0ffdfa92e0bd9e5700bad067cbf3258",
+      "duration_s": 1.192230999993626,
+      "status": "COMMITTED_EXIT_CODE_0"
+    },
+    {
+      "repo_id": "Polydim-Einsof/einsof-ii-triad-evaluation",
+      "repo_type": "EVAL_PLACEHOLDER_EMPTY",
+      "operations_count": 21,
+      "commit_oid": "f25cb69ead",
+      "commit_url": "https://huggingface.co/Polydim-Einsof/einsof-ii-triad-evaluation/commit/f25cb69ead527db708c0a9d8a924c09ba121891e",
+      "duration_s": 1.2037801999977091,
+      "status": "COMMITTED_EXIT_CODE_0"
+    }
+  ],
+  "failed": [],
+  "verdict": "TOTAL_GREEN_LIGHT_32_REPOS"
+}

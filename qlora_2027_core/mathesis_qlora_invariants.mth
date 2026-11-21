@@ -1,0 +1,34 @@
+// POLYDIM-EINSOF QLoRA 2027 Core — Pure Silicon Invariants (.mth)
+// Enforces Stiefel Manifold St(r, D), RoPE Phase Compensation, Armijo Guard,
+// and 1-token CAG Closed-World Activation Gate without 1,200-token prose overhead.
+
+dim D = 4096
+dim r = 16
+dim latent = 2048
+
+// 1. Order-4 Polar Retraction on LoRA_B saving Frobenius adaptation energy
+matrix B_raw: R^{D, r}
+scalar energy = frobenius_norm(B_raw) / sqrt(r)
+operator Q = polar_retract(B_raw, order=4, dtype=fp64)
+invariant stiefel_defect_fp64 = ||Q^T * Q - I_r||_F <= 1e-15
+matrix B_fp32 = cast_fp32(Q * energy)  // Prohibits bfloat16 (~1e-3 floor)
+
+// 2. Orthogonal Procrustes Alignment on Real Model Activations (Rule 0 Suprema)
+matrix X_src: R^{N, latent}
+matrix Y_dst: R^{N, D}
+operator W_proc = svd_polar(X_src^T * Y_dst)
+invariant procrustes_defect = ||W_proc * W_proc^T - I_latent||_inf <= 1e-15
+
+// 3. Deep Layer L-2 Splice + Isometric RoPE Phase Compensator R_theta
+tensor h_res = layer_output(L - 2)
+tensor t_rot = rope_compensate(X_src * W_proc, base_src=10000, base_dst=500000)
+tensor h_blend = (1 - 0.85) * h_res + 0.85 * normalize_to_energy(t_rot, h_res)
+
+// 4. CAG 1-Token Prefix + Logits -inf Gate + Truninger-Popper Control X
+gate cag_prefix = token("<|cag_truth|>", cost_tokens=1)
+gate logits_mask = mask_banned_to_neg_inf(active_blake2s_seal)
+invariant truninger_retention >= 0.95
+invariant control_x_noise_collapse <= 0.05
+
+emit silicon_tuple(exit_code=0, defect=stiefel_defect_fp64, tokens=1)
+HALT_EQUILIBRIUM

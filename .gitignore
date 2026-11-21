@@ -32,3 +32,6 @@ Thumbs.db
 *.exp
 *.safetensors
 *.bin
+
+*.gguf
+

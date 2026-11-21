@@ -1,0 +1,305 @@
+{
+  "manifest_version": "2027.4.0",
+  "framework": "POLYDIM-EINSOF-QLORA",
+  "timestamp_iso": "2026-11-21T19:45:00Z",
+  "adapters_count": 9,
+  "adapters": [
+    {
+      "slug": "gemma4-31b-stiefel",
+      "repo_id": "Polydim-Einsof/einsof2-gemma4-31b-stiefel-adapter",
+      "family": "gemma4",
+      "base_model": "google/gemma-4-31B-it",
+      "weights_path": "E:\\Polydim_2027_core\\Qlora\\adapters\\gemma4-31b-stiefel\\adapter_model.safetensors",
+      "total_tensors": 820,
+      "lora_b_tensors": 410,
+      "saved_dtype": "float32",
+      "before_retraction": {
+        "dtypes": [
+          "torch.bfloat16"
+        ],
+        "mean_stiefel_defect": 0.0006180690839313039,
+        "max_stiefel_defect": 0.005688883605854331
+      },
+      "after_retraction": {
+        "dtypes": [
+          "torch.float32"
+        ],
+        "max_stiefel_defect_fp64": 8.881784197001252e-16,
+        "mean_stiefel_defect_fp64": 3.864117697902679e-16,
+        "max_stiefel_defect_fp32": 8.328467559498844e-08,
+        "mean_stiefel_defect_fp32": 9.348780942409736e-09,
+        "max_frob_energy_drift": 7.771592244495628e-16
+      },
+      "certified_bounds": {
+        "fp64_horner_defect_bound": "<= 1.0e-15",
+        "fp32_storage_defect_bound": "<= 1.0e-5",
+        "frob_energy_drift_bound": "<= 1.0e-3 (0.1%)",
+        "status": "CERTIFIED_EXIT_CODE_0"
+      }
+    },
+    {
+      "slug": "glm4-9b-stiefel",
+      "repo_id": "Polydim-Einsof/einsof2-glm4-9b-stiefel-adapter",
+      "family": "glm4",
+      "base_model": "THUDM/glm-4-9b-chat",
+      "weights_path": "E:\\Polydim_2027_core\\Qlora\\adapters\\glm4-9b-stiefel\\adapter_model.safetensors",
+      "total_tensors": 320,
+      "lora_b_tensors": 160,
+      "saved_dtype": "float32",
+      "before_retraction": {
+        "dtypes": [
+          "torch.bfloat16"
+        ],
+        "mean_stiefel_defect": 0.0006377253520173336,
+        "max_stiefel_defect": 0.003348741201084896
+      },
+      "after_retraction": {
+        "dtypes": [
+          "torch.float32"
+        ],
+        "max_stiefel_defect_fp64": 7.771561172376096e-16,
+        "mean_stiefel_defect_fp64": 3.7331249203020887e-16,
+        "max_stiefel_defect_fp32": 3.7267727488811036e-08,
+        "mean_stiefel_defect_fp32": 9.113424396330961e-09,
+        "max_frob_energy_drift": 9.992063844354152e-16
+      },
+      "certified_bounds": {
+        "fp64_horner_defect_bound": "<= 1.0e-15",
+        "fp32_storage_defect_bound": "<= 1.0e-5",
+        "frob_energy_drift_bound": "<= 1.0e-3 (0.1%)",
+        "status": "CERTIFIED_EXIT_CODE_0"
+      }
+    },
+    {
+      "slug": "deepseek-prover-v2-7b-stiefel",
+      "repo_id": "Polydim-Einsof/einsof2-deepseek-prover-v2-stiefel-adapter",
+      "family": "deepseek_prover",
+      "base_model": "deepseek-ai/DeepSeek-Prover-V2-7B",
+      "weights_path": "E:\\Polydim_2027_core\\Qlora\\adapters\\deepseek-prover-v2-7b-stiefel\\adapter_model.safetensors",
+      "total_tensors": 420,
+      "lora_b_tensors": 210,
+      "saved_dtype": "float32",
+      "before_retraction": {
+        "dtypes": [
+          "torch.bfloat16"
+        ],
+        "mean_stiefel_defect": 0.0006320048348968432,
+        "max_stiefel_defect": 0.0008935033123106069
+      },
+      "after_retraction": {
+        "dtypes": [
+          "torch.float32"
+        ],
+        "max_stiefel_defect_fp64": 6.661338147750939e-16,
+        "mean_stiefel_defect_fp64": 3.690169862801711e-16,
+        "max_stiefel_defect_fp32": 1.4343699322669091e-08,
+        "mean_stiefel_defect_fp32": 9.70901934438706e-09,
+        "max_frob_energy_drift": 4.440962233659319e-16
+      },
+      "certified_bounds": {
+        "fp64_horner_defect_bound": "<= 1.0e-15",
+        "fp32_storage_defect_bound": "<= 1.0e-5",
+        "frob_energy_drift_bound": "<= 1.0e-3 (0.1%)",
+        "status": "CERTIFIED_EXIT_CODE_0"
+      }
+    },
+    {
+      "slug": "deepseek-coder-v2-lite-16b-moe-stiefel",
+      "repo_id": "Polydim-Einsof/einsof2-deepseek-v4-stiefel-adapter",
+      "family": "deepseek_coder",
+      "base_model": "deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct",
+      "weights_path": "E:\\Polydim_2027_core\\Qlora\\adapters\\deepseek-coder-v2-lite-16b-moe-stiefel\\adapter_model.safetensors",
+      "total_tensors": 162,
+      "lora_b_tensors": 81,
+      "saved_dtype": "float32",
+      "before_retraction": {
+        "dtypes": [
+          "torch.bfloat16"
+        ],
+        "mean_stiefel_defect": 0.001180175744209355,
+        "max_stiefel_defect": 0.0024514204931949646
+      },
+      "after_retraction": {
+        "dtypes": [
+          "torch.float32"
+        ],
+        "max_stiefel_defect_fp64": 4.440892098500626e-16,
+        "mean_stiefel_defect_fp64": 3.6047982157582246e-16,
+        "max_stiefel_defect_fp32": 3.452023397718355e-08,
+        "mean_stiefel_defect_fp32": 1.7600091769662087e-08,
+        "max_frob_energy_drift": 2.220457448931859e-16
+      },
+      "certified_bounds": {
+        "fp64_horner_defect_bound": "<= 1.0e-15",
+        "fp32_storage_defect_bound": "<= 1.0e-5",
+        "frob_energy_drift_bound": "<= 1.0e-3 (0.1%)",
+        "status": "CERTIFIED_EXIT_CODE_0"
+      }
+    },
+    {
+      "slug": "moonlight-16b-a3b-moe-stiefel",
+      "repo_id": "Polydim-Einsof/einsof2-kimi-16b-stiefel-adapter",
+      "family": "moonlight",
+      "base_model": "moonshotai/Moonlight-16B-A3B-Instruct",
+      "weights_path": "E:\\Polydim_2027_core\\Qlora\\adapters\\moonlight-16b-a3b-moe-stiefel\\adapter_model.safetensors",
+      "total_tensors": 108,
+      "lora_b_tensors": 54,
+      "saved_dtype": "float32",
+      "before_retraction": {
+        "dtypes": [
+          "torch.bfloat16"
+        ],
+        "mean_stiefel_defect": 0.0009635302045497381,
+        "max_stiefel_defect": 0.001363826275218728
+      },
+      "after_retraction": {
+        "dtypes": [
+          "torch.float32"
+        ],
+        "max_stiefel_defect_fp64": 4.440892098500626e-16,
+        "mean_stiefel_defect_fp64": 3.5979449872111557e-16,
+        "max_stiefel_defect_fp32": 1.7716532935899117e-08,
+        "mean_stiefel_defect_fp32": 1.4626229000164675e-08,
+        "max_frob_energy_drift": 2.22050372395817e-16
+      },
+      "certified_bounds": {
+        "fp64_horner_defect_bound": "<= 1.0e-15",
+        "fp32_storage_defect_bound": "<= 1.0e-5",
+        "frob_energy_drift_bound": "<= 1.0e-3 (0.1%)",
+        "status": "CERTIFIED_EXIT_CODE_0"
+      }
+    },
+    {
+      "slug": "qlora-dual-t4-adapter",
+      "repo_id": "Polydim-Einsof/einsof2-qlora-dual-t4-adapter",
+      "family": "qwen",
+      "base_model": "Qwen/Qwen2.5-1.5B-Instruct",
+      "weights_path": "E:\\Polydim_2027_core\\Qlora\\adapters\\qlora-dual-t4-adapter\\adapter_model.safetensors",
+      "total_tensors": 392,
+      "lora_b_tensors": 196,
+      "saved_dtype": "float32",
+      "before_retraction": {
+        "dtypes": [
+          "torch.float32"
+        ],
+        "mean_stiefel_defect": 5.971302141298138,
+        "max_stiefel_defect": 12.244297174249855
+      },
+      "after_retraction": {
+        "dtypes": [
+          "torch.float32"
+        ],
+        "max_stiefel_defect_fp64": 8.881784197001252e-16,
+        "mean_stiefel_defect_fp64": 3.9197670053092263e-16,
+        "max_stiefel_defect_fp32": 4.6216538849886556e-08,
+        "mean_stiefel_defect_fp32": 2.1082520630126917e-08,
+        "max_frob_energy_drift": 4.334640652447936e-16
+      },
+      "certified_bounds": {
+        "fp64_horner_defect_bound": "<= 1.0e-15",
+        "fp32_storage_defect_bound": "<= 1.0e-5",
+        "frob_energy_drift_bound": "<= 1.0e-3 (0.1%)",
+        "status": "CERTIFIED_EXIT_CODE_0"
+      }
+    },
+    {
+      "slug": "mistral-7b-whatsapp-mail-adapter",
+      "repo_id": "Polydim-Einsof/einsof2-mistral-7b-whatsapp-mail-adapter",
+      "family": "mistral",
+      "base_model": "mistralai/Mistral-7B-Instruct-v0.3",
+      "weights_path": "E:\\Polydim_2027_core\\Qlora\\adapters\\mistral-7b-whatsapp-mail-adapter\\adapter_model.safetensors",
+      "total_tensors": 128,
+      "lora_b_tensors": 64,
+      "saved_dtype": "float32",
+      "before_retraction": {
+        "dtypes": [
+          "torch.bfloat16"
+        ],
+        "mean_stiefel_defect": 0.0013023850130784624,
+        "max_stiefel_defect": 0.004061564100736022
+      },
+      "after_retraction": {
+        "dtypes": [
+          "torch.float32"
+        ],
+        "max_stiefel_defect_fp64": 4.440892098500626e-16,
+        "mean_stiefel_defect_fp64": 3.608224830031759e-16,
+        "max_stiefel_defect_fp32": 3.1365739036351144e-08,
+        "mean_stiefel_defect_fp32": 1.6975126478525227e-08,
+        "max_frob_energy_drift": 2.2206305386670087e-16
+      },
+      "certified_bounds": {
+        "fp64_horner_defect_bound": "<= 1.0e-15",
+        "fp32_storage_defect_bound": "<= 1.0e-5",
+        "frob_energy_drift_bound": "<= 1.0e-3 (0.1%)",
+        "status": "CERTIFIED_EXIT_CODE_0"
+      }
+    },
+    {
+      "slug": "eurollm-9b-stiefel-adapter",
+      "repo_id": "Polydim-Einsof/einsof2-eurollm-9b-stiefel-adapter",
+      "family": "qwen",
+      "base_model": "utter-project/EuroLLM1.5-9B-SFT",
+      "weights_path": "E:\\Polydim_2027_core\\Qlora\\adapters\\eurollm-9b-stiefel-adapter\\adapter_model.safetensors",
+      "total_tensors": 588,
+      "lora_b_tensors": 294,
+      "saved_dtype": "float32",
+      "before_retraction": {
+        "dtypes": [
+          "torch.bfloat16"
+        ],
+        "mean_stiefel_defect": 0.0008183491711642419,
+        "max_stiefel_defect": 0.0017428451261078455
+      },
+      "after_retraction": {
+        "dtypes": [
+          "torch.float32"
+        ],
+        "max_stiefel_defect_fp64": 6.661338147750939e-16,
+        "mean_stiefel_defect_fp64": 3.678085802669736e-16,
+        "max_stiefel_defect_fp32": 3.017771064983452e-08,
+        "mean_stiefel_defect_fp32": 1.2641715604331297e-08,
+        "max_frob_energy_drift": 4.440931510202003e-16
+      },
+      "certified_bounds": {
+        "fp64_horner_defect_bound": "<= 1.0e-15",
+        "fp32_storage_defect_bound": "<= 1.0e-5",
+        "frob_energy_drift_bound": "<= 1.0e-3 (0.1%)",
+        "status": "CERTIFIED_EXIT_CODE_0"
+      }
+    },
+    {
+      "slug": "granite-8b-qiskit-stiefel-adapter",
+      "repo_id": "Polydim-Einsof/einsof2-granite-8b-qiskit-stiefel-adapter",
+      "family": "granite",
+      "base_model": "Qiskit/granite-3.3-8b-qiskit",
+      "weights_path": "E:\\Polydim_2027_core\\Qlora\\adapters\\granite-8b-qiskit-stiefel-adapter\\adapter_model.safetensors",
+      "total_tensors": 560,
+      "lora_b_tensors": 280,
+      "saved_dtype": "float32",
+      "before_retraction": {
+        "dtypes": [
+          "torch.bfloat16"
+        ],
+        "mean_stiefel_defect": 0.0007817304825182657,
+        "max_stiefel_defect": 0.004855765302681446
+      },
+      "after_retraction": {
+        "dtypes": [
+          "torch.float32"
+        ],
+        "max_stiefel_defect_fp64": 6.661338147750939e-16,
+        "mean_stiefel_defect_fp64": 3.5090977742616554e-16,
+        "max_stiefel_defect_fp32": 6.436524224093071e-08,
+        "mean_stiefel_defect_fp32": 1.1955460920272312e-08,
+        "max_frob_energy_drift": 4.440948568592724e-16
+      },
+      "certified_bounds": {
+        "fp64_horner_defect_bound": "<= 1.0e-15",
+        "fp32_storage_defect_bound": "<= 1.0e-5",
+        "frob_energy_drift_bound": "<= 1.0e-3 (0.1%)",
+        "status": "CERTIFIED_EXIT_CODE_0"
+      }
+    }
+  ]
+}

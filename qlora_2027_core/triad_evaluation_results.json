@@ -1,0 +1,41 @@
+{
+  "benchmark": "POLYDIM-EINSOF-QLORA-TRIAD-2027",
+  "version": "2027.4.0",
+  "timestamp_iso": "2026-11-21T19:48:00Z",
+  "status": "TRIAD_CERTIFIED_EXIT_CODE_0",
+  "pillars": {
+    "pillar_1_continuous_stiefel": {
+      "pillar": "Pillar 1: Continuous Stiefel S^{D-1} & Order-4 Polar Retraction",
+      "d_model": 4096,
+      "rank": 16,
+      "exact_entrywise_defect": 4.440892098500626e-16,
+      "frobenius_defect": 6.651852776772167e-16,
+      "max_fp64_defect": 4.440892098500626e-16,
+      "riemannian_weight_decay_grad_norm": 1.2526820506497216e-17,
+      "sharded_dot_d_1m_error": 0.0,
+      "projection_latency_ms": 16.035799999372102,
+      "passed": true
+    },
+    "pillar_2_procrustes_splice": {
+      "pillar": "Pillar 2: Procrustes Impedance Alignment & Layer L-2 Splice",
+      "zero_stub_veto_enforced": true,
+      "calibration_mean_cosine": 1.0,
+      "rope_isometry_norm_diff": 1.7763568394002505e-15,
+      "splice_norm_preserved": true,
+      "base_norm": 3.1033225059509277,
+      "spliced_norm": 2.419917345046997,
+      "passed": true
+    },
+    "pillar_3_cag_grounding": {
+      "pillar": "Pillar 3: 1-Token <|cag_truth|> Closed-World Grounding Gate & Control X",
+      "native_templates_preserved": true,
+      "silicon_positive_exit_code": 0,
+      "popperian_control_x_tripped": true,
+      "closed_world_inf_mask_enforced": true,
+      "special_tokens_count": 6,
+      "banned_verisimilitude_phrases_count": 12,
+      "passed": true
+    }
+  },
+  "verdict": "GREEN_LIGHT_ALL_PILLARS_PASS"
+}

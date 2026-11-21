@@ -1,0 +1,125 @@
+{
+  "audit_protocol": "ZERO_RUBBER_HAMMER_FORENSIC_SILICON_AUDIT",
+  "summary": {
+    "real_peft_qlora_adapters_count": 8,
+    "stiefel_procrustes_pmtp_projectors_count": 18,
+    "gguf_quantized_models_count": 4,
+    "helena_closed_api_bridges_count": 3
+  },
+  "group_1_real_peft_qloras": [
+    {
+      "repo": "Polydim-Einsof/einsof2-mistral-7b-whatsapp-mail-adapter",
+      "type": "QLORA_PEFT_REAL",
+      "base_model": "mistralai/Mistral-7B-Instruct-v0.3",
+      "size_mb": 13.02,
+      "lora_tensors": "full_peft_layers",
+      "can_load_with_peft": true
+    },
+    {
+      "repo": "Polydim-Einsof/einsof2-kimi-16b-stiefel-adapter",
+      "type": "QLORA_PEFT_REAL",
+      "base_model": "moonshotai/Moonlight-16B-A3B-Instruct",
+      "size_mb": 7.61,
+      "lora_tensors": 108,
+      "local_path": "E:\\POLYDIM_EINSOF\\harvest_kimi_complete\\einsof2_kimi_stiefel_adapter",
+      "can_load_with_peft": true
+    },
+    {
+      "repo": "Polydim-Einsof/einsof2-glm4-9b-stiefel-adapter",
+      "type": "QLORA_PEFT_REAL",
+      "base_model": "THUDM/glm-4-9b-chat",
+      "size_mb": 80.83,
+      "lora_tensors": 320,
+      "local_path": "E:\\POLYDIM_EINSOF\\harvest_glm4_complete\\einsof2_glm4_stiefel_adapter",
+      "gguf_repo": "Polydim-Einsof/einsof2-glm4-9b-stiefel-gguf",
+      "can_load_with_peft": true
+    },
+    {
+      "repo": "Polydim-Einsof/einsof2-deepseek-v4-stiefel-adapter",
+      "type": "QLORA_PEFT_REAL",
+      "base_model": "deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct",
+      "size_mb": 10.2,
+      "lora_tensors": 162,
+      "local_path": "E:\\POLYDIM_EINSOF\\harvest_deepseek_complete\\einsof2_deepseek_v4_stiefel_adapter",
+      "can_load_with_peft": true
+    },
+    {
+      "repo": "Polydim-Einsof/einsof2-deepseek-prover-v2-stiefel-adapter",
+      "type": "QLORA_PEFT_REAL",
+      "base_model": "deepseek-ai/DeepSeek-Prover-V2-7B",
+      "size_mb": 71.54,
+      "lora_tensors": 420,
+      "local_path": "E:\\POLYDIM_EINSOF\\kaggle_output_deepseek_prover\\einsof2-deepseek-prover-v2-stiefel_adapter",
+      "gguf_repo": "Polydim-Einsof/einsof2-deepseek-prover-v2-stiefel-gguf",
+      "can_load_with_peft": true
+    },
+    {
+      "repo": "Polydim-Einsof/einsof2-gemma4-31b-stiefel-adapter",
+      "type": "QLORA_PEFT_REAL",
+      "base_model": "google/gemma-4-31B-it",
+      "size_mb": 233.63,
+      "lora_tensors": 820,
+      "local_path": "E:\\POLYDIM_EINSOF\\downloaded_gemma4_adapter\\einsof2-gemma4-31b-stiefel_adapter",
+      "can_load_with_peft": true
+    },
+    {
+      "repo": "Polydim-Einsof/einsof2-eurollm-9b-stiefel-adapter",
+      "type": "QLORA_PEFT_REAL",
+      "base_model": "utter-project/EuroLLM-9B-Instruct",
+      "size_mb": 97.2,
+      "lora_tensors": "full_peft_layers",
+      "gguf_repo": "Polydim-Einsof/einsof2-eurollm-9b-stiefel-gguf",
+      "can_load_with_peft": true
+    },
+    {
+      "repo": "Polydim-Einsof/einsof2-granite-8b-qiskit-stiefel-adapter",
+      "type": "QLORA_PEFT_REAL",
+      "base_model": "ibm-granite/granite-8b-qiskit",
+      "size_mb": 94.45,
+      "lora_tensors": "full_peft_layers",
+      "gguf_repo": "Polydim-Einsof/einsof2-granite-8b-qiskit-stiefel-gguf",
+      "can_load_with_peft": true
+    }
+  ],
+  "group_2_pmtp_stiefel_projectors_not_peft": {
+    "real_nature": "STIEFEL_PROCRUSTES_PROJECTOR_MATRIX_W (3 tensors: W, curvature_scale, temperature; NOT PEFT lora_A/lora_B)",
+    "can_load_with_peft": false,
+    "repos": [
+      "Polydim-Einsof/qwen3-1.5b-pmtp",
+      "Polydim-Einsof/qwen3-1.7b-pmtp",
+      "Polydim-Einsof/qwen3-8b-pmtp",
+      "Polydim-Einsof/qwen3.8-27b-pmtp",
+      "Polydim-Einsof/eurollm-9b-pmtp",
+      "Polydim-Einsof/glm-5.3-prime-pmtp",
+      "Polydim-Einsof/deepseek-v4.1-flash-pmtp",
+      "Polydim-Einsof/deepseek-v4-distill-pmtp",
+      "Polydim-Einsof/kimi-k3.1-pro-pmtp",
+      "Polydim-Einsof/gemma-4-31b-pmtp",
+      "Polydim-Einsof/mistral-large-3-pmtp",
+      "Polydim-Einsof/xiaomi-mimo-9b-pmtp",
+      "Polydim-Einsof/pplx-decider-27b-pmtp",
+      "Polydim-Einsof/phi-4-14b-pmtp",
+      "Polydim-Einsof/llama-3.3-8b-pmtp",
+      "Polydim-Einsof/llama-4-70b-pmtp",
+      "Polydim-Einsof/muse-glimmer-30b-pmtp",
+      "Polydim-Einsof/Hermes-3-Llama-3.1-8B-PMTP-Einsof"
+    ]
+  },
+  "group_3_helena_closed_api_bridges": [
+    {
+      "provider": "Anthropic Claude (Sonnet/Opus)",
+      "can_do_qlora": false,
+      "real_method": "Helena PNG Carrier (128x64, ~258 tokens) + Sandbox Analysis Tool Execution (does not modify remote weights)"
+    },
+    {
+      "provider": "OpenAI GPT (GPT-4o / o3)",
+      "can_do_qlora": false,
+      "real_method": "Helena Binary/PNG Carrier + Python Code Interpreter Sandbox (IEEE-754 deterministic math)"
+    },
+    {
+      "provider": "Google Gemini (Antigravity Official Account)",
+      "can_do_qlora": false,
+      "real_method": "Direct Local Silicon Execution + Zero-Token CAG Stop Hook + MCP mathesis_pmtp:cag_truth_gate"
+    }
+  ]
+}
