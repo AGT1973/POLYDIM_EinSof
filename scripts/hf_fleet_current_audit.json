@@ -1,0 +1,538 @@
+[
+  {
+    "repo_id": "Polydim-Einsof/Hermes-3-Llama-3.1-8B-PMTP-Einsof",
+    "files_count": 9,
+    "files": [
+      ".gitattributes",
+      "CITATION.cff",
+      "Modelfile",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "adapter_weights.safetensors",
+      "codemeta.json",
+      "pmtp_vllm_llamacpp_hermes_bridge.py"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/qwen3.8-27b-pmtp",
+    "files_count": 6,
+    "files": [
+      ".gitattributes",
+      "Modelfile",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "adapter_weights.safetensors"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/muse-glimmer-30b-pmtp",
+    "files_count": 6,
+    "files": [
+      ".gitattributes",
+      "Modelfile",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "adapter_weights.safetensors"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/llama-4-70b-pmtp",
+    "files_count": 6,
+    "files": [
+      ".gitattributes",
+      "Modelfile",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "adapter_weights.safetensors"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/deepseek-v4-distill-pmtp",
+    "files_count": 6,
+    "files": [
+      ".gitattributes",
+      "Modelfile",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "adapter_weights.safetensors"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/qwen3-1.7b-pmtp",
+    "files_count": 6,
+    "files": [
+      ".gitattributes",
+      "Modelfile",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "adapter_weights.safetensors"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/qwen3-8b-pmtp",
+    "files_count": 6,
+    "files": [
+      ".gitattributes",
+      "Modelfile",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "adapter_weights.safetensors"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/llama-3.3-8b-pmtp",
+    "files_count": 6,
+    "files": [
+      ".gitattributes",
+      "Modelfile",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "adapter_weights.safetensors"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/phi-4-14b-pmtp",
+    "files_count": 12,
+    "files": [
+      ".gitattributes",
+      "Modelfile",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "adapter_weights.pt",
+      "adapter_weights.safetensors",
+      "sensor_lidar_3d_adapter.safetensors",
+      "sensor_radar_3d_adapter.safetensors",
+      "sensor_satellite_adapter.safetensors",
+      "sensor_sonar_adapter.safetensors",
+      "sensor_ultrasound_adapter.safetensors"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/pplx-decider-27b-pmtp",
+    "files_count": 10,
+    "files": [
+      ".gitattributes",
+      "Modelfile",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "adapter_weights.safetensors",
+      "sensor_lidar_3d_adapter.safetensors",
+      "sensor_radar_3d_adapter.safetensors",
+      "sensor_satellite_adapter.safetensors",
+      "sensor_sonar_adapter.safetensors",
+      "sensor_ultrasound_adapter.safetensors"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": false
+  },
+  {
+    "repo_id": "Polydim-Einsof/xiaomi-mimo-9b-pmtp",
+    "files_count": 10,
+    "files": [
+      ".gitattributes",
+      "Modelfile",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "adapter_weights.safetensors",
+      "sensor_lidar_3d_adapter.safetensors",
+      "sensor_radar_3d_adapter.safetensors",
+      "sensor_satellite_adapter.safetensors",
+      "sensor_sonar_adapter.safetensors",
+      "sensor_ultrasound_adapter.safetensors"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": false
+  },
+  {
+    "repo_id": "Polydim-Einsof/mistral-large-3-pmtp",
+    "files_count": 6,
+    "files": [
+      ".gitattributes",
+      "Modelfile",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "adapter_weights.safetensors"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/gemma-4-31b-pmtp",
+    "files_count": 6,
+    "files": [
+      ".gitattributes",
+      "Modelfile",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "adapter_weights.safetensors"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/kimi-k3.1-pro-pmtp",
+    "files_count": 6,
+    "files": [
+      ".gitattributes",
+      "Modelfile",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "adapter_weights.safetensors"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/deepseek-v4.1-flash-pmtp",
+    "files_count": 6,
+    "files": [
+      ".gitattributes",
+      "Modelfile",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "adapter_weights.safetensors"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/glm-5.3-prime-pmtp",
+    "files_count": 6,
+    "files": [
+      ".gitattributes",
+      "Modelfile",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "adapter_weights.safetensors"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/eurollm-9b-pmtp",
+    "files_count": 6,
+    "files": [
+      ".gitattributes",
+      "Modelfile",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "adapter_weights.safetensors"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/qwen3-1.5b-pmtp",
+    "files_count": 6,
+    "files": [
+      ".gitattributes",
+      "Modelfile",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "adapter_weights.safetensors"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/einsof-ii-triad-evaluation",
+    "files_count": 2,
+    "files": [
+      ".gitattributes",
+      "README.md"
+    ],
+    "has_safetensors": false,
+    "has_procrustes": false,
+    "has_adapter_config": false,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/einsof2-qlora-dual-t4-adapter",
+    "files_count": 8,
+    "files": [
+      ".gitattributes",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "chat_template.jinja",
+      "silicon_metrics.json",
+      "tokenizer.json",
+      "tokenizer_config.json"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/einsof2-glm4-9b-stiefel-adapter",
+    "files_count": 9,
+    "files": [
+      ".gitattributes",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "added_tokens.json",
+      "chat_template.jinja",
+      "tokenization_chatglm.py",
+      "tokenizer.model",
+      "tokenizer_config.json"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/einsof2-deepseek-v4-stiefel-adapter",
+    "files_count": 7,
+    "files": [
+      ".gitattributes",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "chat_template.jinja",
+      "tokenizer.json",
+      "tokenizer_config.json"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/einsof2-kimi-16b-stiefel-adapter",
+    "files_count": 8,
+    "files": [
+      ".gitattributes",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "chat_template.jinja",
+      "tiktoken.model",
+      "tokenization_moonshot.py",
+      "tokenizer_config.json"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/einsof2-granite-8b-qiskit-stiefel-adapter",
+    "files_count": 8,
+    "files": [
+      ".gitattributes",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "chat_template.jinja",
+      "tokenizer.json",
+      "tokenizer_config.json",
+      "training_args.bin"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/einsof2-eurollm-9b-stiefel-adapter",
+    "files_count": 8,
+    "files": [
+      ".gitattributes",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "chat_template.jinja",
+      "tokenizer.json",
+      "tokenizer_config.json",
+      "training_args.bin"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/einsof2-gemma4-31b-stiefel-adapter",
+    "files_count": 8,
+    "files": [
+      ".gitattributes",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "chat_template.jinja",
+      "tokenizer.json",
+      "tokenizer_config.json",
+      "training_args.bin"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/einsof2-deepseek-prover-v2-stiefel-adapter",
+    "files_count": 8,
+    "files": [
+      ".gitattributes",
+      "README.md",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "chat_template.jinja",
+      "tokenizer.json",
+      "tokenizer_config.json",
+      "training_args.bin"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/einsof2-mistral-7b-whatsapp-mail-adapter",
+    "files_count": 5,
+    "files": [
+      ".gitattributes",
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "tokenizer.json",
+      "tokenizer_config.json"
+    ],
+    "has_safetensors": true,
+    "has_procrustes": false,
+    "has_adapter_config": true,
+    "has_readme": false
+  },
+  {
+    "repo_id": "Polydim-Einsof/einsof2-deepseek-prover-v2-stiefel-gguf",
+    "files_count": 5,
+    "files": [
+      ".gitattributes",
+      "Modelfile",
+      "README.md",
+      "einsof2-deepseek-prover-v2-stiefel.Q4_K_M.gguf",
+      "einsof2-deepseek-prover-v2-stiefel.Q8_0.gguf"
+    ],
+    "has_safetensors": false,
+    "has_procrustes": false,
+    "has_adapter_config": false,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/einsof2-granite-8b-qiskit-stiefel-gguf",
+    "files_count": 5,
+    "files": [
+      ".gitattributes",
+      "Modelfile",
+      "README.md",
+      "einsof2-granite-8b-qiskit-stiefel.Q4_K_M.gguf",
+      "einsof2-granite-8b-qiskit-stiefel.Q8_0.gguf"
+    ],
+    "has_safetensors": false,
+    "has_procrustes": false,
+    "has_adapter_config": false,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/einsof2-eurollm-9b-stiefel-gguf",
+    "files_count": 5,
+    "files": [
+      ".gitattributes",
+      "Modelfile",
+      "README.md",
+      "einsof2-eurollm-9b-stiefel.Q4_K_M.gguf",
+      "einsof2-eurollm-9b-stiefel.Q8_0.gguf"
+    ],
+    "has_safetensors": false,
+    "has_procrustes": false,
+    "has_adapter_config": false,
+    "has_readme": true
+  },
+  {
+    "repo_id": "Polydim-Einsof/einsof2-glm4-9b-stiefel-gguf",
+    "files_count": 5,
+    "files": [
+      ".gitattributes",
+      "Modelfile",
+      "README.md",
+      "einsof2-glm4-9b-stiefel.Q4_K_M.gguf",
+      "einsof2-glm4-9b-stiefel.Q8_0.gguf"
+    ],
+    "has_safetensors": false,
+    "has_procrustes": false,
+    "has_adapter_config": false,
+    "has_readme": true
+  }
+]
