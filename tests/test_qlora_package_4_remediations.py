@@ -16,7 +16,9 @@ import os
 import sys
 import math
 import numpy as np
-import torch
+import pytest
+
+torch = pytest.importorskip("torch", reason="torch no instalado en entorno minimal de CI")
 
 # Asegurar path de SUITE/scripts
 SCRIPTS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "scripts"))
