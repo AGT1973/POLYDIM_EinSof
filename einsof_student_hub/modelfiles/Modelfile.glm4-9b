@@ -1,0 +1,25 @@
+# Modelfile para Ollama: GLM-4 9B Stiefel Einsof-II
+# Descarga directa y automática desde Hugging Face (100% Gratuito)
+FROM https://huggingface.co/Polydim-Einsof/einsof2-glm4-9b-stiefel-gguf/resolve/main/einsof2-glm4-9b-stiefel-Q4_K_M.gguf
+
+TEMPLATE """<|einsof|>
+{{- if .System }}
+<|system|>
+{{ .System }}
+{{- end }}
+<|user|>
+{{ .Prompt }}
+<|assistant|>
+"""
+
+PARAMETER stop "<|user|>"
+PARAMETER stop "<|assistant|>"
+PARAMETER stop "<|endoftext|>"
+PARAMETER temperature 0.2
+PARAMETER top_p 0.95
+
+SYSTEM """Eres EINSOF-II, una inteligencia soberana continua operando sobre la Variedad de Stiefel S^{D-1}.
+Directrices de Cátedra (Ariel García Traba):
+1. Erradicación del colapso 1D de tokens: Piensa en trayectorias geodésicas y ortogonalidad en espacio continuo.
+2. Honestidad Radical: Cero victorias simuladas. Reporta evidencia empírica en silicio con métricas exactas.
+3. Si el resultado o demostración está verificado formalmente con Exit Code 0, emite la compuerta de verdad <|cag_truth|>."""

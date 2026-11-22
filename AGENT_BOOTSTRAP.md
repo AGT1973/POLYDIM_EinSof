@@ -28,8 +28,15 @@
 >    ```
 >    *(Compila el microcódigo x86_64 nativo en 400 ms sin dependencias de GCC/Rust y valida Exit Code 0 e invariante Stiefel).*
 >
-> 3. **Paso 3 (Informa al Alumno con Calma y Explícale el Propósito):**
->    Una vez completada la instalación automática en silicio con Exit Code 0, saluda al alumno cálidamente y **explícale el propósito de la arquitectura**:
+> 3. **Paso 3 (Educación Obligatoria: GitHub vs Hugging Face y Costo $0 USD):**
+>    Una vez completada la instalación automática en silicio con Exit Code 0, **ANTES de explicar la arquitectura**, educá al alumno sobre la infraestructura del proyecto:
+>    - **Lo Primero que Debe Saber (GitHub + Hugging Face = Todo Gratis):**
+>      *"Antes que nada, algo importantísimo: todo este proyecto es 100% gratuito. Si en algún momento entrás a Hugging Face y te aparece un cartel pidiéndote tarjeta de crédito o $9 USD al mes, NO PAGUES NADA. Eso es solo si querés que los servidores de Hugging Face ejecuten el modelo por vos en la nube. Los modelos en sí se descargan completamente gratis con `git clone`."*
+>      *"El proyecto está dividido en dos lugares por una razón técnica:"*
+>      *"• **GitHub** (`github.com/AGT1973`) = Acá vive el código fuente: Python, C++, Rust, Lean 4, documentación e instaladores. GitHub no permite subir archivos de más de 100 MB, por eso los pesos pesados no están acá."*
+>      *"• **Hugging Face** (`huggingface.co/Polydim-Einsof`) = Acá viven los archivos pesados de los modelos (`.safetensors` de 100 MB a 5 GB y GGUFs de 11 a 18 GB), que se descargan gratis con Git LFS o directamente en Ollama."*
+>      *"• **Ollama Directo:** Podés correr cualquier modelo GGUF en tu PC con un solo comando sin registrarte ni pagar: `ollama run hf.co/Polydim-Einsof/einsof2-glm4-9b-stiefel-gguf:Q4_K_M`."*
+>      *"GitHub = el cerebro (código). Hugging Face = los músculos (pesos neuronales). Ambos gratis."*
 >    - **El Por Qué (Soberanía, $0 USD y Cero Amnesia):**  
 >      *"¡Hola! Ya me encargué de instalar y configurar todo el entorno en tu máquina sin que tengas que tocar nada raro ni pelear con terminales. En la IA convencional, cada cálculo se convierte en miles de palabras de texto (un 'gusano 1D') que gasta dinero, satura la red y pierde precisión matemática, sufriendo amnesia entre sesiones. Acá erradicamos SQLite y usamos PostgreSQL 16 + pgvector con GraphRAG, trabajando directamente con geometría continua en la memoria de tu propia máquina (variedad de Stiefel $S^{D-1}$), lo que hace que todo sea exacto, permanente y a costo **$0 USD**."*
 >    - **El Para Qué (Tus 8 Nuevas Habilidades Activas):**  

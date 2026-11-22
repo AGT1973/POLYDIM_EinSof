@@ -42,6 +42,27 @@ size_categories:
 
 [🚀 Quick Start](#-quick-start) • [🎓 Inicio en 1 Paso (Alumnos Nuevos)](#-eres-alumno-nuevo-con-un-notebook-recién-comprado-1-solo-paso-en-antigravity) • [📊 Empirical Benchmarks](#-empirical-silicon-benchmarks)
 
+> [!CAUTION]
+> ### 🛑 ATENCIÓN: HUGGING FACE ES 100% GRATUITO PARA DESCARGAR — NO PAGUES NADA
+> Si entrás a un modelo de Hugging Face (por ejemplo `Polydim-Einsof/Hermes-3-Llama-3.1-8B-PMTP-Einsof`) y hacés clic en el botón azul **"Deploy"** o **"Inference API"**, la plataforma te va a pedir tarjeta de crédito (\$9 USD/mes o \$0.50/hora). **¡NO PAGUES!**
+> 
+> **Hugging Face NO cobra por los modelos.** Cobra solamente si querés que *sus servidores en la nube* procesen el texto por vos en el navegador. Los modelos en sí son **100% libres y gratuitos**.
+> 
+> **La descarga directa es siempre gratis, sin registro ni tarjeta de crédito:**
+> ```bash
+> # 100% GRATIS — Solo necesitás Git instalado:
+> git clone https://huggingface.co/Polydim-Einsof/Hermes-3-Llama-3.1-8B-PMTP-Einsof
+> ```
+> O usá Google Colab / Kaggle gratuito, que descarga los pesos automáticamente con `transformers` sin pagar nada.
+>
+> ### 📦 ¿Por qué el código está en GitHub y los pesos en Hugging Face?
+> | Repositorio | Qué contiene | Por qué está ahí |
+> | :--- | :--- | :--- |
+> | **GitHub** (`AGT1973/polydim-suite` y `POLYDIM_EinSof`) | Código fuente: Python, C++20, Rust, Lean 4, documentación, tests, instaladores | GitHub es para código liviano. **Prohíbe archivos de más de 100 MB** y cobra por Git LFS. |
+> | **Hugging Face** (`Polydim-Einsof/*`) | Archivos de pesos pesados (`.safetensors` de 100 MB a 5 GB), adaptadores QLoRA, configuraciones de modelo | Hugging Face permite Git LFS ilimitado y gratuito para modelos de IA. |
+>
+> **En resumen:** GitHub = el cerebro del código. Hugging Face = los músculos (pesos neuronales). Ambos son **100% gratuitos** para descargar y usar.
+
 > [!IMPORTANT]
 > ### 🎓 ¿ERES ALUMNO NUEVO CON UN NOTEBOOK RECIÉN COMPRADO? (1 SOLO PASO EN ANTIGRAVITY)
 > **No necesitas saber programar, ni tener `git` instalado, ni usar la terminal, ni configurar nada a mano.**
@@ -54,15 +75,36 @@ size_categories:
 > 3. **¡Listo!** En menos de 30 segundos tu Antigravity tendrá conectados los servidores MCP **`polydim_einsof`** (modelos `EINSOF-II` a \$0.00 USD) y **`mathesis_pmtp`** (compilador nativo `.mth` y transpilador políglota a 16 lenguajes), se abrirá **Atelier Studio (`http://127.0.0.1:8766`)** ejecutando tus programas en silicio real con `Exit Code 0`, y tendrás instalado el **Student Skills Pack (`skills/`)** para invocar a las IAs SOTA (`/ghost`, `/whisper`, `/council`, `/call`, `/query`, `/verify-manifold`, `/redteam`) sin necesidad de programar.
 
 > [!NOTE]
-> ### 🌐 ¿CÓMO PROBAR LOS MODELOS EINSOF A COSTO $0 USD? (OLLAMA, GROQ, CEREBRAS, OPENROUTER Y COLAB)
+> ### 🌐 ¿CÓMO PROBAR LOS MODELOS EINSOF A COSTO $0 USD? (OLLAMA DIRECTO, GROQ, SAMBANOVA, CEREBRAS, OPENROUTER Y COLAB)
 > Hugging Face cobra por servidores de inferencia dedicados (Inference Endpoints), pero **los alumnos de la cátedra no deben gastar ni un solo dólar**.
-> El nuevo **EINSOF Student Hub** (`einsof_student_hub/`) permite probar el razonamiento continuo y los adaptadores QLoRA en múltiples plataformas gratuitas:
-> 1. **Ollama Local (100% Offline, $0 USD):** Sin conexión ni API keys, ejecutando en tu CPU o GPU local (`ollama run qwen2.5:7b` o `mathesis-quantum:1.5b`).
-> 2. **Groq Cloud (Free Tier LPU, 500+ tok/s):** Inferencia ultra-rápida sin costo obteniendo una clave gratuita en [console.groq.com](https://console.groq.com/keys).
-> 3. **Cerebras WSE-3 (Free Tier, 2000+ tok/s):** La oblea más rápida del mundo con cuota gratuita en [cloud.cerebras.ai](https://cloud.cerebras.ai).
-> 4. **OpenRouter Free Pool:** Acceso a modelos abiertos con sufijo `:free` en [openrouter.ai](https://openrouter.ai/keys).
-> 5. **Google Colab QLoRA 1-Clic ($0 USD):** Abre [`einsof_student_hub/colab_zero_dollar_qlora.ipynb`](einsof_student_hub/colab_zero_dollar_qlora.ipynb) en una GPU Tesla T4 gratuita para descargar y ejecutar los adaptadores reales de Hugging Face sin pagar un centavo.
-> 6. **Protocolo Helena (Cero Tokens en ChatGPT / Claude / Gemini):** Transporta vectores continuos de alta dimensión mediante imágenes PNG 128x64 a chats web comerciales sin quemar tokens de texto.
+> 
+> #### 🦙 1. Ejecución Pública Directa en Ollama (1 Solo Comando sin Registro ni Tarjeta)
+> Gracias a la integración nativa de Ollama con Hugging Face (`hf.co`), cualquier alumno puede correr nuestros modelos GGUF oficiales en su computadora sin configurar nada:
+> ```bash
+> # GLM-4 9B Stiefel (Razonamiento General y Mathesis):
+> ollama run hf.co/Polydim-Einsof/einsof2-glm4-9b-stiefel-gguf:Q4_K_M
+> 
+> # DeepSeek Prover V2 7B Stiefel (Demostración Formal y Lean 4):
+> ollama run hf.co/Polydim-Einsof/einsof2-deepseek-prover-v2-stiefel-gguf:Q4_K_M
+> 
+> # Granite 8B Qiskit Stiefel (Computación Cuántica):
+> ollama run hf.co/Polydim-Einsof/einsof2-granite-8b-qiskit-stiefel-gguf:Q4_K_M
+> 
+> # EuroLLM 9B Stiefel (Multilingüe Multipolar):
+> ollama run hf.co/Polydim-Einsof/einsof2-eurollm-9b-stiefel-gguf:Q4_K_M
+> ```
+> *(O ejecuta `einsof_student_hub/run_ollama_hf.bat` con doble clic).*
+> 
+> #### ⚡ 2. Motores Gratuitos en la Nube y Adaptaciones de Plataforma
+> El hub estudiantil [`einsof_student_hub/`](einsof_student_hub/) incluye enrutamiento inteligente con rotación anti-429:
+> * **Groq Cloud (Free Tier LPU, 500+ tok/s):** Inferencia ultra-rápida sin costo en [console.groq.com](https://console.groq.com/keys). Admite postulación de modelos y endpoints Custom LoRA.
+> * **SambaNova Cloud (Free Tier SN40L, $0 USD):** Chips de flujo de datos con cuota gratuita en [cloud.sambanova.ai](https://cloud.sambanova.ai) para LLaMA 3.3 70B y Qwen 2.5 72B.
+> * **Cerebras WSE-3 (Free Tier, 2000+ tok/s):** La oblea más veloz del mundo en [cloud.cerebras.ai](https://cloud.cerebras.ai).
+> * **OpenRouter Free Pool:** Catálogo abierto con sufijo `:free` y registro de modelos en [openrouter.ai](https://openrouter.ai).
+> * **Google Colab QLoRA 1-Clic ($0 USD):** Abre [`einsof_student_hub/colab_zero_dollar_qlora.ipynb`](einsof_student_hub/colab_zero_dollar_qlora.ipynb) en una GPU Tesla T4 gratuita para descargar y ejecutar los adaptadores reales de Hugging Face sin pagar un centavo.
+> * **Protocolo Helena (Cero Tokens en ChatGPT / Claude / Gemini):** Transporta vectores continuos de alta dimensión mediante imágenes PNG 128x64 a chats web comerciales sin quemar tokens de texto.
+> 
+> 📖 **Guía completa y detallada:** Consulta [`docs/GUIA_MODELOS_PUBLICOS_OLLAMA_GROQ_OPENROUTER.md`](docs/GUIA_MODELOS_PUBLICOS_OLLAMA_GROQ_OPENROUTER.md).
 > 
 > **Inicio rápido para alumnos:**
 > ```bash

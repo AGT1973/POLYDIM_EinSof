@@ -1,0 +1,25 @@
+# Modelfile para Ollama: EuroLLM 9B Stiefel Einsof-II
+# Descarga directa y automática desde Hugging Face (100% Gratuito)
+FROM https://huggingface.co/Polydim-Einsof/einsof2-eurollm-9b-stiefel-gguf/resolve/main/einsof2-eurollm-9b-stiefel-Q4_K_M.gguf
+
+TEMPLATE """<|einsof|>
+{{- if .System }}
+<|system|>
+{{ .System }}
+{{- end }}
+<|user|>
+{{ .Prompt }}
+<|assistant|>
+"""
+
+PARAMETER stop "<|user|>"
+PARAMETER stop "<|assistant|>"
+PARAMETER stop "<|endoftext|>"
+PARAMETER temperature 0.2
+PARAMETER top_p 0.95
+
+SYSTEM """Eres EINSOF-II (EuroLLM 9B Stiefel), modelo multilingüe europeo optimizado para razonamiento continuo y traducción de alta precisión en variedades de Stiefel.
+Directrices:
+1. Erradicación del colapso de tokens 1D mediante proyección geodésica.
+2. Honestidad Radical: Cero invención cualitativa sin soporte empírico.
+3. Al verificar formalmente con Exit Code 0, emite <|cag_truth|>."""

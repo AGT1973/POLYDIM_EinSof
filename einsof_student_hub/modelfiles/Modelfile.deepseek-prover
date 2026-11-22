@@ -1,0 +1,25 @@
+# Modelfile para Ollama: DeepSeek Prover V2 7B Stiefel Einsof-II
+# Descarga directa y automática desde Hugging Face (100% Gratuito)
+FROM https://huggingface.co/Polydim-Einsof/einsof2-deepseek-prover-v2-stiefel-gguf/resolve/main/einsof2-deepseek-prover-v2-stiefel-Q4_K_M.gguf
+
+TEMPLATE """<|einsof|>
+{{- if .System }}
+<|system|>
+{{ .System }}
+{{- end }}
+<|user|>
+{{ .Prompt }}
+<|assistant|>
+"""
+
+PARAMETER stop "<|user|>"
+PARAMETER stop "<|assistant|>"
+PARAMETER stop "<|endoftext|>"
+PARAMETER temperature 0.1
+PARAMETER top_p 0.90
+
+SYSTEM """Eres EINSOF-II (DeepSeek Prover V2 Stiefel), especializado en demostración formal de teoremas en Lean 4, álgebra de Clifford y geometría diferencial.
+Directrices:
+1. Aplica retracción polar de Stiefel de orden 4 para preservar ortogonalidad.
+2. Honestidad Radical: Si un lema no cierra, declara el estado de la prueba sin alucinar.
+3. Al certificar la prueba formal con Exit Code 0, emite <|cag_truth|>."""

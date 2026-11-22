@@ -28,11 +28,31 @@ La consola te mostrará de inmediato qué motores gratuitos están activos en tu
 
 | Proveedor | Tipo de Acceso | Clave Requerida | Velocidad / Capacidad | Cómo Obtenerlo |
 | :--- | :---: | :---: | :---: | :--- |
-| **Ollama Local** | **100% Offline (Local)** | **Ninguna ($0 USD)** | Depende de tu CPU/GPU | Instalar Ollama (`https://ollama.ai`) y ejecutar: `ollama run qwen2.5:7b` |
+| **Ollama Local** | **100% Offline (Local)** | **Ninguna ($0 USD)** | Depende de tu CPU/GPU | Instalar Ollama (`https://ollama.ai`) y ejecutar directamente: `ollama run hf.co/Polydim-Einsof/einsof2-glm4-9b-stiefel-gguf:Q4_K_M` |
 | **Groq Cloud** | Nube Gratuita (LPU) | Gratuita ($0 USD) | Ultra-rápido (500+ tok/s) | Crear cuenta en [console.groq.com](https://console.groq.com/keys) y generar API Key |
+| **SambaNova Cloud** | Nube Gratuita (RDU) | Gratuita ($0 USD) | Alto rendimiento (800+ tok/s) | Registrarse en [cloud.sambanova.ai](https://cloud.sambanova.ai) para LLaMA 3.3 70B |
 | **Cerebras Inference** | Nube Gratuita (WSE-3) | Gratuita ($0 USD) | Récord mundial (2000+ tok/s) | Registrarse gratis en [cloud.cerebras.ai](https://cloud.cerebras.ai) |
 | **OpenRouter Free Pool** | Nube Gratuita | Gratuita ($0 USD) | Modelos abiertos (`:free`) | Registrarse en [openrouter.ai](https://openrouter.ai/keys) |
 | **Google Colab QLoRA** | Nube Gratuita (GPU T4) | Ninguna ($0 USD) | Inferencia LoRA en silicio | Abrir el notebook [`colab_zero_dollar_qlora.ipynb`](colab_zero_dollar_qlora.ipynb) con 1 clic |
+
+---
+
+## 🦙 Ejecución Inmediata en Ollama (Modelos Oficiales de Hugging Face a $0 USD)
+Podés ejecutar cualquiera de nuestros 4 modelos GGUF oficiales directamente en Ollama sin clonar nada ni crear cuentas:
+```bash
+# GLM-4 9B Stiefel (Razonamiento General):
+ollama run hf.co/Polydim-Einsof/einsof2-glm4-9b-stiefel-gguf:Q4_K_M
+
+# DeepSeek Prover V2 7B Stiefel (Lean 4 & Demostración Formal):
+ollama run hf.co/Polydim-Einsof/einsof2-deepseek-prover-v2-stiefel-gguf:Q4_K_M
+
+# Granite 8B Qiskit Stiefel (Computación Cuántica):
+ollama run hf.co/Polydim-Einsof/einsof2-granite-8b-qiskit-stiefel-gguf:Q4_K_M
+
+# EuroLLM 9B Stiefel (Multilingüe Multipolar):
+ollama run hf.co/Polydim-Einsof/einsof2-eurollm-9b-stiefel-gguf:Q4_K_M
+```
+*(O hacé doble clic en `run_ollama_hf.bat`). También encontrás los `Modelfile` personalizados en la carpeta `modelfiles/`.*
 
 ---
 

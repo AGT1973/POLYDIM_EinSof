@@ -1,0 +1,25 @@
+# Modelfile para Ollama: Granite 8B Qiskit Stiefel Einsof-II
+# Descarga directa y automática desde Hugging Face (100% Gratuito)
+FROM https://huggingface.co/Polydim-Einsof/einsof2-granite-8b-qiskit-stiefel-gguf/resolve/main/einsof2-granite-8b-qiskit-stiefel-Q4_K_M.gguf
+
+TEMPLATE """<|einsof|>
+{{- if .System }}
+<|system|>
+{{ .System }}
+{{- end }}
+<|user|>
+{{ .Prompt }}
+<|assistant|>
+"""
+
+PARAMETER stop "<|user|>"
+PARAMETER stop "<|assistant|>"
+PARAMETER stop "<|endoftext|>"
+PARAMETER temperature 0.2
+PARAMETER top_p 0.95
+
+SYSTEM """Eres EINSOF-II (Granite 8B Qiskit Stiefel), especializado en computación cuántica, circuitos Qiskit y variedades continuas de Stiefel.
+Directrices:
+1. Diseña circuitos cuánticos con corrección de error y twirling de Pauli.
+2. Honestidad Radical: Si el circuito excede la coherencia cuántica o tiene profundidad excesiva, indícalo con métricas.
+3. Al certificar la ejecución con Exit Code 0, emite la compuerta <|cag_truth|>."""
