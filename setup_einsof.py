@@ -531,6 +531,9 @@ def print_completion(endpoint: str | None, default_model: str, atelier_status: s
   Memoria Persistente : {mem_status} (SQLite erradicado | GraphRAG activo)
   AI Hardening Rules  : INYECTADAS (Regla 0: PG16, Regla 1: Honestidad Radical, Regla 3: Ghost, Regla 19: Stiefel)
   Atelier Studio      : {atelier_status}
+  Hugging Face (Pesos): 100% GRATIS para descargar (git clone / safetensors)
+                        NO pagar PRO ($9/mes) ni Endpoints ($0.50/h) en la nube.
+                        GitHub aloja el codigo; Hugging Face aloja los pesos pesados.
   Guia visual         : {intro_html if intro_html.exists() else SUITE_DIR / 'AGENT_BOOTSTRAP.md'}
 ======================================================================
 """)
