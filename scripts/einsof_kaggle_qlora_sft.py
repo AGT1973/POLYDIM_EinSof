@@ -14,6 +14,7 @@ License: Apache 2.0
 
 import os, sys, json, time, math, gc
 from pathlib import Path
+from typing import Optional, List, Dict, Tuple, Any, Union
 
 # ── Hardware gate ──────────────────────────────────────────────────────
 def check_gpu():
