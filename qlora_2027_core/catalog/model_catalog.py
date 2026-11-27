@@ -182,18 +182,7 @@ VERIFIED_OPEN_QLORA_MODELS: List[Dict[str, Any]] = [
         "target_hardware": "CPU / ALADIN 8GB / Student Edge",
         "min_vram_gb": 4,
     },
-    {
-        "slug": "mathesis-quantum-1.5b",
-        "hf_id": "Qwen/Qwen2.5-1.5B-Instruct",
-        "hf_status": "HTTP_200_OPEN",
-        "weights_gb": 2.88,
-        "arch": "Qwen2ForCausalLM",
-        "d_model": 1536,
-        "family": "qwen",
-        "qlora_feasible": True,
-        "target_hardware": "CPU / ALADIN Ollama (mathesis-quantum:1.5b Q8_0 1.65GB) / Any T4",
-        "min_vram_gb": 4,
-    },
+    # Qwen2.5-1.5B removed and banned by Ariel's Law (2026-11-23) - models must be <= 3 months old.
     {
         "slug": "aion-1.0-instruct-2.3b",
         "hf_id": "microsoft/Aion-1.0-Instruct-2.3B",
@@ -401,16 +390,23 @@ CLOSED_COMMERCIAL_SATELLITES: List[Dict[str, Any]] = [
 ]
 
 ALADIN_OLLAMA_2026_TARGETS: List[Dict[str, Any]] = [
-    {"ollama_tag": "qwen3:1.7b", "registry_gb": 1.27, "status": "PULLING_ALADIN_QUEUE", "ram_fit_8gb": True},
-    {"ollama_tag": "qwen3:4b", "registry_gb": 2.33, "status": "QUEUED_ALADIN", "ram_fit_8gb": True},
-    {"ollama_tag": "gemma4:e2b", "registry_gb": 4.27, "status": "QUEUED_ALADIN", "ram_fit_8gb": True},
-    {"ollama_tag": "glm4:latest", "registry_gb": 5.08, "status": "QUEUED_ALADIN_TIGHT", "ram_fit_8gb": True},
-    {"ollama_tag": "mathesis-quantum:1.5b", "registry_gb": 1.53, "status": "INSTALLED_ALADIN", "ram_fit_8gb": True},
+    {"ollama_tag": "qwen3:1.7b", "registry_gb": 1.27, "status": "INSTALLED_ALADIN", "ram_fit_8gb": True},
+    {"ollama_tag": "qwen3:4b", "registry_gb": 2.33, "status": "INSTALLED_ALADIN", "ram_fit_8gb": True},
+    {"ollama_tag": "gemma4:e2b", "registry_gb": 4.27, "status": "INSTALLED_ALADIN", "ram_fit_8gb": True},
+    {"ollama_tag": "glm4:latest", "registry_gb": 5.08, "status": "INSTALLED_ALADIN", "ram_fit_8gb": True},
+    # mathesis-quantum:1.5b (Qwen 2.5) uninstalled and expelled per Ariel's Law (2026-11-23)
     {"ollama_tag": "nomic-embed-text:latest", "registry_gb": 0.26, "status": "INSTALLED_ALADIN", "ram_fit_8gb": True},
 ]
 
-# Complete forensic audit & live remediation registry of all 32 Polydim-Einsof/* Hugging Face Hub repositories
-# (Inspected via safetensors HTTP Range headers + Hugging Face API on 2026-11-21)
+# PROHIBITED & BANNED MODELS (Ariel's Law 2026-11-23: STRICT 3-MONTH FRESHNESS WINDOW)
+# Any model older than 3 months is expelled, prohibited, and vetoed across ALADIN and all clústers.
+PROHIBITED_MODELS_OLDER_THAN_3_MONTHS: List[Dict[str, str]] = [
+    {"model_id": "Qwen/Qwen2.5-1.5B-Instruct", "reason": "BANNED: Obsolete (>1 year old). Expelled from ALADIN and training pipelines."},
+    {"model_id": "Qwen/Qwen2.5-*", "reason": "BANNED: Legacy Qwen 2.5 generation (>1 year old)."},
+    {"model_id": "deepseek-ai/DeepSeek-Coder-V1*", "reason": "BANNED: Obsolete generation."},
+    {"model_id": "moonshot-v1-*", "reason": "BANNED: Legacy Kimi generation."},
+]
+
 POLYDIM_HF_32_REPOS: List[Dict[str, Any]] = [
     # --- Group A: 4 Quantized Full GGUF Models ---
     {"repo_id": "Polydim-Einsof/einsof2-glm4-9b-stiefel-gguf", "repo_type": "GGUF_QUANTIZED", "family": "glm4", "base_model": "THUDM/glm-4-9b-chat", "size_mb": 15502.41, "peft_loadable": False, "note": "Contains real Q4_K_M and Q8_0 GGUF binaries."},

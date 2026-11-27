@@ -1,0 +1,226 @@
+[
+  {
+    "idx": 1,
+    "repo_name": "Hermes-3-Llama-3.1-8B-PMTP-Einsof",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\hf_export\\Hermes-3-Llama-3.1-8B-PMTP-Einsof\\adapter_model.safetensors",
+    "size_mb": 96.0
+  },
+  {
+    "idx": 2,
+    "repo_name": "qwen3.8-27b-pmtp",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\hf_export\\qwen3.8-27b-pmtp\\adapter_model.safetensors",
+    "size_mb": 40.0
+  },
+  {
+    "idx": 3,
+    "repo_name": "muse-glimmer-30b-pmtp",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\hf_export\\muse-glimmer-30b-pmtp\\adapter_model.safetensors",
+    "size_mb": 40.0
+  },
+  {
+    "idx": 4,
+    "repo_name": "llama-4-70b-pmtp",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\hf_export\\llama-4-70b-pmtp\\adapter_model.safetensors",
+    "size_mb": 64.0
+  },
+  {
+    "idx": 5,
+    "repo_name": "deepseek-v4-distill-pmtp",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\hf_export\\deepseek-v4-distill-pmtp\\adapter_model.safetensors",
+    "size_mb": 40.0
+  },
+  {
+    "idx": 6,
+    "repo_name": "qwen3-1.7b-pmtp",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\hf_export\\qwen3-1.7b-pmtp\\adapter_model.safetensors",
+    "size_mb": 16.0
+  },
+  {
+    "idx": 7,
+    "repo_name": "qwen3-8b-pmtp",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\hf_export\\qwen3-8b-pmtp\\adapter_model.safetensors",
+    "size_mb": 32.0
+  },
+  {
+    "idx": 8,
+    "repo_name": "llama-3.3-8b-pmtp",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\hf_export\\llama-3.3-8b-pmtp\\adapter_model.safetensors",
+    "size_mb": 32.0
+  },
+  {
+    "idx": 9,
+    "repo_name": "phi-4-14b-pmtp",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\hf_export\\phi-4-14b-pmtp\\adapter_model.safetensors",
+    "size_mb": 40.0
+  },
+  {
+    "idx": 10,
+    "repo_name": "pplx-decider-27b-pmtp",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\hf_export\\pplx_decider_27b_PMTP_polydim_einsof\\adapter_model.safetensors",
+    "size_mb": 0.0
+  },
+  {
+    "idx": 11,
+    "repo_name": "xiaomi-mimo-9b-pmtp",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\hf_export\\xiaomi_mimo_9b_PMTP_polydim_einsof\\adapter_model.safetensors",
+    "size_mb": 0.0
+  },
+  {
+    "idx": 12,
+    "repo_name": "mistral-large-3-pmtp",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\hf_export\\mistral-large-3-pmtp\\adapter_model.safetensors",
+    "size_mb": 32.0
+  },
+  {
+    "idx": 13,
+    "repo_name": "gemma-4-31b-pmtp",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\hf_export\\gemma-4-31b-pmtp\\adapter_model.safetensors",
+    "size_mb": 32.0
+  },
+  {
+    "idx": 14,
+    "repo_name": "kimi-k3.1-pro-pmtp",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\hf_export\\kimi-k3.1-pro-pmtp\\adapter_model.safetensors",
+    "size_mb": 40.0
+  },
+  {
+    "idx": 15,
+    "repo_name": "deepseek-v4.1-flash-pmtp",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\hf_export\\deepseek-v4.1-flash-pmtp\\adapter_model.safetensors",
+    "size_mb": 40.0
+  },
+  {
+    "idx": 16,
+    "repo_name": "glm-5.3-prime-pmtp",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\hf_export\\glm-5.3-prime-pmtp\\adapter_model.safetensors",
+    "size_mb": 32.0
+  },
+  {
+    "idx": 17,
+    "repo_name": "eurollm-9b-pmtp",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\hf_export\\eurollm-9b-pmtp\\adapter_model.safetensors",
+    "size_mb": 32.0
+  },
+  {
+    "idx": 18,
+    "repo_name": "qwen3-1.5b-pmtp",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\hf_export\\qwen3-1.5b-pmtp\\adapter_model.safetensors",
+    "size_mb": 8.0
+  },
+  {
+    "idx": 19,
+    "repo_name": "einsof2-granite-8b-qiskit-stiefel-adapter",
+    "type": "adapter",
+    "adapter_path": null,
+    "size_mb": 0
+  },
+  {
+    "idx": 20,
+    "repo_name": "einsof2-eurollm-9b-stiefel-adapter",
+    "type": "adapter",
+    "adapter_path": null,
+    "size_mb": 0
+  },
+  {
+    "idx": 21,
+    "repo_name": "einsof2-gemma4-31b-stiefel-adapter",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\downloaded_gemma4_adapter\\einsof2-gemma4-31b-stiefel_adapter\\adapter_model.safetensors",
+    "size_mb": 233.63
+  },
+  {
+    "idx": 22,
+    "repo_name": "einsof2-deepseek-prover-v2-stiefel-adapter",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\kaggle_output_deepseek_prover\\einsof2-deepseek-prover-v2-stiefel_adapter\\adapter_model.safetensors",
+    "size_mb": 71.54
+  },
+  {
+    "idx": 23,
+    "repo_name": "einsof2-deepseek-v4-stiefel-adapter",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\harvest_deepseek_complete\\einsof2_deepseek_v4_stiefel_adapter\\adapter_model.safetensors",
+    "size_mb": 10.2
+  },
+  {
+    "idx": 24,
+    "repo_name": "einsof2-glm4-9b-stiefel-adapter",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\harvest_glm4_complete\\einsof2_glm4_stiefel_adapter\\adapter_model.safetensors",
+    "size_mb": 80.83
+  },
+  {
+    "idx": 25,
+    "repo_name": "einsof2-kimi-16b-stiefel-adapter",
+    "type": "adapter",
+    "adapter_path": "E:\\POLYDIM_EINSOF\\harvest_kimi_complete\\einsof2_kimi_stiefel_adapter\\adapter_model.safetensors",
+    "size_mb": 7.61
+  },
+  {
+    "idx": 26,
+    "repo_name": "einsof2-mistral-7b-whatsapp-mail-adapter",
+    "type": "adapter",
+    "adapter_path": null,
+    "size_mb": 0
+  },
+  {
+    "idx": 27,
+    "repo_name": "einsof2-qlora-dual-t4-adapter",
+    "type": "adapter",
+    "adapter_path": null,
+    "size_mb": 0
+  },
+  {
+    "idx": 28,
+    "repo_name": "einsof2-deepseek-prover-v2-stiefel-gguf",
+    "type": "gguf_eval",
+    "adapter_path": null,
+    "size_mb": 0
+  },
+  {
+    "idx": 29,
+    "repo_name": "einsof2-granite-8b-qiskit-stiefel-gguf",
+    "type": "gguf_eval",
+    "adapter_path": null,
+    "size_mb": 0
+  },
+  {
+    "idx": 30,
+    "repo_name": "einsof2-eurollm-9b-stiefel-gguf",
+    "type": "gguf_eval",
+    "adapter_path": null,
+    "size_mb": 0
+  },
+  {
+    "idx": 31,
+    "repo_name": "einsof2-glm4-9b-stiefel-gguf",
+    "type": "gguf_eval",
+    "adapter_path": null,
+    "size_mb": 0
+  },
+  {
+    "idx": 32,
+    "repo_name": "einsof-ii-triad-evaluation",
+    "type": "gguf_eval",
+    "adapter_path": null,
+    "size_mb": 0
+  }
+]

@@ -186,6 +186,40 @@ def test_4_riemannian_armijo():
     print("  * VEREDICTO PUNTO 4:           PASSED (Exit Code 0)\n")
     return {"iters": iters, "alpha_final": alpha_final, "delta_safe": delta_safe, "defect_safe": defect_safe}
 
+
+def test_5_kvmark_and_target_cache_guard():
+    """KVMARK (arXiv:2611.20454v1) + Target Cache Guard (arXiv:2611.34278v1) with Control X."""
+    from qlora_2027_core.core.kv_cache_bridge import PmtpSharedKVCacheBridge
+
+    rng = np.random.default_rng(2026)
+    bridge = PmtpSharedKVCacheBridge(num_layers=2, num_heads=4, head_dim=32)
+    kv_layers = [
+        (rng.standard_normal((1, 4, 8, 32)), rng.standard_normal((1, 4, 8, 32))),
+        (rng.standard_normal((1, 4, 8, 32)), rng.standard_normal((1, 4, 8, 32))),
+    ]
+    payload = bridge.export_kv_state(kv_layers)
+    verdict_ok = bridge.verify_kv_integrity(payload)
+    assert verdict_ok["valid"] is True and verdict_ok["tampered_layers"] == []
+
+    # Control X: tamper layer 1 only -> must localize layer [1] and raise on verify_integrity=True
+    tampered_payload = {
+        **payload,
+        "layers": [
+            payload["layers"][0],
+            (payload["layers"][1][0] + 1e-4, payload["layers"][1][1]),
+        ],
+    }
+    verdict_bad = bridge.verify_kv_integrity(tampered_payload)
+    assert verdict_bad["valid"] is False and verdict_bad["tampered_layers"] == [1]
+
+    # Target Cache Guard: adversarial 100x spike on V must be clamped
+    v_spike = payload["layers"][0][1].copy()
+    v_spike[0, 0, 0, :] *= 100.0
+    _, v_guarded, clipped = bridge.apply_target_cache_guard(payload["layers"][0][0], v_spike)
+    assert clipped is True
+    assert float(np.linalg.norm(v_guarded[0, 0, 0, :])) < float(np.linalg.norm(v_spike[0, 0, 0, :]))
+
+
 def main():
     print("=" * 80)
     print("  AUDITORÍA INTEGRAL DE SILICIO: 4 DE 4 REMEDIACIONES EN PAQUETE QLORA")

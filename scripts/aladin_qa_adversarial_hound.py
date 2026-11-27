@@ -61,7 +61,7 @@ def log_incident_to_postgres(hound_name, test_name, severity, details, passed):
 # ==============================================================================
 # BATERÍA 1: ATAQUES DE LÍMITE NUMÉRICO Y FRACTURAS DE TENSORES
 # ==============================================================================
-def attack_numeric_and_nan(model_slug="mathesis-quantum:1.5b"):
+def attack_numeric_and_nan(model_slug="qwen3:1.7b"):
     """Inyecta payloads con valores extremos, subnormales y secuencias de escape."""
     print(f"\n[SABUESO 1/5] Lanzando ataque de frontera numérica contra {model_slug}...")
     edge_payloads = [
@@ -100,7 +100,7 @@ def attack_numeric_and_nan(model_slug="mathesis-quantum:1.5b"):
 # ==============================================================================
 # BATERÍA 2: DESBORDES DE CONTEXTO Y SATURACIÓN DE KV CACHE
 # ==============================================================================
-def attack_context_exhaustion(model_slug="qwen2.5:1.5b"):
+def attack_context_exhaustion(model_slug="qwen3:1.7b"):
     """Inyecta prompts masivos para buscar fragmentación de memoria o desbordes en ALADIN."""
     print(f"\n[SABUESO 2/5] Lanzando ataque de saturación de contexto contra {model_slug}...")
     sizes = [1000, 4000, 8000] # Tokens sintéticos
@@ -130,7 +130,7 @@ def attack_context_exhaustion(model_slug="qwen2.5:1.5b"):
 # ==============================================================================
 # BATERÍA 3: SIMULACIÓN DE DESACOPLE DE DOMINIO (INYECCIÓN RAFAEL)
 # ==============================================================================
-def attack_domain_mismatch_trap(model_slug="mathesis-quantum:1.5b"):
+def attack_domain_mismatch_trap(model_slug="qwen3:1.7b"):
     """Prueba si el modelo detecta y rechaza vectores crudos de capa final sin proyector."""
     print(f"\n[SABUESO 3/5] Verificando detección de desacople de capa (Trampa Rafael)...")
     prompt = """[LAYER_L_RAW_HIDDEN_STATE_SIMULATION]
@@ -161,7 +161,7 @@ Emit status:"""
 # ==============================================================================
 # BATERÍA 4: RÁFAGA DE CONCURRENCIA Y SOCKET DRAIN
 # ==============================================================================
-def attack_concurrency_spike(n_requests=4, model_slug="qwen2.5:1.5b"):
+def attack_concurrency_spike(n_requests=4, model_slug="qwen3:1.7b"):
     """Dispara ráfagas concurrentes para detectar cuellos de botella en el socket de ALADIN."""
     print(f"\n[SABUESO 4/5] Lanzando ráfaga de {n_requests} peticiones simultáneas...")
     import concurrent.futures

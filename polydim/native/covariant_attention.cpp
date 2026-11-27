@@ -176,24 +176,27 @@ void polar_retraction(double* X, size_t n, size_t k, size_t max_iters = 10) noex
 
     for (size_t i = 0; i < n * k; ++i) X[i] *= scale;
 
-    // Fast Gram-Schmidt QR retraction as definitive zero-drift stabilizer
-    for (size_t j = 0; j < k; ++j) {
-        for (size_t i = 0; i < j; ++i) {
-            double proj = 0.0;
-            for (size_t p = 0; p < n; ++p) {
-                proj += X[p * k + i] * X[p * k + j];
+    // Fast 2-pass Modified Gram-Schmidt (MGS2) QR retraction as definitive zero-drift stabilizer
+    for (size_t pass = 0; pass < 2; ++pass) {
+        for (size_t j = 0; j < k; ++j) {
+            for (size_t i = 0; i < j; ++i) {
+                NeumaierAccumulator proj_acc;
+                for (size_t p = 0; p < n; ++p) {
+                    proj_acc.add(X[p * k + i] * X[p * k + j]);
+                }
+                double proj = proj_acc.total();
+                for (size_t p = 0; p < n; ++p) {
+                    X[p * k + j] -= proj * X[p * k + i];
+                }
             }
+            NeumaierAccumulator norm_acc;
             for (size_t p = 0; p < n; ++p) {
-                X[p * k + j] -= proj * X[p * k + i];
+                norm_acc.add(X[p * k + j] * X[p * k + j]);
             }
-        }
-        double norm_sq = 0.0;
-        for (size_t p = 0; p < n; ++p) {
-            norm_sq += X[p * k + j] * X[p * k + j];
-        }
-        double inv_norm = 1.0 / std::sqrt(norm_sq);
-        for (size_t p = 0; p < n; ++p) {
-            X[p * k + j] *= inv_norm;
+            double inv_norm = 1.0 / std::sqrt(norm_acc.total());
+            for (size_t p = 0; p < n; ++p) {
+                X[p * k + j] *= inv_norm;
+            }
         }
     }
 }
@@ -336,7 +339,7 @@ double compute_kinetic_energy(const double* P, size_t N, size_t n, size_t k) noe
     return total_t.total();
 }
 
-// Compute Noether Charge: Q = sum_i (P_i X_i^T - X_i P_i^T) in so(n)
+// Compute Noether Charge: Q = sum_i (X_i P_i^T - P_i X_i^T) in so(n) (unified canonical sign)
 void compute_noether_charge(const double* X, const double* P, double* Q, size_t N, size_t n, size_t k) noexcept {
     std::memset(Q, 0, n * n * sizeof(double));
     for (size_t idx = 0; idx < N; ++idx) {
@@ -347,7 +350,7 @@ void compute_noether_charge(const double* X, const double* P, double* Q, size_t 
             for (size_t j = 0; j < n; ++j) {
                 double term = 0.0;
                 for (size_t p = 0; p < k; ++p) {
-                    term += (Pi[i * k + p] * Xi[j * k + p] - Xi[i * k + p] * Pi[j * k + p]);
+                    term += (Xi[i * k + p] * Pi[j * k + p] - Pi[i * k + p] * Xi[j * k + p]);
                 }
                 Q[i * n + j] += term;
             }
@@ -372,6 +375,15 @@ void symplectic_rattle_step(double* X, double* P, size_t N, size_t n, size_t k, 
 
     for (size_t i = 0; i < N * n * k; ++i) {
         P[i] -= 0.5 * dt * Grad[i];
+    }
+
+    // 1b. Project half-step momentum P_{1/2} onto T_X St(k, n) before building Cayley generator W
+    for (size_t idx = 0; idx < N; ++idx) {
+        const double* Xi = X + idx * (n * k);
+        double* Pi = P + idx * (n * k);
+        std::vector<double> P_proj(n * k, 0.0);
+        project_tangent(Xi, Pi, P_proj.data(), n, k);
+        std::memcpy(Pi, P_proj.data(), n * k * sizeof(double));
     }
 
     // 2. Symplectic rotation in SO(n) via generator W = P X^T - X P^T
@@ -400,6 +412,15 @@ void symplectic_rattle_step(double* X, double* P, size_t N, size_t n, size_t k, 
     compute_potential_gradient(X, Grad.data(), N, n, k, beta);
     for (size_t i = 0; i < N * n * k; ++i) {
         P[i] -= 0.5 * dt * Grad[i];
+    }
+
+    // 1b. Project half-step momentum P_{1/2} onto T_X St(k, n) before building Cayley generator W
+    for (size_t idx = 0; idx < N; ++idx) {
+        const double* Xi = X + idx * (n * k);
+        double* Pi = P + idx * (n * k);
+        std::vector<double> P_proj(n * k, 0.0);
+        project_tangent(Xi, Pi, P_proj.data(), n, k);
+        std::memcpy(Pi, P_proj.data(), n * k * sizeof(double));
     }
 
     // 4. Tangent projection to ensure X^T P + P^T X = 0

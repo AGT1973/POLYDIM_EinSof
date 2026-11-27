@@ -238,10 +238,11 @@ if _TORCH_AVAILABLE:
         Inserta el tensor continuo latente directamente en la capa profunda L-1 o 2L/3,
         evitando pasar por las capas tempranas de vocabulario.
         """
-        def __init__(self, target_layer_module, latent_injection_tensor: torch.Tensor, mode: str = "add"):
+        def __init__(self, target_layer_module, latent_injection_tensor: torch.Tensor, mode: str = "stiefel_blend", alpha: float = 0.85):
             self.target_layer = target_layer_module
             self.latent_tensor = latent_injection_tensor
             self.mode = mode
+            self.alpha = float(alpha)
             self.hook_handle = None
 
         def register(self):
@@ -252,7 +253,23 @@ if _TORCH_AVAILABLE:
                 dtype = residual_stream.dtype
                 t_inj = self.latent_tensor.to(device=device, dtype=dtype)
                 
-                if self.mode == "add":
+                if self.mode == "stiefel_blend":
+                    res_norm = residual_stream.norm(dim=-1, keepdim=True).clamp_min(1e-12)
+                    t_norm = t_inj.norm(dim=-1, keepdim=True).clamp_min(1e-12)
+                    u_res = residual_stream / res_norm
+                    u_t = t_inj / t_norm
+                    cos_omega = (u_res * u_t).sum(dim=-1, keepdim=True).clamp(-1.0 + 1e-7, 1.0 - 1e-7)
+                    omega = torch.acos(cos_omega)
+                    sin_omega = torch.sin(omega).clamp_min(1e-7)
+                    w_res = torch.sin((1.0 - self.alpha) * omega) / sin_omega
+                    w_t = torch.sin(self.alpha * omega) / sin_omega
+                    slerp_unit = w_res * u_res + w_t * u_t
+                    lin_unit = (1.0 - self.alpha) * u_res + self.alpha * u_t
+                    lin_unit = lin_unit / lin_unit.norm(dim=-1, keepdim=True).clamp_min(1e-12)
+                    blended_unit = torch.where(omega > 1e-4, slerp_unit, lin_unit)
+                    blended_unit = blended_unit / blended_unit.norm(dim=-1, keepdim=True).clamp_min(1e-12)
+                    modified = blended_unit * res_norm
+                elif self.mode == "add":
                     # Adaptación de longitud de secuencia si difieren
                     if t_inj.ndim == 3 and residual_stream.ndim == 3 and t_inj.shape[1] != residual_stream.shape[1]:
                         # Si el tensor latente tiene menos tokens, se añade a los primeros k tokens

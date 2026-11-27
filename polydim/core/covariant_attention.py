@@ -58,13 +58,19 @@ class StiefelManifoldAlgebra:
     @staticmethod
     def polar_retraction(Y: np.ndarray) -> np.ndarray:
         """
-        SVD-free polar retraction onto St(k, n) via reduced QR with positive diagonal.
+        SVD-free polar retraction onto St(k, n) via reduced QR with positive diagonal
+        followed by Order-4 Chebyshev-Padé polar polish to eliminate O(1000+) layer drift.
         """
         Q, R = np.linalg.qr(Y, mode='reduced')
         d = np.diagonal(R)
         ph = np.sign(d)
         ph[ph == 0] = 1.0
-        return Q * ph
+        X = Q * ph
+        k = X.shape[1]
+        I_k = np.eye(k, dtype=np.float64)
+        E = X.T @ X - I_k
+        X = X @ (I_k - 0.5 * E + 0.375 * (E @ E) - 0.3125 * (E @ E @ E))
+        return X
 
     @staticmethod
     def cayley_rotation(X: np.ndarray, P: np.ndarray, dt: float) -> Tuple[np.ndarray, np.ndarray]:
@@ -158,11 +164,12 @@ class SymplecticRATTLEStiefelIntegrator:
             p_h = P[i] - 0.5 * dt * grad_R[i]
             P_half[i] = StiefelManifoldAlgebra.project_tangent(X[i], p_h)
 
-        # 3. Full symplectic position step via Cayley so(n) rotation
+        # 3. Full symplectic position step via Cayley so(n) rotation + machine-epsilon polar stabilization
         X_next = np.zeros_like(X)
         P_trans = np.zeros_like(P)
         for i in range(N):
-            X_next[i], P_trans[i] = StiefelManifoldAlgebra.cayley_rotation(X[i], P_half[i], dt)
+            X_rot, P_trans[i] = StiefelManifoldAlgebra.cayley_rotation(X[i], P_half[i], dt)
+            X_next[i] = StiefelManifoldAlgebra.polar_retraction(X_rot)
 
         # 4. Evaluate Riemannian gradient at new configuration X_{t+1}
         grad_E_next = self.potential.euclidean_gradient(X_next)

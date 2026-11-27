@@ -873,6 +873,26 @@ def tool_cag_truth_gate(args: dict) -> dict:
         return {"status": "ERROR", "exit_code": 1, "error": f"Accion desconocida: {action}"}
 
 
+def tool_cag_intercept_output(args: dict) -> dict:
+    """
+    CAG Output Truth Interceptor v2.0 (Mandatory Post-Generation Filter).
+    Descompone la respuesta cruda de un LLM en proposiciones atómicas, verifica
+    cada una contra PostgreSQL 16 y silicio, y poda alucinaciones con sello BLAKE2s.
+    """
+    sys.path.insert(0, str(Path(r"E:\POLYDIM_EINSOF\tools")))
+    from cag_output_truth_interceptor import CagOutputTruthInterceptor
+
+    raw_output = str(args.get("raw_output", "")).strip()
+    mode = str(args.get("mode", "filter_strict")).strip()
+    if not raw_output:
+        return {"status": "ERROR", "exit_code": 1, "error": "raw_output vacío"}
+
+    interceptor = CagOutputTruthInterceptor()
+    result = interceptor.intercept_and_filter(raw_output, mode=mode)
+    result["exit_code"] = 0
+    return result
+
+
 # ============================================================================
 # ESQUEMA DE HERRAMIENTAS MCP (JSON-RPC 2.0)
 # ============================================================================
@@ -1007,6 +1027,18 @@ MCP_TOOLS = [
             },
             "required": ["action"]
         }
+    },
+    {
+        "name": "cag_intercept_output",
+        "description": "Interceptor de Verdad Post-Generacion MANDATORIO (CAG Output Truth Interceptor v2.0). Descompone la respuesta cruda de cualquier LLM en proposiciones atomicas, verifica cada una contra PostgreSQL 16 y silicio, poda alucinaciones (nombres vetados, epsilon imposible, sicofancia vacia, anaforas huerfanas, homoglyphs Unicode) y emite solo la verdad con sello BLAKE2s.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "raw_output": {"type": "string", "description": "Respuesta cruda del LLM a interceptar y filtrar"},
+                "mode": {"type": "string", "enum": ["filter_strict", "audit_report"], "description": "Modo: 'filter_strict' (poda y emite verdad) o 'audit_report' (informe completo)", "default": "filter_strict"}
+            },
+            "required": ["raw_output"]
+        }
     }
 ]
 
@@ -1064,6 +1096,8 @@ def handle_request(req: dict):
                 res = tool_pmtp_sota_aladin_verify(args)
             elif name == "cag_truth_gate":
                 res = tool_cag_truth_gate(args)
+            elif name == "cag_intercept_output":
+                res = tool_cag_intercept_output(args)
             else:
                 send_jsonrpc_response(req_id, error={"code": -32601, "message": f"Herramienta no encontrada: {name}"})
                 return

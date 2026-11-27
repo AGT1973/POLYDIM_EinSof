@@ -377,10 +377,23 @@ class ResidualStreamSpliceHook:
                 t = apply_rope_phase_compensator(t, self.base_source, self.base_target)
 
             if self.mode == "stiefel_blend":
-                res_norm = residual.norm(dim=-1, keepdim=True).clamp_min(1e-9)
-                t_norm = t.norm(dim=-1, keepdim=True).clamp_min(1e-9)
-                t_scaled = t * (res_norm / t_norm)
-                modified = (1.0 - self.alpha) * residual + self.alpha * t_scaled
+                res_norm = residual.norm(dim=-1, keepdim=True).clamp_min(1e-12)
+                t_norm = t.norm(dim=-1, keepdim=True).clamp_min(1e-12)
+                u_res = residual / res_norm
+                u_t = t / t_norm
+                # Geodesic SLERP on S^{D-1} scaled by res_norm (zero chordal norm shrinkage)
+                cos_omega = (u_res * u_t).sum(dim=-1, keepdim=True).clamp(-1.0 + 1e-7, 1.0 - 1e-7)
+                omega = torch.acos(cos_omega)
+                sin_omega = torch.sin(omega).clamp_min(1e-7)
+                w_res = torch.sin((1.0 - self.alpha) * omega) / sin_omega
+                w_t = torch.sin(self.alpha * omega) / sin_omega
+                slerp_unit = w_res * u_res + w_t * u_t
+                # Fallback for nearly collinear vectors (omega < 1e-4) + exact unit re-normalization
+                lin_unit = (1.0 - self.alpha) * u_res + self.alpha * u_t
+                lin_unit = lin_unit / lin_unit.norm(dim=-1, keepdim=True).clamp_min(1e-12)
+                blended_unit = torch.where(omega > 1e-4, slerp_unit, lin_unit)
+                blended_unit = blended_unit / blended_unit.norm(dim=-1, keepdim=True).clamp_min(1e-12)
+                modified = blended_unit * res_norm
             elif self.mode == "replace":
                 res_norm = residual.norm(dim=-1, keepdim=True).clamp_min(1e-9)
                 t_norm = t.norm(dim=-1, keepdim=True).clamp_min(1e-9)

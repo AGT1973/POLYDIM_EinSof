@@ -712,10 +712,29 @@ class PmtpShmBus:
         return out
 
     def publish_tensor(self, vec: np.ndarray, aux_tag: int = 0) -> str:
-        """Asigna o reutiliza un slab, publica `vec` autenticado con MAC y devuelve SLAB_ID."""
+        """Asigna o reutiliza primero un slab released=True, luego un slot libre, y publica `vec` con MAC devolviendo SLAB_ID."""
         arr = np.asarray(vec, dtype=np.float64).ravel()
-        sid = (self._next_slab_seq % max(1, self.max_slabs)) + 1
-        self._next_slab_seq += 1
+        max_s = max(1, self.max_slabs)
+        chosen_sid = None
+        # Pass 1: reutilizar cualquier slab liberado previamente antes de asignar memoria SHM nueva
+        for offset in range(max_s):
+            cand = ((self._next_slab_seq + offset) % max_s) + 1
+            if cand in self.slabs and self.slabs[cand].get("released", False):
+                chosen_sid = cand
+                self._next_slab_seq = cand
+                break
+        # Pass 2: buscar un slot aún no asignado
+        if chosen_sid is None:
+            for offset in range(max_s):
+                cand = ((self._next_slab_seq + offset) % max_s) + 1
+                if cand not in self.slabs:
+                    chosen_sid = cand
+                    self._next_slab_seq = cand
+                    break
+        if chosen_sid is None:
+            chosen_sid = (self._next_slab_seq % max_s) + 1
+            self._next_slab_seq += 1
+        sid = chosen_sid
         if sid in self.slabs and self.slabs[sid]["num_elements"] == arr.size and not self.slabs[sid].get("released", False):
             self.publish_snapshot_atomic(sid, arr)
         else:

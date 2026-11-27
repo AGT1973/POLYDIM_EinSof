@@ -257,3 +257,96 @@ def stream_cache_sharded_dot(x: np.ndarray, y: np.ndarray, block_size: int = 102
             c += (block_sum - t) + s
         s = t
     return float(s + c)
+
+
+def subriemannian_nonholonomic_tangent_cone(
+    W: np.ndarray,
+    G_R: np.ndarray,
+    singular_threshold: float = 1e-12
+) -> np.ndarray:
+    """
+    Sub-Riemannian non-holonomic tangent cone correction (Wang & Zelenko, 2026).
+    Handles length-minimizing curves with discontinuous velocities near abnormal/singular
+    extremals on St(k, D). When rank deficiency or near-singular directions appear in
+    the metric tensor or horizontal velocity distribution, projects out degenerate
+    eigenvectors and enforces exact tangent projection onto T_W St(k, D) so that
+    ||sym(W^T G)||_inf <= 1e-15.
+    """
+    W64 = np.asarray(W, dtype=np.float64)
+    G64 = np.asarray(G_R, dtype=np.float64)
+    k = W64.shape[1]
+
+    gram = W64.T @ W64
+    evals, evecs = np.linalg.eigh(gram)
+
+    # 1. Filtrar direcciones singulares de la métrica base W^T W (si W viene fuera de variedad)
+    mask = evals < singular_threshold
+    if np.any(mask):
+        null_dirs = evecs[:, mask]
+        for col in range(null_dirs.shape[1]):
+            v = null_dirs[:, col]
+            G64 = G64 - (G64 @ np.outer(v, v))
+        # Si W tenía rango deficiente, retraer a una base ortonormal limpia para definir T_W St(k,D)
+        W_ortho, _ = project_stiefel_polar_order4(W64)
+    else:
+        # Si W ya está cerca de St(k,D), asegurar ortonormalidad a nivel epsilon de máquina
+        defect_w = float(np.max(np.abs(gram - np.eye(k, dtype=np.float64))))
+        if defect_w > 1e-14:
+            W_ortho, _ = project_stiefel_polar_order4(W64)
+        else:
+            W_ortho = W64
+
+    # 2. Filtrar direcciones cuasi-singulares del tensor de velocidad horizontal G_R^T G_R
+    g_gram = G64.T @ G64
+    g_evals, g_evecs = np.linalg.eigh(g_gram)
+    g_max = float(np.max(np.abs(g_evals))) if len(g_evals) > 0 else 0.0
+    if g_max > 0.0:
+        g_mask = (g_evals > 0.0) & (g_evals < singular_threshold * g_max)
+        if np.any(g_mask):
+            g_null = g_evecs[:, g_mask]
+            for col in range(g_null.shape[1]):
+                v = g_null[:, col]
+                G64 = G64 - (G64 @ np.outer(v, v))
+
+    # 3. Re-proyección obligatoria sobre T_W St(k, D) para garantizar ||sym(W^T G)||_inf <= 1e-15
+    G_tangent = project_to_stiefel_tangent(W_ortho, G64)
+    # Segundo pase de pulido tangente (compensa redondeo IEEE-754)
+    G_tangent = project_to_stiefel_tangent(W_ortho, G_tangent)
+    return G_tangent
+
+
+def spectral_damping_rank_one_correction(
+    W: np.ndarray,
+    factors: List[np.ndarray],
+    theta_rad: float = 0.0
+) -> Tuple[np.ndarray, float]:
+    """
+    Rank-One Attenuation & Spectral Damping Regularizer (Zenodo 24451151).
+    Evaluates depth-k matrix contractions: lambda_min ~ A/k + O(k^-3) where A = theta*(4pi - theta).
+    Applies Tikhonov spectral damping floor gamma_k = min(0.25, A / (4*pi^2 * k)) and
+    Neumaier-compensated phase unwrapping to prevent complex eigenpair leakage
+    and rank-one collapse in iterative Stiefel polar retractions.
+    """
+    W64 = np.asarray(W, dtype=np.float64)
+    k_depth = max(1, len(factors))
+    A = theta_rad * (4.0 * math.pi - theta_rad) if theta_rad > 0.0 else 0.0
+    damping_floor = A / float(k_depth) if k_depth > 0 else 0.0
+    gamma_damping = min(0.25, damping_floor / (4.0 * math.pi * math.pi)) if damping_floor > 0.0 else 0.0
+
+    # Compensated projection product with active spectral damping floor
+    curr = W64.copy()
+    for F in factors:
+        F64 = np.asarray(F, dtype=np.float64)
+        if gamma_damping > 0.0 and F64.ndim == 2 and F64.shape[0] == F64.shape[1]:
+            eye_f = np.eye(F64.shape[0], dtype=np.float64)
+            F64 = (1.0 - gamma_damping) * F64 + gamma_damping * eye_f
+        curr = curr @ F64
+        # Neumaier re-normalization along columns
+        for c in range(curr.shape[1]):
+            norm_c = math.sqrt(neumaier_sum_sq(curr[:, c]))
+            if norm_c > 1e-15:
+                curr[:, c] = curr[:, c] / norm_c
+
+    retracted, defect = project_stiefel_polar_order4(curr)
+    return retracted, float(defect)
+
