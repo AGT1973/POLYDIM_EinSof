@@ -79,8 +79,8 @@ jobs:
       - name: Build and Run Reproducible Container Audit
         run: |
           docker build -t polydim-audit .
-          docker run --rm `
-            --ipc=private `
-            --security-opt seccomp=unconfined `
-            -e ASAN_OPTIONS="detect_leaks=0:allocator_may_return_null=1" `
+          docker run --rm \
+            --ipc=private \
+            --security-opt seccomp=unconfined \
+            -e ASAN_OPTIONS="detect_leaks=0:allocator_may_return_null=1" \
             polydim-audit
