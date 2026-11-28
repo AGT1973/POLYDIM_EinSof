@@ -25,9 +25,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
-import psycopg2
 
-_HELENA_CORE_DIR = Path(r"e:\Polydim_2027_core\Qlora\core")
+try:
+    import psycopg2
+except ImportError:
+    psycopg2 = None
+
+_THIS_DIR = Path(__file__).resolve().parent
+_HELENA_CORE_DIR = _THIS_DIR if (_THIS_DIR / "helena_carrier_bridge.py").exists() else Path(r"e:\Polydim_2027_core\Qlora\core")
 if str(_HELENA_CORE_DIR) not in sys.path:
     sys.path.insert(0, str(_HELENA_CORE_DIR))
 
@@ -38,7 +43,21 @@ PG_PORT = int(os.environ.get("PGPORT", 5432))
 PG_USER = os.environ.get("PGUSER", "postgres")
 PG_DB = os.environ.get("PGDATABASE", "polydim_active_db")
 
-GANDALF_VAULT_DIR = Path(r"C:\Users\eluithi\.gandalf_vault")
+
+def _resolve_gandalf_vault_dir() -> Path:
+    candidates = [
+        os.environ.get("GANDALF_VAULT_DIR"),
+        r"C:\Users\eluithi\.gandalf_vault",
+        str(Path.home() / ".gandalf_vault"),
+        "/home/agt/.gandalf_vault",
+    ]
+    for c in candidates:
+        if c and Path(c).exists():
+            return Path(c)
+    return Path.home() / ".gandalf_vault"
+
+
+GANDALF_VAULT_DIR = _resolve_gandalf_vault_dir()
 CAROUSEL_STATE_FILE = (
     GANDALF_VAULT_DIR / "carousel_keys.json"
     if (GANDALF_VAULT_DIR / "carousel_keys.json").exists()
@@ -66,6 +85,8 @@ PROVIDER_KEY_POOLS = {
 
 
 def get_db_connection():
+    if psycopg2 is None:
+        raise RuntimeError("psycopg2 no instalado en este nodo")
     passwords = [os.environ.get("PGPASSWORD"), "Polydim#2027!", "1234", "123", "postgres", ""]
     for pwd in passwords:
         if pwd is None:
@@ -80,17 +101,21 @@ def get_db_connection():
 
 
 def load_vault_secrets():
-    """Carga claves y endpoints desde active_vault sin exponerlos en disco o logs."""
+    """Carga claves y endpoints desde active_vault (si disponible) y .gandalf_vault sin exponerlos."""
     wanted = {k for pool in PROVIDER_KEY_POOLS.values() for k in pool}
     wanted.add("Alibaba_Bailian_Endpoint")
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute(
-        "SELECT key_name, value FROM active_vault WHERE key_name = ANY(%s);",
-        (list(wanted),),
-    )
-    rows = cur.fetchall()
-    conn.close()
+    rows = []
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT key_name, value FROM active_vault WHERE key_name = ANY(%s);",
+            (list(wanted),),
+        )
+        rows = cur.fetchall()
+        conn.close()
+    except Exception:
+        rows = []
 
     vault = {}
     token_plan_base = None
